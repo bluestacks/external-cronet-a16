@@ -1,3 +1,4 @@
 /desc.json filter=lfs diff=lfs merge=lfs -text
 /desc_x64.json filter=lfs diff=lfs merge=lfs -text
 /desc_x86.json filter=lfs diff=lfs merge=lfs -text
+/desc_arm64.json filter=lfs diff=lfs merge=lfs -text

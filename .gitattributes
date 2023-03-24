@@ -3,3 +3,7 @@
 /desc_x86.json filter=lfs diff=lfs merge=lfs -text
 /desc_arm64.json filter=lfs diff=lfs merge=lfs -text
 /desc_arm.json filter=lfs diff=lfs merge=lfs -text
+/android/tools/gn2bp/desc_arm.json filter=lfs diff=lfs merge=lfs -text
+/android/tools/gn2bp/desc_arm64.json filter=lfs diff=lfs merge=lfs -text
+/android/tools/gn2bp/desc_x64.json filter=lfs diff=lfs merge=lfs -text
+/android/tools/gn2bp/desc_x86.json filter=lfs diff=lfs merge=lfs -text

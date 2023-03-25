@@ -1,1 +1,2 @@
 /desc.json filter=lfs diff=lfs merge=lfs -text
+/desc_x64.json filter=lfs diff=lfs merge=lfs -text

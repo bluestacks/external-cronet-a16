@@ -13,9 +13,9 @@ import subprocess
 
 from contextlib import AbstractContextManager
 
-from common import check_ssh_config_file, find_image_in_sdk, get_system_info, \
-                   run_ffx_command, SDK_ROOT
-from compatible_utils import get_host_arch, get_sdk_hash
+from common import get_hash_from_sdk, get_system_info, run_ffx_command, \
+                   IMAGES_ROOT, SDK_ROOT
+from compatible_utils import get_host_arch
 
 _EMU_COMMAND_RETRIES = 3
 
@@ -23,10 +23,10 @@ _EMU_COMMAND_RETRIES = 3
 class FfxEmulator(AbstractContextManager):
     """A helper for managing emulators."""
     def __init__(self, args: argparse.Namespace) -> None:
-        if args.product_bundle:
-            self._product_bundle = args.product_bundle
+        if args.product:
+            self._product = args.product
         else:
-            self._product_bundle = 'terminal.qemu-' + get_host_arch()
+            self._product = 'terminal.qemu-' + get_host_arch()
 
         self._enable_graphics = args.enable_graphics
         self._hardware_gpu = args.hardware_gpu
@@ -44,21 +44,15 @@ class FfxEmulator(AbstractContextManager):
             self._node_name = 'fuchsia-emulator-' + str(random.randint(
                 1, 9999))
 
-        # Set the download path parallel to Fuchsia SDK directory
-        # permanently so that scripts can always find the product bundles.
-        run_ffx_command(('config', 'set', 'pbms.storage.path',
-                         os.path.join(SDK_ROOT, os.pardir, 'images')))
-
     def _everlasting(self) -> bool:
         return self._node_name == 'fuchsia-everlasting-emulator'
 
     def _start_emulator(self) -> None:
         """Start the emulator."""
         logging.info('Starting emulator %s', self._node_name)
-        check_ssh_config_file()
-        emu_command = [
-            'emu', 'start', self._product_bundle, '--name', self._node_name
-        ]
+        prod, board = self._product.split('.', 1)
+        image_dir = os.path.join(IMAGES_ROOT, prod, board)
+        emu_command = ['emu', 'start', image_dir, '--name', self._node_name]
         if not self._enable_graphics:
             emu_command.append('-H')
         if self._hardware_gpu:
@@ -68,6 +62,8 @@ class FfxEmulator(AbstractContextManager):
                 ('-l', os.path.join(self._logs_dir, 'emulator_log')))
         if self._with_network:
             emu_command.extend(('--net', 'tap'))
+        else:
+            emu_command.extend(('--net', 'user'))
 
         # TODO(https://crbug.com/1336776): remove when ffx has native support
         # for starting emulator on arm64 host.
@@ -119,12 +115,11 @@ class FfxEmulator(AbstractContextManager):
                 configs = ['emu.start.timeout=90']
                 if i > 0:
                     logging.warning(
-                        'Emulator failed to start. Turning on debug')
-                    configs.append('log.level=debug')
-                run_ffx_command(emu_command, timeout=85, configs=configs)
+                        'Emulator failed to start.')
+                run_ffx_command(cmd=emu_command, timeout=100, configs=configs)
                 break
             except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
-                run_ffx_command(('emu', 'stop'))
+                run_ffx_command(cmd=('emu', 'stop'))
 
     def _shutdown_emulator(self) -> None:
         """Shutdown the emulator."""
@@ -132,7 +127,7 @@ class FfxEmulator(AbstractContextManager):
         logging.info('Stopping the emulator %s', self._node_name)
         # The emulator might have shut down unexpectedly, so this command
         # might fail.
-        run_ffx_command(('emu', 'stop', self._node_name), check=False)
+        run_ffx_command(cmd=('emu', 'stop', self._node_name), check=False)
 
     def __enter__(self) -> str:
         """Start the emulator if necessary.
@@ -142,7 +137,7 @@ class FfxEmulator(AbstractContextManager):
         """
 
         if self._everlasting():
-            sdk_hash = get_sdk_hash(find_image_in_sdk(self._product_bundle))
+            sdk_hash = get_hash_from_sdk()
             sys_info = get_system_info(self._node_name)
             if sdk_hash == sys_info:
                 return self._node_name

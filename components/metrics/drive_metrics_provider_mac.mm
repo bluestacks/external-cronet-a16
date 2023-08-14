@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include "base/apple/bridging.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -58,7 +59,7 @@ bool DriveMetricsProvider::HasSeekPenalty(const base::FilePath& path,
   if (!type_ref)
     return false;
 
-  NSString* type = base::mac::CFToNSCast(type_ref);
+  NSString* type = base::apple::CFToNSPtrCast(type_ref);
   if ([type isEqualToString:@kIOPropertyMediumTypeRotationalKey]) {
     *has_seek_penalty = true;
     return true;

@@ -54,8 +54,7 @@ NSString* GenerateClientId() {
 
 }  // namespace
 
-namespace ios {
-namespace device_util {
+namespace ios::device_util {
 
 std::string GetPlatform() {
 #if TARGET_OS_SIMULATOR
@@ -185,5 +184,4 @@ std::string GetSaltedString(const std::string& in_string,
   return base::SysCFStringRefToUTF8(device_id);
 }
 
-}  // namespace device_util
-}  // namespace ios
+}  // namespace ios::device_util

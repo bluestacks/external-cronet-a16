@@ -105,8 +105,12 @@ each term depends mainly upon previously defined ones.
     primary user (the [V8 Sandbox][v8-sandbox]) can configure it at runtime,
     providing a pre-existing mapping. Its allocations aren't protected by
     BackupRefPtr.
-  * [64-bit only] The pkey pool is returning memory tagged with a memory
-    protection key on supported platforms. It's primary user is [V8 CFI][v8-cfi].
+  * [64-bit only] The thread isolated pool is returning memory protected with
+    per-thread permissions. At the moment, this is implemented for pkeys on x64.
+    It's primary user is [V8 CFI][v8-cfi].
+
+![The singular AddressPoolManager mediates access to the separate pools
+  for each PartitionRoot.](./dot/address-space.png)
 
 *** promo
 Pools are downgraded into a logical concept in 32-bit environments,

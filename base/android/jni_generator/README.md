@@ -23,14 +23,15 @@ the class to be disabled.
 
 ### Exposing Native Methods
 
-Generally Java->Native calls are exported from the shared library and lazily
-resolved by the runtime (via `dlsym()`). There are a number of notable
-exceptions to this. See usage of `jni_registration_generator.py` in the
-codebase.
+There are two ways to have native methods be found by Java:
+1) Explicitly register the name -> function pointer mapping using JNI's
+   `RegisterNatives()` function.
+2) Export the symbols from the shared library, and let the runtime resolve them
+   on-demand (using `dlsym()`) the first time a native method is called.
 
-The `jni_registration_generator.py` exposes a registration function when using
-manual registation:
-* `RegisterNatives` - Registers all native functions.
+2) Is generally preferred due to a smaller code size and less up-front work, but
+1) is sometimes required (e.g. when OS bugs prevent `dlsym()` from working).
+Both ways are supported by this tool.
 
 ### Exposing Java Methods
 
@@ -130,8 +131,6 @@ void MyClass::NonStatic(JNIEnv* env) { ... }
 
 - The binding generator also looks for `native` JNI method declarations and
   generates stubs for them. This used to be the norm, but is now obsolete.
-- If you have native methods that you don't want stubs generated for, you should
-  add @JniIgnoreNatives to the class.
 
 #### Testing Mockable Natives
 
@@ -185,14 +184,14 @@ result in `test_module_GEN_JNI`.
 
 ### Testing for readiness: use `get()`
 
-JNI Generator automatically produces checks that verify that the Natives interface can be safely
+JNI Generator automatically produces asserts that verify that the Natives interface can be safely
 called. These checks are compiled out of Release builds, making these an excellent way to determine
 whether your code is called safely.
 
 ![Check Flow](doc/jni-check-flow.svg)
 
-Most of the time you would write your code so that you only use JNI once the native libraries are
-loaded. There's nothing extra you need to do here.
+It is not sufficient, however, to use `<Class>Jni.get()` to guarantee native is initialized - it is
+only a debugging tool to ensure that you're using native after native is loaded.
 
 If you expect your code to be called by an external caller, it's often helpful to know _ahead of
 time_ that the context is valid (ie. either native libraries are loaded or mocks are installed).
@@ -215,6 +214,11 @@ executed tests, inaccurately reporting flakiness and failures of these victim te
 * Introducing `LibraryLoader.is*()` calls in your code immediately affects all callers, forcing
 the authors of the code up the call stack to override `LibraryLoader` internal state in order to be
 able to unit-test their code.
+
+However, if your code is going to be called both before and after native is initialized, you are
+forced to call `LibraryLoader.isInitialized()` to be able to differentiate. Calling
+`<Class>Jni.get()` only provides assertions, and will fail in debug builds if you call it when
+native isn't ready.
 
 ### Calling Native -> Java
 
@@ -271,5 +275,5 @@ for more about the GN templates.
 
 ## Changing `jni_generator`
 
- * Python unit tests live in `jni_generator_tests.py`
+ * Python tests live in `integration_tests.py`
  * A working demo app exists as `//base/android/jni_generator:sample_jni_apk`

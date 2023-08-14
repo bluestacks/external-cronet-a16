@@ -140,7 +140,7 @@ int64_t ComputeThreadTicks() {
 namespace base {
 
 // The Time routines in this file use Mach and CoreFoundation APIs, since the
-// POSIX definition of time_t in Mac OS X wraps around after 2038--and
+// POSIX definition of time_t in macOS wraps around after 2038--and
 // there are already cookie expiration dates, etc., past that time out in
 // the field.  Using CFDate prevents that problem, and using mach_absolute_time
 // for TimeTicks gives us nice high-resolution interval timing.

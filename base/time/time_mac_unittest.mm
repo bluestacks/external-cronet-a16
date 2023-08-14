@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 class ScopedTimebase {
  public:
   ScopedTimebase(mach_timebase_info_data_t timebase) {

@@ -8,7 +8,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.DoNotMock;
 
@@ -21,7 +20,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.MainDex;
 import org.chromium.url.mojom.Url;
 import org.chromium.url.mojom.UrlConstants;
 
@@ -39,7 +37,6 @@ import java.util.Random;
  * reconstruct a GURL in Java, allowing it to be much faster in the common case and easier to use.
  */
 @JNINamespace("url")
-@MainDex
 @DoNotMock("Create a real instance instead. For Robolectric, see JUnitTestGURLs.java")
 public class GURL {
     private static final String TAG = "GURL";
@@ -371,7 +368,6 @@ public class GURL {
     }
 
     /** Inits this GURL with the internal state of another GURL. */
-    @VisibleForTesting
     /* package */ void initForTesting(GURL gurl) {
         init(gurl.mSpec, gurl.mIsValid, gurl.mParsed);
     }

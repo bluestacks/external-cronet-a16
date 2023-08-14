@@ -222,9 +222,13 @@ const (
 // algorithms.
 var supportedSignatureAlgorithms = []signatureAlgorithm{
 	signatureRSAPSSWithSHA256,
+	signatureRSAPSSWithSHA384,
 	signatureRSAPKCS1WithSHA256,
 	signatureECDSAWithP256AndSHA256,
+	signatureECDSAWithP384AndSHA384,
 	signatureRSAPKCS1WithSHA1,
+	signatureRSAPKCS1WithSHA256,
+	signatureRSAPKCS1WithSHA384,
 	signatureECDSAWithSHA1,
 	signatureEd25519,
 }
@@ -1996,7 +2000,7 @@ func (c *Config) maxVersion(isDTLS bool) uint16 {
 	return ret
 }
 
-var defaultCurvePreferences = []CurveID{CurveX25519, CurveP256, CurveP384, CurveP521}
+var defaultCurvePreferences = []CurveID{CurveX25519Kyber768, CurveX25519, CurveP256, CurveP384, CurveP521}
 
 func (c *Config) curvePreferences() []CurveID {
 	if c == nil || len(c.CurvePreferences) == 0 {
@@ -2187,11 +2191,11 @@ type lruSessionCache struct {
 
 type lruSessionCacheEntry struct {
 	sessionKey string
-	state      interface{}
+	state      any
 }
 
 // Put adds the provided (sessionKey, cs) pair to the cache.
-func (c *lruSessionCache) Put(sessionKey string, cs interface{}) {
+func (c *lruSessionCache) Put(sessionKey string, cs any) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -2219,7 +2223,7 @@ func (c *lruSessionCache) Put(sessionKey string, cs interface{}) {
 
 // Get returns the value associated with a given key. It returns (nil,
 // false) if no value is found.
-func (c *lruSessionCache) Get(sessionKey string) (interface{}, bool) {
+func (c *lruSessionCache) Get(sessionKey string) (any, bool) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -2333,7 +2337,7 @@ func initDefaultCipherSuites() {
 	}
 }
 
-func unexpectedMessageError(wanted, got interface{}) error {
+func unexpectedMessageError(wanted, got any) error {
 	return fmt.Errorf("tls: received unexpected handshake message of type %T when waiting for %T", got, wanted)
 }
 

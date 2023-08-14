@@ -7,6 +7,7 @@
 #include <climits>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -22,6 +23,8 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
+#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr_counting_impl_wrapper_for_test.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr_test_support.h"
 #include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -133,6 +136,9 @@ static_assert([]() constexpr {
     [[maybe_unused]] Int* i2 = r;               // operator T*()
     [[maybe_unused]] IntBase* i3 = r;           // operator Convertible*()
 
+    [[maybe_unused]] Int** i4 = &r.AsEphemeralRawAddr();
+    [[maybe_unused]] Int*& i5 = r.AsEphemeralRawAddr();
+
     Int* array = new Int[3]();
     {
       raw_ptr<Int, base::RawPtrTraits::kAllowPtrArithmetic> ra(array);
@@ -156,14 +162,14 @@ namespace {
 
 // `kAllowPtrArithmetic` matches what `CountingRawPtr` does internally.
 // `kUseCountingWrapperForTest` is removed.
-using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
+using RawPtrCountingImpl = base::test::RawPtrCountingImplWrapperForTest<
     base::RawPtrTraits::kAllowPtrArithmetic>;
 
 // `kMayDangle | kAllowPtrArithmetic` matches what `CountingRawPtrMayDangle`
 // does internally. `kUseCountingWrapperForTest` is removed, and `kMayDangle`
 // and `kAllowPtrArithmetic` are kept.
 using RawPtrCountingMayDangleImpl =
-    base::internal::RawPtrCountingImplWrapperForTest<
+    base::test::RawPtrCountingImplWrapperForTest<
         base::RawPtrTraits::kMayDangle |
         base::RawPtrTraits::kAllowPtrArithmetic>;
 
@@ -1499,41 +1505,51 @@ TEST_F(RawPtrTest, ToAddressGivesBackRawAddress) {
   EXPECT_EQ(base::to_address(raw), base::to_address(miracle));
 }
 
-// Verifies that `raw_ptr_experimental` is aliased appropriately.
-//
-// The `DisableDanglingPtrDetection` trait is arbitrarily chosen and is
-// just there to ensure that `raw_ptr_experimental` knows how to field
-// the traits template argument.
-#if BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-static_assert(
-    std::is_same_v<raw_ptr_experimental<int, DisableDanglingPtrDetection>,
-                   raw_ptr<int, DisableDanglingPtrDetection>>);
-static_assert(
-    std::is_same_v<raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-                   raw_ptr<const int, DisableDanglingPtrDetection>>);
-static_assert(
-    std::is_same_v<
-        const raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-        const raw_ptr<const int, DisableDanglingPtrDetection>>);
-#else   // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
-// `DisableDanglingPtrDetection` means nothing here and is silently
-// ignored.
-static_assert(
-    std::is_same_v<raw_ptr_experimental<int, DisableDanglingPtrDetection>,
-                   int*>);
-static_assert(
-    std::is_same_v<raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-                   const int*>);
-static_assert(
-    std::is_same_v<
-        const raw_ptr_experimental<const int, DisableDanglingPtrDetection>,
-        const int* const>);
-#endif  // BUILDFLAG(ENABLE_RAW_PTR_EXPERIMENTAL)
+void InOutParamFuncWithPointer(int* in, int** out) {
+  *out = in;
+}
+
+TEST_F(RawPtrTest, EphemeralRawAddrPointerPointer) {
+  int v1 = 123;
+  int v2 = 456;
+  raw_ptr<int> ptr = &v1;
+  // Pointer pointer should point to a pointer other than one inside raw_ptr.
+  EXPECT_NE(&ptr.AsEphemeralRawAddr(),
+            reinterpret_cast<int**>(std::addressof(ptr)));
+  // But inner pointer should point to the same address.
+  EXPECT_EQ(*&ptr.AsEphemeralRawAddr(), &v1);
+
+  // Inner pointer can be rewritten via the pointer pointer.
+  *&ptr.AsEphemeralRawAddr() = &v2;
+  EXPECT_EQ(ptr.get(), &v2);
+  InOutParamFuncWithPointer(&v1, &ptr.AsEphemeralRawAddr());
+  EXPECT_EQ(ptr.get(), &v1);
+}
+
+void InOutParamFuncWithReference(int* in, int*& out) {
+  out = in;
+}
+
+TEST_F(RawPtrTest, EphemeralRawAddrPointerReference) {
+  int v1 = 123;
+  int v2 = 456;
+  raw_ptr<int> ptr = &v1;
+  // Pointer reference should refer to a pointer other than one inside raw_ptr.
+  EXPECT_NE(&static_cast<int*&>(ptr.AsEphemeralRawAddr()),
+            reinterpret_cast<int**>(std::addressof(ptr)));
+  // But inner pointer should point to the same address.
+  EXPECT_EQ(static_cast<int*&>(ptr.AsEphemeralRawAddr()), &v1);
+
+  // Inner pointer can be rewritten via the pointer pointer.
+  static_cast<int*&>(ptr.AsEphemeralRawAddr()) = &v2;
+  EXPECT_EQ(ptr.get(), &v2);
+  InOutParamFuncWithReference(&v1, ptr.AsEphemeralRawAddr());
+  EXPECT_EQ(ptr.get(), &v1);
+}
 
 }  // namespace
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
@@ -1542,26 +1558,24 @@ void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
 }
 
-static constexpr partition_alloc::PartitionOptions kOpts = {
-    partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-    partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-    partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-    partition_alloc::PartitionOptions::Cookie::kAllowed,
-    partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-    partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
-    partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-};
-
 class BackupRefPtrTest : public testing::Test {
  protected:
   void SetUp() override {
     // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
     // new/delete once PartitionAlloc Everywhere is fully enabled.
     partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-    allocator_.init(kOpts);
   }
 
-  partition_alloc::PartitionAllocator allocator_;
+  partition_alloc::PartitionAllocator allocator_ =
+      partition_alloc::PartitionAllocator(partition_alloc::PartitionOptions{
+          .backup_ref_ptr =
+              partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+          .memory_tagging = {.enabled =
+                                 base::CPU::GetInstanceNoAllocation().has_mte()
+                                     ? partition_alloc::PartitionOptions::
+                                           MemoryTagging::kEnabled
+                                     : partition_alloc::PartitionOptions::
+                                           MemoryTagging::kDisabled}});
 };
 
 TEST_F(BackupRefPtrTest, Basic) {
@@ -1571,7 +1585,7 @@ TEST_F(BackupRefPtrTest, Basic) {
       reinterpret_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
   // Use the actual raw_ptr implementation, not a test substitute, to
   // exercise real PartitionAlloc paths.
-  raw_ptr<int> wrapped_ptr1 = raw_ptr1;
+  raw_ptr<int, DisableDanglingPtrDetection> wrapped_ptr1 = raw_ptr1;
 
   *raw_ptr1 = 42;
   EXPECT_EQ(*raw_ptr1, *wrapped_ptr1);
@@ -1654,7 +1668,7 @@ TEST_F(BackupRefPtrTest, EndPointer) {
 TEST_F(BackupRefPtrTest, QuarantinedBytes) {
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
       allocator_.root()->Alloc(sizeof(uint64_t), ""));
-  raw_ptr<uint64_t> wrapped_ptr1 = raw_ptr1;
+  raw_ptr<uint64_t, DisableDanglingPtrDetection> wrapped_ptr1 = raw_ptr1;
   EXPECT_EQ(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
@@ -1734,6 +1748,7 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_DEATH_IF_SUPPORTED(** protected_arr_ptr = 4, "");
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
+  protected_ptr = nullptr;
   allocator.root()->Free(ptr);
 }
 
@@ -1786,6 +1801,7 @@ TEST_F(BackupRefPtrTest, AdvanceAcrossPools) {
   // Same when a pointer is shifted from inside the BRP pool out of it.
   EXPECT_CHECK_DEATH(protected_ptr += (array1 - in_pool_ptr));
 
+  protected_ptr = nullptr;
   allocator_.root()->Free(in_pool_ptr);
 }
 
@@ -1823,6 +1839,13 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
 #endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
   EXPECT_EQ(protected_ptr2_2 - protected_ptr2, 1);
   EXPECT_EQ(protected_ptr2 - protected_ptr2_2, -1);
+
+  protected_ptr1 = nullptr;
+  protected_ptr1_2 = nullptr;
+  protected_ptr1_3 = nullptr;
+  protected_ptr1_4 = nullptr;
+  protected_ptr2 = nullptr;
+  protected_ptr2_2 = nullptr;
 
   allocator_.root()->Free(ptr1);
   allocator_.root()->Free(ptr2);
@@ -2148,6 +2171,8 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
               }),
               CountersMatch());
 
+  protected_ptr = nullptr;
+  protected_ptr_end = nullptr;
   allocator_.root()->Free(ptr);
 }
 
@@ -2181,7 +2206,7 @@ TEST_F(BackupRefPtrTest, Duplicate) {
 TEST_F(BackupRefPtrTest, WriteAfterFree) {
   constexpr uint64_t kPayload = 0x1234567890ABCDEF;
 
-  raw_ptr<uint64_t> ptr =
+  raw_ptr<uint64_t, DisableDanglingPtrDetection> ptr =
       static_cast<uint64_t*>(allocator_.root()->Alloc(sizeof(uint64_t), ""));
 
   // Now |ptr| should be quarantined.
@@ -2216,7 +2241,7 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
       static_cast<uint8_t*>(allocator_.root()->Alloc(sizeof(uint8_t), ""));
   *native_ptr = 0;
   {
-    raw_ptr<uint8_t> smart_ptr = native_ptr;
+    raw_ptr<uint8_t, DisableDanglingPtrDetection> smart_ptr = native_ptr;
 
     allocator_.root()->Free(smart_ptr);
     // Access the allocation through the native pointer to avoid triggering
@@ -2246,7 +2271,9 @@ namespace {
   F(safely_unwrap_for_extraction)     \
   F(unsafely_unwrap_for_comparison)   \
   F(advance)                          \
-  F(duplicate)
+  F(duplicate)                        \
+  F(wrap_ptr_for_duplication)         \
+  F(unsafely_unwrap_for_duplication)
 
 // Can't use gMock to count the number of invocations because
 // gMock itself triggers raw_ptr<T> operations.
@@ -2363,6 +2390,19 @@ TEST_F(HookableRawPtrImplTest, Duplicate) {
   EXPECT_EQ(CountingHooks::Get()->duplicate_count, 1u);
 }
 
+TEST_F(HookableRawPtrImplTest, CrossKindCopyConstruction) {
+  CountingHooks::Get()->ResetCounts();
+  {
+    int* ptr = new int;
+    raw_ptr<int> non_dangling_ptr = ptr;
+    raw_ptr<int, RawPtrTraits::kMayDangle> dangling_ptr(non_dangling_ptr);
+    delete ptr;
+  }
+  EXPECT_EQ(CountingHooks::Get()->duplicate_count, 0u);
+  EXPECT_EQ(CountingHooks::Get()->wrap_ptr_for_duplication_count, 1u);
+  EXPECT_EQ(CountingHooks::Get()->unsafely_unwrap_for_duplication_count, 1u);
+}
+
 #endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
 TEST(DanglingPtrTest, DetectAndReset) {
@@ -2424,5 +2464,4 @@ TEST(DanglingPtrTest, DetectResetAndDestructor) {
   EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

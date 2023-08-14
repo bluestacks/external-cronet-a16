@@ -21,8 +21,8 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   if (from_path.ReferencesParent() || to_path.ReferencesParent())
     return false;
-  return (copyfile(from_path.value().c_str(),
-                   to_path.value().c_str(), NULL, COPYFILE_DATA) == 0);
+  return (copyfile(from_path.value().c_str(), to_path.value().c_str(),
+                   /*state=*/nullptr, COPYFILE_DATA) == 0);
 }
 
 bool GetTempDir(base::FilePath* path) {

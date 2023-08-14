@@ -5,6 +5,11 @@
 #ifndef BASE_CONTAINERS_STACK_CONTAINER_H_
 #define BASE_CONTAINERS_STACK_CONTAINER_H_
 
+// ================== DEPRECATION NOTICE ==================
+// These classes are deprecated and will be removed soon. Use
+// absl::InlinedVector instead. If absl::InlinedVector doesn't fit your use
+// case, please email cxx@chromium.org with details.
+
 #include <stddef.h>
 #include <memory>
 #include <vector>
@@ -212,6 +217,8 @@ auto end(const StackContainer<TContainerType, stack_capacity>& stack_container)
 
 // StackVector -----------------------------------------------------------------
 
+// THIS CLASS IS DEPRECATED. Use absl::InlinedVector instead.
+
 // Example:
 //   StackVector<int, 16> foo;
 //   foo->push_back(22);  // we have overloaded operator->
@@ -257,5 +264,14 @@ class StackVector
 };
 
 }  // namespace base
+
+// Opt out of libc++ container annotations for StackAllocator. It seems to slow
+// down some tests enough to cause timeouts(?) crbug.com/1444659
+#ifdef _LIBCPP_HAS_ASAN_CONTAINER_ANNOTATIONS_FOR_ALL_ALLOCATORS
+template <typename T, size_t stack_capacity, typename FallbackAllocator>
+struct ::std::__asan_annotate_container_with_allocator<
+    base::StackAllocator<T, stack_capacity, FallbackAllocator>>
+    : ::std::false_type {};
+#endif  // _LIBCPP_HAS_ASAN_CONTAINER_ANNOTATIONS_FOR_ALL_ALLOCATORS
 
 #endif  // BASE_CONTAINERS_STACK_CONTAINER_H_

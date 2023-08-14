@@ -19,8 +19,8 @@
 #include "net/cert/pki/extended_key_usage.h"
 #include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/verify_signed_data.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
@@ -891,6 +891,11 @@ void CertBuilder::SetOuterSignatureAlgorithmTLV(
 void CertBuilder::SetTBSSignatureAlgorithmTLV(
     base::StringPiece signature_algorithm_tlv) {
   tbs_signature_algorithm_tlv_ = std::string(signature_algorithm_tlv);
+  Invalidate();
+}
+
+void CertBuilder::SetSerialNumber(uint64_t serial_number) {
+  serial_number_ = serial_number;
   Invalidate();
 }
 

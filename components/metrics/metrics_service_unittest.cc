@@ -64,9 +64,10 @@ class TestUnsentLogStore : public UnsentLogStore {
                        service,
                        kTestPrefName,
                        nullptr,
-                       /*min_log_count=*/3,
-                       /*min_log_bytes=*/1,
-                       /*max_log_size=*/0,
+                       // Set to 3 so logs are not dropped in the test.
+                       UnsentLogStore::UnsentLogStoreLimits{
+                           .min_log_count = 3,
+                       },
                        /*signing_key=*/std::string(),
                        /*logs_event_manager=*/nullptr) {}
   ~TestUnsentLogStore() override = default;
@@ -198,6 +199,7 @@ class TestIndependentMetricsProvider : public MetricsProvider {
     return false;
   }
   void ProvideIndependentMetrics(
+      base::OnceClosure serialize_log_callback,
       base::OnceCallback<void(bool)> done_callback,
       ChromeUserMetricsExtension* uma_proto,
       base::HistogramSnapshotManager* snapshot_manager) override {

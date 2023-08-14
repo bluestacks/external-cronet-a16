@@ -7,10 +7,13 @@ import json
 import logging
 import os
 
-import six
-
 import requests  # pylint: disable=import-error
 from lib.results import result_types
+
+HTML_SUMMARY_MAX = 4096
+
+_HTML_SUMMARY_ARTIFACT = '<text-artifact artifact-id="HTML Summary" />'
+_TEST_LOG_ARTIFACT = '<text-artifact artifact-id="Test Log" />'
 
 # Maps result_types to the luci test-result.proto.
 # https://godoc.org/go.chromium.org/luci/resultdb/proto/v1#TestStatus
@@ -137,11 +140,22 @@ class ResultSinkClient(object):
 
     artifacts = artifacts or {}
     tr['summaryHtml'] = html_artifact if html_artifact else ''
+
+    # If over max supported length of html summary, replace with artifact
+    # upload.
+    if (test_log
+        and len(tr['summaryHtml']) + len(_TEST_LOG_ARTIFACT) > HTML_SUMMARY_MAX
+        or len(tr['summaryHtml']) > HTML_SUMMARY_MAX):
+      b64_summary = base64.b64encode(tr['summaryHtml'].encode()).decode()
+      artifacts.update({'HTML Summary': {'contents': b64_summary}})
+      tr['summaryHtml'] = _HTML_SUMMARY_ARTIFACT
+
     if test_log:
       # Upload the original log without any modifications.
-      b64_log = six.ensure_str(base64.b64encode(six.ensure_binary(test_log)))
+      b64_log = base64.b64encode(test_log.encode()).decode()
       artifacts.update({'Test Log': {'contents': b64_log}})
-      tr['summaryHtml'] += '<text-artifact artifact-id="Test Log" />'
+      tr['summaryHtml'] += _TEST_LOG_ARTIFACT
+
     if artifacts:
       tr['artifacts'] = artifacts
     if failure_reason:

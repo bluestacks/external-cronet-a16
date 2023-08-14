@@ -274,8 +274,10 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       base::PassKey<URLRequestContextBuilder>());
 
   context->set_enable_brotli(enable_brotli_);
+  context->set_enable_zstd(enable_zstd_);
   context->set_check_cleartext_permitted(check_cleartext_permitted_);
-  context->set_require_network_isolation_key(require_network_isolation_key_);
+  context->set_require_network_anonymization_key(
+      require_network_anonymization_key_);
   context->set_network_quality_estimator(network_quality_estimator_);
 
   if (http_user_agent_settings_) {

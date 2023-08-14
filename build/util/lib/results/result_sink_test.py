@@ -11,7 +11,6 @@ import unittest
 # The following non-std imports are fetched via vpython. See the list at
 # //.vpython3
 import mock  # pylint: disable=import-error
-import six
 
 _BUILD_UTIL_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -39,11 +38,7 @@ class InitClientTest(unittest.TestCase):
     luci_context_json = {
         'result_sink': _FAKE_CONTEXT,
     }
-    if six.PY2:
-      open_builtin_path = '__builtin__.open'
-    else:
-      open_builtin_path = 'builtins.open'
-    with mock.patch(open_builtin_path,
+    with mock.patch('builtins.open',
                     mock.mock_open(read_data=json.dumps(luci_context_json))):
       client = result_sink.TryInitClient()
     self.assertEqual(
@@ -102,6 +97,47 @@ class ClientTest(unittest.TestCase):
     self.assertEqual(
         data['testResults'][0]['failureReason']['primaryErrorMessage'],
         'omg test failure')
+
+  @mock.patch('requests.Session.post')
+  def testPostWithTestLogAndHTMLSummary(self, mock_post):
+    # This is under max length, but will be over when test log
+    # artifact is included.
+    test_artifact = '<text-artifact artifact-id="%s" />' % 'b' * (
+        result_sink.HTML_SUMMARY_MAX - 35)
+    self.client.Post('some-test',
+                     result_types.PASS,
+                     0,
+                     'some-test-log',
+                     '//some/test.cc',
+                     html_artifact=test_artifact)
+    data = json.loads(mock_post.call_args[1]['data'])
+    self.assertIsNotNone(data['testResults'][0]['summaryHtml'])
+    self.assertTrue(
+        len(data['testResults'][0]['summaryHtml']) <
+        result_sink.HTML_SUMMARY_MAX)
+    self.assertTrue(result_sink._HTML_SUMMARY_ARTIFACT in data['testResults'][0]
+                    ['summaryHtml'])
+    self.assertTrue(
+        result_sink._TEST_LOG_ARTIFACT in data['testResults'][0]['summaryHtml'])
+
+  @mock.patch('requests.Session.post')
+  def testPostWithTooLongSummary(self, mock_post):
+    # This will be over max length.
+    test_artifact = ('<text-artifact artifact-id="%s" />' % 'b' *
+                     result_sink.HTML_SUMMARY_MAX)
+    self.client.Post('some-test',
+                     result_types.PASS,
+                     0,
+                     'some-test-log',
+                     '//some/test.cc',
+                     html_artifact=test_artifact)
+    data = json.loads(mock_post.call_args[1]['data'])
+    self.assertIsNotNone(data['testResults'][0]['summaryHtml'])
+    self.assertTrue(
+        len(data['testResults'][0]['summaryHtml']) <
+        result_sink.HTML_SUMMARY_MAX)
+    self.assertTrue(result_sink._HTML_SUMMARY_ARTIFACT in data['testResults'][0]
+                    ['summaryHtml'])
 
   @mock.patch('requests.Session.post')
   def testPostWithTestFile(self, mock_post):

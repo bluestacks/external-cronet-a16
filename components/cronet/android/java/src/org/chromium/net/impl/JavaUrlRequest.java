@@ -4,6 +4,7 @@
 
 package org.chromium.net.impl;
 
+import android.net.Network;
 import android.net.TrafficStats;
 import android.os.Build;
 import android.util.Log;
@@ -107,6 +108,8 @@ final class JavaUrlRequest extends UrlRequestBase {
     private final int mCronetEngineId;
     private final CronetLogger mLogger;
 
+    private final long mNetworkHandle;
+
     // Executor that runs one task at a time on an underlying Executor.
     // NOTE: Do not use to wrap user supplied Executor as lock is held while underlying execute()
     // is called.
@@ -181,7 +184,7 @@ final class JavaUrlRequest extends UrlRequestBase {
     JavaUrlRequest(JavaCronetEngine engine, Callback callback, final Executor executor,
             Executor userExecutor, String url, String userAgent, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, final boolean trafficStatsUidSet,
-            final int trafficStatsUid) {
+            final int trafficStatsUid, long networkHandle) {
         if (url == null) {
             throw new NullPointerException("URL is required");
         }
@@ -227,6 +230,7 @@ final class JavaUrlRequest extends UrlRequestBase {
         mLogger = engine.getCronetLogger();
         mCurrentUrl = url;
         mUserAgent = userAgent;
+        mNetworkHandle = networkHandle;
     }
 
     @Override
@@ -589,7 +593,15 @@ final class JavaUrlRequest extends UrlRequestBase {
                     mCurrentUrlConnection.disconnect();
                     mCurrentUrlConnection = null;
                 }
-                mCurrentUrlConnection = (HttpURLConnection) url.openConnection();
+
+                if (mNetworkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE
+                        || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                    mCurrentUrlConnection = (HttpURLConnection) url.openConnection();
+                } else {
+                    mCurrentUrlConnection =
+                            (HttpURLConnection) Network.fromNetworkHandle(mNetworkHandle)
+                                    .openConnection(url);
+                }
                 mCurrentUrlConnection.setInstanceFollowRedirects(false);
                 if (!mRequestHeaders.containsKey(USER_AGENT)) {
                     mRequestHeaders.put(USER_AGENT, mUserAgent);
@@ -977,7 +989,6 @@ final class JavaUrlRequest extends UrlRequestBase {
 
         void onCanceled(final UrlResponseInfo info) {
             closeResponseChannel();
-            mEngine.decrementActiveRequestCount();
             mUserExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -987,12 +998,12 @@ final class JavaUrlRequest extends UrlRequestBase {
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onCanceled method", exception);
                     }
+                    mEngine.decrementActiveRequestCount();
                 }
             });
         }
 
         void onSucceeded(final UrlResponseInfo info) {
-            mEngine.decrementActiveRequestCount();
             mUserExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -1002,13 +1013,13 @@ final class JavaUrlRequest extends UrlRequestBase {
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onSucceeded method", exception);
                     }
+                    mEngine.decrementActiveRequestCount();
                 }
             });
         }
 
         void onFailed(final UrlResponseInfo urlResponseInfo, final CronetException e) {
             closeResponseChannel();
-            mEngine.decrementActiveRequestCount();
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -1018,6 +1029,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onFailed method", exception);
                     }
+                    mEngine.decrementActiveRequestCount();
                 }
             };
             try {

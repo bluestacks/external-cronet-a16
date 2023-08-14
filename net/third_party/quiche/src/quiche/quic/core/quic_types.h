@@ -23,6 +23,7 @@
 #include "quiche/quic/platform/api/quic_export.h"
 #include "quiche/quic/platform/api/quic_flags.h"
 #include "quiche/common/quiche_endian.h"
+#include "quiche/web_transport/web_transport.h"
 
 namespace quic {
 
@@ -52,10 +53,10 @@ using StatelessResetToken = std::array<char, kStatelessResetTokenLength>;
 
 // WebTransport session IDs are stream IDs.
 using WebTransportSessionId = uint64_t;
-// WebTransport stream reset codes are 8-bit.
-using WebTransportStreamError = uint8_t;
+// WebTransport stream reset codes are 32-bit.
+using WebTransportStreamError = ::webtransport::StreamErrorCode;
 // WebTransport session error codes are 32-bit.
-using WebTransportSessionError = uint32_t;
+using WebTransportSessionError = ::webtransport::SessionErrorCode;
 
 enum : size_t { kQuicPathFrameBufferSize = 8 };
 using QuicPathFrameBuffer = std::array<uint8_t, kQuicPathFrameBufferSize>;
@@ -157,10 +158,19 @@ struct QUIC_EXPORT_PRIVATE WriteResult {
   QUIC_EXPORT_PRIVATE friend std::ostream& operator<<(std::ostream& os,
                                                       const WriteResult& s);
 
+  WriteResult& set_batch_id(uint32_t new_batch_id) {
+    batch_id = new_batch_id;
+    return *this;
+  }
+
   WriteStatus status;
   // Number of packets dropped as a result of this write.
   // Only used by batch writers. Otherwise always 0.
   uint16_t dropped_packets = 0;
+  // The batch id the packet being written belongs to. For debugging only.
+  // Only used by batch writers. Only valid if the packet being written started
+  // a new batch, or added to an existing batch.
+  uint32_t batch_id = 0;
   // The delta between a packet's ideal and actual send time:
   //     actual_send_time = ideal_send_time + send_time_offset
   //                      = (now + release_time_delay) + send_time_offset

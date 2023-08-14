@@ -40,7 +40,8 @@ enum class EventRecordingState {
   kRecordingDisabled = 2,
   kProviderMissing = 3,
   kProjectDisallowed = 4,
-  kMaxValue = kProjectDisallowed,
+  kLogSizeExceeded = 5,
+  kMaxValue = kLogSizeExceeded,
 };
 
 // Describes the action taken by KeyData::ValidateAndGetKey on a particular user
@@ -87,6 +88,9 @@ void LogUploadSizeBytes(int64_t upload_size_bytes);
 
 // Logs the number of external metrics were scanned for an upload.
 void LogExternalMetricsScanInUpload(int num_scans);
+
+// Logs the number of external metrics that were dropped.
+void LogDroppedExternalMetrics(int num_dropped);
 
 }  // namespace metrics::structured
 

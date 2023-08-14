@@ -63,6 +63,17 @@ extern PageCharacteristics page_characteristics;
 
 #endif
 
+// Ability to name anonymous VMAs is available on some, but not all Linux-based
+// systems.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#include <sys/prctl.h>
+
+#if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
+#define LINUX_NAME_REGION 1
+#endif
+
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+
 namespace partition_alloc::internal {
 
 // Forward declaration, implementation below
@@ -77,7 +88,7 @@ PageAllocationGranularityShift() {
   // compiled for 64kB are likely to work on 4kB systems, 64kB is a good choice
   // here.
   return 16;  // 64kB
-#elif defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONG64)
+#elif defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONGARCH64)
   return 14;  // 16kB
 #elif BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
   return static_cast<size_t>(vm_page_shift);

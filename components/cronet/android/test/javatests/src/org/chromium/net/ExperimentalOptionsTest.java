@@ -25,6 +25,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import com.android.testutils.SkipPresubmit;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -127,13 +129,13 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     @OnlyRunNativeCronet
-    public void testEnableTelemetryTrue() throws Exception {
-        JSONObject experimentalOptions = new JSONObject().put("enable_telemetry", true);
+    public void testEnableTelemetryFalse() throws Exception {
+        JSONObject experimentalOptions = new JSONObject().put("enable_telemetry", false);
         mBuilder.setExperimentalOptions(experimentalOptions.toString());
 
         CronetEngine cronetEngine = mBuilder.build();
         CronetUrlRequestContext context = (CronetUrlRequestContext) mBuilder.build();
-        assertTrue(context.getEnableTelemetryForTesting());
+        assertFalse(context.getEnableTelemetryForTesting());
         cronetEngine.shutdown();
     }
 
@@ -143,7 +145,7 @@ public class ExperimentalOptionsTest {
     public void testEnableTelemetryDefault() throws Exception {
         CronetEngine cronetEngine = mBuilder.build();
         CronetUrlRequestContext context = (CronetUrlRequestContext) mBuilder.build();
-        assertFalse(context.getEnableTelemetryForTesting());
+        assertTrue(context.getEnableTelemetryForTesting());
         cronetEngine.shutdown();
     }
 
@@ -218,6 +220,7 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     @OnlyRunNativeCronet
+    @SkipPresubmit(reason = "b/293141085 Tests that enable disk cache are flaky")
     // Tests that basic Cronet functionality works when host cache persistence is enabled, and that
     // persistence works.
     public void testHostCachePersistence() throws Exception {

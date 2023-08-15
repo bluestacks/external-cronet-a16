@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_event_logger.h"
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_values.h"
@@ -31,7 +32,8 @@ base::Value::Dict NetLogQuicPacketSentParams(
     quic::QuicPacketLength packet_length,
     quic::TransmissionType transmission_type,
     quic::EncryptionLevel encryption_level,
-    quic::QuicTime sent_time) {
+    quic::QuicTime sent_time,
+    uint32_t batch_id) {
   base::Value::Dict dict;
   dict.Set("transmission_type",
            quic::TransmissionTypeToString(transmission_type));
@@ -39,6 +41,7 @@ base::Value::Dict NetLogQuicPacketSentParams(
   dict.Set("size", packet_length);
   dict.Set("sent_time_us", NetLogNumberValue(sent_time.ToDebuggingValue()));
   dict.Set("encryption_level", quic::EncryptionLevelToString(encryption_level));
+  dict.Set("batch_id", NetLogNumberValue(batch_id));
   return dict;
 }
 
@@ -167,6 +170,7 @@ base::Value::Dict NetLogQuicRstStreamFrameParams(
   base::Value::Dict dict;
   dict.Set("stream_id", static_cast<int>(frame->stream_id));
   dict.Set("quic_rst_stream_error", static_cast<int>(frame->error_code));
+  dict.Set("ietf_error_code", static_cast<int>(frame->ietf_error_code));
   dict.Set("offset", NetLogNumberValue(frame->byte_offset));
   return dict;
 }
@@ -238,15 +242,6 @@ base::Value::Dict NetLogQuicVersionNegotiationPacketParams(
     versions.Append(ParsedQuicVersionToString(version));
   }
   dict.Set("versions", std::move(versions));
-  return dict;
-}
-
-base::Value::Dict NetLogQuicPublicResetPacketParams(
-    const IPEndPoint& server_hello_address,
-    const quic::QuicSocketAddress& public_reset_address) {
-  base::Value::Dict dict;
-  dict.Set("server_hello_address", server_hello_address.ToString());
-  dict.Set("public_reset_address", public_reset_address.ToString());
   return dict;
 }
 
@@ -329,6 +324,7 @@ base::Value::Dict NetLogQuicStopSendingFrameParams(
   base::Value::Dict dict;
   dict.Set("stream_id", static_cast<int>(frame.stream_id));
   dict.Set("quic_rst_stream_error", static_cast<int>(frame.error_code));
+  dict.Set("ietf_error_code", static_cast<int>(frame.ietf_error_code));
   return dict;
 }
 
@@ -522,11 +518,12 @@ void QuicEventLogger::OnPacketSent(
     quic::EncryptionLevel encryption_level,
     const quic::QuicFrames& /*retransmittable_frames*/,
     const quic::QuicFrames& /*nonretransmittable_frames*/,
-    quic::QuicTime sent_time) {
+    quic::QuicTime sent_time,
+    uint32_t batch_id) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PACKET_SENT, [&] {
     return NetLogQuicPacketSentParams(packet_number, packet_length,
                                       transmission_type, encryption_level,
-                                      sent_time);
+                                      sent_time, batch_id);
   });
 }
 
@@ -655,12 +652,6 @@ void QuicEventLogger::OnMaxStreamsFrame(
                     [&] { return NetLogQuicMaxStreamsFrameParams(frame); });
 }
 
-void QuicEventLogger::OnStopWaitingFrame(
-    const quic::QuicStopWaitingFrame& frame) {
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_STOP_WAITING_FRAME_RECEIVED,
-                    [&] { return NetLogQuicStopWaitingFrameParams(&frame); });
-}
-
 void QuicEventLogger::OnRstStreamFrame(const quic::QuicRstStreamFrame& frame) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_RST_STREAM_FRAME_RECEIVED,
                     [&] { return NetLogQuicRstStreamFrameParams(&frame); });
@@ -740,15 +731,6 @@ void QuicEventLogger::OnCoalescedPacketSent(
   net_log_.AddEventWithStringParams(
       NetLogEventType::QUIC_SESSION_COALESCED_PACKET_SENT, "info",
       coalesced_packet.ToString(length));
-}
-
-void QuicEventLogger::OnPublicResetPacket(
-    const quic::QuicPublicResetPacket& packet) {
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PUBLIC_RESET_PACKET_RECEIVED,
-                    [&] {
-                      return NetLogQuicPublicResetPacketParams(
-                          local_address_from_shlo_, packet.client_address);
-                    });
 }
 
 void QuicEventLogger::OnVersionNegotiationPacket(
@@ -838,6 +820,16 @@ void QuicEventLogger::OnTransportParametersResumed(
 void QuicEventLogger::OnZeroRttRejected(int reason) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ZERO_RTT_REJECTED,
                     [reason] { return NetLogQuicZeroRttRejectReason(reason); });
+}
+
+void QuicEventLogger::OnEncryptedClientHelloSent(
+    std::string_view client_hello) {
+  net_log_.AddEvent(NetLogEventType::SSL_ENCRYPTED_CLIENT_HELLO, [&] {
+    base::Value::Dict dict;
+    dict.Set("bytes",
+             NetLogBinaryValue(base::as_bytes(base::make_span(client_hello))));
+    return dict;
+  });
 }
 
 }  // namespace net

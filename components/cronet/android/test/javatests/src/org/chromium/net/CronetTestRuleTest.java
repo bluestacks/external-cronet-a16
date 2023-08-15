@@ -4,9 +4,8 @@
 
 package org.chromium.net;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.fail;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -19,7 +18,8 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.CronetTestFramework;
+import org.chromium.base.test.util.Batch;
+import org.chromium.net.CronetTestRule.OnlyRunJavaCronet;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.impl.CronetUrlRequestContext;
@@ -28,13 +28,12 @@ import org.chromium.net.impl.CronetUrlRequestContext;
  * Tests features of CronetTestRule.
  */
 @RunWith(AndroidJUnit4.class)
+@Batch(Batch.UNIT_TESTS)
 public class CronetTestRuleTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     @Rule
     public final TestName mTestName = new TestName();
-
-    private CronetTestFramework mTestFramework;
     /**
      * For any test whose name contains "MustRun", it's enforced that the test must run and set
      * {@code mTestWasRun} to {@code true}.
@@ -44,7 +43,6 @@ public class CronetTestRuleTest {
     @Before
     public void setUp() throws Exception {
         mTestWasRun = false;
-        mTestFramework = mTestRule.startCronetTestFramework();
     }
 
     @After
@@ -72,10 +70,11 @@ public class CronetTestRuleTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testRunOnlyNativeMustRun() {
-        assertFalse(mTestRule.testingJavaImpl());
-        assertFalse(mTestWasRun);
+        assertThat(mTestRule.testingJavaImpl()).isFalse();
+        assertThat(mTestWasRun).isFalse();
         mTestWasRun = true;
-        assertEquals(mTestFramework.mCronetEngine.getClass(), CronetUrlRequestContext.class);
+        assertThat(mTestRule.getTestFramework().getEngine())
+                .isInstanceOf(CronetUrlRequestContext.class);
     }
-
+    
 }

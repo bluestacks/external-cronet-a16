@@ -97,6 +97,10 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "base/path_service.h"
+#endif
+
 namespace base {
 
 // See
@@ -1191,6 +1195,10 @@ void TestLauncher::LaunchChildGTestProcess(
   LaunchOptions options;
   options.flags = launcher_delegate_->GetLaunchOptions();
 
+  if (BotModeEnabled(CommandLine::ForCurrentProcess())) {
+    LOG(INFO) << "Starting [" << base::JoinString(test_names, ", ") << "]";
+  }
+
   ChildProcessResults process_results = DoLaunchChildTestProcess(
       new_command_line, child_temp_dir, result_file,
       launcher_delegate_->GetTimeout(), test_names.size(), options,
@@ -1615,8 +1623,16 @@ bool TestLauncher::Init(CommandLine* command_line) {
     for (auto filter_file :
          SplitStringPiece(filter, FILE_PATH_LITERAL(";"), base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_ALL)) {
+#if BUILDFLAG(IS_IOS)
+      // On iOS, the filter files are bundled with the test application.
+      base::FilePath data_dir;
+      PathService::Get(DIR_SRC_TEST_DATA_ROOT, &data_dir);
+      base::FilePath filter_file_path = data_dir.Append(FilePath(filter_file));
+#else
       base::FilePath filter_file_path =
           base::MakeAbsoluteFilePath(FilePath(filter_file));
+#endif  // BUILDFLAG(IS_IOS)
+
       if (!LoadFilterFile(filter_file_path, &positive_file_filter,
                           &negative_test_filter_))
         return false;
@@ -1788,6 +1804,23 @@ bool TestLauncher::InitTests() {
     LOG(ERROR) << "Failed to get list of tests.";
     return false;
   }
+
+  // Check for duplicate test names. These can cause difficult-to-diagnose
+  // crashes in the test runner as well as confusion about exactly what test is
+  // failing. See https://crbug.com/1463355 for details.
+  std::unordered_set<std::string> full_test_names;
+  bool dups_found = false;
+  for (auto& test : tests) {
+    const std::string full_test_name =
+        test.test_case_name + "." + test.test_name;
+    auto [it, inserted] = full_test_names.insert(full_test_name);
+    if (!inserted) {
+      LOG(WARNING) << "Duplicate test name found: " << full_test_name;
+      dups_found = true;
+    }
+  }
+  CHECK(!dups_found);
+
   std::vector<std::string> uninstantiated_tests;
   for (const TestIdentifier& test_id : tests) {
     TestInfo test_info(test_id);
@@ -2227,7 +2260,13 @@ size_t NumParallelJobs(unsigned int cores_per_job) {
       ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
 #else
   size_t cores = base::checked_cast<size_t>(SysInfo::NumberOfProcessors());
-#endif
+#if BUILDFLAG(IS_MAC)
+  // This is necessary to allow tests to call SetCpuSecurityMitigationsEnabled()
+  // despite NumberOfProcessors() having already been called in the process.
+  SysInfo::ResetCpuSecurityMitigationsEnabledForTesting();
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR
   // If we are targeting the simulator increase the number of jobs we use by 2x
   // the number of cores. This is necessary because the startup of each

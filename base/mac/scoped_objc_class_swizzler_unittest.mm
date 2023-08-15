@@ -4,7 +4,8 @@
 
 #import "base/mac/scoped_objc_class_swizzler.h"
 
-#import "base/mac/scoped_nsobject.h"
+#import <Foundation/Foundation.h>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 @interface ObjCClassSwizzlerTestOne : NSObject
@@ -76,10 +77,10 @@
 namespace base::mac {
 
 TEST(ObjCClassSwizzlerTest, SwizzleInstanceMethods) {
-  base::scoped_nsobject<ObjCClassSwizzlerTestOne> object_one(
-      [[ObjCClassSwizzlerTestOne alloc] init]);
-  base::scoped_nsobject<ObjCClassSwizzlerTestTwo> object_two(
-      [[ObjCClassSwizzlerTestTwo alloc] init]);
+  ObjCClassSwizzlerTestOne* object_one =
+      [[ObjCClassSwizzlerTestOne alloc] init];
+  ObjCClassSwizzlerTestTwo* object_two =
+      [[ObjCClassSwizzlerTestTwo alloc] init];
   EXPECT_EQ(3, [object_one method]);
   EXPECT_EQ(14, [object_two method]);
 
@@ -119,8 +120,8 @@ TEST(ObjCClassSwizzlerTest, SwizzleClassMethods) {
 }
 
 TEST(ObjCClassSwizzlerTest, SwizzleViaCategory) {
-  base::scoped_nsobject<ObjCClassSwizzlerTestOne> object_one(
-      [[ObjCClassSwizzlerTestOne alloc] init]);
+  ObjCClassSwizzlerTestOne* object_one =
+      [[ObjCClassSwizzlerTestOne alloc] init];
   EXPECT_EQ(3, [object_one method]);
 
   {
@@ -137,8 +138,8 @@ TEST(ObjCClassSwizzlerTest, SwizzleViaCategory) {
 }
 
 TEST(ObjCClassSwizzlerTest, SwizzleViaInheritance) {
-  base::scoped_nsobject<ObjCClassSwizzlerTestOneChild> child(
-      [[ObjCClassSwizzlerTestOneChild alloc] init]);
+  ObjCClassSwizzlerTestOneChild* child =
+      [[ObjCClassSwizzlerTestOneChild alloc] init];
   EXPECT_EQ(3, [child method]);
 
   {

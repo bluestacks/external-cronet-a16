@@ -134,6 +134,7 @@
 ../gn_helpers.py
 ../print_python_deps.py
 ../skia_gold_common/__init__.py
+../skia_gold_common/output_managerless_skia_gold_session.py
 ../skia_gold_common/skia_gold_properties.py
 ../skia_gold_common/skia_gold_session.py
 ../skia_gold_common/skia_gold_session_manager.py
@@ -213,6 +214,7 @@ pylib/symbols/expensive_line_transformer.py
 pylib/symbols/stack_symbolizer.py
 pylib/utils/__init__.py
 pylib/utils/chrome_proxy_utils.py
+pylib/utils/code_coverage_utils.py
 pylib/utils/decorators.py
 pylib/utils/device_dependencies.py
 pylib/utils/dexdump.py

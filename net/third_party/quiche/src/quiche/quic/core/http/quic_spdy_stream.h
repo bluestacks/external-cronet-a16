@@ -187,10 +187,12 @@ class QUIC_EXPORT_PRIVATE QuicSpdyStream
   static bool ParseHeaderStatusCode(absl::string_view status_value,
                                     int* status_code);
 
-  // Returns true when all data from the peer has been read and consumed,
-  // including the fin.
+  // Returns true when headers, data and trailers all are read.
   bool IsDoneReading() const;
+  // For IETF QUIC, bytes-to-read/readable-bytes only concern body (not headers
+  // or trailers). For gQUIC, they refer to all the bytes in the sequencer.
   bool HasBytesToRead() const;
+  QuicByteCount ReadableBytes() const;
 
   void set_visitor(Visitor* visitor) { visitor_ = visitor; }
 
@@ -328,6 +330,10 @@ class QUIC_EXPORT_PRIVATE QuicSpdyStream
 
   void WriteGreaseCapsule();
 
+  const std::string& invalid_request_details() const {
+    return invalid_request_details_;
+  }
+
  protected:
   // Called when the received headers are too large. By default this will
   // reset the stream.
@@ -359,14 +365,23 @@ class QUIC_EXPORT_PRIVATE QuicSpdyStream
 
   void OnWriteSideInDataRecvdState() override;
 
-  virtual bool AreHeadersValid(const QuicHeaderList& header_list) const;
-  // TODO(b/202433856) Merge AreHeaderFieldValueValid into AreHeadersValid once
-  // all flags guarding the behavior of AreHeadersValid has been rolled out.
+  virtual bool ValidatedReceivedHeaders(const QuicHeaderList& header_list);
+  // TODO(b/202433856) Merge AreHeaderFieldValueValid into
+  // ValidatedReceivedHeaders once all flags guarding the behavior of
+  // ValidatedReceivedHeaders has been rolled out.
   virtual bool AreHeaderFieldValuesValid(
       const QuicHeaderList& header_list) const;
 
   // Reset stream upon invalid request headers.
   virtual void OnInvalidHeaders();
+
+  void set_invalid_request_details(std::string invalid_request_details);
+
+  // Called by HttpDecoderVisitor.
+  virtual bool OnDataFrameStart(QuicByteCount header_length,
+                                QuicByteCount payload_length);
+
+  void CloseReadSide() override;
 
  private:
   friend class test::QuicSpdyStreamPeer;
@@ -383,8 +398,6 @@ class QUIC_EXPORT_PRIVATE QuicSpdyStream
   };
 
   // Called by HttpDecoderVisitor.
-  bool OnDataFrameStart(QuicByteCount header_length,
-                        QuicByteCount payload_length);
   bool OnDataFramePayload(absl::string_view payload);
   bool OnDataFrameEnd();
   bool OnHeadersFrameStart(QuicByteCount header_length,
@@ -417,6 +430,9 @@ class QUIC_EXPORT_PRIVATE QuicSpdyStream
 
   // Called when a datagram frame or capsule is received.
   void HandleReceivedDatagram(absl::string_view payload);
+
+  // Whether the next received header is trailer or not.
+  virtual bool NextHeaderIsTrailer() const { return headers_decompressed_; }
 
   QuicSpdySession* spdy_session_;
 
@@ -493,6 +509,9 @@ class QUIC_EXPORT_PRIVATE QuicSpdyStream
   Http3DatagramVisitor* datagram_visitor_ = nullptr;
   // CONNECT-IP support.
   ConnectIpVisitor* connect_ip_visitor_ = nullptr;
+
+  // Empty if the headers are valid.
+  std::string invalid_request_details_;
 };
 
 }  // namespace quic

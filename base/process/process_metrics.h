@@ -252,6 +252,9 @@ class BASE_EXPORT ProcessMetrics {
   // See |GetPackageIdleWakeupsForSecond| comment for more info.
   int CalculatePackageIdleWakeupsPerSecond(
       uint64_t absolute_package_idle_wakeups);
+
+  // Queries the port provider if it's set.
+  mach_port_t TaskForPid(ProcessHandle process) const;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -289,9 +292,6 @@ class BASE_EXPORT ProcessMetrics {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  // Queries the port provider if it's set.
-  mach_port_t TaskForPid(ProcessHandle process) const;
-
   raw_ptr<PortProvider> port_provider_;
 #endif  // BUILDFLAG(IS_MAC)
 };

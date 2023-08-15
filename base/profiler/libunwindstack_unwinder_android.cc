@@ -80,7 +80,7 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
 
 LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid()
     : memory_regions_map_(NativeUnwinderAndroid::CreateMemoryRegionsMap(
-          /*use_updatable_maps=*/true)),
+          /*use_updatable_maps=*/false)),
       process_memory_(std::shared_ptr<unwindstack::Memory>(
           memory_regions_map_->TakeMemory().release())) {
   TRACE_EVENT_INSTANT(
@@ -174,10 +174,20 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
     const ModuleCache::Module* module =
         module_cache()->GetModuleForAddress(frame.pc);
     if (module == nullptr && frame.map_info != nullptr) {
-      auto module_for_caching =
-          std::make_unique<NonElfModule>(frame.map_info.get());
-      module = module_for_caching.get();
-      module_cache()->AddCustomNativeModule(std::move(module_for_caching));
+      // Try searching for the module with same module start.
+      module = module_cache()->GetModuleForAddress(frame.map_info->start());
+      if (module == nullptr) {
+        auto module_for_caching =
+            std::make_unique<NonElfModule>(frame.map_info.get());
+        module = module_for_caching.get();
+        module_cache()->AddCustomNativeModule(std::move(module_for_caching));
+      }
+      // TODO(crbug/1446766): Cleanup after finishing crash investigation.
+      if (frame.pc < frame.map_info->start() ||
+          frame.pc >= frame.map_info->end()) {
+        TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
+                            "PC out of map range");
+      }
     }
     stack->emplace_back(frame.pc, module, frame.function_name);
   }

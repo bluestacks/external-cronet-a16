@@ -381,7 +381,6 @@ public final class CronetUploadDataStream extends UploadDataSink {
      * CronetUploadDataStream for testing.
      * @return the address of the native CronetUploadDataStream object.
      */
-    @VisibleForTesting
     public long createUploadDataStreamForTesting() throws IOException {
         synchronized (mLock) {
             mUploadDataStreamAdapter = CronetUploadDataStreamJni.get().createAdapterForTesting(

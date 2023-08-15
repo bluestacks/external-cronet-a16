@@ -47,6 +47,7 @@ import (
 
 	"boringssl.googlesource.com/boringssl/ssl/test/runner/hpke"
 	"boringssl.googlesource.com/boringssl/util/testresult"
+	"golang.org/x/crypto/cryptobyte"
 )
 
 var (
@@ -819,10 +820,10 @@ func doExchange(test *testCase, config *Config, conn net.Conn, isResume bool, tr
 				if err := os.MkdirAll(dir, 0755); err != nil {
 					return err
 				}
-				bb := newByteBuilder()
-				bb.addU24LengthPrefixed().addBytes(encodedInner)
-				bb.addBytes(outer)
-				return os.WriteFile(filepath.Join(dir, name), bb.finish(), 0644)
+				bb := cryptobyte.NewBuilder(nil)
+				addUint24LengthPrefixedBytes(bb, encodedInner)
+				bb.AddBytes(outer)
+				return os.WriteFile(filepath.Join(dir, name), bb.BytesOrPanic(), 0644)
 			}
 		}
 
@@ -1248,37 +1249,44 @@ var (
 )
 
 type shimProcess struct {
-	cmd            *exec.Cmd
-	waitChan       chan error
-	listener       *net.TCPListener
+	cmd *exec.Cmd
+	// done is closed when the process has exited. At that point, childErr may be
+	// read for the result.
+	done           chan struct{}
+	childErr       error
+	listener       *shimListener
 	stdout, stderr bytes.Buffer
 }
 
 // newShimProcess starts a new shim with the specified executable, flags, and
 // environment. It internally creates a TCP listener and adds the the -port
 // flag.
-func newShimProcess(shimPath string, flags []string, env []string) (*shimProcess, error) {
-	shim := new(shimProcess)
-	var err error
-	shim.listener, err = net.ListenTCP("tcp", &net.TCPAddr{IP: net.IPv6loopback})
-	if err != nil {
-		shim.listener, err = net.ListenTCP("tcp4", &net.TCPAddr{IP: net.IP{127, 0, 0, 1}})
-	}
+func newShimProcess(dispatcher *shimDispatcher, shimPath string, flags []string, env []string) (*shimProcess, error) {
+	listener, err := dispatcher.NewShim()
 	if err != nil {
 		return nil, err
 	}
 
-	flags = append([]string{"-port", strconv.Itoa(shim.listener.Addr().(*net.TCPAddr).Port)}, flags...)
+	shim := &shimProcess{listener: listener}
+	cmdFlags := []string{
+		"-port", strconv.Itoa(listener.Port()),
+		"-shim-id", strconv.FormatUint(listener.ShimID(), 10),
+	}
+	if listener.IsIPv6() {
+		cmdFlags = append(cmdFlags, "-ipv6")
+	}
+	cmdFlags = append(cmdFlags, flags...)
+
 	if *useValgrind {
-		shim.cmd = valgrindOf(false, shimPath, flags...)
+		shim.cmd = valgrindOf(false, shimPath, cmdFlags...)
 	} else if *useGDB {
-		shim.cmd = gdbOf(shimPath, flags...)
+		shim.cmd = gdbOf(shimPath, cmdFlags...)
 	} else if *useLLDB {
-		shim.cmd = lldbOf(shimPath, flags...)
+		shim.cmd = lldbOf(shimPath, cmdFlags...)
 	} else if *useRR {
-		shim.cmd = rrOf(shimPath, flags...)
+		shim.cmd = rrOf(shimPath, cmdFlags...)
 	} else {
-		shim.cmd = exec.Command(shimPath, flags...)
+		shim.cmd = exec.Command(shimPath, cmdFlags...)
 	}
 	shim.cmd.Stdin = os.Stdin
 	shim.cmd.Stdout = &shim.stdout
@@ -1290,37 +1298,23 @@ func newShimProcess(shimPath string, flags []string, env []string) (*shimProcess
 		return nil, err
 	}
 
-	shim.waitChan = make(chan error, 1)
-	go func() { shim.waitChan <- shim.cmd.Wait() }()
+	shim.done = make(chan struct{})
+	go func() {
+		shim.childErr = shim.cmd.Wait()
+		shim.listener.Close()
+		close(shim.done)
+	}()
 	return shim, nil
 }
 
 // accept returns a new TCP connection with the shim process, or returns an
 // error on timeout or shim exit.
 func (s *shimProcess) accept() (net.Conn, error) {
-	type connOrError struct {
-		conn net.Conn
-		err  error
+	var deadline time.Time
+	if !useDebugger() {
+		deadline = time.Now().Add(*idleTimeout)
 	}
-	connChan := make(chan connOrError, 1)
-	go func() {
-		if !useDebugger() {
-			s.listener.SetDeadline(time.Now().Add(*idleTimeout))
-		}
-		conn, err := s.listener.Accept()
-		connChan <- connOrError{conn, err}
-		close(connChan)
-	}()
-	select {
-	case result := <-connChan:
-		return result.conn, result.err
-	case childErr := <-s.waitChan:
-		s.waitChan <- childErr
-		if childErr == nil {
-			return nil, fmt.Errorf("child exited early with no error")
-		}
-		return nil, fmt.Errorf("child exited early: %s", childErr)
-	}
+	return s.listener.Accept(deadline)
 }
 
 // wait finishes the test and waits for the shim process to exit.
@@ -1336,9 +1330,8 @@ func (s *shimProcess) wait() error {
 		defer waitTimeout.Stop()
 	}
 
-	err := <-s.waitChan
-	s.waitChan <- err
-	return err
+	<-s.done
+	return s.childErr
 }
 
 // close releases resources associated with the shimProcess. This is safe to
@@ -1424,7 +1417,7 @@ func translateExpectedError(errorStr string) string {
 // -shim-writes-first flag is used.
 const shimInitialWrite = "hello"
 
-func runTest(statusChan chan statusMsg, test *testCase, shimPath string, mallocNumToFail int64) error {
+func runTest(dispatcher *shimDispatcher, statusChan chan statusMsg, test *testCase, shimPath string, mallocNumToFail int64) error {
 	// Help debugging panics on the Go side.
 	defer func() {
 		if r := recover(); r != nil {
@@ -1635,7 +1628,7 @@ func runTest(statusChan chan statusMsg, test *testCase, shimPath string, mallocN
 		env = append(env, "_MALLOC_CHECK=1")
 	}
 
-	shim, err := newShimProcess(shimPath, flags, env)
+	shim, err := newShimProcess(dispatcher, shimPath, flags, env)
 	if err != nil {
 		return err
 	}
@@ -1843,6 +1836,7 @@ var testCipherSuites = []testCipherSuite{
 	{"ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256", TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256},
 	{"ECDHE_RSA_WITH_AES_128_GCM_SHA256", TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256},
 	{"ECDHE_RSA_WITH_AES_128_CBC_SHA", TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA},
+	{"ECDHE_RSA_WITH_AES_128_CBC_SHA256", TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256},
 	{"ECDHE_RSA_WITH_AES_256_GCM_SHA384", TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384},
 	{"ECDHE_RSA_WITH_AES_256_CBC_SHA", TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA},
 	{"ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256", TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256},
@@ -3198,7 +3192,7 @@ read alert 1 0
 				// elliptic curves, so no extensions are
 				// involved.
 				MaxVersion:   VersionTLS12,
-				CipherSuites: []uint16{TLS_RSA_WITH_3DES_EDE_CBC_SHA},
+				CipherSuites: []uint16{TLS_RSA_WITH_AES_128_CBC_SHA},
 				Bugs: ProtocolBugs{
 					SendV2ClientHello: true,
 				},
@@ -3220,7 +3214,7 @@ read alert 1 0
 				// elliptic curves, so no extensions are
 				// involved.
 				MaxVersion:   VersionTLS12,
-				CipherSuites: []uint16{TLS_RSA_WITH_3DES_EDE_CBC_SHA},
+				CipherSuites: []uint16{TLS_RSA_WITH_AES_128_CBC_SHA},
 				Bugs: ProtocolBugs{
 					SendV2ClientHello: true,
 				},
@@ -3680,6 +3674,11 @@ func addTestForCipherSuite(suite testCipherSuite, ver tlsVersion, protocol proto
 		flags = append(flags,
 			"-psk", psk,
 			"-psk-identity", pskIdentity)
+	}
+
+	if hasComponent(suite.name, "3DES") {
+		// BoringSSL disables 3DES ciphers by default.
+		flags = append(flags, "-cipher", "3DES")
 	}
 
 	var shouldFail bool
@@ -4229,6 +4228,8 @@ func addCBCSplittingTests() {
 				"-async",
 				"-write-different-record-sizes",
 				"-cbc-record-splitting",
+				// BoringSSL disables 3DES by default.
+				"-cipher", "ALL:3DES",
 			},
 		})
 		testCases = append(testCases, testCase{
@@ -4247,6 +4248,8 @@ func addCBCSplittingTests() {
 				"-write-different-record-sizes",
 				"-cbc-record-splitting",
 				"-partial-write",
+				// BoringSSL disables 3DES by default.
+				"-cipher", "ALL:3DES",
 			},
 		})
 	}
@@ -5770,7 +5773,7 @@ func addStateMachineCoverageTests(config stateMachineTestConfig) {
 					// elliptic curves, so no extensions are
 					// involved.
 					MaxVersion:   VersionTLS12,
-					CipherSuites: []uint16{TLS_RSA_WITH_3DES_EDE_CBC_SHA},
+					CipherSuites: []uint16{TLS_RSA_WITH_AES_128_CBC_SHA},
 					Bugs: ProtocolBugs{
 						SendV2ClientHello:            true,
 						V2ClientHelloChallengeLength: challengeLength,
@@ -9320,7 +9323,7 @@ func addRenegotiationTests() {
 		renegotiate: 1,
 		config: Config{
 			MaxVersion:   VersionTLS12,
-			CipherSuites: []uint16{TLS_RSA_WITH_3DES_EDE_CBC_SHA},
+			CipherSuites: []uint16{TLS_RSA_WITH_AES_128_CBC_SHA},
 		},
 		renegotiateCiphers: []uint16{TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256},
 		flags: []string{
@@ -9335,7 +9338,7 @@ func addRenegotiationTests() {
 			MaxVersion:   VersionTLS12,
 			CipherSuites: []uint16{TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256},
 		},
-		renegotiateCiphers: []uint16{TLS_RSA_WITH_3DES_EDE_CBC_SHA},
+		renegotiateCiphers: []uint16{TLS_RSA_WITH_AES_128_CBC_SHA},
 		flags: []string{
 			"-renegotiate-freely",
 			"-expect-total-renegotiations", "1",
@@ -9724,26 +9727,29 @@ var testSignatureAlgorithms = []struct {
 	name string
 	id   signatureAlgorithm
 	cert testCert
+	// If non-zero, the curve that must be supported in TLS 1.2 for cert to be
+	// accepted.
+	curve CurveID
 }{
-	{"RSA_PKCS1_SHA1", signatureRSAPKCS1WithSHA1, testCertRSA},
-	{"RSA_PKCS1_SHA256", signatureRSAPKCS1WithSHA256, testCertRSA},
-	{"RSA_PKCS1_SHA384", signatureRSAPKCS1WithSHA384, testCertRSA},
-	{"RSA_PKCS1_SHA512", signatureRSAPKCS1WithSHA512, testCertRSA},
-	{"ECDSA_SHA1", signatureECDSAWithSHA1, testCertECDSAP256},
+	{"RSA_PKCS1_SHA1", signatureRSAPKCS1WithSHA1, testCertRSA, 0},
+	{"RSA_PKCS1_SHA256", signatureRSAPKCS1WithSHA256, testCertRSA, 0},
+	{"RSA_PKCS1_SHA384", signatureRSAPKCS1WithSHA384, testCertRSA, 0},
+	{"RSA_PKCS1_SHA512", signatureRSAPKCS1WithSHA512, testCertRSA, 0},
+	{"ECDSA_SHA1", signatureECDSAWithSHA1, testCertECDSAP256, CurveP256},
 	// The “P256” in the following line is not a mistake. In TLS 1.2 the
 	// hash function doesn't have to match the curve and so the same
 	// signature algorithm works with P-224.
-	{"ECDSA_P224_SHA256", signatureECDSAWithP256AndSHA256, testCertECDSAP224},
-	{"ECDSA_P256_SHA256", signatureECDSAWithP256AndSHA256, testCertECDSAP256},
-	{"ECDSA_P384_SHA384", signatureECDSAWithP384AndSHA384, testCertECDSAP384},
-	{"ECDSA_P521_SHA512", signatureECDSAWithP521AndSHA512, testCertECDSAP521},
-	{"RSA_PSS_SHA256", signatureRSAPSSWithSHA256, testCertRSA},
-	{"RSA_PSS_SHA384", signatureRSAPSSWithSHA384, testCertRSA},
-	{"RSA_PSS_SHA512", signatureRSAPSSWithSHA512, testCertRSA},
-	{"Ed25519", signatureEd25519, testCertEd25519},
+	{"ECDSA_P224_SHA256", signatureECDSAWithP256AndSHA256, testCertECDSAP224, CurveP224},
+	{"ECDSA_P256_SHA256", signatureECDSAWithP256AndSHA256, testCertECDSAP256, CurveP256},
+	{"ECDSA_P384_SHA384", signatureECDSAWithP384AndSHA384, testCertECDSAP384, CurveP384},
+	{"ECDSA_P521_SHA512", signatureECDSAWithP521AndSHA512, testCertECDSAP521, CurveP521},
+	{"RSA_PSS_SHA256", signatureRSAPSSWithSHA256, testCertRSA, 0},
+	{"RSA_PSS_SHA384", signatureRSAPSSWithSHA384, testCertRSA, 0},
+	{"RSA_PSS_SHA512", signatureRSAPSSWithSHA512, testCertRSA, 0},
+	{"Ed25519", signatureEd25519, testCertEd25519, 0},
 	// Tests for key types prior to TLS 1.2.
-	{"RSA", 0, testCertRSA},
-	{"ECDSA", 0, testCertECDSAP256},
+	{"RSA", 0, testCertRSA, 0},
+	{"ECDSA", 0, testCertECDSAP256, CurveP256},
 }
 
 const fakeSigAlg1 signatureAlgorithm = 0x2a01
@@ -9795,6 +9801,14 @@ func addSignatureAlgorithmTests() {
 				rejectByDefault = true
 			}
 
+			var curveFlags []string
+			if alg.curve != 0 && ver.version <= VersionTLS12 {
+				// In TLS 1.2, the ECDH curve list also constrains ECDSA keys. Ensure the
+				// corresponding curve is enabled on the shim. Also include X25519 to
+				// ensure the shim and runner have something in common for ECDH.
+				curveFlags = flagInts("-curves", []int{int(CurveX25519), int(alg.curve)})
+			}
+
 			var signError, signLocalError, verifyError, verifyLocalError, defaultError, defaultLocalError string
 			if shouldFail {
 				signError = ":NO_COMMON_SIGNATURE_ALGORITHMS:"
@@ -9833,7 +9847,7 @@ func addSignatureAlgorithmTests() {
 							"-cert-file", path.Join(*resourceDir, getShimCertificate(alg.cert)),
 							"-key-file", path.Join(*resourceDir, getShimKey(alg.cert)),
 						},
-						flagInts("-curves", shimConfig.AllCurves)...,
+						curveFlags...,
 					),
 					shouldFail:         shouldFail,
 					expectedError:      signError,
@@ -9857,7 +9871,7 @@ func addSignatureAlgorithmTests() {
 							"-cert-file", path.Join(*resourceDir, getShimCertificate(alg.cert)),
 							"-key-file", path.Join(*resourceDir, getShimKey(alg.cert)),
 						},
-						flagInts("-curves", shimConfig.AllCurves)...,
+						curveFlags...,
 					),
 					expectations: connectionExpectations{
 						peerSignatureAlgorithm: alg.id,
@@ -9898,7 +9912,7 @@ func addSignatureAlgorithmTests() {
 							IgnorePeerSignatureAlgorithmPreferences: shouldFail,
 						},
 					},
-					flags: flagInts("-curves", shimConfig.AllCurves),
+					flags: curveFlags,
 					// Resume the session to assert the peer signature
 					// algorithm is reported on both handshakes.
 					resumeSession:      !shouldFail,
@@ -9931,7 +9945,7 @@ func addSignatureAlgorithmTests() {
 					},
 					flags: append(
 						[]string{"-expect-peer-signature-algorithm", strconv.Itoa(int(alg.id))},
-						flagInts("-curves", shimConfig.AllCurves)...,
+						curveFlags...,
 					),
 					// Resume the session to assert the peer signature
 					// algorithm is reported on both handshakes.
@@ -9955,7 +9969,7 @@ func addSignatureAlgorithmTests() {
 							InvalidSignature: true,
 						},
 					},
-					flags:         flagInts("-curves", shimConfig.AllCurves),
+					flags:         curveFlags,
 					shouldFail:    true,
 					expectedError: ":BAD_SIGNATURE:",
 				}
@@ -11341,7 +11355,7 @@ func addRSAClientKeyExchangeTests() {
 				// version are different, to detect if the
 				// server uses the wrong one.
 				MaxVersion:   VersionTLS11,
-				CipherSuites: []uint16{TLS_RSA_WITH_3DES_EDE_CBC_SHA},
+				CipherSuites: []uint16{TLS_RSA_WITH_AES_128_CBC_SHA},
 				Bugs: ProtocolBugs{
 					BadRSAClientKeyExchange: bad,
 				},
@@ -11375,6 +11389,7 @@ var testCurves = []struct {
 	{"P-384", CurveP384},
 	{"P-521", CurveP521},
 	{"X25519", CurveX25519},
+	{"Kyber", CurveX25519Kyber768},
 }
 
 const bogusCurve = 0x1234
@@ -11953,8 +11968,6 @@ func addCurveTests() {
 			"-curves", strconv.Itoa(int(CurveX25519Kyber768)),
 			"-expect-curve-id", strconv.Itoa(int(CurveX25519Kyber768)),
 		},
-		shouldFail:         true,
-		expectedLocalError: "no curve supported by both client and server",
 	})
 
 	// As a server, Kyber is not yet supported by default.
@@ -19183,13 +19196,21 @@ func addCompliancePolicyTests() {
 				isFIPSCipherSuite = true
 			}
 
+			var isWPACipherSuite bool
+			switch suite.id {
+			case TLS_AES_256_GCM_SHA384,
+				TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:
+				isWPACipherSuite = true
+			}
+
 			var certFile string
 			var keyFile string
 			var certs []Certificate
 			if hasComponent(suite.name, "ECDSA") {
-				certFile = ecdsaP256CertificateFile
-				keyFile = ecdsaP256KeyFile
-				certs = []Certificate{ecdsaP256Certificate}
+				certFile = ecdsaP384CertificateFile
+				keyFile = ecdsaP384KeyFile
+				certs = []Certificate{ecdsaP384Certificate}
 			} else {
 				certFile = rsaCertificateFile
 				keyFile = rsaKeyFile
@@ -19204,38 +19225,48 @@ func addCompliancePolicyTests() {
 				maxVersion = VersionTLS12
 			}
 
-			testCases = append(testCases, testCase{
-				testType: serverTest,
-				protocol: protocol,
-				name:     "Compliance-fips202205-" + protocol.String() + "-Server-" + suite.name,
-				config: Config{
-					MinVersion:   VersionTLS12,
-					MaxVersion:   maxVersion,
-					CipherSuites: []uint16{suite.id},
-				},
-				certFile: certFile,
-				keyFile:  keyFile,
-				flags: []string{
-					"-fips-202205",
-				},
-				shouldFail: !isFIPSCipherSuite,
-			})
+			policies := []struct {
+				flag          string
+				cipherSuiteOk bool
+			}{
+				{"-fips-202205", isFIPSCipherSuite},
+				{"-wpa-202304", isWPACipherSuite},
+			}
 
-			testCases = append(testCases, testCase{
-				testType: clientTest,
-				protocol: protocol,
-				name:     "Compliance-fips202205-" + protocol.String() + "-Client-" + suite.name,
-				config: Config{
-					MinVersion:   VersionTLS12,
-					MaxVersion:   maxVersion,
-					CipherSuites: []uint16{suite.id},
-					Certificates: certs,
-				},
-				flags: []string{
-					"-fips-202205",
-				},
-				shouldFail: !isFIPSCipherSuite,
-			})
+			for _, policy := range policies {
+				testCases = append(testCases, testCase{
+					testType: serverTest,
+					protocol: protocol,
+					name:     "Compliance" + policy.flag + "-" + protocol.String() + "-Server-" + suite.name,
+					config: Config{
+						MinVersion:   VersionTLS12,
+						MaxVersion:   maxVersion,
+						CipherSuites: []uint16{suite.id},
+					},
+					certFile: certFile,
+					keyFile:  keyFile,
+					flags: []string{
+						policy.flag,
+					},
+					shouldFail: !policy.cipherSuiteOk,
+				})
+
+				testCases = append(testCases, testCase{
+					testType: clientTest,
+					protocol: protocol,
+					name:     "Compliance" + policy.flag + "-" + protocol.String() + "-Client-" + suite.name,
+					config: Config{
+						MinVersion:   VersionTLS12,
+						MaxVersion:   maxVersion,
+						CipherSuites: []uint16{suite.id},
+						Certificates: certs,
+					},
+					flags: []string{
+						policy.flag,
+					},
+					shouldFail: !policy.cipherSuiteOk,
+				})
+			}
 		}
 
 		// Check that a TLS 1.3 client won't accept ChaCha20 even if the server
@@ -19265,35 +19296,51 @@ func addCompliancePolicyTests() {
 				isFIPSCurve = true
 			}
 
-			testCases = append(testCases, testCase{
-				testType: serverTest,
-				protocol: protocol,
-				name:     "Compliance-fips202205-" + protocol.String() + "-Server-" + curve.name,
-				config: Config{
-					MinVersion:       VersionTLS12,
-					MaxVersion:       VersionTLS13,
-					CurvePreferences: []CurveID{curve.id},
-				},
-				flags: []string{
-					"-fips-202205",
-				},
-				shouldFail: !isFIPSCurve,
-			})
+			var isWPACurve bool
+			switch curve.id {
+			case CurveP384:
+				isWPACurve = true
+			}
 
-			testCases = append(testCases, testCase{
-				testType: clientTest,
-				protocol: protocol,
-				name:     "Compliance-fips202205-" + protocol.String() + "-Client-" + curve.name,
-				config: Config{
-					MinVersion:       VersionTLS12,
-					MaxVersion:       VersionTLS13,
-					CurvePreferences: []CurveID{curve.id},
-				},
-				flags: []string{
-					"-fips-202205",
-				},
-				shouldFail: !isFIPSCurve,
-			})
+			policies := []struct {
+				flag    string
+				curveOk bool
+			}{
+				{"-fips-202205", isFIPSCurve},
+				{"-wpa-202304", isWPACurve},
+			}
+
+			for _, policy := range policies {
+				testCases = append(testCases, testCase{
+					testType: serverTest,
+					protocol: protocol,
+					name:     "Compliance" + policy.flag + "-" + protocol.String() + "-Server-" + curve.name,
+					config: Config{
+						MinVersion:       VersionTLS12,
+						MaxVersion:       VersionTLS13,
+						CurvePreferences: []CurveID{curve.id},
+					},
+					flags: []string{
+						policy.flag,
+					},
+					shouldFail: !policy.curveOk,
+				})
+
+				testCases = append(testCases, testCase{
+					testType: clientTest,
+					protocol: protocol,
+					name:     "Compliance" + policy.flag + "-" + protocol.String() + "-Client-" + curve.name,
+					config: Config{
+						MinVersion:       VersionTLS12,
+						MaxVersion:       VersionTLS13,
+						CurvePreferences: []CurveID{curve.id},
+					},
+					flags: []string{
+						policy.flag,
+					},
+					shouldFail: !policy.curveOk,
+				})
+			}
 		}
 
 		for _, sigalg := range testSignatureAlgorithms {
@@ -19310,6 +19357,16 @@ func addCompliancePolicyTests() {
 				isFIPSSigAlg = true
 			}
 
+			var isWPASigAlg bool
+			switch sigalg.id {
+			case signatureRSAPKCS1WithSHA384,
+				signatureRSAPKCS1WithSHA512,
+				signatureECDSAWithP384AndSHA384,
+				signatureRSAPSSWithSHA384,
+				signatureRSAPSSWithSHA512:
+				isWPASigAlg = true
+			}
+
 			if sigalg.cert == testCertECDSAP224 {
 				// This can work in TLS 1.2, but not with TLS 1.3.
 				// For consistency it's not permitted in FIPS mode.
@@ -19324,43 +19381,53 @@ func addCompliancePolicyTests() {
 				maxVersion = VersionTLS12
 			}
 
-			testCases = append(testCases, testCase{
-				testType: serverTest,
-				protocol: protocol,
-				name:     "Compliance-fips202205-" + protocol.String() + "-Server-" + sigalg.name,
-				config: Config{
-					MinVersion:                VersionTLS12,
-					MaxVersion:                maxVersion,
-					VerifySignatureAlgorithms: []signatureAlgorithm{sigalg.id},
-				},
-				flags: []string{
-					"-fips-202205",
-					"-cert-file", path.Join(*resourceDir, getShimCertificate(sigalg.cert)),
-					"-key-file", path.Join(*resourceDir, getShimKey(sigalg.cert)),
-				},
-				shouldFail: !isFIPSSigAlg,
-			})
+			policies := []struct {
+				flag     string
+				sigAlgOk bool
+			}{
+				{"-fips-202205", isFIPSSigAlg},
+				{"-wpa-202304", isWPASigAlg},
+			}
 
-			testCases = append(testCases, testCase{
-				testType: clientTest,
-				protocol: protocol,
-				name:     "Compliance-fips202205-" + protocol.String() + "-Client-" + sigalg.name,
-				config: Config{
-					MinVersion:              VersionTLS12,
-					MaxVersion:              maxVersion,
-					SignSignatureAlgorithms: []signatureAlgorithm{sigalg.id},
-					Certificates:            []Certificate{getRunnerCertificate(sigalg.cert)},
-				},
-				flags: []string{
-					"-fips-202205",
-				},
-				shouldFail: !isFIPSSigAlg,
-			})
+			for _, policy := range policies {
+				testCases = append(testCases, testCase{
+					testType: serverTest,
+					protocol: protocol,
+					name:     "Compliance" + policy.flag + "-" + protocol.String() + "-Server-" + sigalg.name,
+					config: Config{
+						MinVersion:                VersionTLS12,
+						MaxVersion:                maxVersion,
+						VerifySignatureAlgorithms: []signatureAlgorithm{sigalg.id},
+					},
+					flags: []string{
+						policy.flag,
+						"-cert-file", path.Join(*resourceDir, getShimCertificate(sigalg.cert)),
+						"-key-file", path.Join(*resourceDir, getShimKey(sigalg.cert)),
+					},
+					shouldFail: !policy.sigAlgOk,
+				})
+
+				testCases = append(testCases, testCase{
+					testType: clientTest,
+					protocol: protocol,
+					name:     "Compliance" + policy.flag + "-" + protocol.String() + "-Client-" + sigalg.name,
+					config: Config{
+						MinVersion:              VersionTLS12,
+						MaxVersion:              maxVersion,
+						SignSignatureAlgorithms: []signatureAlgorithm{sigalg.id},
+						Certificates:            []Certificate{getRunnerCertificate(sigalg.cert)},
+					},
+					flags: []string{
+						policy.flag,
+					},
+					shouldFail: !policy.sigAlgOk,
+				})
+			}
 		}
 	}
 }
 
-func worker(statusChan chan statusMsg, c chan *testCase, shimPath string, wg *sync.WaitGroup) {
+func worker(dispatcher *shimDispatcher, statusChan chan statusMsg, c chan *testCase, shimPath string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for test := range c {
@@ -19369,7 +19436,7 @@ func worker(statusChan chan statusMsg, c chan *testCase, shimPath string, wg *sy
 		if *mallocTest >= 0 {
 			for mallocNumToFail := int64(*mallocTest); ; mallocNumToFail++ {
 				statusChan <- statusMsg{test: test, statusType: statusStarted}
-				if err = runTest(statusChan, test, shimPath, mallocNumToFail); err != errMoreMallocs {
+				if err = runTest(dispatcher, statusChan, test, shimPath, mallocNumToFail); err != errMoreMallocs {
 					if err != nil {
 						fmt.Printf("\n\nmalloc test failed at %d: %s\n", mallocNumToFail, err)
 					}
@@ -19379,11 +19446,11 @@ func worker(statusChan chan statusMsg, c chan *testCase, shimPath string, wg *sy
 		} else if *repeatUntilFailure {
 			for err == nil {
 				statusChan <- statusMsg{test: test, statusType: statusStarted}
-				err = runTest(statusChan, test, shimPath, -1)
+				err = runTest(dispatcher, statusChan, test, shimPath, -1)
 			}
 		} else {
 			statusChan <- statusMsg{test: test, statusType: statusStarted}
-			err = runTest(statusChan, test, shimPath, -1)
+			err = runTest(dispatcher, statusChan, test, shimPath, -1)
 		}
 		statusChan <- statusMsg{test: test, statusType: statusDone, err: err}
 	}
@@ -19613,6 +19680,13 @@ func main() {
 
 	checkTests()
 
+	dispatcher, err := newShimDispatcher()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error opening socket: %s", err)
+		os.Exit(1)
+	}
+	defer dispatcher.Close()
+
 	numWorkers := *numWorkersFlag
 	if useDebugger() {
 		numWorkers = 1
@@ -19627,7 +19701,7 @@ func main() {
 	var wg sync.WaitGroup
 	for i := 0; i < numWorkers; i++ {
 		wg.Add(1)
-		go worker(statusChan, testChan, *shimPath, &wg)
+		go worker(dispatcher, statusChan, testChan, *shimPath, &wg)
 	}
 
 	var oneOfPatternIfAny, noneOfPattern []string

@@ -15,10 +15,9 @@ import signal
 import socket
 import sys
 import tempfile
-import six
 
 # The following non-std imports are fetched via vpython. See the list at
-# //.vpython
+# //.vpython3
 import dateutil.parser  # pylint: disable=import-error
 import jsonlines  # pylint: disable=import-error
 import psutil  # pylint: disable=import-error
@@ -35,8 +34,6 @@ from pylib.results import json_results  # pylint: disable=import-error
 sys.path.insert(0, os.path.join(CHROMIUM_SRC_PATH, 'build', 'util'))
 # TODO(crbug.com/1421441): Re-enable the 'no-name-in-module' check.
 from lib.results import result_sink  # pylint: disable=import-error,no-name-in-module
-
-assert not six.PY2, 'Py2 not supported for this file.'
 
 import subprocess  # pylint: disable=import-error,wrong-import-order
 
@@ -328,7 +325,7 @@ class TastTest(RemoteTest):
       self._attr_expr = '(' + ' || '.join(names) + ')'
 
     if self._attr_expr:
-      # Don't use pipes.quote() here. Something funky happens with the arg
+      # Don't use shlex.quote() here. Something funky happens with the arg
       # as it gets passed down from cros_run_test to tast. (Tast picks up the
       # escaping single quotes and complains that the attribute expression
       # "must be within parentheses".)
@@ -399,6 +396,9 @@ class TastTest(RemoteTest):
         # inside as an RDB 'artifact'. (This could include system logs, screen
         # shots, etc.)
         artifacts = self.get_artifacts(test['outDir'])
+        html_artifact = debug_link
+        if result == base_test_result.ResultType.SKIP:
+          html_artifact = 'Test was skipped because: ' + test['skipReason']
         self._rdb_client.Post(
             test['name'],
             result,
@@ -407,7 +407,7 @@ class TastTest(RemoteTest):
             None,
             artifacts=artifacts,
             failure_reason=primary_error_message,
-            html_artifact=debug_link)
+            html_artifact=html_artifact)
 
     if self._rdb_client and self._logs_dir:
       # Attach artifacts from the device that don't apply to a single test.
@@ -584,6 +584,12 @@ class GTestTest(RemoteTest):
       device_test_script_contents += [
           'stop ui',
       ]
+      # Send a user activity ping to powerd to ensure the display is on.
+      device_test_script_contents += [
+          'dbus-send --system --type=method_call'
+          ' --dest=org.chromium.PowerManager /org/chromium/PowerManager'
+          ' org.chromium.PowerManager.HandleUserActivity int32:0'
+      ]
       # The UI service on the device owns the chronos user session, so shutting
       # it down as chronos kills the entire execution of the test. So we'll have
       # to run as root up until the test invocation.
@@ -600,6 +606,14 @@ class GTestTest(RemoteTest):
       ]
 
     device_test_script_contents.append(test_invocation)
+
+    # (Re)start ui after all tests are done. This is for developer convenienve.
+    # Without this, the device would remain in a black screen which looks like
+    # powered off.
+    if self._stop_ui:
+      device_test_script_contents += [
+          'start ui',
+      ]
 
     self._on_device_script = self.write_test_script_to_disk(
         device_test_script_contents)
@@ -874,7 +888,8 @@ def main():
   gtest_parser.add_argument(
       '--stop-ui',
       action='store_true',
-      help='Will stop the UI service in the device before running the test.')
+      help='Will stop the UI service in the device before running the test. '
+      'Also start the UI service after all tests are done.')
   gtest_parser.add_argument(
       '--trace-dir',
       type=str,

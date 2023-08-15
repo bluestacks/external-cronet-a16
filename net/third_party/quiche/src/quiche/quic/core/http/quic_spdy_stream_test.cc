@@ -15,7 +15,9 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "quiche/quic/core/crypto/null_encrypter.h"
+#include "quiche/quic/core/http/http_constants.h"
 #include "quiche/quic/core/http/http_encoder.h"
+#include "quiche/quic/core/http/http_frames.h"
 #include "quiche/quic/core/http/quic_spdy_session.h"
 #include "quiche/quic/core/http/spdy_utils.h"
 #include "quiche/quic/core/http/web_transport_http3.h"
@@ -51,6 +53,7 @@ using testing::AnyNumber;
 using testing::AtLeast;
 using testing::DoAll;
 using testing::ElementsAre;
+using testing::HasSubstr;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::MatchesRegex;
@@ -63,8 +66,8 @@ namespace quic {
 namespace test {
 namespace {
 
-const bool kShouldProcessData = true;
-const char kDataFramePayload[] = "some data";
+constexpr bool kShouldProcessData = true;
+constexpr absl::string_view kDataFramePayload = "some data";
 
 class TestCryptoStream : public QuicCryptoStream, public QuicCryptoHandshaker {
  public:
@@ -276,11 +279,6 @@ class TestStream : public QuicSpdyStream {
 
   size_t headers_payload_length() const { return headers_payload_length_; }
 
-  bool AreHeadersValid(const QuicHeaderList& header_list) const override {
-    return !GetQuicReloadableFlag(quic_verify_request_headers_2) ||
-           QuicSpdyStream::AreHeadersValid(header_list);
-  }
-
  private:
   bool should_process_data_;
   spdy::Http2HeaderBlock saved_headers_;
@@ -302,8 +300,14 @@ class TestSession : public MockQuicSpdySession {
     return &crypto_stream_;
   }
 
-  bool ShouldNegotiateWebTransport() override { return enable_webtransport_; }
-  void EnableWebTransport() { enable_webtransport_ = true; }
+  WebTransportHttp3VersionSet LocallySupportedWebTransportVersions()
+      const override {
+    return locally_supported_webtransport_versions_;
+  }
+  void EnableWebTransport(WebTransportHttp3VersionSet versions =
+                              kDefaultSupportedWebTransportVersions) {
+    locally_supported_webtransport_versions_ = versions;
+  }
 
   HttpDatagramSupport LocalHttpDatagramSupport() override {
     return local_http_datagram_support_;
@@ -313,7 +317,7 @@ class TestSession : public MockQuicSpdySession {
   }
 
  private:
-  bool enable_webtransport_ = false;
+  WebTransportHttp3VersionSet locally_supported_webtransport_versions_;
   HttpDatagramSupport local_http_datagram_support_ = HttpDatagramSupport::kNone;
   StrictMock<TestCryptoStream> crypto_stream_;
 };
@@ -2267,7 +2271,7 @@ TEST_P(QuicSpdyStreamTest, ImmediateHeaderDecodingWithDynamicTableEntries) {
   // DATA frame.
   std::string data = DataFrame(kDataFramePayload);
   EXPECT_CALL(debug_visitor,
-              OnDataFrameReceived(stream_->id(), strlen(kDataFramePayload)));
+              OnDataFrameReceived(stream_->id(), kDataFramePayload.length()));
   stream_->OnStreamFrame(QuicStreamFrame(stream_->id(), false, /* offset = */
                                          headers.length(), data));
   EXPECT_EQ(kDataFramePayload, stream_->data());
@@ -2340,7 +2344,7 @@ TEST_P(QuicSpdyStreamTest, BlockedHeaderDecoding) {
   // DATA frame.
   std::string data = DataFrame(kDataFramePayload);
   EXPECT_CALL(debug_visitor,
-              OnDataFrameReceived(stream_->id(), strlen(kDataFramePayload)));
+              OnDataFrameReceived(stream_->id(), kDataFramePayload.length()));
   stream_->OnStreamFrame(QuicStreamFrame(stream_->id(), false, /* offset = */
                                          headers.length(), data));
   EXPECT_EQ(kDataFramePayload, stream_->data());
@@ -3100,7 +3104,6 @@ TEST_P(QuicSpdyStreamTest, ProcessIncomingWebTransportHeaders) {
 
   headers_[":method"] = "CONNECT";
   headers_[":protocol"] = "webtransport";
-  headers_["sec-webtransport-http3-draft02"] = "1";
 
   stream_->OnStreamHeadersPriority(
       spdy::SpdyStreamPrecedence(kV3HighestPriority));
@@ -3110,6 +3113,98 @@ TEST_P(QuicSpdyStreamTest, ProcessIncomingWebTransportHeaders) {
   EXPECT_FALSE(stream_->IsDoneReading());
   ASSERT_TRUE(stream_->web_transport() != nullptr);
   EXPECT_EQ(stream_->id(), stream_->web_transport()->id());
+}
+
+TEST_P(QuicSpdyStreamTest, IncomingWebTransportStreamWhenUnsupported) {
+  if (!UsesHttp3()) {
+    return;
+  }
+
+  Initialize(kShouldProcessData);
+  // Support WebTransport locally, but not by the peer.
+  session_->set_local_http_datagram_support(HttpDatagramSupport::kRfc);
+  session_->EnableWebTransport();
+  session_->OnSettingsFrame(SettingsFrame());
+
+  StrictMock<MockHttp3DebugVisitor> debug_visitor;
+  session_->set_debug_visitor(&debug_visitor);
+
+  std::string webtransport_stream_frame =
+      absl::HexStringToBytes("40410400000000");
+  QuicStreamFrame stream_frame(stream_->id(), /* fin = */ false,
+                               /* offset = */ 0, webtransport_stream_frame);
+
+  EXPECT_CALL(debug_visitor, OnUnknownFrameReceived(stream_->id(), 0x41, 4));
+  stream_->OnStreamFrame(stream_frame);
+  EXPECT_TRUE(stream_->web_transport_stream() == nullptr);
+}
+
+TEST_P(QuicSpdyStreamTest, IncomingWebTransportStream) {
+  if (!UsesHttp3()) {
+    return;
+  }
+
+  Initialize(kShouldProcessData);
+  session_->set_local_http_datagram_support(HttpDatagramSupport::kRfc);
+  session_->EnableWebTransport();
+  SettingsFrame settings;
+  settings.values[SETTINGS_WEBTRANS_MAX_SESSIONS_DRAFT07] = 10;
+  settings.values[SETTINGS_H3_DATAGRAM] = 1;
+  session_->OnSettingsFrame(settings);
+
+  std::string webtransport_stream_frame = absl::HexStringToBytes("404110");
+  QuicStreamFrame stream_frame(stream_->id(), /* fin = */ false,
+                               /* offset = */ 0, webtransport_stream_frame);
+
+  EXPECT_CALL(*session_, CreateIncomingStream(0x10));
+  stream_->OnStreamFrame(stream_frame);
+  EXPECT_TRUE(stream_->web_transport_stream() != nullptr);
+}
+
+TEST_P(QuicSpdyStreamTest, IncomingWebTransportStreamWithPaddingDraft02) {
+  if (!UsesHttp3()) {
+    return;
+  }
+
+  Initialize(kShouldProcessData);
+  session_->set_local_http_datagram_support(HttpDatagramSupport::kRfc);
+  session_->EnableWebTransport();
+  SettingsFrame settings;
+  settings.values[SETTINGS_WEBTRANS_DRAFT00] = 1;
+  settings.values[SETTINGS_H3_DATAGRAM] = 1;
+  session_->OnSettingsFrame(settings);
+
+  std::string webtransport_stream_frame = absl::HexStringToBytes("2100404110");
+  QuicStreamFrame stream_frame(stream_->id(), /* fin = */ false,
+                               /* offset = */ 0, webtransport_stream_frame);
+
+  EXPECT_CALL(*session_, CreateIncomingStream(0x10));
+  stream_->OnStreamFrame(stream_frame);
+  EXPECT_TRUE(stream_->web_transport_stream() != nullptr);
+}
+
+TEST_P(QuicSpdyStreamTest, IncomingWebTransportStreamWithPaddingDraft07) {
+  if (!UsesHttp3()) {
+    return;
+  }
+
+  Initialize(kShouldProcessData);
+  session_->set_local_http_datagram_support(HttpDatagramSupport::kRfc);
+  session_->EnableWebTransport();
+  SettingsFrame settings;
+  settings.values[SETTINGS_WEBTRANS_MAX_SESSIONS_DRAFT07] = 10;
+  settings.values[SETTINGS_H3_DATAGRAM] = 1;
+  session_->OnSettingsFrame(settings);
+
+  std::string webtransport_stream_frame = absl::HexStringToBytes("2100404110");
+  QuicStreamFrame stream_frame(stream_->id(), /* fin = */ false,
+                               /* offset = */ 0, webtransport_stream_frame);
+
+  EXPECT_CALL(*connection_,
+              CloseConnection(QUIC_HTTP_INVALID_FRAME_SEQUENCE_ON_SPDY_STREAM,
+                              HasSubstr("non-zero offset"), _));
+  stream_->OnStreamFrame(stream_frame);
+  EXPECT_TRUE(stream_->web_transport_stream() == nullptr);
 }
 
 TEST_P(QuicSpdyStreamTest, ReceiveHttpDatagram) {
@@ -3268,6 +3363,43 @@ TEST_P(QuicSpdyStreamTest,
         EXPECT_FALSE(QuicSpdyStreamPeer::OnHeadersFrameEnd(stream_));
       },
       "b215142466_OnHeadersFrameEnd");
+}
+
+// Regression test for https://crbug.com/1465224.
+TEST_P(QuicSpdyStreamTest, ReadAfterReset) {
+  if (!UsesHttp3()) {
+    return;
+  }
+
+  SetQuicReloadableFlag(quic_clear_body_manager, true);
+
+  Initialize(!kShouldProcessData);
+
+  ProcessHeaders(false, headers_);
+  stream_->ConsumeHeaderList();
+
+  std::string data_frame = DataFrame(kDataFramePayload);
+  QuicStreamFrame frame(stream_->id(), /* fin = */ false, 0, data_frame);
+  stream_->OnStreamFrame(frame);
+
+  // As a result of resetting the stream, stream type and stream cancellation
+  // are sent on the QPACK decoder stream.
+  auto qpack_decoder_stream =
+      QuicSpdySessionPeer::GetQpackDecoderSendStream(session_.get());
+  EXPECT_CALL(*session_,
+              WritevData(qpack_decoder_stream->id(), _, _, NO_FIN, _, _))
+      .Times(2);
+
+  stream_->OnStreamReset(QuicRstStreamFrame(
+      kInvalidControlFrameId, stream_->id(), QUIC_STREAM_NO_ERROR, 0));
+
+  char buffer[100];
+  struct iovec vec;
+  vec.iov_base = buffer;
+  vec.iov_len = ABSL_ARRAYSIZE(buffer);
+
+  size_t bytes_read = stream_->Readv(&vec, 1);
+  EXPECT_EQ(0u, bytes_read);
 }
 
 }  // namespace

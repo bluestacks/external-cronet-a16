@@ -4,11 +4,11 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.content.Context;
 import org.chromium.net.CronetEngine;
 import android.os.ConditionVariable;
-
-import org.junit.Assert;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -150,14 +150,14 @@ public final class TestUploadDataStreamHandler {
     // Called on network thread.
     @CalledByNative
     private void onCheckInitCallbackNotInvoked(boolean initCallbackNotInvoked) {
-        Assert.assertTrue(initCallbackNotInvoked);
+        assertThat(initCallbackNotInvoked).isTrue();
         mWaitCheckInit.open();
     }
 
     // Called on network thread.
     @CalledByNative
     private void onCheckReadCallbackNotInvoked(boolean readCallbackNotInvoked) {
-        Assert.assertTrue(readCallbackNotInvoked);
+        assertThat(readCallbackNotInvoked).isTrue();
         mWaitCheckRead.open();
     }
 

@@ -274,7 +274,7 @@
 //
 // Tells the ControlFlowIntegrity sanitizer to not instrument a given function.
 // See https://clang.llvm.org/docs/ControlFlowIntegrity.html for details.
-#if ABSL_HAVE_ATTRIBUTE(no_sanitize)
+#if ABSL_HAVE_ATTRIBUTE(no_sanitize) && defined(__llvm__)
 #define ABSL_ATTRIBUTE_NO_SANITIZE_CFI __attribute__((no_sanitize("cfi")))
 #else
 #define ABSL_ATTRIBUTE_NO_SANITIZE_CFI
@@ -331,8 +331,8 @@
 // This functionality is supported by GNU linker.
 #ifndef ABSL_ATTRIBUTE_SECTION_VARIABLE
 #ifdef _AIX
-// __attribute__((section(#name))) on AIX is achived by using the `.csect` psudo
-// op which includes an additional integer as part of its syntax indcating
+// __attribute__((section(#name))) on AIX is achieved by using the `.csect`
+// psudo op which includes an additional integer as part of its syntax indcating
 // alignment. If data fall under different alignments then you might get a
 // compilation error indicating a `Section type conflict`.
 #define ABSL_ATTRIBUTE_SECTION_VARIABLE(name)
@@ -684,6 +684,28 @@
 #else
 #define ABSL_DEPRECATED(message)
 #endif
+
+// When deprecating Abseil code, it is sometimes necessary to turn off the
+// warning within Abseil, until the deprecated code is actually removed. The
+// deprecated code can be surrounded with these directives to acheive that
+// result.
+//
+// class ABSL_DEPRECATED("Use Bar instead") Foo;
+//
+// ABSL_INTERNAL_DISABLE_DEPRECATED_DECLARATION_WARNING
+// Baz ComputeBazFromFoo(Foo f);
+// ABSL_INTERNAL_RESTORE_DEPRECATED_DECLARATION_WARNING
+#if defined(__GNUC__) || defined(__clang__)
+// Clang also supports these GCC pragmas.
+#define ABSL_INTERNAL_DISABLE_DEPRECATED_DECLARATION_WARNING \
+  _Pragma("GCC diagnostic push")             \
+  _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#define ABSL_INTERNAL_RESTORE_DEPRECATED_DECLARATION_WARNING \
+  _Pragma("GCC diagnostic pop")
+#else
+#define ABSL_INTERNAL_DISABLE_DEPRECATED_DECLARATION_WARNING
+#define ABSL_INTERNAL_RESTORE_DEPRECATED_DECLARATION_WARNING
+#endif  // defined(__GNUC__) || defined(__clang__)
 
 // ABSL_CONST_INIT
 //

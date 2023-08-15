@@ -1058,7 +1058,8 @@ class URLRequestLoadTimingTest : public URLRequestTest {
   }
 
  private:
-  raw_ptr<URLRequestInterceptorWithLoadTimingInfo> interceptor_;
+  raw_ptr<URLRequestInterceptorWithLoadTimingInfo, DanglingUntriaged>
+      interceptor_;
 };
 
 // "Normal" LoadTimingInfo as returned by a job.  Everything is in order, not
@@ -7807,8 +7808,10 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
                         {CookieInclusionStatus::EXCLUDE_SECURE_ONLY,
                          CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
-    EXPECT_FALSE(
-        req->maybe_stored_cookies()[2].access_result.status.ShouldWarn());
+    EXPECT_TRUE(req->maybe_stored_cookies()[2]
+                    .access_result.status.HasExactlyWarningReasonsForTesting(
+                        {CookieInclusionStatus::
+                             WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
   }
 
   // Get cookies (blocked by user preference)
@@ -8880,16 +8883,7 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 // This currently only happens when in suspend mode and there's no cache, but
 // just use a special HttpTransactionFactory, to avoid depending on those
 // behaviors.
-//
-// Flaky crash: https://crbug.com/1348418
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NetworkCancelAfterCreateTransactionFailsTest \
-  DISABLED_NetworkCancelAfterCreateTransactionFailsTest
-#else
-#define MAYBE_NetworkCancelAfterCreateTransactionFailsTest \
-  NetworkCancelAfterCreateTransactionFailsTest
-#endif
-TEST_F(URLRequestTestHTTP, MAYBE_NetworkCancelAfterCreateTransactionFailsTest) {
+TEST_F(URLRequestTestHTTP, NetworkCancelAfterCreateTransactionFailsTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCreateHttpTransactionFactoryCallback(
       base::BindOnce([](HttpNetworkSession* session) {
@@ -10581,8 +10575,6 @@ static bool SystemSupportsHardFailRevocationChecking() {
 // several tests are effected because our testing EV certificate won't be
 // recognised as EV.
 static bool SystemUsesChromiumEVMetadata() {
-  if (UsingBuiltinCertVerifier())
-    return true;
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
   return true;
 #else

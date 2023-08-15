@@ -37,6 +37,7 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/create_unwind_table.gni")
   import("//build/config/android/extract_unwind_tables.gni")
+  import("//build/config/android/jni.gni")
   import("//build/config/android/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
 } else if (is_fuchsia) {
@@ -189,7 +190,6 @@ template("mixed_test") {
 #      job_policy_ambient_mark_vmo_exec.
 #   fuchsia_package_deps: (Fuchsia, optional) List of fuchsia_component()
 #      targets that this test package contains.
-#   # TODO(crbug/1280705): remove when all tests are migrated to CFv2.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -266,9 +266,14 @@ template("test") {
       _dist_target = "${target_name}__dist"
       _exec_output =
           "$target_out_dir/${invoker.target_name}/${invoker.target_name}"
+      _crate_name = "${target_name}"
 
       mixed_test(_exec_target) {
         target_type = "executable"
+
+        # Use a crate name that avoids creating a warning due to double
+        # underscore (ie. `__`).
+        crate_name = _crate_name
 
         # Configs will always be defined since we set_defaults in
         # BUILDCONFIG.gn.
@@ -335,7 +340,6 @@ template("test") {
         "android_manifest_template",
         "app_as_shared_lib",
         "enable_multidex",
-        "generate_final_jni",
         "product_config_java_packages",
         "loadable_modules",
         "loadable_module_deps",
@@ -381,20 +385,20 @@ template("test") {
         }
       }
 
+      _generate_final_jni =
+          !defined(invoker.generate_final_jni) || invoker.generate_final_jni
       mixed_test(_library_target_name) {
-        target_type = "shared_library"
+        if (_generate_final_jni) {
+          target_type = "shared_library_with_jni"
+          java_targets = [ ":$_apk_target_name" ]
+        } else {
+          target_type = "shared_library"
+        }
 
         # Configs will always be defined since we set_defaults in
         # BUILDCONFIG.gn.
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
-
-        if (_add_unwind_tables_in_apk) {
-          # Remove -gz if present, as dump_syms does not support it.
-          # Add and then remove because "-=" removes all, but errors if none are found.
-          configs += [ "//build/config:compress_debug_sections" ]
-          configs -= [ "//build/config:compress_debug_sections" ]
-        }
 
         forward_variables_from(
             invoker,
@@ -424,6 +428,9 @@ template("test") {
       unittest_apk(_apk_target_name) {
         forward_variables_from(invoker, _apk_specific_vars)
         shared_library = ":$_library_target_name"
+        if (_generate_final_jni) {
+          srcjar_deps = [ "${shared_library}__jni_registration" ]
+        }
         apk_name = invoker.target_name
         if (defined(invoker.output_name)) {
           apk_name = invoker.output_name
@@ -521,6 +528,7 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
     _program_name = get_label_info(":${_exec_target}", "name")
+    _crate_name = _output_name
 
     # Generate a CML fragment that provides the program name.
     _test_program_fragment_target = "${target_name}_program-fragment"
@@ -561,6 +569,12 @@ template("test") {
         "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
         "//build/config/fuchsia/test/minimum.shard.test-cml",
       ]
+    }
+
+    if (is_asan) {
+      # TODO(crbug.com/1465997): Remove the extra cml segment for asan.
+      _manifest_fragments +=
+          [ "//build/config/fuchsia/test/asan_options.shard.test-cml" ]
     }
 
     _test_component_manifest = "${target_out_dir}/${target_name}.cml"
@@ -687,16 +701,18 @@ template("test") {
       target_type = "executable"
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
+
+      # Use a crate name that avoids creating a warning due to double
+      # underscore (ie. `__`).
+      crate_name = _crate_name
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
     _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
 
     declare_args() {
-      # Keep the unittest-as-xctest functionality defaulted to off until the
-      # bots are updated to handle it properly.
-      # TODO(crbug.com/1001667): Remove this arg once the iOS test runner
-      # supports running unittests with xctest.
+      # Keep the unittest-as-xctest functionality defaulted to off for
+      # local builds and test executions.
       enable_run_ios_unittests_with_xctest = false
     }
 
@@ -925,6 +941,9 @@ template("test") {
       if (use_cfi_diag) {
         executable_args += [ "--cfi-diag=1" ]
       }
+      if (fail_on_san_warnings) {
+        executable_args += [ "--fail-san=1" ]
+      }
 
       data += [ "//build/lacros/test_runner.py" ]
 
@@ -1002,6 +1021,9 @@ template("test") {
       }
       if (use_cfi_diag) {
         executable_args += [ "--cfi-diag=1" ]
+      }
+      if (fail_on_san_warnings) {
+        executable_args += [ "--fail-san=1" ]
       }
 
       if (use_rts) {

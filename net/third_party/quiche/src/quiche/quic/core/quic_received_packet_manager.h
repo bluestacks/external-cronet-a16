@@ -80,10 +80,6 @@ class QUIC_EXPORT_PRIVATE QuicReceivedPacketManager {
   // packets of the largest observed.
   virtual bool HasNewMissingPackets() const;
 
-  QuicPacketNumber peer_least_packet_awaiting_ack() const {
-    return peer_least_packet_awaiting_ack_;
-  }
-
   virtual bool ack_frame_updated() const;
 
   QuicPacketNumber GetLargestObserved() const;
@@ -149,6 +145,8 @@ class QUIC_EXPORT_PRIVATE QuicReceivedPacketManager {
     return last_ack_frequency_frame_sequence_number_ >= 0;
   }
 
+  void MaybeTrimAckRanges();
+
   // Least packet number of the the packet sent by the peer for which it
   // hasn't received an ack.
   QuicPacketNumber peer_least_packet_awaiting_ack_;
@@ -207,6 +205,9 @@ class QUIC_EXPORT_PRIVATE QuicReceivedPacketManager {
   QuicTime time_of_previous_received_packet_;
   // Whether the most recent packet was missing before it was received.
   bool was_last_packet_missing_;
+
+  const bool trim_ack_ranges_early_ =
+      GetQuicReloadableFlag(quic_rpm_trim_ack_ranges_early);
 
   // Last sent largest acked, which gets updated when ACK was successfully sent.
   QuicPacketNumber last_sent_largest_acked_;

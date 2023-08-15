@@ -20,7 +20,7 @@ import org.chromium.net.ContextInterceptor;
  *
  * @see org.chromium.net.impl.CronetManifest
  */
-public final class CronetManifestInterceptor implements ContextInterceptor {
+final class CronetManifestInterceptor implements ContextInterceptor {
     private final Bundle mMetaData;
 
     /**

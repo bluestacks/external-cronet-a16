@@ -4,7 +4,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/foundation_util.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
 namespace partition_alloc::internal::base::mac {
 
@@ -23,7 +23,7 @@ namespace partition_alloc::internal::base::mac {
   template <>                                                      \
   TypeCF##Ref CFCastStrict<TypeCF##Ref>(const CFTypeRef& cf_val) { \
     TypeCF##Ref rv = CFCast<TypeCF##Ref>(cf_val);                  \
-    PA_DCHECK(cf_val == NULL || rv);                               \
+    PA_BASE_DCHECK(cf_val == NULL || rv);                          \
     return rv;                                                     \
   }
 

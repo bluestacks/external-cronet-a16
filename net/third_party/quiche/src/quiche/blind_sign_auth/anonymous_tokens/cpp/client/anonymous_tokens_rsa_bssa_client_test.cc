@@ -26,6 +26,7 @@
 #include "quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/rsa_blind_signer.h"
 #include "quiche/blind_sign_auth/anonymous_tokens/cpp/shared/proto_utils.h"
 #include "quiche/blind_sign_auth/anonymous_tokens/cpp/shared/status_utils.h"
+#include "quiche/blind_sign_auth/anonymous_tokens/cpp/testing/proto_utils.h"
 #include "quiche/blind_sign_auth/anonymous_tokens/cpp/testing/utils.h"
 #include "quiche/blind_sign_auth/anonymous_tokens/proto/anonymous_tokens.pb.h"
 #include "openssl/base.h"
@@ -36,7 +37,6 @@ namespace anonymous_tokens {
 namespace {
 
 using ::testing::SizeIs;
-using quiche::test::StatusIs;
 
 // Returns a fixed public private key pair by calling GetStrongRsaKeys4096().
 absl::StatusOr<std::pair<RSABlindSignaturePublicKey, RSAPrivateKey>>
@@ -107,7 +107,8 @@ absl::StatusOr<AnonymousTokensSignResponse> CreateResponse(
     }
     ANON_TOKENS_ASSIGN_OR_RETURN(
         std::unique_ptr<RsaBlindSigner> blind_signer,
-        RsaBlindSigner::New(private_key, public_metadata));
+        RsaBlindSigner::New(private_key, /*use_rsa_public_exponent=*/true,
+                            public_metadata));
     ANON_TOKENS_ASSIGN_OR_RETURN(
         *response_token->mutable_serialized_token(),
         blind_signer->Sign(request_token.serialized_token()));
@@ -117,44 +118,59 @@ absl::StatusOr<AnonymousTokensSignResponse> CreateResponse(
 
 TEST(CreateAnonymousTokensRsaBssaClientTest, Success) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(auto rsa_key, CreateClientTestKey());
-  QUICHE_EXPECT_OK(AnonymousTokensRsaBssaClient::Create(rsa_key.first));
+  EXPECT_TRUE(AnonymousTokensRsaBssaClient::Create(rsa_key.first).ok());
 }
 
 TEST(CreateAnonymousTokensRsaBssaClientTest, InvalidUseCase) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(auto rsa_key,
                                    CreateClientTestKey("INVALID_USE_CASE"));
-  EXPECT_THAT(AnonymousTokensRsaBssaClient::Create(rsa_key.first),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::unique_ptr<AnonymousTokensRsaBssaClient>> client =
+      AnonymousTokensRsaBssaClient::Create(rsa_key.first);
+  EXPECT_EQ(client.status().code(), absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(client.status().message(),
+              testing::HasSubstr("Invalid use case for public key"));
 }
 
 TEST(CreateAnonymousTokensRsaBssaClientTest, NotAUseCase) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(auto rsa_key,
                                    CreateClientTestKey("NOT_A_USE_CASE"));
-  EXPECT_THAT(AnonymousTokensRsaBssaClient::Create(rsa_key.first),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::unique_ptr<AnonymousTokensRsaBssaClient>> client =
+      AnonymousTokensRsaBssaClient::Create(rsa_key.first);
+  EXPECT_EQ(client.status().code(), absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(client.status().message(),
+              testing::HasSubstr("Invalid use case for public key"));
 }
 
 TEST(CreateAnonymousTokensRsaBssaClientTest, InvalidKeyVersion) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(auto rsa_key,
                                    CreateClientTestKey("TEST_USE_CASE", 0));
-  EXPECT_THAT(AnonymousTokensRsaBssaClient::Create(rsa_key.first),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::unique_ptr<AnonymousTokensRsaBssaClient>> client =
+      AnonymousTokensRsaBssaClient::Create(rsa_key.first);
+  EXPECT_EQ(client.status().code(), absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(client.status().message(),
+              testing::HasSubstr("Key version cannot be zero or negative"));
 }
 
 TEST(CreateAnonymousTokensRsaBssaClientTest, InvalidMessageMaskType) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       auto rsa_key,
-      CreateClientTestKey("TEST_USE_CASE", 0, AT_MESSAGE_MASK_TYPE_UNDEFINED));
-  EXPECT_THAT(AnonymousTokensRsaBssaClient::Create(rsa_key.first),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+      CreateClientTestKey("TEST_USE_CASE", 1, AT_MESSAGE_MASK_TYPE_UNDEFINED));
+  absl::StatusOr<std::unique_ptr<AnonymousTokensRsaBssaClient>> client =
+      AnonymousTokensRsaBssaClient::Create(rsa_key.first);
+  EXPECT_EQ(client.status().code(), absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(client.status().message(),
+              testing::HasSubstr("Message mask type must be defined"));
 }
 
 TEST(CreateAnonymousTokensRsaBssaClientTest, InvalidMessageMaskSize) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       auto rsa_key,
-      CreateClientTestKey("TEST_USE_CASE", 0, AT_MESSAGE_MASK_CONCAT, 0));
-  EXPECT_THAT(AnonymousTokensRsaBssaClient::Create(rsa_key.first),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+      CreateClientTestKey("TEST_USE_CASE", 1, AT_MESSAGE_MASK_CONCAT, 0));
+  absl::StatusOr<std::unique_ptr<AnonymousTokensRsaBssaClient>> client =
+      AnonymousTokensRsaBssaClient::Create(rsa_key.first);
+  EXPECT_EQ(client.status().code(), absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(client.status().message(),
+              testing::HasSubstr("Message mask size must be positive"));
 }
 
 class AnonymousTokensRsaBssaClientTest : public testing::Test {
@@ -180,7 +196,7 @@ TEST_F(AnonymousTokensRsaBssaClientTest, SuccessOneMessage) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(AnonymousTokensSignResponse response,
                                    CreateResponse(request, private_key_));
   EXPECT_THAT(response.anonymous_tokens(), SizeIs(1));
-  QUICHE_EXPECT_OK(client_->ProcessResponse(response));
+  EXPECT_TRUE(client_->ProcessResponse(response).ok());
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, SuccessMultipleMessages) {
@@ -192,7 +208,7 @@ TEST_F(AnonymousTokensRsaBssaClientTest, SuccessMultipleMessages) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(AnonymousTokensSignResponse response,
                                    CreateResponse(request, private_key_));
   EXPECT_THAT(response.anonymous_tokens(), SizeIs(4));
-  QUICHE_EXPECT_OK(client_->ProcessResponse(response));
+  EXPECT_TRUE(client_->ProcessResponse(response).ok());
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, EnsureRandomTokens) {
@@ -219,8 +235,11 @@ TEST_F(AnonymousTokensRsaBssaClientTest, EmptyInput) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       std::vector<PlaintextMessageWithPublicMetadata> input_messages,
       CreateInput({}));
-  EXPECT_THAT(client_->CreateRequest(input_messages),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<AnonymousTokensSignRequest> request =
+      client_->CreateRequest(input_messages);
+  EXPECT_EQ(request.status().code(), absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(request.status().message(),
+              testing::HasSubstr("Cannot create an empty request"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, NotYetValidKey) {
@@ -235,8 +254,11 @@ TEST_F(AnonymousTokensRsaBssaClientTest, NotYetValidKey) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       std::vector<PlaintextMessageWithPublicMetadata> input_messages,
       CreateInput({"message"}));
-  EXPECT_THAT(client->CreateRequest(input_messages),
-              StatusIs(absl::StatusCode::kFailedPrecondition));
+  absl::StatusOr<AnonymousTokensSignRequest> request =
+      client->CreateRequest(input_messages);
+  EXPECT_EQ(request.status().code(), absl::StatusCode::kFailedPrecondition);
+  EXPECT_THAT(request.status().message(),
+              testing::HasSubstr("Key is not valid yet"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, ExpiredKey) {
@@ -250,23 +272,34 @@ TEST_F(AnonymousTokensRsaBssaClientTest, ExpiredKey) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       std::vector<PlaintextMessageWithPublicMetadata> input_messages,
       CreateInput({"message"}));
-  EXPECT_THAT(client->CreateRequest(input_messages),
-              StatusIs(absl::StatusCode::kFailedPrecondition));
+  absl::StatusOr<AnonymousTokensSignRequest> request =
+      client->CreateRequest(input_messages);
+  EXPECT_EQ(request.status().code(), absl::StatusCode::kFailedPrecondition);
+  EXPECT_THAT(request.status().message(),
+              testing::HasSubstr("Key is already expired"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, CreateRequestTwice) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       std::vector<PlaintextMessageWithPublicMetadata> input_messages,
       CreateInput({"message"}));
-  QUICHE_EXPECT_OK(client_->CreateRequest(input_messages));
-  EXPECT_THAT(client_->CreateRequest(input_messages),
-              StatusIs(absl::StatusCode::kFailedPrecondition));
+  EXPECT_TRUE(client_->CreateRequest(input_messages).ok());
+  absl::StatusOr<AnonymousTokensSignRequest> request =
+      client_->CreateRequest(input_messages);
+  EXPECT_EQ(request.status().code(), absl::StatusCode::kFailedPrecondition);
+  EXPECT_THAT(request.status().message(),
+              testing::HasSubstr("Blind signature request already created"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, ProcessResponseWithoutCreateRequest) {
   AnonymousTokensSignResponse response;
-  EXPECT_THAT(client_->ProcessResponse(response),
-              StatusIs(absl::StatusCode::kFailedPrecondition));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response = client_->ProcessResponse(response);
+  EXPECT_EQ(processed_response.status().code(),
+            absl::StatusCode::kFailedPrecondition);
+  EXPECT_THAT(
+      processed_response.status().message(),
+      testing::HasSubstr("A valid Blind signature request was not created"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, ProcessEmptyResponse) {
@@ -276,8 +309,12 @@ TEST_F(AnonymousTokensRsaBssaClientTest, ProcessEmptyResponse) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(AnonymousTokensSignRequest request,
                                    client_->CreateRequest(input_messages));
   AnonymousTokensSignResponse response;
-  EXPECT_THAT(client_->ProcessResponse(response),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response = client_->ProcessResponse(response);
+  EXPECT_EQ(processed_response.status().code(),
+            absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(processed_response.status().message(),
+              testing::HasSubstr("Cannot process an empty response"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, ProcessResponseWithBadUseCase) {
@@ -289,8 +326,12 @@ TEST_F(AnonymousTokensRsaBssaClientTest, ProcessResponseWithBadUseCase) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(AnonymousTokensSignResponse response,
                                    CreateResponse(request, private_key_));
   response.mutable_anonymous_tokens(0)->set_use_case("TEST_USE_CASE_2");
-  EXPECT_THAT(client_->ProcessResponse(response),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response = client_->ProcessResponse(response);
+  EXPECT_EQ(processed_response.status().code(),
+            absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(processed_response.status().message(),
+              testing::HasSubstr("Use case does not match public key"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, ProcessResponseWithBadKeyVersion) {
@@ -302,8 +343,12 @@ TEST_F(AnonymousTokensRsaBssaClientTest, ProcessResponseWithBadKeyVersion) {
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(AnonymousTokensSignResponse response,
                                    CreateResponse(request, private_key_));
   response.mutable_anonymous_tokens(0)->set_key_version(2);
-  EXPECT_THAT(client_->ProcessResponse(response),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response = client_->ProcessResponse(response);
+  EXPECT_EQ(processed_response.status().code(),
+            absl::StatusCode::kInvalidArgument);
+  EXPECT_THAT(processed_response.status().message(),
+              testing::HasSubstr("Key version does not match public key"));
 }
 
 TEST_F(AnonymousTokensRsaBssaClientTest, ProcessResponseFromDifferentClient) {
@@ -321,10 +366,14 @@ TEST_F(AnonymousTokensRsaBssaClientTest, ProcessResponseFromDifferentClient) {
                                    CreateResponse(request1, private_key_));
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(AnonymousTokensSignResponse response2,
                                    CreateResponse(request2, private_key_));
-  EXPECT_THAT(client_->ProcessResponse(response2),
-              StatusIs(absl::StatusCode::kInvalidArgument));
-  EXPECT_THAT(client2->ProcessResponse(response1),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response2 = client_->ProcessResponse(response2);
+  EXPECT_EQ(processed_response2.status().code(),
+            absl::StatusCode::kInvalidArgument);
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response1 = client2->ProcessResponse(response1);
+  EXPECT_EQ(processed_response1.status().code(),
+            absl::StatusCode::kInvalidArgument);
 }
 
 class AnonymousTokensRsaBssaClientWithPublicMetadataTest
@@ -359,7 +408,7 @@ TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
       AnonymousTokensSignResponse response,
       CreateResponse(request, private_key_, /*enable_public_metadata=*/true));
   EXPECT_THAT(response.anonymous_tokens(), SizeIs(1));
-  QUICHE_EXPECT_OK(public_metadata_client_->ProcessResponse(response));
+  EXPECT_TRUE(public_metadata_client_->ProcessResponse(response).ok());
 }
 
 TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
@@ -373,8 +422,10 @@ TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       AnonymousTokensSignResponse response,
       CreateResponse(request, private_key_, /*enable_public_metadata=*/false));
-  EXPECT_THAT(public_metadata_client_->ProcessResponse(response),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response = public_metadata_client_->ProcessResponse(response);
+  EXPECT_EQ(processed_response.status().code(),
+            absl::StatusCode::kInvalidArgument);
 }
 
 TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
@@ -390,8 +441,10 @@ TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       AnonymousTokensSignResponse response,
       CreateResponse(request, private_key_, /*enable_public_metadata=*/true));
-  EXPECT_THAT(public_metadata_client_->ProcessResponse(response),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response = public_metadata_client_->ProcessResponse(response);
+  EXPECT_EQ(processed_response.status().code(),
+            absl::StatusCode::kInvalidArgument);
 }
 
 TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
@@ -412,8 +465,11 @@ TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
   ANON_TOKENS_ASSERT_OK_AND_ASSIGN(
       AnonymousTokensSignResponse response,
       CreateResponse(request, private_key_, /*enable_public_metadata=*/true));
-  EXPECT_THAT(non_public_metadata_client->ProcessResponse(response),
-              StatusIs(absl::StatusCode::kInvalidArgument));
+  absl::StatusOr<std::vector<RSABlindSignatureTokenWithInput>>
+      processed_response =
+          non_public_metadata_client->ProcessResponse(response);
+  EXPECT_EQ(processed_response.status().code(),
+            absl::StatusCode::kInvalidArgument);
 }
 
 TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
@@ -429,7 +485,7 @@ TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
       AnonymousTokensSignResponse response,
       CreateResponse(request, private_key_, /*enable_public_metadata=*/true));
   EXPECT_THAT(response.anonymous_tokens(), SizeIs(4));
-  QUICHE_EXPECT_OK(public_metadata_client_->ProcessResponse(response));
+  EXPECT_TRUE(public_metadata_client_->ProcessResponse(response).ok());
 }
 
 TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
@@ -446,7 +502,7 @@ TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
       AnonymousTokensSignResponse response,
       CreateResponse(request, private_key_, /*enable_public_metadata=*/true));
   EXPECT_THAT(response.anonymous_tokens(), SizeIs(4));
-  QUICHE_EXPECT_OK(public_metadata_client_->ProcessResponse(response));
+  EXPECT_TRUE(public_metadata_client_->ProcessResponse(response).ok());
 }
 
 TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
@@ -462,7 +518,7 @@ TEST_F(AnonymousTokensRsaBssaClientWithPublicMetadataTest,
       AnonymousTokensSignResponse response,
       CreateResponse(request, private_key_, /*enable_public_metadata=*/true));
   EXPECT_THAT(response.anonymous_tokens(), SizeIs(4));
-  QUICHE_EXPECT_OK(public_metadata_client_->ProcessResponse(response));
+  EXPECT_TRUE(public_metadata_client_->ProcessResponse(response).ok());
 }
 
 }  // namespace

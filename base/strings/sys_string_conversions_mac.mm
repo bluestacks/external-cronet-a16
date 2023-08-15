@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
@@ -138,11 +139,12 @@ ScopedCFTypeRef<CFStringRef> SysUTF16ToCFStringRef(StringPiece16 utf16) {
 }
 
 NSString* SysUTF8ToNSString(StringPiece utf8) {
-  return [mac::CFToNSCast(SysUTF8ToCFStringRef(utf8).release()) autorelease];
+  return base::apple::CFToNSOwnershipCast(SysUTF8ToCFStringRef(utf8).release());
 }
 
 NSString* SysUTF16ToNSString(StringPiece16 utf16) {
-  return [mac::CFToNSCast(SysUTF16ToCFStringRef(utf16).release()) autorelease];
+  return base::apple::CFToNSOwnershipCast(
+      SysUTF16ToCFStringRef(utf16).release());
 }
 
 std::string SysCFStringRefToUTF8(CFStringRef ref) {
@@ -157,13 +159,13 @@ std::u16string SysCFStringRefToUTF16(CFStringRef ref) {
 std::string SysNSStringToUTF8(NSString* nsstring) {
   if (!nsstring)
     return std::string();
-  return SysCFStringRefToUTF8(mac::NSToCFCast(nsstring));
+  return SysCFStringRefToUTF8(apple::NSToCFPtrCast(nsstring));
 }
 
 std::u16string SysNSStringToUTF16(NSString* nsstring) {
   if (!nsstring)
     return std::u16string();
-  return SysCFStringRefToUTF16(mac::NSToCFCast(nsstring));
+  return SysCFStringRefToUTF16(apple::NSToCFPtrCast(nsstring));
 }
 
 }  // namespace base

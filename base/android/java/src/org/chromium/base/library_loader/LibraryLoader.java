@@ -21,6 +21,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TimeUtils.CurrentThreadTimeMillisTimer;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
@@ -361,16 +362,6 @@ public class LibraryLoader {
             if (useChromiumLinker()) {
                 getLinker().putSharedRelrosToBundle(bundle);
             }
-        }
-
-        private void recordLinkerHistogramsAfterLibraryLoad() {
-            if (!useChromiumLinker()) return;
-            // When recording a sample in the App Zygote it gets copied to each forked process and
-            // hence gets duplicated in the uploads. Avoiding such duplication would require
-            // serializing the samples, sending them to the browser process and disambiguating by,
-            // for example, Zygote PID in ChildProcessConnection.java. A few rough performance
-            // estimations do not require this complexity.
-            getLinker().recordHistograms(creationAsString());
         }
 
         private String creationAsString() {
@@ -732,7 +723,6 @@ public class LibraryLoader {
         String sourceDir = appInfo.sourceDir;
         Log.i(TAG, "Loading %s from within %s", library, sourceDir);
         linker.loadLibrary(library); // May throw UnsatisfiedLinkError.
-        getMediator().recordLinkerHistogramsAfterLibraryLoad();
     }
 
     @GuardedBy("mLock")
@@ -897,9 +887,10 @@ public class LibraryLoader {
      * @param loader the mock library loader.
      */
     @Deprecated
-    @VisibleForTesting
     public static void setLibraryLoaderForTesting(LibraryLoader loader) {
+        var oldValue = sInstance;
         sInstance = loader;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     /**

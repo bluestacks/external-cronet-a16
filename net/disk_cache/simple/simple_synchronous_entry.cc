@@ -10,7 +10,6 @@
 #include <zlib.h>
 
 #include "base/compiler_specific.h"
-#include "base/containers/stack_container.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
@@ -34,6 +33,8 @@
 #include "net/disk_cache/simple/simple_histogram_enums.h"
 #include "net/disk_cache/simple/simple_histogram_macros.h"
 #include "net/disk_cache/simple/simple_util.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+#include "third_party/zlib/zlib.h"
 
 using base::FilePath;
 using base::Time;
@@ -127,7 +128,7 @@ class SimpleSynchronousEntry::PrefetchData final {
       return false;
     UpdateEarliestOffset(offset);
     return offset >= offset_in_file_ &&
-           end <= (offset_in_file_ + buffer_->size());
+           end <= (offset_in_file_ + buffer_.size());
   }
 
   // Read the given range out of the prefetch buffer into the target
@@ -142,7 +143,7 @@ class SimpleSynchronousEntry::PrefetchData final {
       return false;
     DCHECK(offset >= offset_in_file_);
     size_t buffer_offset = offset - offset_in_file_;
-    memcpy(dest, buffer_->data() + buffer_offset, length);
+    memcpy(dest, buffer_.data() + buffer_offset, length);
     return true;
   }
 
@@ -152,12 +153,13 @@ class SimpleSynchronousEntry::PrefetchData final {
                         size_t offset,
                         size_t length) {
     DCHECK(file);
-    if (!buffer_->empty())
+    if (!buffer_.empty()) {
       return false;
-    buffer_->resize(length);
-    if (file->get()->Read(offset, buffer_->data(), length) !=
+    }
+    buffer_.resize(length);
+    if (file->get()->Read(offset, buffer_.data(), length) !=
         static_cast<int>(length)) {
-      buffer_->resize(0);
+      buffer_.resize(0);
       return false;
     }
     offset_in_file_ = offset;
@@ -183,7 +185,7 @@ class SimpleSynchronousEntry::PrefetchData final {
 
   // Prefer to read the prefetch data into a stack buffer to minimize
   // memory pressure on the OS disk cache.
-  base::StackVector<char, 1024> buffer_;
+  absl::InlinedVector<char, 1024> buffer_;
   size_t offset_in_file_ = 0;
 
   size_t earliest_requested_offset_;

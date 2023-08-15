@@ -39,6 +39,8 @@ NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
     for (const auto& arg : *string_vector) {
       [args_array addObject:base::SysUTF8ToNSString(arg)];
     }
+
+    return args_array;
   }
 
   return @[];
@@ -46,7 +48,7 @@ NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
 
 NSWorkspaceOpenConfiguration* GetOpenConfiguration(
     LaunchApplicationOptions options,
-    const CommandLineArgs& command_line_args) API_AVAILABLE(macos(10.15)) {
+    const CommandLineArgs& command_line_args) {
   NSWorkspaceOpenConfiguration* config =
       [NSWorkspaceOpenConfiguration configuration];
 
@@ -56,22 +58,6 @@ NSWorkspaceOpenConfiguration* GetOpenConfiguration(
   config.arguments = CommandLineArgsToArgsArray(command_line_args);
 
   return config;
-}
-
-NSWorkspaceLaunchOptions GetLaunchOptions(LaunchApplicationOptions options) {
-  NSWorkspaceLaunchOptions launch_options = NSWorkspaceLaunchDefault;
-
-  if (!options.activate) {
-    launch_options |= NSWorkspaceLaunchWithoutActivation;
-  }
-  if (options.create_new_instance) {
-    launch_options |= NSWorkspaceLaunchNewInstance;
-  }
-  if (options.prompt_user_if_needed) {
-    launch_options |= NSWorkspaceLaunchWithErrorPresentation;
-  }
-
-  return launch_options;
 }
 
 }  // namespace
@@ -87,9 +73,9 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
   if (!bundle_url) {
     dispatch_async(dispatch_get_main_queue(), ^{
       std::move(callback_block_access)
-          .Run(base::unexpected([NSError errorWithDomain:NSCocoaErrorDomain
-                                                    code:NSFileNoSuchFileError
-                                                userInfo:nil]));
+          .Run(nil, [NSError errorWithDomain:NSCocoaErrorDomain
+                                        code:NSFileNoSuchFileError
+                                    userInfo:nil]);
     });
     return;
   }
@@ -103,63 +89,30 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
     }
   }
 
-  if (@available(macOS 10.15, *)) {
-    void (^action_block)(NSRunningApplication*, NSError*) =
-        ^void(NSRunningApplication* app, NSError* error) {
-          dispatch_async(dispatch_get_main_queue(), ^{
-            if (error) {
-              LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
-              std::move(callback_block_access).Run(base::unexpected(error));
-            } else {
-              std::move(callback_block_access).Run(app);
-            }
-          });
-        };
+  void (^action_block)(NSRunningApplication*, NSError*) =
+      ^void(NSRunningApplication* app, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          if (error) {
+            LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
+            std::move(callback_block_access).Run(nil, error);
+          } else {
+            std::move(callback_block_access).Run(app, nil);
+          }
+        });
+      };
 
-    NSWorkspaceOpenConfiguration* configuration =
-        GetOpenConfiguration(options, command_line_args);
+  NSWorkspaceOpenConfiguration* configuration =
+      GetOpenConfiguration(options, command_line_args);
 
-    if (ns_urls) {
-      [NSWorkspace.sharedWorkspace openURLs:ns_urls
-                       withApplicationAtURL:bundle_url
-                              configuration:configuration
-                          completionHandler:action_block];
-    } else {
-      [NSWorkspace.sharedWorkspace openApplicationAtURL:bundle_url
-                                          configuration:configuration
-                                      completionHandler:action_block];
-    }
+  if (ns_urls) {
+    [NSWorkspace.sharedWorkspace openURLs:ns_urls
+                     withApplicationAtURL:bundle_url
+                            configuration:configuration
+                        completionHandler:action_block];
   } else {
-    NSDictionary* configuration = @{
-      NSWorkspaceLaunchConfigurationArguments :
-          CommandLineArgsToArgsArray(command_line_args),
-    };
-
-    NSWorkspaceLaunchOptions launch_options = GetLaunchOptions(options);
-
-    NSError* error = nil;
-    NSRunningApplication* app;
-    if (ns_urls) {
-      app = [NSWorkspace.sharedWorkspace openURLs:ns_urls
-                             withApplicationAtURL:bundle_url
-                                          options:launch_options
-                                    configuration:configuration
-                                            error:&error];
-    } else {
-      app = [NSWorkspace.sharedWorkspace launchApplicationAtURL:bundle_url
-                                                        options:launch_options
-                                                  configuration:configuration
-                                                          error:&error];
-    }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (error) {
-        LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
-        std::move(callback_block_access).Run(base::unexpected(error));
-      } else {
-        std::move(callback_block_access).Run(app);
-      }
-    });
+    [NSWorkspace.sharedWorkspace openApplicationAtURL:bundle_url
+                                        configuration:configuration
+                                    completionHandler:action_block];
   }
 }
 

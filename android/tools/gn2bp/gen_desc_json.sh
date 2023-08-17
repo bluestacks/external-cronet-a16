@@ -159,6 +159,12 @@ if [ -z "${rev}" ]; then
   usage
 fi
 
+if [ -z "${ANDROID_BUILD_TOP}" ]; then
+    echo "ANDROID_BUILD_TOP is not set. Please run source build/envsetup.h && lunch"
+    exit 1
+fi
+
+
 setup_chromium_src_repo "${rev}" "${chromium_dir}" "${force_reset}"
 apply_patches "${chromium_dir}"
 gn_desc x86 "${chromium_dir}"

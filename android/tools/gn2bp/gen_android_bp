@@ -954,11 +954,10 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     self._set_value_arg('--jar_file', '$(location :current_android_jar)', False)
     if self._has_arg('--jar_file'):
       self._append_arg('--javap', '$$(find $${OUT_DIR:-out}/.path -name javap)')
-    self._update_value_arg('--output_dir', self._sanitize_filepath)
-    self._update_value_arg('--includes', self._sanitize_filepath, False)
-    self._delete_value_arg('--prev_output_dir', False)
-    self._update_list_arg('--input_file', self._sanitize_filepath)
-    self._update_list_arg('--input_file', self._add_location_tag_to_filepath)
+    self._update_value_arg('--output-dir', self._sanitize_filepath)
+    self._update_value_arg('--extra-include', self._sanitize_filepath, False)
+    self._update_list_arg('--input-file', self._sanitize_filepath)
+    self._update_list_arg('--input-file', self._add_location_tag_to_filepath)
     if not self.is_test_target:
       # Only jarjar platform code
       self._append_arg('--package_prefix', 'android.net.connectivity')
@@ -971,9 +970,6 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()
-    # android_jar.classes should be part of the tools as it list implicit classes
-    # for the script to generate JNI headers.
-    tool_files.add("base/android/jni_generator/android_jar.classes")
 
     # Filter android.jar and add :current_android_jar
     tool_files = {file if not file.endswith('android.jar') else ':current_android_jar'
@@ -996,10 +992,7 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     self._update_value_arg('--srcjar-path', self._sanitize_filepath)
     self._update_value_arg('--header-path', self._sanitize_filepath)
     self._delete_value_arg('--depfile', False)
-    self._set_value_arg('--sources-files', '$(genDir)/java.sources')
-    # update_jni_registration_module removes them from the srcs of the module
-    # It might be better to remove sources by '--sources-exclusions'
-    self._delete_value_arg('--file-exclusions')
+    self._set_value_arg('--java-sources-file', '$(genDir)/java.sources')
     if not self.is_test_target:
       # Only jarjar platform code
       self._append_arg('--package_prefix', 'android.net.connectivity')
@@ -1106,13 +1099,6 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
     return WriteBuildFlagHeaderSanitizer(target, arch)
   elif target.script == "//base/write_build_date_header.py":
     return WriteBuildDateHeaderSanitizer(target, arch)
-  elif target.script == '//base/android/jni_generator/jni_generator.py':
-    return JniGeneratorSanitizer(target, arch, is_test_target)
-  elif target.script == '//base/android/jni_generator/jni_registration_generator.py':
-    if type == 'java_genrule':
-      return JavaJniRegistrationGeneratorSanitizer(target, arch, is_test_target)
-    else:
-      return JniRegistrationGeneratorSanitizer(target, arch, is_test_target)
   elif target.script == "//build/util/version.py":
     return VersionSanitizer(target, arch)
   elif target.script == "//build/android/gyp/java_cpp_enum.py":
@@ -1129,6 +1115,14 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
     return GnRunBinarySanitizer(target, arch)
   elif target.script == '//build/protoc_java.py':
     return ProtocJavaSanitizer(target, arch, gn)
+  elif target.script == '//third_party/jni_zero/jni_zero.py':
+    if target.args[0] == 'generate-final':
+      if type == 'java_genrule':
+        return JavaJniRegistrationGeneratorSanitizer(target, arch, is_test_target)
+      else:
+        return JniRegistrationGeneratorSanitizer(target, arch, is_test_target)
+    else:
+      return JniGeneratorSanitizer(target, arch, is_test_target)
   else:
     raise Exception('Unsupported action %s' % target.script)
 
@@ -1599,7 +1593,7 @@ def create_java_api_module(blueprint, gn):
 def update_jni_registration_module(module, gn):
   # TODO: java_sources might not contain all the required java files
   module.srcs.update([gn_utils.label_to_path(source)
-                      for source in get_non_api_java_sources(gn)
+                    for source in get_non_api_java_sources(gn)
                       if source.endswith('.java')])
 
 

@@ -1545,6 +1545,7 @@ def create_java_module(blueprint, gn, is_test_target):
                                                  'java_genrule',
                                                  is_test_target).name)
   module.visibility.append(connectivity_visibility)
+  module.visibility.append("//external/cronet/android:__subpackages__")
   blueprint.add_module(module)
   return module
 

@@ -974,6 +974,8 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     # Filter android.jar and add :current_android_jar
     tool_files = {file if not file.endswith('android.jar') else ':current_android_jar'
                   for file in tool_files }
+    # Filter bin/javap
+    tool_files = {file for file in tool_files if not file.endswith('bin/javap') }
     return tool_files
 
 class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):

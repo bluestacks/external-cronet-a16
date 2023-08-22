@@ -954,6 +954,7 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     self._set_value_arg('--jar-file', '$(location :current_android_jar)', False)
     if self._has_arg('--jar-file'):
       self._set_value_arg('--javap', '$$(find $${OUT_DIR:-out}/.path -name javap)')
+    self._update_value_arg('--srcjar-path', self._sanitize_filepath, False)
     self._update_value_arg('--output-dir', self._sanitize_filepath)
     self._update_value_arg('--extra-include', self._sanitize_filepath, False)
     self._update_list_arg('--input-file', self._sanitize_filepath)

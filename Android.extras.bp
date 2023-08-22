@@ -73,12 +73,6 @@ java_library {
 // produced by the jni_registration_generator genrule target.
 java_defaults {
     name: "jni_proxy_natives_defaults",
-    plugins: [
-        "cronet_aml_java_jni_annotation_preprocessor",
-    ],
-    javacflags: [
-        "-Aorg.chromium.chrome.skipGenJni",
-    ],
 }
 
 // Similar to jni_proxy_natives_default, only a single jni_registration_generator target can be used
@@ -91,24 +85,35 @@ genrule_defaults {
          "do " +
          "echo \"../$$current_dir/$$f\" >> $(genDir)/java.sources; " +
          "done; " +
-         "python3 $(location base/android/jni_generator/jni_registration_generator.py) --srcjar-path " +
-         "$(genDir)/components/cronet/android/cronet_tests_jni_registration.srcjar " +
-         "--sources-files " +
+         "python3 $(location third_party/jni_zero/jni_zero.py) generate-final " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_jni_registration.srcjar " +
+         "--java-sources-file " +
          "$(genDir)/java.sources " +
          "--include-test-only " +
          "--use-proxy-hash " +
-         "--enable-proxy-mocks",
+         "--manual-jni-registration " +
+         "--header-path " +
+         "$(genDir)/components/cronet/android/cronet_jni_registration_generated.h",
     out: [
-        "components/cronet/android/cronet_tests_jni_registration.srcjar",
+        "components/cronet/android/cronet_jni_registration.srcjar",
     ],
     tool_files: [
-        "base/android/jni_generator/jni_generator.py",
-        "base/android/jni_generator/jni_registration_generator.py",
         "build/action_helpers.py",
         "build/android/gyp/util/__init__.py",
         "build/android/gyp/util/build_utils.py",
         "build/gn_helpers.py",
         "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
     ],
 }
 
@@ -188,9 +193,6 @@ java_library {
         "junit",
         "androidx.annotation_annotation",
         "androidx.annotation_annotation-experimental-nodeps",
-    ],
-    plugins: [
-        "cronet_aml_java_jni_annotation_preprocessor",
     ],
 }
 

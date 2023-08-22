@@ -34,7 +34,6 @@
 #include "net/disk_cache/simple/simple_histogram_macros.h"
 #include "net/disk_cache/simple/simple_util.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/zlib/zlib.h"
 
 using base::FilePath;
 using base::Time;

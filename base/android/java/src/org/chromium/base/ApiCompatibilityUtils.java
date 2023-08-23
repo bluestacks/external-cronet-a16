@@ -38,6 +38,7 @@ import androidx.annotation.RequiresApi;
 import com.android.modules.utils.build.SdkLevel;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -294,8 +295,20 @@ public class ApiCompatibilityUtils {
     public static void setActivityOptionsBackgroundActivityStartMode(
             @NonNull ActivityOptions options) {
         if (!SdkLevel.isAtLeastU()) return;
-        options.setPendingIntentBackgroundActivityStartMode(
-                ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
+
+        // options.setPendingIntentBackgroundActivityStartMode(
+        //     ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
+        try {
+            Method method = ActivityOptions.class.getMethod(
+                    "setPendingIntentBackgroundActivityStartMode", int.class);
+            Field field = ActivityOptions.class.getField("MODE_BACKGROUND_ACTIVITY_START_ALLOWED");
+            int mode = field.getInt(null);
+            method.invoke(options, mode);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException
+                 | NoSuchMethodException e) {
+            Log.e(TAG, "Reflection failure: " + e);
+            assert false : "PendingIntent from background activity may fail to run.";
+        }
     }
 
     /**

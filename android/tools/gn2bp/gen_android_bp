@@ -994,6 +994,13 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
                            out.endswith(".srcjar")]
     super()._sanitize_outputs()
 
+  def get_cmd(self):
+    cmd = super().get_cmd()
+    # Delete intermediates
+    commands = [cmd,
+                "&& zipinfo -1 {src_jar} | grep GEN_JNI.java | zip -d -@ {src_jar}".format(src_jar =self._get_value_arg('--srcjar-path'))]
+    return NEWLINE.join(commands)
+
   def get_name(self):
     name = super().get_name() + "__java"
     if self.is_test_target:

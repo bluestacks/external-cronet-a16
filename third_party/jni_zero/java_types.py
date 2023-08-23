@@ -60,6 +60,8 @@ PRIMITIVES = frozenset(_DEFAULT_VALUE_BY_PRIMITIVE_TYPE)
 class JavaClass:
   """Represents a reference type."""
   _fqn: str
+  # This is only meaningful if make_prefix have been called on the original class.
+  _ofqn: str = None
 
   def __post_init__(self):
     assert '.' not in self._fqn, f'{self._fqn} should have / and $, but not .'
@@ -84,8 +86,16 @@ class JavaClass:
     return self._fqn.rsplit('/', 1)[0]
 
   @property
+  def original_package_with_slashes(self):
+    return self._ofqn.rsplit('/', 1)[0] if self._ofqn is not None else self.package_with_slashes
+
+  @property
   def package_with_dots(self):
     return self.package_with_slashes.replace('/', '.')
+
+  @property
+  def original_package_with_dots(self):
+    return self.original_package_with_slashes.replace('/', '.')
 
   @property
   def full_name_with_slashes(self):
@@ -107,7 +117,7 @@ class JavaClass:
     if not prefix:
       return self
     prefix = prefix.replace('.', '/')
-    return JavaClass(f'{prefix}/{self._fqn}')
+    return JavaClass(f'{prefix}/{self._fqn}', self._fqn)
 
   def make_nested(self, name):
     return JavaClass(f'{self._fqn}${name}')

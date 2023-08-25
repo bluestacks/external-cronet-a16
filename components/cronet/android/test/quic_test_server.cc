@@ -62,9 +62,10 @@ void StartOnServerThread(const base::FilePath& test_files_root,
   // Set up server certs.
   std::unique_ptr<net::ProofSourceChromium> proof_source(
       new net::ProofSourceChromium());
-  CHECK(proof_source->Initialize(directory.Append("quic-chain.pem"),
-                                 directory.Append("quic-leaf-cert.key"),
-                                 base::FilePath()));
+  CHECK(proof_source->Initialize(
+        test_data_dir.Append("quic-chain.pem"),
+        test_data_dir.Append("quic-leaf-cert.key"),
+        base::FilePath()));
   g_quic_server = std::make_unique<net::QuicSimpleServer>(
       std::move(proof_source), config,
       quic::QuicCryptoServerConfig::ConfigOptions(),

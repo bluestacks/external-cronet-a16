@@ -24,7 +24,6 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
-import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.UserAgent;
 
@@ -50,8 +49,6 @@ public class CronetTestRule implements TestRule {
     private CronetTestRule(EngineStartupMode engineStartupMode) {
         this.mEngineStartupMode = engineStartupMode;
     }
-
-    private Field factoryField;
 
     /**
      * Requires the user to call {@code CronetTestFramework.startEngine()} but allows to customize
@@ -98,7 +95,7 @@ public class CronetTestRule implements TestRule {
      */
     @Deprecated
     public boolean testingJavaImpl() {
-        return mImplementation.equals(CronetImplementation.FALLBACK);
+        return false;
     }
 
     @Override
@@ -159,11 +156,6 @@ public class CronetTestRule implements TestRule {
             try {
                 if (doRunTestForNative) {
                     Log.i(TAG, "Running test against Native implementation.");
-                    evaluateWithFramework(base);
-                }
-                if (doRunTestForJava) {
-                    Log.i(TAG, "Running test against Java implementation.");
-                    setImplementationUnderTest(CronetImplementation.FALLBACK);
                     evaluateWithFramework(base);
                 }
             } catch (Throwable e) {
@@ -313,7 +305,7 @@ public class CronetTestRule implements TestRule {
             this.mContextWrapper =
                     new MutableContextWrapper(ApplicationProvider.getApplicationContext());
             this.mBuilder = implementation.createBuilder(mContextWrapper)
-                                    .setUserAgent(UserAgent.from(mContextWrapper))
+                                    .setUserAgent(UserAgent.getDefault())
                                     .enableQuic(true);
             this.mImplementation = implementation;
 
@@ -501,9 +493,6 @@ public class CronetTestRule implements TestRule {
         STATICALLY_LINKED(context
                 -> (ExperimentalCronetEngine.Builder) new NativeCronetProvider(context)
                            .createBuilder()),
-        FALLBACK((context)
-                         -> (ExperimentalCronetEngine.Builder) new JavaCronetProvider(context)
-                                    .createBuilder()),
         AOSP_PLATFORM(
                 (context) -> { throw new UnsupportedOperationException("Not implemented yet"); });
 

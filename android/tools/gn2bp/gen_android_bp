@@ -51,6 +51,7 @@ DEFAULT_TESTS = [
   '//components/cronet/android:cronet_unittests_android__library',
   '//net:net_unittests__library',
   '//components/cronet/android:cronet_tests',
+  '//components/cronet/android:cronet'
 ]
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"

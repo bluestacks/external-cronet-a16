@@ -42,6 +42,7 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDeleg
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -65,14 +66,13 @@ public class CronetUrlRequestContextTest {
             "http://mock.http/success.txt";
     private static final int MAX_FILE_SIZE = 1000000000;
 
-    private EmbeddedTestServer mTestServer;
     private String mUrl;
     private String mUrl404;
     private String mUrl500;
 
   @Before
   public void setUp() throws Exception {
-    assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+    assertThat(NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext())).isTrue();
     mUrl = NativeTestServer.getSuccessURL();
     mUrl404 = NativeTestServer.getNotFoundURL();
         mUrl500 = NativeTestServer.getServerErrorURL();
@@ -506,11 +506,11 @@ public class CronetUrlRequestContextTest {
         urlRequestBuilder.build().start();
         callback.blockForDone();
         cronetEngine.stopNetLog();
-        assertTrue(logFile.exists());
-        assertTrue(logFile.length() != 0);
-        assertFalse(hasBytesInNetLog(logFile));
+        assertThat(logFile.exists()).isTrue();
+        assertThat(logFile.length()).isNotEqualTo(0);
+        assertThat(hasBytesInNetLog(logFile)).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir, FileUtils.DELETE_ALL);
-        assertFalse(netLogDir.exists());
+        assertThat(netLogDir.exists()).isFalse();
     }
 
     @Test
@@ -1407,7 +1407,6 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SkipPresubmit(reason = "b/293141085 Tests that enable disk cache are flaky")
     @OnlyRunNativeCronet // Not supported by Java implementation
     public void testEnableHttpCacheDiskNoHttp() throws Exception {

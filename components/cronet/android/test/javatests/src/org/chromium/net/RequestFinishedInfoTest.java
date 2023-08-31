@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
@@ -40,7 +41,6 @@ public class RequestFinishedInfoTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
-    private EmbeddedTestServer mTestServer;
     private String mUrl;
 
     // A subclass of TestRequestFinishedListener to additionally assert that UrlRequest.Callback's
@@ -64,14 +64,13 @@ public class RequestFinishedInfoTest {
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext())).isTrue();
         mUrl = NativeTestServer.getSuccessURL();
-        mTestFramework = mTestRule.startCronetTestFramework();
     }
 
     @After
     public void tearDown() throws Exception {
-        mTestServer.stopAndDestroyServer();
+        NativeTestServer.shutdownNativeTestServer();
     }
 
     static class DirectExecutor implements Executor {

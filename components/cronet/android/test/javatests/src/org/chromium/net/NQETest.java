@@ -54,7 +54,7 @@ public class NQETest {
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext())).isTrue();
         mUrl = NativeTestServer.getSuccessURL();
     }
 

@@ -46,6 +46,7 @@ import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1662,6 +1663,7 @@ public class CronetUrlRequestContextTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet // Deliberate manual creation of native engine
+    @Ignore("b/298380508")
     public void testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider() throws Exception {
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
@@ -1676,6 +1678,7 @@ public class CronetUrlRequestContextTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
+    @Ignore("b/298380508")
     public void testSetLibraryLoaderIsIgnoredInNativeCronetEngineBuilderImpl() throws Exception {
         CronetEngine.Builder builder = new CronetEngine.Builder(
                 new NativeCronetEngineBuilderImpl(mTestRule.getTestFramework().getContext()));

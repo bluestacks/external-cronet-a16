@@ -38,17 +38,15 @@ public class BrotliTest {
 
     @Before
     public void setUp() throws Exception {
-        TestFilesInstaller.installIfNeeded(getContext());
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext())).isTrue();
     }
 
     @After
     public void tearDown() throws Exception {
-         NativeTestServer.shutdownNativeTestServer();
+        NativeTestServer.shutdownNativeTestServer();
         if (mCronetEngine != null) {
             mCronetEngine.shutdown();
         }
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
     }
 
     @Test
@@ -62,10 +60,10 @@ public class BrotliTest {
         });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = Http2TestServer.getEchoAllHeadersUrl();
+        String url = NativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        assertThat(callback.mResponseAsString).contains("accept-encoding: gzip, deflate, br");
+        assertThat(callback.mResponseAsString).contains("Accept-Encoding: gzip, deflate, br");
     }
 
     @Test
@@ -78,7 +76,7 @@ public class BrotliTest {
         });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = Http2TestServer.getEchoAllHeadersUrl();
+        String url = NativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).doesNotContain("br");

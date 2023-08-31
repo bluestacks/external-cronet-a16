@@ -800,7 +800,7 @@ public class CronetUrlRequestTest {
              //   mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_EXPIRED);
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 /* sslServer.getURL("/") */ null, callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(

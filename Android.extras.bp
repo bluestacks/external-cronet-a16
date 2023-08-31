@@ -79,7 +79,7 @@ java_defaults {
 // per dependency tree. It must include all dependent sources that contain JNI annotations
 // (non-exclusive).
 genrule_defaults {
-    name: "jni_registration_generator_defaults",
+    name: "gen_jni_registration_generator_defaults",
     cmd: "current_dir=`basename \\`pwd\\``; " +
          "for f in $(in); " +
          "do " +
@@ -93,6 +93,7 @@ genrule_defaults {
          "--include-test-only " +
          "--use-proxy-hash " +
          "--manual-jni-registration " +
+         "--module-name=cronet_tests " +
          "--header-path " +
          "$(genDir)/components/cronet/android/cronet_jni_registration_generated.h",
     out: [
@@ -140,10 +141,15 @@ java_defaults {
     defaults: [
         "mts-target-sdk-version-current",
     ],
+    asset_dirs: [
+        "third_party/icu/android",
+    ],
+    aaptflags: ["-0 .dat"],
     compile_multilib: "both",
     min_sdk_version: "31", // b/270049141
     srcs: [
         ":cronet_native_unittests_defaults_srcs",
+        ":cronet_aml_testing_android_native_test_native_test_jni__java__testing",
     ],
     static_libs: [
         "androidx.annotation_annotation",
@@ -178,6 +184,7 @@ filegroup {
 java_library {
     name: "cronet_for_testing_net_java",
     srcs: [
+        ":cronet_aml_net_test_files_jni_headers__java__testing",
         ":cronet_for_testing_net_java_srcs",
     ],
     aidl: {
@@ -201,7 +208,8 @@ filegroup {
     srcs: [
         "net/data/**/*",
         "net/third_party/nist-pkits/**/*",
-        "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*"
+        "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*",
+        "net/third_party/quiche/src/quiche/common/anonymous_tokens/testdata/**/*",
     ],
 }
 
@@ -313,6 +321,8 @@ filegroup {
         "base/test/android/javatests/**/TestFileUtil.java",
         "base/test/android/javatests/**/TimeoutTimer.java",
         "base/test/android/javatests/**/UrlUtils.java",
+        "base/test/android/javatests/**/Batch.java",
+        "base/test/android/javatests/**/DoNotBatch.java",
         "net/url_request/FailurePhase.java",
     ]
 }
@@ -336,12 +346,13 @@ filegroup {
         "components/cronet/android/test/**/QuicTestServer.java",
         "components/cronet/android/test/**/MockCertVerifier.java",
         "components/cronet/android/test/**/MockUrlRequestJobFactory.java",
+        "components/cronet/android/test/**/UrlResponseInfoSubject.java",
     ],
 }
 
 genrule {
-    name: "cronet_java_tests_jni",
-    defaults: ["jni_registration_generator_defaults"],
+    name: "cronet_java_tests_gen_jni",
+    defaults: ["gen_jni_registration_generator_defaults"],
     srcs: [
       ":cronet_aml_javatests_sources",
       ":cronet_testserver_utils_srcs",
@@ -358,8 +369,9 @@ android_library {
     manifest: "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
     srcs: [
         ":cronet_aml_javatests_sources",
-        ":cronet_java_tests_jni",
+        ":cronet_java_tests_gen_jni",
         ":cronet_testserver_utils_srcs",
+        ":cronet_aml_test_files_jni_headers__java__testing",
     ],
     sdk_version: "module_current",
     min_sdk_version: "30",
@@ -388,3 +400,178 @@ android_library {
     ],
 }
 
+// --------------------------- JNI MANUAL HACKS ------------------------
+
+// This is a horrible hack. Please do not replicate in gn2bp
+// Delete this once gn2bp has been tweaked to accommodate the JNI changes.
+// This is a replacement for the JNI java processor that was deleted.
+java_genrule {
+    name: "cronet_aml_net_test_files_jni_headers__java__testing",
+    srcs: [
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/net/net_extra_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/net/net_extra_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "DummySpnegoAuthenticator_jni.h " +
+         "--output-name " +
+         "EmbeddedTestServerImpl_jni.h " +
+         "--input-file " +
+         "$(location net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java) " +
+         "--input-file " +
+         "$(location net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java) " +
+         "&& zipinfo -1 $(genDir)/net/net_extra_jni.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/net/net_extra_jni.srcjar",
+    out: [
+        "net/net_extra_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
+// This is a horrible hack. Please do not replicate in gn2bp
+// Delete this once gn2bp has been tweaked to accommodate the JNI changes.
+// This is a replacement for the JNI java processor that was deleted.
+// GN: //testing/android/native_test:native_test_jni__testing
+java_genrule {
+    name: "cronet_aml_testing_android_native_test_native_test_jni__java__testing",
+    srcs: [
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/testing/android/native_test/native_test_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/testing/android/native_test/native_test_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "NativeTest_jni.h " +
+         "--input-file " +
+         "$(location testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java) " +
+         "&& zipinfo -1 $(genDir)/testing/android/native_test/native_test_jni.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/testing/android/native_test/native_test_jni.srcjar",
+    out: [
+        "testing/android/native_test/native_test_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
+// This is a horrible hack. Please do not replicate in gn2bp
+// Delete this once gn2bp has been tweaked to accommodate the JNI changes.
+java_genrule {
+    name: "cronet_aml_test_files_jni_headers__java__testing",
+    srcs: [
+        "components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java",
+        "components/cronet/android/test/src/org/chromium/net/NativeTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java",
+        "components/cronet/android/test/src/org/chromium/net/QuicTestServer.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
+        "components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
+        "components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/components/cronet/android/cronet_extra_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_extra_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "CronetTestUtil_jni.h " +
+         "--output-name " +
+         "NativeTestServer_jni.h " +
+         "--output-name " +
+         "TestUploadDataStreamHandler_jni.h " +
+         "--output-name " +
+         "QuicTestServer_jni.h " +
+         "--output-name " +
+         "CronetUrlRequestTest_jni.h " +
+         "--output-name " +
+         "MockUrlRequestJobFactory_jni.h " +
+         "--output-name " +
+         "CronetUrlRequestContextTest_jni.h " +
+         "--output-name " +
+         "ExperimentalOptionsTest_jni.h " +
+         "--output-name " +
+         "MockCertVerifier_jni.h " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/NativeTestServer.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/QuicTestServer.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java) " +
+         "&& zipinfo -1 $(genDir)/components/cronet/android/cronet_extra_jni.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/components/cronet/android/cronet_extra_jni.srcjar",
+    out: [
+        "components/cronet/android/cronet_extra_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}

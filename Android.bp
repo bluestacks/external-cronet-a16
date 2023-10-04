@@ -4577,7 +4577,7 @@ cc_library_static {
 cc_genrule {
     name: "cronet_aml_base_build_date",
     cmd: "$(location base/write_build_date_header.py) $(out) " +
-         "1691550280",
+         "1695894411",
     out: [
         "base/generated_build_date.h",
     ],
@@ -4593,7 +4593,7 @@ cc_genrule {
 cc_genrule {
     name: "cronet_aml_base_build_date__testing",
     cmd: "$(location base/write_build_date_header.py) $(out) " +
-         "1691550280",
+         "1695894411",
     host_supported: true,
     out: [
         "base/generated_build_date.h",
@@ -8175,7 +8175,7 @@ cc_library_shared {
         "-Wl,-wrap,valloc",
         "-Wl,-wrap,vasprintf",
     ],
-    stem: "libcronet.117.0.5938.0",
+    stem: "libmainlinecronet.114.0.5735.84",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
@@ -14886,6 +14886,7 @@ java_library {
         "error_prone_annotations",
         "framework-connectivity-t.stubs.module_lib",
         "framework-connectivity.stubs.module_lib",
+        "framework-location.stubs.module_lib",
         "framework-mediaprovider.stubs.module_lib",
         "framework-tethering.stubs.module_lib",
         "framework-wifi.stubs.module_lib",
@@ -14901,8 +14902,8 @@ java_library {
         "-Aorg.chromium.chrome.skipGenJni",
     ],
     visibility: [
-        "//external/cronet/android:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -15150,6 +15151,7 @@ java_library {
         "error_prone_annotations",
         "framework-connectivity-t.stubs.module_lib",
         "framework-connectivity.stubs.module_lib",
+        "framework-location.stubs.module_lib",
         "framework-mediaprovider.stubs.module_lib",
         "framework-tethering.stubs.module_lib",
         "framework-wifi.stubs.module_lib",

@@ -44,7 +44,7 @@ CRONET_LICENSE_NAME = "external_cronet_license"
 # Default targets to translate to the blueprint file.
 DEFAULT_TARGETS = [
     '//components/cronet/android:cronet',
-    '//components/cronet/android:cronet_android_mainline',
+    '//components/cronet/android:cronet_impl_native_base_java',
 ]
 
 DEFAULT_TESTS = [
@@ -182,6 +182,8 @@ def enable_boringssl(module, arch):
   # Do not add boringssl targets to cc_genrules. This happens, because protobuf targets are
   # originally static_libraries, but later get converted to a cc_genrule.
   if module.is_genrule(): return
+  # Lets keep statically linking BoringSSL for testing target for now. This should be fixed.
+  if module.name.endswith(gn_utils.TESTING_SUFFIX): return
   if arch == 'common':
     shared_libs = module.shared_libs
   else:
@@ -189,33 +191,66 @@ def enable_boringssl(module, arch):
   shared_libs.add('//external/cronet/third_party/boringssl:libcrypto')
   shared_libs.add('//external/cronet/third_party/boringssl:libssl')
 
+def add_androidx_experimental_java_deps(module, arch):
+  module.libs.add("androidx.annotation_annotation-experimental-nodeps")
+
+def add_androidx_annotation_java_deps(module, arch):
+  module.libs.add("androidx.annotation_annotation-nodeps")
+
+def add_protobuf_lite_runtime_java_deps(module, arch):
+  module.static_libs.add("libprotobuf-java-lite")
+
+def add_androidx_core_java_deps(module, arch):
+  module.libs.add("androidx.core_core-nodeps")
+
+def add_jsr305_java_deps(module, arch):
+  module.libs.add("jsr305")
+
+def add_errorprone_annotation_java_deps(module, arch):
+  module.libs.add("error_prone_annotations")
+
+def add_androidx_collection_java_deps(module, arch):
+  module.libs.add("androidx.collection_collection-nodeps")
+
 # Android equivalents for third-party libraries that the upstream project
-# depends on.
-builtin_deps = {
+# depends on. This will be applied to normal and testing targets.
+_builtin_deps = {
     '//buildtools/third_party/libunwind:libunwind':
-        always_disable,
-    '//buildtools/third_party/libunwind:libunwind__testing':
         always_disable,
     '//net/data/ssl/chrome_root_store:gen_root_store_inc':
         always_disable,
-    '//net/data/ssl/chrome_root_store:gen_root_store_inc__testing':
-        always_disable,
     '//net/tools/root_store_tool:root_store_tool':
-        always_disable,
-    '//net/tools/root_store_tool:root_store_tool__testing':
         always_disable,
     '//third_party/zlib:zlib':
         enable_zlib,
-    '//third_party/zlib:zlib__testing':
-        enable_zlib,
-    '//third_party/boringssl:boringssl':
-        enable_boringssl,
-    '//third_party/boringssl:boringssl_asm':
-        # Due to FIPS requirements, downstream BoringSSL has a different "shape" than upstream's.
-        # We're guaranteed that if X depends on :boringssl it will also depend on :boringssl_asm.
-        # Hence, always drop :boringssl_asm and handle the translation entirely in :boringssl.
-        always_disable,
+    '//third_party/androidx:androidx_annotation_annotation_java':
+        add_androidx_annotation_java_deps,
+    '//third_party/android_deps:protobuf_lite_runtime_java':
+        add_protobuf_lite_runtime_java_deps,
+    '//third_party/androidx:androidx_annotation_annotation_experimental_java':
+        add_androidx_experimental_java_deps,
+    '//third_party/androidx:androidx_core_core_java':
+        add_androidx_core_java_deps,
+    '//third_party/android_deps:com_google_code_findbugs_jsr305_java':
+        add_jsr305_java_deps,
+    '//third_party/android_deps:com_google_errorprone_error_prone_annotations_java':
+        add_errorprone_annotation_java_deps,
+    '//third_party/androidx:androidx_collection_collection_java':
+        add_androidx_collection_java_deps,
 }
+builtin_deps = {"{}{}".format(key, suffix): value for key, value in _builtin_deps.items() for suffix in ["", gn_utils.TESTING_SUFFIX] }
+
+# Same as _builtin_deps but will only apply what is explicitly specified.
+builtin_deps.update({
+  '//third_party/boringssl:boringssl':
+    enable_boringssl,
+  '//third_party/boringssl:boringssl_asm':
+  # Due to FIPS requirements, downstream BoringSSL has a different "shape" than upstream's.
+  # We're guaranteed that if X depends on :boringssl it will also depend on :boringssl_asm.
+  # Hence, always drop :boringssl_asm and handle the translation entirely in :boringssl.
+    always_disable,
+})
+
 
 # Name of tethering apex module
 tethering_apex = "com.android.tethering"
@@ -881,6 +916,9 @@ class BaseActionSanitizer():
   def _sanitize_inputs(self):
     pass
 
+  def get_deps(self):
+    return self.target.deps
+
   def sanitize(self):
     self._sanitize_args()
     self._sanitize_outputs()
@@ -997,16 +1035,22 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
 
   def get_cmd(self):
     cmd = super().get_cmd()
-    # Delete intermediates
-    commands = [cmd,
-                "&& zipinfo -1 {src_jar} | grep GEN_JNI.java | zip -d -@ {src_jar}".format(src_jar =self._get_value_arg('--srcjar-path'))]
+    # Delete intermediates GEN_JNI If a srcjar-path exist
+    commands = [cmd]
+    if self._has_arg('--srcjar-path'):
+      commands = [cmd,
+                  "&& zipinfo -1 {src_jar} | grep GEN_JNI.java | zip -d -@ {src_jar}".format(src_jar =self._get_value_arg('--srcjar-path'))]
     return NEWLINE.join(commands)
 
+  def get_deps(self):
+    return {}
+
   def get_name(self):
-    name = super().get_name() + "__java"
+    name = super().get_name()
     if self.is_test_target:
       name += gn_utils.TESTING_SUFFIX
     return name
+
 
 class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
   def __init__(self, target, arch, is_test_target):
@@ -1048,7 +1092,7 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
 
 class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
   def get_name(self):
-    name = super().get_name() + "__java"
+    name = super().get_name()
     if self.is_test_target:
       name += gn_utils.TESTING_SUFFIX
     return name
@@ -1057,6 +1101,9 @@ class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
     self.target.outputs = [out for out in self.target.outputs if
                            out.endswith(".srcjar")]
     super()._sanitize_outputs()
+
+  def get_deps(self):
+    return {}
 
 class VersionSanitizer(BaseActionSanitizer):
   def _sanitize_args(self):
@@ -1159,7 +1206,7 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
       else:
         return JavaJniGeneratorSanitizer(target, arch, is_test_target)
   else:
-    raise Exception('Unsupported action %s' % target.script)
+    raise Exception('Unsupported action %s from %s' % (target.script, target.name))
 
 def create_action_foreach_modules(blueprint, gn, target, is_test_target):
   """ The following assumes that rebase_path exists in the args.
@@ -1199,7 +1246,9 @@ def create_action_foreach_modules(blueprint, gn, target, is_test_target):
   target.args = new_args
   return create_action_module(blueprint, gn, target, 'cc_genrule', is_test_target)
 
-def create_action_module_internal(gn, target, type, is_test_target, arch=None):
+def create_action_module_internal(gn, target, type, is_test_target, blueprint, arch=None):
+  if target.script == '//build/android/gyp/gcc_preprocess.py':
+    return create_gcc_preprocess_modules(blueprint, target)
   sanitizer = get_action_sanitizer(gn, target, type, arch, is_test_target)
   sanitizer.sanitize()
 
@@ -1211,6 +1260,7 @@ def create_action_module_internal(gn, target, type, is_test_target, arch=None):
   module.srcs = sanitizer.get_srcs()
   module.tool_files = sanitizer.get_tool_files()
   module.tools = sanitizer.get_tools()
+  target.deps = sanitizer.get_deps()
 
   return module
 
@@ -1284,13 +1334,13 @@ def create_action_module(blueprint, gn, target, genrule_type, is_test_target):
   if target.name in ['//build/android:native_libraries_gen',
                      '//build/android:native_libraries_gen__testing']:
     module = create_action_module_internal(gn, target, genrule_type,
-                                           is_test_target,
+                                           is_test_target, blueprint,
                                            target.arch['android_arm'])
     blueprint.add_module(module)
     return module
 
   modules = {arch_name: create_action_module_internal(gn, target, genrule_type,
-                                                      is_test_target, arch)
+                                                      is_test_target, blueprint, arch)
              for arch_name, arch in target.get_archs().items()}
   module = merge_modules(modules, genrule_type)
   blueprint.add_module(module)
@@ -1337,7 +1387,7 @@ def set_module_include_dirs(module, cflags, include_dirs):
                                if d not in local_include_dirs_denylist]
 
 
-def create_modules_from_target(blueprint, gn, gn_target_name, is_test_target):
+def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_java, is_test_target):
   """Generate module(s) for a given GN target.
 
     Given a GN target name, generate one or more corresponding modules into a
@@ -1349,9 +1399,18 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_test_target):
         gn_target_name: GN target for module generation.
     """
   bp_module_name = label_to_module_name(gn_target_name)
+  target = gn.get_target(gn_target_name)
+
+  # Append __java suffix to actions reachable from java_library. This is necessary
+  # to differentiate them from cc actions. The need to differentiate comes because some
+  # GN targets create both Java and C++ outputs in the same actions and Soong does not support that.
+  # Hence we need to create two different actions.
+  if "action" in target.type and is_descendant_of_java:
+    bp_module_name += "__java"
+
   if bp_module_name in blueprint.modules:
     return blueprint.modules[bp_module_name]
-  target = gn.get_target(gn_target_name)
+
   log.info('create modules for %s (%s)', target.name, target.type)
 
   if target.type == 'executable':
@@ -1374,7 +1433,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_test_target):
     if module is None:
       return None
   elif target.type == 'action':
-    module = create_action_module(blueprint, gn, target, 'cc_genrule', is_test_target)
+    module = create_action_module(blueprint, gn, target, 'java_genrule' if is_descendant_of_java else 'cc_genrule', is_test_target)
   elif target.type == 'action_foreach':
     module = create_action_foreach_modules(blueprint, gn, target, is_test_target)
   elif target.type == 'copy':
@@ -1383,9 +1442,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_test_target):
     # problem as libicu contains the only copy target which happens to be a
     # leaf node.
     return None
-  elif target.type == 'java_group':
-    # Java targets are handled outside of create_modules_from_target.
-    return None
+  elif target.type == 'java_library':
+    module = Module('java_library', bp_module_name, gn_target_name)
   else:
     raise Exception('Unknown target %s (%s)' % (target.name, target.type))
 
@@ -1426,7 +1484,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_test_target):
   if module.is_compiled():
     # Don't try to inject library/source dependencies into genrules or
     # filegroups because they are not compiled in the traditional sense.
-    module.defaults = [defaults_module]
+    if module.type != "java_library":
+      module.defaults = [defaults_module]
     for lib in target.libs:
       # Generally library names should be mangled as 'libXXX', unless they
       # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
@@ -1466,7 +1525,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_test_target):
       builtin_deps[dep_name](module, arch_name)
       continue
 
-    dep_module = create_modules_from_target(blueprint, gn, dep_name, is_test_target)
+    if dep_name == "//third_party/android_deps:protobuf_lite_runtime_java":
+      print("bsbs", gn_target_name)
+    dep_module = create_modules_from_target(blueprint, gn, dep_name, is_descendant_of_java or module.type == 'java_library', is_test_target)
 
     if dep_module is None:
       continue
@@ -1506,6 +1567,10 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_test_target):
       module_target.srcs.update(dep_module.genrule_srcs)
       module_target.shared_libs.update(dep_module.genrule_shared_libs)
       module_target.header_libs.update(dep_module.genrule_header_libs)
+    elif dep_module.type == 'java_library':
+      module_target.static_libs.add(dep_module.name)
+    elif dep_module.type in ['genrule', 'java_genrule']:
+      module_target.srcs.add(":" + dep_module.name)
     else:
       raise Exception('Unsupported arch-specific dependency %s of target %s with type %s' %
                       (dep_module.name, target.name, dep_module.type))
@@ -1558,8 +1623,7 @@ def create_java_module(blueprint, gn, is_test_target):
     "libprotobuf-java-lite",
     "modules-utils-build_system",
   }
-  module.aidl["include_dirs"] = {"frameworks/base/core/java/"}
-  module.aidl["local_include_dirs"] = gn.aidl_local_include_dirs
+
   module.sdk_version = "module_current"
   module.min_sdk_version = 30
   module.apex_available.add(tethering_apex)
@@ -1671,12 +1735,12 @@ def create_blueprint_for_targets(gn, targets, test_targets):
   blueprint.add_module(defaults)
 
   for target in targets:
-    module = create_modules_from_target(blueprint, gn, target, is_test_target=False)
+    module = create_modules_from_target(blueprint, gn, target, is_descendant_of_java=False, is_test_target=False)
     if module:
       module.visibility.append(connectivity_visibility)
 
   for test_target in test_targets:
-    module = create_modules_from_target(blueprint, gn, test_target + gn_utils.TESTING_SUFFIX, is_test_target=True)
+    module = create_modules_from_target(blueprint, gn, test_target + gn_utils.TESTING_SUFFIX, is_descendant_of_java=False, is_test_target=True)
     if module:
       module.visibility.append(connectivity_visibility)
 

@@ -1805,7 +1805,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//base:base_i18n_perftests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_i18n_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -3079,7 +3079,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//base:base_junit_tests__java_binary" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_junit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -3564,7 +3564,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//base:base_perftests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -4288,7 +4288,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//base:base_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -7047,7 +7047,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//build/android:build_junit_tests__java_binary" ]
       },
       "outputs": [ "//out/cronet/gen/build/android/build_junit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -8810,7 +8810,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//components/cronet/android:cronet_impl_native_base_java" ]
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_jni_registration.srcjar", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_jni_registration_generated.h" ],
       "public": "*",
@@ -11760,7 +11760,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//components/cronet/android:cronet_tests_android__apk" ]
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_tests_android__library__jni_registration.srcjar" ],
       "public": "*",
@@ -11854,7 +11854,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//components/cronet/android:cronet_common_javatests", "//components/cronet/android:cronet_test_apk_java", "//base:base_java", "//base:jni_java", "//base:base_java_test_support", "//net/android:embedded_test_server_aidl_java", "//net/android:net_java", "//net/android:net_java_test_support", "//url:url_java", "//third_party/androidx:androidx_annotation_annotation_experimental_java", "//components/cronet/android:cronet_javatests", "//third_party/netty4:netty_all_java" ]
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_tests_jni_registration.srcjar", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_tests_jni_registration_generated.h" ],
       "public": "*",
@@ -12359,7 +12359,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//components/cronet/android:cronet_unittests_android__apk" ]
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_unittests_android__library__jni_registration.srcjar" ],
       "public": "*",
@@ -13199,7 +13199,7 @@
    "//components/cronet/android:repackage_native": {
       "args": [ "--depfile", "gen/components/cronet/android/repackage_native.d", "--output", "cronet/cronet_impl_native_java.jar", "--no-compress", "--input-zips=@FileArg(gen/components/cronet/android/repackage_native.build_config.json:javac:classpath)", "--input-zips-excluded-globs=[\"android/*\", \"androidx/*\", \"*/library_loader/*.class\", \"*/multidex/*.class\", \"*/process_launcher/*.class\", \"*/SysUtils*.class\", \"org/chromium/base/BaseFeature*.class\", \"org/chromium/base/Feature*.class\", \"org/chromium/base/jank_tracker/*.class\", \"org/chromium/base/memory/MemoryPurgeManager*.class\", \"org/chromium/base/memory/MemoryPressureMonitor*.class\", \"org/chromium/build/NativeLibraries.class\", \"META-INF/*.MF\"]" ],
       "depfile": "//out/cronet/gen/components/cronet/android/repackage_native.d",
-      "deps": [ "//components/cronet/android:cronet_jni_registration_java", "//components/cronet/android:repackage_native__build_config_crbug_908819", "//components/cronet/android:repackage_native_java" ],
+      "deps": [ "//components/cronet/android:cronet_impl_native_base_java", "//components/cronet/android:cronet_jni_registration_java", "//components/cronet/android:repackage_native__build_config_crbug_908819" ],
       "inputs": [ "//out/cronet/gen/components/cronet/android/repackage_native.build_config.json", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/android/gyp/zip.py" ],
       "metadata": {
 
@@ -13213,10 +13213,10 @@
       "visibility": [ "*" ]
    },
    "//components/cronet/android:repackage_native__build_config_crbug_908819": {
-      "args": [ "--type=dist_jar", "--depfile", "gen/components/cronet/android/repackage_native__build_config_crbug_908819.d", "--deps-configs=[\"gen/components/cronet/android/cronet_jni_registration_java.build_config.json\", \"gen/components/cronet/android/repackage_native_java.build_config.json\"]", "--public-deps-configs=[]", "--build-config", "gen/components/cronet/android/repackage_native.build_config.json", "--gn-target", "//components/cronet/android:repackage_native", "--supports-android", "--requires-android" ],
+      "args": [ "--type=dist_jar", "--depfile", "gen/components/cronet/android/repackage_native__build_config_crbug_908819.d", "--deps-configs=[\"gen/components/cronet/android/cronet_jni_registration_java.build_config.json\", \"gen/components/cronet/android/cronet_impl_native_base_java.build_config.json\"]", "--public-deps-configs=[]", "--build-config", "gen/components/cronet/android/repackage_native.build_config.json", "--gn-target", "//components/cronet/android:repackage_native", "--supports-android", "--requires-android" ],
       "depfile": "//out/cronet/gen/components/cronet/android/repackage_native__build_config_crbug_908819.d",
-      "deps": [ "//components/cronet/android:cronet_jni_registration_java__build_config_crbug_908819", "//components/cronet/android:repackage_native_java__build_config_crbug_908819" ],
-      "inputs": [ "//out/cronet/gen/components/cronet/android/cronet_jni_registration_java.build_config.json", "//out/cronet/gen/components/cronet/android/repackage_native_java.build_config.json", "//third_party/jinja2/__init__.py", "//third_party/jinja2/_identifier.py", "//third_party/jinja2/async_utils.py", "//third_party/jinja2/bccache.py", "//third_party/jinja2/compiler.py", "//third_party/jinja2/defaults.py", "//third_party/jinja2/environment.py", "//third_party/jinja2/exceptions.py", "//third_party/jinja2/filters.py", "//third_party/jinja2/idtracking.py", "//third_party/jinja2/lexer.py", "//third_party/jinja2/loaders.py", "//third_party/jinja2/nodes.py", "//third_party/jinja2/optimizer.py", "//third_party/jinja2/parser.py", "//third_party/jinja2/runtime.py", "//third_party/jinja2/tests.py", "//third_party/jinja2/utils.py", "//third_party/jinja2/visitor.py", "//third_party/markupsafe/__init__.py", "//third_party/markupsafe/_compat.py", "//third_party/markupsafe/_native.py", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/android/gyp/util/resource_utils.py", "//build/android/gyp/write_build_config.py" ],
+      "deps": [ "//components/cronet/android:cronet_impl_native_base_java__build_config_crbug_908819", "//components/cronet/android:cronet_jni_registration_java__build_config_crbug_908819" ],
+      "inputs": [ "//out/cronet/gen/components/cronet/android/cronet_jni_registration_java.build_config.json", "//out/cronet/gen/components/cronet/android/cronet_impl_native_base_java.build_config.json", "//third_party/jinja2/__init__.py", "//third_party/jinja2/_identifier.py", "//third_party/jinja2/async_utils.py", "//third_party/jinja2/bccache.py", "//third_party/jinja2/compiler.py", "//third_party/jinja2/defaults.py", "//third_party/jinja2/environment.py", "//third_party/jinja2/exceptions.py", "//third_party/jinja2/filters.py", "//third_party/jinja2/idtracking.py", "//third_party/jinja2/lexer.py", "//third_party/jinja2/loaders.py", "//third_party/jinja2/nodes.py", "//third_party/jinja2/optimizer.py", "//third_party/jinja2/parser.py", "//third_party/jinja2/runtime.py", "//third_party/jinja2/tests.py", "//third_party/jinja2/utils.py", "//third_party/jinja2/visitor.py", "//third_party/markupsafe/__init__.py", "//third_party/markupsafe/_compat.py", "//third_party/markupsafe/_native.py", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/android/gyp/util/resource_utils.py", "//build/android/gyp/write_build_config.py" ],
       "metadata": {
 
       },
@@ -13226,150 +13226,6 @@
       "testonly": false,
       "toolchain": "//build/toolchain/android:android_clang_arm64",
       "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_impl": {
-      "args": [ "--depfile", "gen/components/cronet/android/repackage_native_impl.d", "--output", "obj/components/cronet/android/repackage_native_impl.jar", "--no-compress", "--input-zips=@FileArg(gen/components/cronet/android/repackage_native_impl.build_config.json:javac:classpath)", "--input-zips-excluded-globs=[\"android/*\", \"androidx/*\", \"*/library_loader/*.class\", \"*/multidex/*.class\", \"*/process_launcher/*.class\", \"*/SysUtils*.class\", \"org/chromium/base/BaseFeature*.class\", \"org/chromium/base/Feature*.class\", \"org/chromium/base/jank_tracker/*.class\", \"org/chromium/base/memory/MemoryPurgeManager*.class\", \"org/chromium/base/memory/MemoryPressureMonitor*.class\", \"org/chromium/build/NativeLibraries.class\", \"*/*GEN_JNI.class\", \"META-INF/*.MF\"]" ],
-      "depfile": "//out/cronet/gen/components/cronet/android/repackage_native_impl.d",
-      "deps": [ "//base:base_java", "//base:jni_java", "//build/android:build_java", "//components/cronet/android:cronet_impl_native_base_java", "//components/cronet/android:cronet_urlconnection_impl_java", "//components/cronet/android:repackage_native_impl__build_config_crbug_908819", "//components/cronet/android:request_context_config_java_proto", "//net/android:net_java", "//url:url_java" ],
-      "inputs": [ "//out/cronet/gen/components/cronet/android/repackage_native_impl.build_config.json", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/android/gyp/zip.py" ],
-      "metadata": {
-
-      },
-      "outputs": [ "//out/cronet/obj/components/cronet/android/repackage_native_impl.jar" ],
-      "public": "*",
-      "script": "//build/android/gyp/zip.py",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_impl__build_config_crbug_908819": {
-      "args": [ "--type=dist_jar", "--depfile", "gen/components/cronet/android/repackage_native_impl__build_config_crbug_908819.d", "--deps-configs=[\"gen/components/cronet/android/cronet_urlconnection_impl_java.build_config.json\", \"gen/components/cronet/android/request_context_config_java_proto.build_config.json\", \"gen/base/base_java.build_config.json\", \"gen/base/jni_java.build_config.json\", \"gen/build/android/build_java.build_config.json\", \"gen/net/android/net_java.build_config.json\", \"gen/url/url_java.build_config.json\", \"gen/components/cronet/android/cronet_impl_native_base_java.build_config.json\"]", "--public-deps-configs=[]", "--build-config", "gen/components/cronet/android/repackage_native_impl.build_config.json", "--gn-target", "//components/cronet/android:repackage_native_impl", "--supports-android", "--requires-android" ],
-      "depfile": "//out/cronet/gen/components/cronet/android/repackage_native_impl__build_config_crbug_908819.d",
-      "deps": [ "//base:base_java__build_config_crbug_908819", "//base:jni_java__build_config_crbug_908819", "//build/android:build_java__build_config_crbug_908819", "//components/cronet/android:cronet_impl_native_base_java__build_config_crbug_908819", "//components/cronet/android:cronet_urlconnection_impl_java__build_config_crbug_908819", "//components/cronet/android:request_context_config_java_proto__build_config_crbug_908819", "//net/android:net_java__build_config_crbug_908819", "//url:url_java__build_config_crbug_908819" ],
-      "inputs": [ "//out/cronet/gen/components/cronet/android/cronet_urlconnection_impl_java.build_config.json", "//out/cronet/gen/components/cronet/android/request_context_config_java_proto.build_config.json", "//out/cronet/gen/base/base_java.build_config.json", "//out/cronet/gen/base/jni_java.build_config.json", "//out/cronet/gen/build/android/build_java.build_config.json", "//out/cronet/gen/net/android/net_java.build_config.json", "//out/cronet/gen/url/url_java.build_config.json", "//out/cronet/gen/components/cronet/android/cronet_impl_native_base_java.build_config.json", "//third_party/jinja2/__init__.py", "//third_party/jinja2/_identifier.py", "//third_party/jinja2/async_utils.py", "//third_party/jinja2/bccache.py", "//third_party/jinja2/compiler.py", "//third_party/jinja2/defaults.py", "//third_party/jinja2/environment.py", "//third_party/jinja2/exceptions.py", "//third_party/jinja2/filters.py", "//third_party/jinja2/idtracking.py", "//third_party/jinja2/lexer.py", "//third_party/jinja2/loaders.py", "//third_party/jinja2/nodes.py", "//third_party/jinja2/optimizer.py", "//third_party/jinja2/parser.py", "//third_party/jinja2/runtime.py", "//third_party/jinja2/tests.py", "//third_party/jinja2/utils.py", "//third_party/jinja2/visitor.py", "//third_party/markupsafe/__init__.py", "//third_party/markupsafe/_compat.py", "//third_party/markupsafe/_native.py", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/android/gyp/util/resource_utils.py", "//build/android/gyp/write_build_config.py" ],
-      "metadata": {
-
-      },
-      "outputs": [ "//out/cronet/gen/components/cronet/android/repackage_native_impl.build_config.json" ],
-      "public": "*",
-      "script": "//build/android/gyp/write_build_config.py",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java": {
-      "deps": [ "//components/cronet/android:repackage_native_impl", "//components/cronet/android:repackage_native_java__assetres", "//components/cronet/android:repackage_native_java__dex", "//components/cronet/android:repackage_native_java__process_device", "//components/cronet/android:repackage_native_java__validate" ],
-      "metadata": {
-         "all_deps": [ "//components/cronet/android:repackage_native_impl" ],
-         "cur_type": [ "java_library" ],
-         "source_files": [  ]
-      },
-      "public": "*",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "group",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java__assetres": {
-      "deps": [  ],
-      "metadata": {
-
-      },
-      "public": "*",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "group",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java__build_config_crbug_908819": {
-      "args": [ "--type=java_library", "--depfile", "gen/components/cronet/android/repackage_native_java__build_config_crbug_908819.d", "--deps-configs=[\"gen/third_party/android_sdk/android_sdk_java.build_config.json\"]", "--public-deps-configs=[]", "--build-config", "gen/components/cronet/android/repackage_native_java.build_config.json", "--gn-target", "//components/cronet/android:repackage_native_java", "--device-jar-path", "obj/components/cronet/android/repackage_native_java.processed.jar", "--host-jar-path", "lib.java/components/cronet/android/repackage_native_java.jar", "--unprocessed-jar-path", "obj/components/cronet/android/repackage_native_impl.jar", "--interface-jar-path", "obj/components/cronet/android/repackage_native_java.ijar.jar", "--dex-path", "obj/components/cronet/android/repackage_native_java.dex.jar", "--supports-android", "--requires-android", "--is-prebuilt", "--bundled-srcjars=[]" ],
-      "depfile": "//out/cronet/gen/components/cronet/android/repackage_native_java__build_config_crbug_908819.d",
-      "deps": [ "//third_party/android_sdk:android_sdk_java__build_config_crbug_908819" ],
-      "inputs": [ "//out/cronet/gen/third_party/android_sdk/android_sdk_java.build_config.json", "//third_party/jinja2/__init__.py", "//third_party/jinja2/_identifier.py", "//third_party/jinja2/async_utils.py", "//third_party/jinja2/bccache.py", "//third_party/jinja2/compiler.py", "//third_party/jinja2/defaults.py", "//third_party/jinja2/environment.py", "//third_party/jinja2/exceptions.py", "//third_party/jinja2/filters.py", "//third_party/jinja2/idtracking.py", "//third_party/jinja2/lexer.py", "//third_party/jinja2/loaders.py", "//third_party/jinja2/nodes.py", "//third_party/jinja2/optimizer.py", "//third_party/jinja2/parser.py", "//third_party/jinja2/runtime.py", "//third_party/jinja2/tests.py", "//third_party/jinja2/utils.py", "//third_party/jinja2/visitor.py", "//third_party/markupsafe/__init__.py", "//third_party/markupsafe/_compat.py", "//third_party/markupsafe/_native.py", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/android/gyp/util/resource_utils.py", "//build/android/gyp/write_build_config.py" ],
-      "metadata": {
-
-      },
-      "outputs": [ "//out/cronet/gen/components/cronet/android/repackage_native_java.build_config.json" ],
-      "public": "*",
-      "script": "//build/android/gyp/write_build_config.py",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java__dex": {
-      "args": [ "--depfile", "gen/components/cronet/android/repackage_native_java__dex.d", "--output", "obj/components/cronet/android/repackage_native_java.dex.jar", "--min-api=19", "--r8-jar-path", "../../third_party/r8/d8/lib/r8.jar", "--custom-d8-jar-path", "../../third_party/r8/custom_d8.jar", "--warnings-as-errors", "--library", "--class-inputs=[\"obj/components/cronet/android/repackage_native_java.processed.jar\"]", "--desugar", "--classpath", "obj/components/cronet/android/repackage_native_impl.jar", "--classpath=@FileArg(gen/components/cronet/android/repackage_native_java.build_config.json:deps_info:javac_full_interface_classpath)", "--desugar-dependencies", "gen/components/cronet/android/repackage_native_java__dex.desugardeps", "--bootclasspath=@FileArg(gen/components/cronet/android/repackage_native_java.build_config.json:android:sdk_jars)" ],
-      "depfile": "//out/cronet/gen/components/cronet/android/repackage_native_java__dex.d",
-      "deps": [ "//components/cronet/android:repackage_native_impl", "//components/cronet/android:repackage_native_java__build_config_crbug_908819", "//components/cronet/android:repackage_native_java__process_device", "//third_party/android_sdk:android_sdk_java__header" ],
-      "inputs": [ "//third_party/jdk/current/bin/java.chromium", "//third_party/r8/d8/lib/r8.jar", "//third_party/r8/custom_d8.jar", "//out/cronet/obj/components/cronet/android/repackage_native_java.processed.jar", "//out/cronet/obj/components/cronet/android/repackage_native_impl.jar", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/print_python_deps.py", "//build/zip_helpers.py", "//build/android/gyp/dex.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/android/gyp/util/md5_check.py" ],
-      "metadata": {
-
-      },
-      "outputs": [ "//out/cronet/obj/components/cronet/android/repackage_native_java.dex.jar" ],
-      "public": "*",
-      "script": "//build/android/gyp/dex.py",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java__header": {
-      "args": [ "clang_x64/ijar", "obj/components/cronet/android/repackage_native_impl.jar", "obj/components/cronet/android/repackage_native_java.ijar.jar" ],
-      "deps": [ "//components/cronet/android:repackage_native_impl", "//third_party/ijar:ijar(//build/toolchain/linux:clang_x64)" ],
-      "inputs": [ "//out/cronet/obj/components/cronet/android/repackage_native_impl.jar", "//out/cronet/clang_x64/ijar", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/android/gyp/ijar.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py" ],
-      "metadata": {
-
-      },
-      "outputs": [ "//out/cronet/obj/components/cronet/android/repackage_native_java.ijar.jar" ],
-      "public": "*",
-      "script": "//build/android/gyp/ijar.py",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java__host": {
-      "args": [ "--input", "obj/components/cronet/android/repackage_native_impl.jar", "--output", "lib.java/components/cronet/android/repackage_native_java.jar", "--exclude-globs=[\"*/R.class\", \"*/R\\$*.class\", \"*/Manifest.class\", \"*/Manifest\\$*.class\", \"*/*GEN_JNI.class\"]", "--include-globs=[]" ],
-      "deps": [ "//components/cronet/android:repackage_native_impl", "//components/cronet/android:repackage_native_java__build_config_crbug_908819", "//third_party/android_sdk:android_sdk_java" ],
-      "inputs": [ "//out/cronet/obj/components/cronet/android/repackage_native_impl.jar", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//build/android/gyp/filter_zip.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py" ],
-      "metadata": {
-
-      },
-      "outputs": [ "//out/cronet/lib.java/components/cronet/android/repackage_native_java.jar" ],
-      "public": "*",
-      "script": "//build/android/gyp/filter_zip.py",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java__process_device": {
-      "args": [ "--input", "obj/components/cronet/android/repackage_native_impl.jar", "--output", "obj/components/cronet/android/repackage_native_java.processed.jar", "--exclude-globs=[\"*/R.class\", \"*/R\\$*.class\", \"*/Manifest.class\", \"*/Manifest\\$*.class\", \"*/*GEN_JNI.class\"]", "--include-globs=[]" ],
-      "deps": [ "//components/cronet/android:repackage_native_impl", "//components/cronet/android:repackage_native_java__build_config_crbug_908819", "//third_party/android_sdk:android_sdk_java" ],
-      "inputs": [ "//out/cronet/obj/components/cronet/android/repackage_native_impl.jar", "//build/action_helpers.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//build/android/gyp/filter_zip.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py" ],
-      "metadata": {
-
-      },
-      "outputs": [ "//out/cronet/obj/components/cronet/android/repackage_native_java.processed.jar" ],
-      "public": "*",
-      "script": "//build/android/gyp/filter_zip.py",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "action",
-      "visibility": [ "*" ]
-   },
-   "//components/cronet/android:repackage_native_java__validate": {
-      "deps": [  ],
-      "metadata": {
-
-      },
-      "public": "*",
-      "testonly": false,
-      "toolchain": "//build/toolchain/android:android_clang_arm64",
-      "type": "group",
       "visibility": [ "*" ]
    },
    "//components/cronet/android:repackage_test_jars": {
@@ -14822,7 +14678,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//crypto:crypto_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/crypto/crypto_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -15310,7 +15166,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//net/android:net_test_support_apk" ]
       },
       "outputs": [ "//out/cronet/gen/net/android/net_java_test_native_support__jni_registration.srcjar" ],
       "public": "*",
@@ -15585,7 +15441,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//net/android:net_junit_tests__java_binary" ]
       },
       "outputs": [ "//out/cronet/gen/net/android/net_junit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -19353,7 +19209,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//net:net_perftests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/net/net_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -19937,7 +19793,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//net:net_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/net/net_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -20847,7 +20703,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//sql:sql_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/sql/sql_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -21274,7 +21130,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//testing/android/junit:junit_unit_tests__java_binary" ]
       },
       "outputs": [ "//out/cronet/gen/testing/android/junit/junit_unit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -36822,7 +36678,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//third_party/abseil-cpp:absl_hardening_tests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/third_party/abseil-cpp/absl_hardening_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -37242,7 +37098,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//third_party/abseil-cpp:absl_tests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/third_party/abseil-cpp/absl_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -88606,7 +88462,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//third_party/boringssl:boringssl_crypto_tests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/third_party/boringssl/boringssl_crypto_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -89246,7 +89102,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//third_party/boringssl:boringssl_ssl_tests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/third_party/boringssl/boringssl_ssl_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -90351,7 +90207,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//third_party/ced:ced_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/third_party/ced/ced_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -91921,7 +91777,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//third_party/flatbuffers:flatbuffers_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/third_party/flatbuffers/flatbuffers_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -96334,7 +96190,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//third_party/zlib:zlib_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/third_party/zlib/zlib_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -97498,7 +97354,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//url:url_perftests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/url/url_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -97952,7 +97808,7 @@
       "deps": [  ],
       "inputs": [ "//build/action_helpers.py", "//build/android/gyp/util/__init__.py", "//build/android/gyp/util/build_utils.py", "//build/gn_helpers.py", "//build/zip_helpers.py", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-
+         "java_deps": [ "//url:url_unittests__apk" ]
       },
       "outputs": [ "//out/cronet/gen/url/url_unittests__library__jni_registration.srcjar" ],
       "public": "*",

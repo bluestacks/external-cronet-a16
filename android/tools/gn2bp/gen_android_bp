@@ -45,6 +45,7 @@ CRONET_LICENSE_NAME = "external_cronet_license"
 DEFAULT_TARGETS = [
     '//components/cronet/android:cronet',
     '//components/cronet/android:cronet_impl_native_base_java',
+    '//components/cronet/android:cronet_jni_registration_java',
 ]
 
 DEFAULT_TESTS = [
@@ -1395,6 +1396,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
     """
   bp_module_name = label_to_module_name(gn_target_name)
   target = gn.get_target(gn_target_name)
+  is_descendant_of_java = is_descendant_of_java or target.type == "java_library"
 
   # Append __java suffix to actions reachable from java_library. This is necessary
   # to differentiate them from cc actions.
@@ -1520,7 +1522,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
       builtin_deps[dep_name](module, arch_name)
       continue
 
-    dep_module = create_modules_from_target(blueprint, gn, dep_name, is_descendant_of_java or module.type == 'java_library', is_test_target)
+    dep_module = create_modules_from_target(blueprint, gn, dep_name, is_descendant_of_java, is_test_target)
 
     if dep_module is None:
       continue

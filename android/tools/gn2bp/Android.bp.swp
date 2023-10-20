@@ -3462,6 +3462,7 @@ java_library {
         "error_prone_annotations",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -3606,6 +3607,7 @@ java_library {
         "error_prone_annotations",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -3708,6 +3710,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "androidx.core_core-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -3726,6 +3729,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -5693,6 +5697,7 @@ java_library {
     static_libs: [
         "cronet_aml_build_android_build_java",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -5714,6 +5719,7 @@ java_library {
     static_libs: [
         "cronet_aml_build_android_build_java__testing",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -6104,6 +6110,7 @@ java_library {
             "base/android/java/src",
         ],
     },
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -6138,6 +6145,7 @@ java_library {
         "androidx.core_core-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -7115,6 +7123,7 @@ java_library {
     libs: [
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -7134,6 +7143,7 @@ java_library {
             "base/test/android/java/src",
         ],
     },
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -7765,6 +7775,7 @@ java_library {
         "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
         "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -7784,6 +7795,7 @@ java_library {
         "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
         "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9230,6 +9242,7 @@ java_library {
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9278,6 +9291,7 @@ java_library {
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9309,12 +9323,14 @@ java_library {
         "android.test.base",
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_impl_all_java__testing
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9354,6 +9370,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9394,6 +9411,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
@@ -9474,6 +9492,7 @@ java_library {
         "androidx.annotation_annotation-experimental-nodeps",
     ],
     stem: "libcronet_javatests",
+    sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
@@ -10532,6 +10551,7 @@ java_library {
     srcs: [
         ":cronet_aml_components_cronet_android_cronet_jni_registration__java",
     ],
+    sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
@@ -11045,6 +11065,7 @@ java_library {
         "android.test.base",
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -11849,6 +11870,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -11872,6 +11894,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -12133,6 +12156,7 @@ java_library {
     static_libs: [
         "libprotobuf-java-lite",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -15821,6 +15845,7 @@ java_library {
             "frameworks/base/core/java/",
         ],
     },
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -15830,6 +15855,7 @@ java_library {
     static_libs: [
         "cronet_aml_net_android_embedded_test_server_aidl__testing",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -16028,6 +16054,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -16070,6 +16097,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -16099,6 +16127,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -16315,6 +16344,7 @@ java_library {
     srcs: [
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -16324,6 +16354,7 @@ java_library {
     srcs: [
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -28352,6 +28383,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java__testing",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -42223,12 +42255,14 @@ cc_library_static {
 // GN: //third_party/androidx:androidx_test_core_java__testing
 java_library {
     name: "cronet_aml_third_party_androidx_androidx_test_core_java__testing",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //third_party/androidx:androidx_test_monitor_java__testing
 java_library {
     name: "cronet_aml_third_party_androidx_androidx_test_monitor_java__testing",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -46492,6 +46526,7 @@ cc_library_static {
 // GN: //third_party/netty4:netty_all_java__testing
 java_library {
     name: "cronet_aml_third_party_netty4_netty_all_java__testing",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -47639,6 +47674,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -47651,6 +47687,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java__testing",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 

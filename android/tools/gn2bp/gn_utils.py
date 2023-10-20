@@ -44,6 +44,8 @@ def _extract_includes_from_aidl_args(args):
       return [_clean_string(local_include) for local_include in local_includes]
   return []
 
+def contains_aidl(sources):
+  return any([src.endswith(".aidl") for src in sources])
 
 def label_to_path(label):
   """Turn a GN output label (e.g., //some_dir/file.cc) into a path."""

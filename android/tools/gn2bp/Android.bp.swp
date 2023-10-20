@@ -6092,6 +6092,18 @@ cc_genrule {
 // GN: //base:process_launcher_aidl__testing
 java_library {
     name: "cronet_aml_base_process_launcher_aidl__testing",
+    srcs: [
+        "base/android/java/src/org/chromium/base/process_launcher/IChildProcessService.aidl",
+        "base/android/java/src/org/chromium/base/process_launcher/IParentProcess.aidl",
+    ],
+    aidl: {
+        include_dirs: [
+            "frameworks/base/core/java/",
+        ],
+        local_include_dirs: [
+            "base/android/java/src",
+        ],
+    },
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -6116,6 +6128,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_base_java__testing",
         "cronet_aml_base_jni_java__testing",
+        "cronet_aml_base_process_launcher_aidl__testing",
         "cronet_aml_build_android_build_java__testing",
     ],
     libs: [
@@ -7096,6 +7109,7 @@ java_library {
         "cronet_aml_base_base_java__testing",
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_base_process_launcher_java__testing",
+        "cronet_aml_base_test_test_support_java_aidl__testing",
         "cronet_aml_testing_android_native_test_native_main_runner_java__testing",
     ],
     libs: [
@@ -7107,6 +7121,19 @@ java_library {
 // GN: //base/test:test_support_java_aidl__testing
 java_library {
     name: "cronet_aml_base_test_test_support_java_aidl__testing",
+    srcs: [
+        "base/test/android/java/src/org/chromium/base/ITestCallback.aidl",
+        "base/test/android/java/src/org/chromium/base/ITestController.aidl",
+    ],
+    aidl: {
+        include_dirs: [
+            "frameworks/base/core/java/",
+        ],
+        local_include_dirs: [
+            "base/android/java/src",
+            "base/test/android/java/src",
+        ],
+    },
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -15785,12 +15812,24 @@ java_library {
 // GN: //net/android:embedded_test_server_aidl__testing
 java_library {
     name: "cronet_aml_net_android_embedded_test_server_aidl__testing",
+    srcs: [
+        "net/test/android/javatests/src/org/chromium/net/test/IConnectionListener.aidl",
+        "net/test/android/javatests/src/org/chromium/net/test/IEmbeddedTestServerImpl.aidl",
+    ],
+    aidl: {
+        include_dirs: [
+            "frameworks/base/core/java/",
+        ],
+    },
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //net/android:embedded_test_server_aidl_java__testing
 java_library {
     name: "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
+    static_libs: [
+        "cronet_aml_net_android_embedded_test_server_aidl__testing",
+    ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 

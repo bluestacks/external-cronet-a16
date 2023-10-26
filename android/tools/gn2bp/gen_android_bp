@@ -54,6 +54,8 @@ DEFAULT_TESTS = [
   '//components/cronet/android:cronet_tests',
   '//components/cronet/android:cronet',
   '//components/cronet/android:cronet_javatests',
+  '//components/cronet/android:cronet_jni_registration_java',
+  '//components/cronet/android:cronet_tests_jni_registration_java',
 ]
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
@@ -1080,6 +1082,9 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     self.is_test_target = is_test_target
     super().__init__(target, arch)
 
+  def get_srcs(self):
+      return set(src for src in super().get_srcs() if src.endswith(".java"))
+
   def _add_location_tag_to_filepath(self, arg):
     if not arg.endswith('.class'):
       # --input_file supports both .class specifiers or source files as arguments.
@@ -1143,6 +1148,9 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
   def __init__(self, target, arch, is_test_target):
     self.is_test_target = is_test_target
     super().__init__(target, arch)
+
+  def get_srcs(self):
+      return set(src for src in super().get_srcs() if src.endswith(".java"))
 
   def _sanitize_inputs(self):
     self.target.inputs = [file for file in self.target.inputs if not file.startswith('//out/')]
@@ -1534,8 +1542,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
     raise Exception('Unknown target %s (%s)' % (target.name, target.type))
 
   blueprint.add_module(module)
-  module.srcs.update(gn_utils.label_to_path(src)
-                     for src in target.sources if is_supported_source_file(src))
+  if target.type not in ['action', 'action_foreach']:
+      # Actions should get their srcs from their corresponding ActionSanitizer as actionSanitizer
+      # filters srcs differently according to the type of the action.
+      module.srcs.update(gn_utils.label_to_path(src)
+                         for src in target.sources if is_supported_source_file(src))
 
   # Add arch-specific properties
   for arch_name, arch in target.get_archs().items():

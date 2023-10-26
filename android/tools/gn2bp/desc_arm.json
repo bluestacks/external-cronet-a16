@@ -8446,6 +8446,7 @@
    "//components/cronet/android:cronet_impl_all_java": {
       "deps": [ "//components/cronet/android:cronet_impl_all_java__build_config_crbug_908819", "//components/cronet/android:cronet_impl_common_base_java", "//components/cronet/android:cronet_impl_native_base_java" ],
       "metadata": {
+         "all_deps": [ "//components/cronet/android:cronet_impl_common_base_java", "//components/cronet/android:cronet_impl_native_base_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -38119,6 +38120,7 @@
    "//third_party/android_deps/local_modifications/preconditions:preconditions_stub_java": {
       "deps": [ "//third_party/android_deps/local_modifications/preconditions:androidx_stub_preconditions_java", "//third_party/android_deps/local_modifications/preconditions:gms_stub_preconditions_java", "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java", "//third_party/android_deps/local_modifications/preconditions:preconditions_stub_java__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps/local_modifications/preconditions:androidx_stub_preconditions_java", "//third_party/android_deps/local_modifications/preconditions:gms_stub_preconditions_java", "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -38431,6 +38433,7 @@
    "//third_party/android_deps:android_arch_core_runtime_java": {
       "deps": [ "//third_party/android_deps:android_arch_core_runtime_J__unpack_aar", "//third_party/android_deps:android_arch_core_runtime_java__build_config_crbug_908819", "//third_party/android_deps:android_arch_core_runtime_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:android_arch_core_runtime_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -38823,6 +38826,7 @@
    "//third_party/android_deps:android_arch_lifecycle_livedata_core_java": {
       "deps": [ "//third_party/android_deps:android_arch_lifecycle_livedata_core_J__unpack_aar", "//third_party/android_deps:android_arch_lifecycle_livedata_core_java__build_config_crbug_908819", "//third_party/android_deps:android_arch_lifecycle_livedata_core_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:android_arch_lifecycle_livedata_core_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -38991,6 +38995,7 @@
    "//third_party/android_deps:android_arch_lifecycle_livedata_java": {
       "deps": [ "//third_party/android_deps:android_arch_lifecycle_livedata_J__unpack_aar", "//third_party/android_deps:android_arch_lifecycle_livedata_java__build_config_crbug_908819", "//third_party/android_deps:android_arch_lifecycle_livedata_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:android_arch_lifecycle_livedata_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -39174,6 +39179,7 @@
    "//third_party/android_deps:android_arch_lifecycle_runtime_java": {
       "deps": [ "//third_party/android_deps:android_arch_lifecycle_runtime_J__unpack_aar", "//third_party/android_deps:android_arch_lifecycle_runtime_java__build_config_crbug_908819", "//third_party/android_deps:android_arch_lifecycle_runtime_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:android_arch_lifecycle_runtime_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -39357,6 +39363,7 @@
    "//third_party/android_deps:android_arch_lifecycle_viewmodel_java": {
       "deps": [ "//third_party/android_deps:android_arch_lifecycle_viewmodel_J__unpack_aar", "//third_party/android_deps:android_arch_lifecycle_viewmodel_java__build_config_crbug_908819", "//third_party/android_deps:android_arch_lifecycle_viewmodel_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:android_arch_lifecycle_viewmodel_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -39814,6 +39821,7 @@
    "//third_party/android_deps:com_android_support_animated_vector_drawable_java": {
       "deps": [ "//third_party/android_deps:com_android_support_animated_vector_drawable_J__unpack_aar", "//third_party/android_deps:com_android_support_animated_vector_drawable_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_animated_vector_drawable_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_animated_vector_drawable_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -39997,6 +40005,7 @@
    "//third_party/android_deps:com_android_support_appcompat_v7_java": {
       "deps": [ "//third_party/android_deps:com_android_support_appcompat_v7_J__unpack_aar", "//third_party/android_deps:com_android_support_appcompat_v7_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_appcompat_v7_java__classes", "//third_party/android_deps:com_android_support_appcompat_v7_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_appcompat_v7_java__classes", "//third_party/android_deps:com_android_support_appcompat_v7_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -40213,6 +40222,7 @@
    "//third_party/android_deps:com_android_support_asynclayoutinflater_java": {
       "deps": [ "//third_party/android_deps:com_android_support_asynclayoutinflater_J__unpack_aar", "//third_party/android_deps:com_android_support_asynclayoutinflater_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_asynclayoutinflater_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_asynclayoutinflater_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -40396,6 +40406,7 @@
    "//third_party/android_deps:com_android_support_cardview_v7_java": {
       "deps": [ "//third_party/android_deps:com_android_support_cardview_v7_J__unpack_aar", "//third_party/android_deps:com_android_support_cardview_v7_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_cardview_v7_java__classes", "//third_party/android_deps:com_android_support_cardview_v7_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_cardview_v7_java__classes", "//third_party/android_deps:com_android_support_cardview_v7_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -40709,6 +40720,7 @@
    "//third_party/android_deps:com_android_support_coordinatorlayout_java": {
       "deps": [ "//third_party/android_deps:com_android_support_coordinatorlayout_J__unpack_aar", "//third_party/android_deps:com_android_support_coordinatorlayout_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_coordinatorlayout_java__classes", "//third_party/android_deps:com_android_support_coordinatorlayout_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_coordinatorlayout_java__classes", "//third_party/android_deps:com_android_support_coordinatorlayout_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -40925,6 +40937,7 @@
    "//third_party/android_deps:com_android_support_cursoradapter_java": {
       "deps": [ "//third_party/android_deps:com_android_support_cursoradapter_J__unpack_aar", "//third_party/android_deps:com_android_support_cursoradapter_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_cursoradapter_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_cursoradapter_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -41108,6 +41121,7 @@
    "//third_party/android_deps:com_android_support_customview_java": {
       "deps": [ "//third_party/android_deps:com_android_support_customview_J__unpack_aar", "//third_party/android_deps:com_android_support_customview_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_customview_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_customview_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -41291,6 +41305,7 @@
    "//third_party/android_deps:com_android_support_design_java": {
       "deps": [ "//third_party/android_deps:com_android_support_design_J__unpack_aar", "//third_party/android_deps:com_android_support_design_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_design_java__classes", "//third_party/android_deps:com_android_support_design_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_design_java__classes", "//third_party/android_deps:com_android_support_design_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -41507,6 +41522,7 @@
    "//third_party/android_deps:com_android_support_documentfile_java": {
       "deps": [ "//third_party/android_deps:com_android_support_documentfile_J__unpack_aar", "//third_party/android_deps:com_android_support_documentfile_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_documentfile_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_documentfile_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -41690,6 +41706,7 @@
    "//third_party/android_deps:com_android_support_drawerlayout_java": {
       "deps": [ "//third_party/android_deps:com_android_support_drawerlayout_J__unpack_aar", "//third_party/android_deps:com_android_support_drawerlayout_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_drawerlayout_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_drawerlayout_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -41873,6 +41890,7 @@
    "//third_party/android_deps:com_android_support_interpolator_java": {
       "deps": [ "//third_party/android_deps:com_android_support_interpolator_J__unpack_aar", "//third_party/android_deps:com_android_support_interpolator_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_interpolator_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_interpolator_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -42056,6 +42074,7 @@
    "//third_party/android_deps:com_android_support_loader_java": {
       "deps": [ "//third_party/android_deps:com_android_support_loader_J__unpack_aar", "//third_party/android_deps:com_android_support_loader_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_loader_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_loader_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -42239,6 +42258,7 @@
    "//third_party/android_deps:com_android_support_localbroadcastmanager_java": {
       "deps": [ "//third_party/android_deps:com_android_support_localbroadcastmanager_J__unpack_aar", "//third_party/android_deps:com_android_support_localbroadcastmanager_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_localbroadcastmanager_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_localbroadcastmanager_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -42422,6 +42442,7 @@
    "//third_party/android_deps:com_android_support_multidex_java": {
       "deps": [ "//third_party/android_deps:com_android_support_multidex_J__unpack_aar", "//third_party/android_deps:com_android_support_multidex_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_multidex_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_multidex_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -42605,6 +42626,7 @@
    "//third_party/android_deps:com_android_support_print_java": {
       "deps": [ "//third_party/android_deps:com_android_support_print_J__unpack_aar", "//third_party/android_deps:com_android_support_print_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_print_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_print_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -42788,6 +42810,7 @@
    "//third_party/android_deps:com_android_support_recyclerview_v7_java": {
       "deps": [ "//third_party/android_deps:com_android_support_recyclerview_v7_J__unpack_aar", "//third_party/android_deps:com_android_support_recyclerview_v7_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_recyclerview_v7_java__classes", "//third_party/android_deps:com_android_support_recyclerview_v7_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_recyclerview_v7_java__classes", "//third_party/android_deps:com_android_support_recyclerview_v7_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -43004,6 +43027,7 @@
    "//third_party/android_deps:com_android_support_slidingpanelayout_java": {
       "deps": [ "//third_party/android_deps:com_android_support_slidingpanelayout_J__unpack_aar", "//third_party/android_deps:com_android_support_slidingpanelayout_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_slidingpanelayout_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_slidingpanelayout_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -43284,6 +43308,7 @@
    "//third_party/android_deps:com_android_support_support_compat_java": {
       "deps": [ "//third_party/android_deps:com_android_support_support_compat_J__unpack_aar", "//third_party/android_deps:com_android_support_support_compat_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_support_compat_java__classes", "//third_party/android_deps:com_android_support_support_compat_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_compat_java__classes", "//third_party/android_deps:com_android_support_support_compat_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -43456,6 +43481,7 @@
    "//third_party/android_deps:com_android_support_support_compat_java__ignored_manifest": {
       "deps": [ "//third_party/android_deps:com_android_support_support_compat_J__unpack_aar", "//third_party/android_deps:com_android_support_support_compat_java__ignored_manifest__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_compat_J__unpack_aar" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -43586,6 +43612,7 @@
    "//third_party/android_deps:com_android_support_support_core_ui_java": {
       "deps": [ "//third_party/android_deps:com_android_support_support_core_ui_J__unpack_aar", "//third_party/android_deps:com_android_support_support_core_ui_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_support_core_ui_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_core_ui_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -43769,6 +43796,7 @@
    "//third_party/android_deps:com_android_support_support_core_utils_java": {
       "deps": [ "//third_party/android_deps:com_android_support_support_core_utils_J__unpack_aar", "//third_party/android_deps:com_android_support_support_core_utils_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_support_core_utils_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_core_utils_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -43952,6 +43980,7 @@
    "//third_party/android_deps:com_android_support_support_fragment_java": {
       "deps": [ "//third_party/android_deps:com_android_support_support_fragment_J__unpack_aar", "//third_party/android_deps:com_android_support_support_fragment_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_support_fragment_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_fragment_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -44135,6 +44164,7 @@
    "//third_party/android_deps:com_android_support_support_media_compat_java": {
       "deps": [ "//third_party/android_deps:com_android_support_support_media_compat_J__unpack_aar", "//third_party/android_deps:com_android_support_support_media_compat_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_support_media_compat_java__classes", "//third_party/android_deps:com_android_support_support_media_compat_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_media_compat_java__classes", "//third_party/android_deps:com_android_support_support_media_compat_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -44351,6 +44381,7 @@
    "//third_party/android_deps:com_android_support_support_v4_java": {
       "deps": [ "//third_party/android_deps:com_android_support_support_v4_J__unpack_aar", "//third_party/android_deps:com_android_support_support_v4_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_support_v4_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_v4_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -44534,6 +44565,7 @@
    "//third_party/android_deps:com_android_support_support_vector_drawable_java": {
       "deps": [ "//third_party/android_deps:com_android_support_support_vector_drawable_J__unpack_aar", "//third_party/android_deps:com_android_support_support_vector_drawable_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_support_vector_drawable_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_support_vector_drawable_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -44717,6 +44749,7 @@
    "//third_party/android_deps:com_android_support_swiperefreshlayout_java": {
       "deps": [ "//third_party/android_deps:com_android_support_swiperefreshlayout_J__unpack_aar", "//third_party/android_deps:com_android_support_swiperefreshlayout_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_swiperefreshlayout_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_swiperefreshlayout_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -44900,6 +44933,7 @@
    "//third_party/android_deps:com_android_support_transition_java": {
       "deps": [ "//third_party/android_deps:com_android_support_transition_J__unpack_aar", "//third_party/android_deps:com_android_support_transition_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_transition_java__classes", "//third_party/android_deps:com_android_support_transition_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_transition_java__classes", "//third_party/android_deps:com_android_support_transition_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -45116,6 +45150,7 @@
    "//third_party/android_deps:com_android_support_versionedparcelable_java": {
       "deps": [ "//third_party/android_deps:com_android_support_versionedparcelable_J__unpack_aar", "//third_party/android_deps:com_android_support_versionedparcelable_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_versionedparcelable_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_versionedparcelable_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -45314,6 +45349,7 @@
    "//third_party/android_deps:com_android_support_viewpager_java": {
       "deps": [ "//third_party/android_deps:com_android_support_viewpager_J__unpack_aar", "//third_party/android_deps:com_android_support_viewpager_java__build_config_crbug_908819", "//third_party/android_deps:com_android_support_viewpager_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_android_support_viewpager_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -45989,6 +46025,7 @@
    "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java": {
       "deps": [ "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_J__unpack_aar", "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java__build_config_crbug_908819", "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -46172,6 +46209,7 @@
    "//third_party/android_deps:com_google_android_material_material_java": {
       "deps": [ "//third_party/android_deps:com_google_android_material_material_J__unpack_aar", "//third_party/android_deps:com_google_android_material_material_java__build_config_crbug_908819", "//third_party/android_deps:com_google_android_material_material_java__classes", "//third_party/android_deps:com_google_android_material_material_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_android_material_material_java__classes", "//third_party/android_deps:com_google_android_material_material_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -46388,6 +46426,7 @@
    "//third_party/android_deps:com_google_android_play_core_common_java": {
       "deps": [ "//third_party/android_deps:com_google_android_play_core_common_J__unpack_aar", "//third_party/android_deps:com_google_android_play_core_common_java__build_config_crbug_908819", "//third_party/android_deps:com_google_android_play_core_common_java__classes", "//third_party/android_deps:com_google_android_play_core_common_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_android_play_core_common_java__classes", "//third_party/android_deps:com_google_android_play_core_common_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -46604,6 +46643,7 @@
    "//third_party/android_deps:com_google_android_play_feature_delivery_java": {
       "deps": [ "//third_party/android_deps:com_google_android_play_feature_delivery_J__unpack_aar", "//third_party/android_deps:com_google_android_play_feature_delivery_java__build_config_crbug_908819", "//third_party/android_deps:com_google_android_play_feature_delivery_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_android_play_feature_delivery_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -48187,6 +48227,7 @@
    "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java": {
       "deps": [ "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java__build_config_crbug_908819", "//third_party/flatbuffers:flatbuffers_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/flatbuffers:flatbuffers_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -49477,6 +49518,7 @@
    "//third_party/android_deps:dagger_java": {
       "deps": [ "//third_party/android_deps:com_google_dagger_dagger_java", "//third_party/android_deps:dagger_java__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_dagger_dagger_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -49597,6 +49639,7 @@
    "//third_party/android_deps:espresso_java": {
       "deps": [ "//third_party/android_deps:espresso_java__build_config_crbug_908819", "//third_party/espresso:espresso_all_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/espresso:espresso_all_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -49683,6 +49726,7 @@
    "//third_party/android_deps:google_android_datatransport_transport_api_java": {
       "deps": [ "//third_party/android_deps:google_android_datatransport_transport_api_J__unpack_aar", "//third_party/android_deps:google_android_datatransport_transport_api_java__build_config_crbug_908819", "//third_party/android_deps:google_android_datatransport_transport_api_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_android_datatransport_transport_api_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -49963,6 +50007,7 @@
    "//third_party/android_deps:google_firebase_firebase_common_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_common_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_common_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_common_java__classes", "//third_party/android_deps:google_firebase_firebase_common_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_common_java__classes", "//third_party/android_deps:google_firebase_firebase_common_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -50178,6 +50223,7 @@
    "//third_party/android_deps:google_firebase_firebase_components_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_components_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_components_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_components_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_components_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -50458,6 +50504,7 @@
    "//third_party/android_deps:google_firebase_firebase_encoders_json_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_encoders_json_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_encoders_json_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_encoders_json_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_encoders_json_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -50656,6 +50703,7 @@
    "//third_party/android_deps:google_firebase_firebase_iid_interop_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_iid_interop_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_iid_interop_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_iid_interop_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_iid_interop_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -50824,6 +50872,7 @@
    "//third_party/android_deps:google_firebase_firebase_iid_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_iid_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_iid_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_iid_java__classes", "//third_party/android_deps:google_firebase_firebase_iid_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_iid_java__classes", "//third_party/android_deps:google_firebase_firebase_iid_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -51054,6 +51103,7 @@
    "//third_party/android_deps:google_firebase_firebase_installations_interop_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_installations_interop_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_installations_interop_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_installations_interop_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_installations_interop_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -51222,6 +51272,7 @@
    "//third_party/android_deps:google_firebase_firebase_installations_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_installations_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_installations_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_installations_java__classes", "//third_party/android_deps:google_firebase_firebase_installations_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_installations_java__classes", "//third_party/android_deps:google_firebase_firebase_installations_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -51437,6 +51488,7 @@
    "//third_party/android_deps:google_firebase_firebase_measurement_connector_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_measurement_connector_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_measurement_connector_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_measurement_connector_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_measurement_connector_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -51620,6 +51672,7 @@
    "//third_party/android_deps:google_firebase_firebase_messaging_java": {
       "deps": [ "//third_party/android_deps:google_firebase_firebase_messaging_J__unpack_aar", "//third_party/android_deps:google_firebase_firebase_messaging_java__build_config_crbug_908819", "//third_party/android_deps:google_firebase_firebase_messaging_java__classes", "//third_party/android_deps:google_firebase_firebase_messaging_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_firebase_firebase_messaging_java__classes", "//third_party/android_deps:google_firebase_firebase_messaging_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -51851,6 +51904,7 @@
    "//third_party/android_deps:google_play_services_auth_api_phone_java": {
       "deps": [ "//third_party/android_deps:google_play_services_auth_api_phone_J__unpack_aar", "//third_party/android_deps:google_play_services_auth_api_phone_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_auth_api_phone_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_auth_api_phone_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -52034,6 +52088,7 @@
    "//third_party/android_deps:google_play_services_auth_base_java": {
       "deps": [ "//third_party/android_deps:google_play_services_auth_base_J__unpack_aar", "//third_party/android_deps:google_play_services_auth_base_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_auth_base_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_auth_base_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -52202,6 +52257,7 @@
    "//third_party/android_deps:google_play_services_auth_java": {
       "deps": [ "//third_party/android_deps:google_play_services_auth_J__unpack_aar", "//third_party/android_deps:google_play_services_auth_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_auth_java__classes", "//third_party/android_deps:google_play_services_auth_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_auth_java__classes", "//third_party/android_deps:google_play_services_auth_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -52418,6 +52474,7 @@
    "//third_party/android_deps:google_play_services_base_java": {
       "deps": [ "//third_party/android_deps:google_play_services_base_J__unpack_aar", "//third_party/android_deps:google_play_services_base_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_base_java__classes", "//third_party/android_deps:google_play_services_base_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_base_java__classes", "//third_party/android_deps:google_play_services_base_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -52665,6 +52722,7 @@
    "//third_party/android_deps:google_play_services_basement_java": {
       "deps": [ "//third_party/android_deps:google_play_services_basement_J__unpack_aar", "//third_party/android_deps:google_play_services_basement_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_basement_java__classes", "//third_party/android_deps:google_play_services_basement_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_basement_java__classes", "//third_party/android_deps:google_play_services_basement_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -52927,6 +52985,7 @@
    "//third_party/android_deps:google_play_services_cast_framework_java": {
       "deps": [ "//third_party/android_deps:google_play_services_cast_framework_J__unpack_aar", "//third_party/android_deps:google_play_services_cast_framework_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_cast_framework_java__classes", "//third_party/android_deps:google_play_services_cast_framework_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_cast_framework_java__classes", "//third_party/android_deps:google_play_services_cast_framework_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -53128,6 +53187,7 @@
    "//third_party/android_deps:google_play_services_cast_java": {
       "deps": [ "//third_party/android_deps:google_play_services_cast_J__unpack_aar", "//third_party/android_deps:google_play_services_cast_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_cast_java__classes", "//third_party/android_deps:google_play_services_cast_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_cast_java__classes", "//third_party/android_deps:google_play_services_cast_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -53344,6 +53404,7 @@
    "//third_party/android_deps:google_play_services_clearcut_java": {
       "deps": [ "//third_party/android_deps:google_play_services_clearcut_J__unpack_aar", "//third_party/android_deps:google_play_services_clearcut_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_clearcut_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_clearcut_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -53527,6 +53588,7 @@
    "//third_party/android_deps:google_play_services_cloud_messaging_java": {
       "deps": [ "//third_party/android_deps:google_play_services_cloud_messaging_J__unpack_aar", "//third_party/android_deps:google_play_services_cloud_messaging_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_cloud_messaging_java__classes", "//third_party/android_deps:google_play_services_cloud_messaging_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_cloud_messaging_java__classes", "//third_party/android_deps:google_play_services_cloud_messaging_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -53742,6 +53804,7 @@
    "//third_party/android_deps:google_play_services_flags_java": {
       "deps": [ "//third_party/android_deps:google_play_services_flags_J__unpack_aar", "//third_party/android_deps:google_play_services_flags_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_flags_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_flags_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -53925,6 +53988,7 @@
    "//third_party/android_deps:google_play_services_gcm_java": {
       "deps": [ "//third_party/android_deps:google_play_services_gcm_J__unpack_aar", "//third_party/android_deps:google_play_services_gcm_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_gcm_java__classes", "//third_party/android_deps:google_play_services_gcm_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_gcm_java__classes", "//third_party/android_deps:google_play_services_gcm_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -54141,6 +54205,7 @@
    "//third_party/android_deps:google_play_services_iid_java": {
       "deps": [ "//third_party/android_deps:google_play_services_iid_J__unpack_aar", "//third_party/android_deps:google_play_services_iid_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_iid_java__classes", "//third_party/android_deps:google_play_services_iid_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_iid_java__classes", "//third_party/android_deps:google_play_services_iid_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -54356,6 +54421,7 @@
    "//third_party/android_deps:google_play_services_instantapps_java": {
       "deps": [ "//third_party/android_deps:google_play_services_instantapps_J__unpack_aar", "//third_party/android_deps:google_play_services_instantapps_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_instantapps_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_instantapps_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -54539,6 +54605,7 @@
    "//third_party/android_deps:google_play_services_location_java": {
       "deps": [ "//third_party/android_deps:google_play_services_location_J__unpack_aar", "//third_party/android_deps:google_play_services_location_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_location_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_location_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -54722,6 +54789,7 @@
    "//third_party/android_deps:google_play_services_phenotype_java": {
       "deps": [ "//third_party/android_deps:google_play_services_phenotype_J__unpack_aar", "//third_party/android_deps:google_play_services_phenotype_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_phenotype_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_phenotype_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -54905,6 +54973,7 @@
    "//third_party/android_deps:google_play_services_places_placereport_java": {
       "deps": [ "//third_party/android_deps:google_play_services_places_placereport_J__unpack_aar", "//third_party/android_deps:google_play_services_places_placereport_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_places_placereport_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_places_placereport_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -55088,6 +55157,7 @@
    "//third_party/android_deps:google_play_services_stats_java": {
       "deps": [ "//third_party/android_deps:google_play_services_stats_J__unpack_aar", "//third_party/android_deps:google_play_services_stats_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_stats_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_stats_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -55271,6 +55341,7 @@
    "//third_party/android_deps:google_play_services_tasks_java": {
       "deps": [ "//third_party/android_deps:google_play_services_tasks_J__unpack_aar", "//third_party/android_deps:google_play_services_tasks_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_tasks_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_tasks_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -55469,6 +55540,7 @@
    "//third_party/android_deps:google_play_services_vision_common_java": {
       "deps": [ "//third_party/android_deps:google_play_services_vision_common_J__unpack_aar", "//third_party/android_deps:google_play_services_vision_common_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_vision_common_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_vision_common_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -55637,6 +55709,7 @@
    "//third_party/android_deps:google_play_services_vision_java": {
       "deps": [ "//third_party/android_deps:google_play_services_vision_J__unpack_aar", "//third_party/android_deps:google_play_services_vision_java__build_config_crbug_908819", "//third_party/android_deps:google_play_services_vision_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:google_play_services_vision_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -55805,6 +55878,7 @@
    "//third_party/android_deps:guava_android_java": {
       "deps": [ "//third_party/android_deps:com_google_guava_guava_android_java", "//third_party/android_deps:guava_android_java__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_guava_guava_android_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -56067,6 +56141,7 @@
    "//third_party/android_deps:io_grpc_grpc_binder_java": {
       "deps": [ "//third_party/android_deps:io_grpc_grpc_binder_J__unpack_aar", "//third_party/android_deps:io_grpc_grpc_binder_java__build_config_crbug_908819", "//third_party/android_deps:io_grpc_grpc_binder_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:io_grpc_grpc_binder_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -57011,6 +57086,7 @@
    "//third_party/android_deps:material_design_java": {
       "deps": [ "//third_party/android_deps:com_google_android_material_material_java", "//third_party/android_deps:material_design_java__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_android_material_material_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -60897,6 +60973,7 @@
    "//third_party/android_deps:playcore_java": {
       "deps": [ "//third_party/android_deps:com_google_android_play_feature_delivery_java", "//third_party/android_deps:playcore_java__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_android_play_feature_delivery_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -60968,6 +61045,7 @@
    "//third_party/android_deps:protobuf_lite_runtime_java": {
       "deps": [ "//third_party/android_deps:com_google_protobuf_protobuf_javalite_java", "//third_party/android_deps:protobuf_lite_runtime_java__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:com_google_protobuf_protobuf_javalite_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -61039,6 +61117,7 @@
    "//third_party/android_deps:robolectric_all_java": {
       "deps": [ "//third_party/android_deps:org_robolectric_annotations_java", "//third_party/android_deps:org_robolectric_junit_java", "//third_party/android_deps:org_robolectric_pluginapi_java", "//third_party/android_deps:org_robolectric_resources_java", "//third_party/android_deps:org_robolectric_robolectric_java", "//third_party/android_deps:org_robolectric_sandbox_java", "//third_party/android_deps:org_robolectric_shadowapi_java", "//third_party/android_deps:org_robolectric_shadows_framework_java", "//third_party/android_deps:org_robolectric_utils_java", "//third_party/android_deps:org_robolectric_utils_reflector_java", "//third_party/android_deps:robolectric_all_java__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_deps:org_robolectric_annotations_java", "//third_party/android_deps:org_robolectric_junit_java", "//third_party/android_deps:org_robolectric_pluginapi_java", "//third_party/android_deps:org_robolectric_resources_java", "//third_party/android_deps:org_robolectric_robolectric_java", "//third_party/android_deps:org_robolectric_sandbox_java", "//third_party/android_deps:org_robolectric_shadowapi_java", "//third_party/android_deps:org_robolectric_shadows_framework_java", "//third_party/android_deps:org_robolectric_utils_java", "//third_party/android_deps:org_robolectric_utils_reflector_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -61271,6 +61350,7 @@
    "//third_party/android_sdk:android_test_base_java": {
       "deps": [ "//third_party/android_sdk:android_test_base_java__build_config_crbug_908819", "//third_party/android_sdk:android_test_base_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_sdk:android_test_base_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -61389,6 +61469,7 @@
    "//third_party/android_sdk:android_test_mock_java": {
       "deps": [ "//third_party/android_sdk:android_test_mock_java__build_config_crbug_908819", "//third_party/android_sdk:android_test_mock_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_sdk:android_test_mock_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -61507,6 +61588,7 @@
    "//third_party/android_sdk:android_test_runner_java": {
       "deps": [ "//third_party/android_sdk:android_test_runner_java__build_config_crbug_908819", "//third_party/android_sdk:android_test_runner_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/android_sdk:android_test_runner_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -61860,6 +61942,7 @@
    "//third_party/androidx:androidx_activity_activity_java": {
       "deps": [ "//third_party/androidx:androidx_activity_activity_J__unpack_aar", "//third_party/androidx:androidx_activity_activity_java__build_config_crbug_908819", "//third_party/androidx:androidx_activity_activity_java__classes", "//third_party/androidx:androidx_activity_activity_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_activity_activity_java__classes", "//third_party/androidx:androidx_activity_activity_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -62076,6 +62159,7 @@
    "//third_party/androidx:androidx_activity_activity_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_activity_activity_ktx_J__unpack_aar", "//third_party/androidx:androidx_activity_activity_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_activity_activity_ktx_java__classes", "//third_party/androidx:androidx_activity_activity_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_activity_activity_ktx_java__classes", "//third_party/androidx:androidx_activity_activity_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -62292,6 +62376,7 @@
    "//third_party/androidx:androidx_annotation_annotation_experimental_java": {
       "deps": [ "//third_party/androidx:androidx_annotation_annotation_experimental_J__unpack_aar", "//third_party/androidx:androidx_annotation_annotation_experimental_java__build_config_crbug_908819", "//third_party/androidx:androidx_annotation_annotation_experimental_java__classes", "//third_party/androidx:androidx_annotation_annotation_experimental_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_annotation_annotation_experimental_java__classes", "//third_party/androidx:androidx_annotation_annotation_experimental_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -62493,6 +62578,7 @@
    "//third_party/androidx:androidx_annotation_annotation_java": {
       "deps": [ "//third_party/androidx:androidx_annotation_annotation_java__build_config_crbug_908819", "//third_party/androidx:androidx_annotation_annotation_jvm_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -62691,6 +62777,7 @@
    "//third_party/androidx:androidx_appcompat_appcompat_java": {
       "deps": [ "//third_party/androidx:androidx_appcompat_appcompat_J__unpack_aar", "//third_party/androidx:androidx_appcompat_appcompat_java__build_config_crbug_908819", "//third_party/androidx:androidx_appcompat_appcompat_java__classes", "//third_party/androidx:androidx_appcompat_appcompat_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_appcompat_appcompat_java__classes", "//third_party/androidx:androidx_appcompat_appcompat_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -62907,6 +62994,7 @@
    "//third_party/androidx:androidx_appcompat_appcompat_resources_java": {
       "deps": [ "//third_party/androidx:androidx_appcompat_appcompat_resources_J__unpack_aar", "//third_party/androidx:androidx_appcompat_appcompat_resources_java__build_config_crbug_908819", "//third_party/androidx:androidx_appcompat_appcompat_resources_java__classes", "//third_party/androidx:androidx_appcompat_appcompat_resources_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_appcompat_appcompat_resources_java__classes", "//third_party/androidx:androidx_appcompat_appcompat_resources_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -63123,6 +63211,7 @@
    "//third_party/androidx:androidx_appsearch_appsearch_java": {
       "deps": [ "//third_party/androidx:androidx_appsearch_appsearch_J__unpack_aar", "//third_party/androidx:androidx_appsearch_appsearch_java__build_config_crbug_908819", "//third_party/androidx:androidx_appsearch_appsearch_java__classes", "//third_party/androidx:androidx_appsearch_appsearch_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_appsearch_appsearch_java__classes", "//third_party/androidx:androidx_appsearch_appsearch_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -63339,6 +63428,7 @@
    "//third_party/androidx:androidx_appsearch_appsearch_platform_storage_java": {
       "deps": [ "//third_party/androidx:androidx_appsearch_appsearch_platform_storage_J__unpack_aar", "//third_party/androidx:androidx_appsearch_appsearch_platform_storage_java__build_config_crbug_908819", "//third_party/androidx:androidx_appsearch_appsearch_platform_storage_java__classes", "//third_party/androidx:androidx_appsearch_appsearch_platform_storage_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_appsearch_appsearch_platform_storage_java__classes", "//third_party/androidx:androidx_appsearch_appsearch_platform_storage_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -63652,6 +63742,7 @@
    "//third_party/androidx:androidx_arch_core_core_runtime_java": {
       "deps": [ "//third_party/androidx:androidx_arch_core_core_runtime_J__unpack_aar", "//third_party/androidx:androidx_arch_core_core_runtime_java__build_config_crbug_908819", "//third_party/androidx:androidx_arch_core_core_runtime_java__classes", "//third_party/androidx:androidx_arch_core_core_runtime_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_arch_core_core_runtime_java__classes", "//third_party/androidx:androidx_arch_core_core_runtime_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -63883,6 +63974,7 @@
    "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java": {
       "deps": [ "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_J__unpack_aar", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java__build_config_crbug_908819", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java__classes", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java__classes", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -64084,6 +64176,7 @@
    "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java": {
       "deps": [ "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_J__unpack_aar", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java__build_config_crbug_908819", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java__classes", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java__classes", "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -64315,6 +64408,7 @@
    "//third_party/androidx:androidx_benchmark_benchmark_common_java": {
       "deps": [ "//third_party/androidx:androidx_benchmark_benchmark_common_J__unpack_aar", "//third_party/androidx:androidx_benchmark_benchmark_common_java__assets", "//third_party/androidx:androidx_benchmark_benchmark_common_java__build_config_crbug_908819", "//third_party/androidx:androidx_benchmark_benchmark_common_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_common_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_benchmark_benchmark_common_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_common_java__resources", "//third_party/androidx:androidx_benchmark_benchmark_common_java__assets" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -64547,6 +64641,7 @@
    "//third_party/androidx:androidx_benchmark_benchmark_junit4_java": {
       "deps": [ "//third_party/androidx:androidx_benchmark_benchmark_U4_J__unpack_aar", "//third_party/androidx:androidx_benchmark_benchmark_junit4_java__build_config_crbug_908819", "//third_party/androidx:androidx_benchmark_benchmark_junit4_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_junit4_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_benchmark_benchmark_junit4_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_junit4_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -64778,6 +64873,7 @@
    "//third_party/androidx:androidx_benchmark_benchmark_macro_java": {
       "deps": [ "//third_party/androidx:androidx_benchmark_benchmark_macro_J__unpack_aar", "//third_party/androidx:androidx_benchmark_benchmark_macro_java__assets", "//third_party/androidx:androidx_benchmark_benchmark_macro_java__build_config_crbug_908819", "//third_party/androidx:androidx_benchmark_benchmark_macro_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_macro_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_benchmark_benchmark_macro_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_macro_java__resources", "//third_party/androidx:androidx_benchmark_benchmark_macro_java__assets" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -65010,6 +65106,7 @@
    "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java": {
       "deps": [ "//third_party/androidx:androidx_benchmark_benchmark_macro_U4_J__unpack_aar", "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java__build_config_crbug_908819", "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java__classes", "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -65226,6 +65323,7 @@
    "//third_party/androidx:androidx_biometric_biometric_java": {
       "deps": [ "//third_party/androidx:androidx_biometric_biometric_J__unpack_aar", "//third_party/androidx:androidx_biometric_biometric_java__build_config_crbug_908819", "//third_party/androidx:androidx_biometric_biometric_java__classes", "//third_party/androidx:androidx_biometric_biometric_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_biometric_biometric_java__classes", "//third_party/androidx:androidx_biometric_biometric_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -65473,6 +65571,7 @@
    "//third_party/androidx:androidx_browser_browser_java": {
       "deps": [ "//third_party/androidx:androidx_browser_browser_J__unpack_aar", "//third_party/androidx:androidx_browser_browser_java__build_config_crbug_908819", "//third_party/androidx:androidx_browser_browser_java__classes", "//third_party/androidx:androidx_browser_browser_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_browser_browser_java__classes", "//third_party/androidx:androidx_browser_browser_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -65689,6 +65788,7 @@
    "//third_party/androidx:androidx_cardview_cardview_java": {
       "deps": [ "//third_party/androidx:androidx_cardview_cardview_J__unpack_aar", "//third_party/androidx:androidx_cardview_cardview_java__build_config_crbug_908819", "//third_party/androidx:androidx_cardview_cardview_java__classes", "//third_party/androidx:androidx_cardview_cardview_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_cardview_cardview_java__classes", "//third_party/androidx:androidx_cardview_cardview_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -65890,6 +65990,7 @@
    "//third_party/androidx:androidx_collection_collection_java": {
       "deps": [ "//third_party/androidx:androidx_collection_collection_java__build_config_crbug_908819", "//third_party/androidx:androidx_collection_collection_jvm_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_collection_collection_jvm_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -66364,6 +66465,7 @@
    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java": {
       "deps": [ "//third_party/androidx:androidx_constraintlayout_constraintlayout_J__unpack_aar", "//third_party/androidx:androidx_constraintlayout_constraintlayout_java__build_config_crbug_908819", "//third_party/androidx:androidx_constraintlayout_constraintlayout_java__classes", "//third_party/androidx:androidx_constraintlayout_constraintlayout_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_constraintlayout_constraintlayout_java__classes", "//third_party/androidx:androidx_constraintlayout_constraintlayout_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -66580,6 +66682,7 @@
    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java": {
       "deps": [ "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_J__unpack_aar", "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java__build_config_crbug_908819", "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java__classes", "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java__classes", "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -66811,6 +66914,7 @@
    "//third_party/androidx:androidx_core_core_animation_java": {
       "deps": [ "//third_party/androidx:androidx_core_core_animation_J__unpack_aar", "//third_party/androidx:androidx_core_core_animation_java__build_config_crbug_908819", "//third_party/androidx:androidx_core_core_animation_java__classes", "//third_party/androidx:androidx_core_core_animation_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_core_core_animation_java__classes", "//third_party/androidx:androidx_core_core_animation_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -67012,6 +67116,7 @@
    "//third_party/androidx:androidx_core_core_java": {
       "deps": [ "//third_party/androidx:androidx_core_core_J__unpack_aar", "//third_party/androidx:androidx_core_core_java__build_config_crbug_908819", "//third_party/androidx:androidx_core_core_java__classes", "//third_party/androidx:androidx_core_core_java__resources", "//third_party/androidx/local_modifications/buildcompat:buildcompat_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_core_core_java__classes", "//third_party/androidx:androidx_core_core_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -67184,6 +67289,7 @@
    "//third_party/androidx:androidx_core_core_java__ignored_manifest": {
       "deps": [ "//third_party/androidx:androidx_core_core_J__unpack_aar", "//third_party/androidx:androidx_core_core_java__ignored_manifest__build_config_crbug_908819" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_core_core_J__unpack_aar" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -67314,6 +67420,7 @@
    "//third_party/androidx:androidx_core_core_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_core_core_ktx_J__unpack_aar", "//third_party/androidx:androidx_core_core_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_core_core_ktx_java__classes", "//third_party/androidx:androidx_core_core_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_core_core_ktx_java__classes", "//third_party/androidx:androidx_core_core_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -67530,6 +67637,7 @@
    "//third_party/androidx:androidx_cursoradapter_cursoradapter_java": {
       "deps": [ "//third_party/androidx:androidx_cursoradapter_cursoradapter_J__unpack_aar", "//third_party/androidx:androidx_cursoradapter_cursoradapter_java__build_config_crbug_908819", "//third_party/androidx:androidx_cursoradapter_cursoradapter_java__classes", "//third_party/androidx:androidx_cursoradapter_cursoradapter_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_cursoradapter_cursoradapter_java__classes", "//third_party/androidx:androidx_cursoradapter_cursoradapter_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -67746,6 +67854,7 @@
    "//third_party/androidx:androidx_customview_customview_java": {
       "deps": [ "//third_party/androidx:androidx_customview_customview_J__unpack_aar", "//third_party/androidx:androidx_customview_customview_java__build_config_crbug_908819", "//third_party/androidx:androidx_customview_customview_java__classes", "//third_party/androidx:androidx_customview_customview_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_customview_customview_java__classes", "//third_party/androidx:androidx_customview_customview_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -67962,6 +68071,7 @@
    "//third_party/androidx:androidx_customview_customview_poolingcontainer_java": {
       "deps": [ "//third_party/androidx:androidx_customview_customview_poolingcontainer_J__unpack_aar", "//third_party/androidx:androidx_customview_customview_poolingcontainer_java__build_config_crbug_908819", "//third_party/androidx:androidx_customview_customview_poolingcontainer_java__classes", "//third_party/androidx:androidx_customview_customview_poolingcontainer_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_customview_customview_poolingcontainer_java__classes", "//third_party/androidx:androidx_customview_customview_poolingcontainer_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -68178,6 +68288,7 @@
    "//third_party/androidx:androidx_documentfile_documentfile_java": {
       "deps": [ "//third_party/androidx:androidx_documentfile_documentfile_J__unpack_aar", "//third_party/androidx:androidx_documentfile_documentfile_java__build_config_crbug_908819", "//third_party/androidx:androidx_documentfile_documentfile_java__classes", "//third_party/androidx:androidx_documentfile_documentfile_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_documentfile_documentfile_java__classes", "//third_party/androidx:androidx_documentfile_documentfile_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -68394,6 +68505,7 @@
    "//third_party/androidx:androidx_drawerlayout_drawerlayout_java": {
       "deps": [ "//third_party/androidx:androidx_drawerlayout_drawerlayout_J__unpack_aar", "//third_party/androidx:androidx_drawerlayout_drawerlayout_java__build_config_crbug_908819", "//third_party/androidx:androidx_drawerlayout_drawerlayout_java__classes", "//third_party/androidx:androidx_drawerlayout_drawerlayout_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_drawerlayout_drawerlayout_java__classes", "//third_party/androidx:androidx_drawerlayout_drawerlayout_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -68610,6 +68722,7 @@
    "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java": {
       "deps": [ "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_J__unpack_aar", "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java__build_config_crbug_908819", "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java__classes", "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java__classes", "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -68826,6 +68939,7 @@
    "//third_party/androidx:androidx_emoji2_emoji2_java": {
       "deps": [ "//third_party/androidx:androidx_emoji2_emoji2_J__unpack_aar", "//third_party/androidx:androidx_emoji2_emoji2_java__build_config_crbug_908819", "//third_party/androidx:androidx_emoji2_emoji2_java__classes", "//third_party/androidx:androidx_emoji2_emoji2_java__resources", "//third_party/androidx:androidx_emoji2_emoji2_java__subjar_repackaged" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_emoji2_emoji2_java__classes", "//third_party/androidx:androidx_emoji2_emoji2_java__subjar_repackaged", "//third_party/androidx:androidx_emoji2_emoji2_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -69139,6 +69253,7 @@
    "//third_party/androidx:androidx_emoji2_emoji2_views_helper_java": {
       "deps": [ "//third_party/androidx:androidx_emoji2_emoji2_views_helper_J__unpack_aar", "//third_party/androidx:androidx_emoji2_emoji2_views_helper_java__build_config_crbug_908819", "//third_party/androidx:androidx_emoji2_emoji2_views_helper_java__classes", "//third_party/androidx:androidx_emoji2_emoji2_views_helper_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_emoji2_emoji2_views_helper_java__classes", "//third_party/androidx:androidx_emoji2_emoji2_views_helper_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -69355,6 +69470,7 @@
    "//third_party/androidx:androidx_emoji_emoji_java": {
       "deps": [ "//third_party/androidx:androidx_emoji_emoji_J__unpack_aar", "//third_party/androidx:androidx_emoji_emoji_java__build_config_crbug_908819", "//third_party/androidx:androidx_emoji_emoji_java__classes", "//third_party/androidx:androidx_emoji_emoji_java__resources", "//third_party/androidx:androidx_emoji_emoji_java__subjar_repackaged" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_emoji_emoji_java__classes", "//third_party/androidx:androidx_emoji_emoji_java__subjar_repackaged", "//third_party/androidx:androidx_emoji_emoji_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -69668,6 +69784,7 @@
    "//third_party/androidx:androidx_exifinterface_exifinterface_java": {
       "deps": [ "//third_party/androidx:androidx_exifinterface_exifinterface_J__unpack_aar", "//third_party/androidx:androidx_exifinterface_exifinterface_java__build_config_crbug_908819", "//third_party/androidx:androidx_exifinterface_exifinterface_java__classes", "//third_party/androidx:androidx_exifinterface_exifinterface_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_exifinterface_exifinterface_java__classes", "//third_party/androidx:androidx_exifinterface_exifinterface_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -69884,6 +70001,7 @@
    "//third_party/androidx:androidx_fragment_fragment_java": {
       "deps": [ "//third_party/androidx:androidx_fragment_fragment_J__unpack_aar", "//third_party/androidx:androidx_fragment_fragment_java__build_config_crbug_908819", "//third_party/androidx:androidx_fragment_fragment_java__classes", "//third_party/androidx:androidx_fragment_fragment_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_fragment_fragment_java__classes", "//third_party/androidx:androidx_fragment_fragment_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -70131,6 +70249,7 @@
    "//third_party/androidx:androidx_fragment_fragment_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_fragment_fragment_ktx_J__unpack_aar", "//third_party/androidx:androidx_fragment_fragment_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_fragment_fragment_ktx_java__classes", "//third_party/androidx:androidx_fragment_fragment_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_fragment_fragment_ktx_java__classes", "//third_party/androidx:androidx_fragment_fragment_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -70347,6 +70466,7 @@
    "//third_party/androidx:androidx_fragment_fragment_testing_java": {
       "deps": [ "//third_party/androidx:androidx_fragment_fragment_testing_J__unpack_aar", "//third_party/androidx:androidx_fragment_fragment_testing_java__build_config_crbug_908819", "//third_party/androidx:androidx_fragment_fragment_testing_java__classes", "//third_party/androidx:androidx_fragment_fragment_testing_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_fragment_fragment_testing_java__classes", "//third_party/androidx:androidx_fragment_fragment_testing_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -70563,6 +70683,7 @@
    "//third_party/androidx:androidx_fragment_fragment_testing_manifest_java": {
       "deps": [ "//third_party/androidx:androidx_fragment_fragment_testing_manifest_J__unpack_aar", "//third_party/androidx:androidx_fragment_fragment_testing_manifest_java__build_config_crbug_908819", "//third_party/androidx:androidx_fragment_fragment_testing_manifest_java__classes", "//third_party/androidx:androidx_fragment_fragment_testing_manifest_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_fragment_fragment_testing_manifest_java__classes", "//third_party/androidx:androidx_fragment_fragment_testing_manifest_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -70779,6 +70900,7 @@
    "//third_party/androidx:androidx_gridlayout_gridlayout_java": {
       "deps": [ "//third_party/androidx:androidx_gridlayout_gridlayout_J__unpack_aar", "//third_party/androidx:androidx_gridlayout_gridlayout_java__build_config_crbug_908819", "//third_party/androidx:androidx_gridlayout_gridlayout_java__classes", "//third_party/androidx:androidx_gridlayout_gridlayout_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_gridlayout_gridlayout_java__classes", "//third_party/androidx:androidx_gridlayout_gridlayout_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -70995,6 +71117,7 @@
    "//third_party/androidx:androidx_interpolator_interpolator_java": {
       "deps": [ "//third_party/androidx:androidx_interpolator_interpolator_J__unpack_aar", "//third_party/androidx:androidx_interpolator_interpolator_java__build_config_crbug_908819", "//third_party/androidx:androidx_interpolator_interpolator_java__classes", "//third_party/androidx:androidx_interpolator_interpolator_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_interpolator_interpolator_java__classes", "//third_party/androidx:androidx_interpolator_interpolator_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -71226,6 +71349,7 @@
    "//third_party/androidx:androidx_leanback_leanback_grid_java": {
       "deps": [ "//third_party/androidx:androidx_leanback_leanback_grid_J__unpack_aar", "//third_party/androidx:androidx_leanback_leanback_grid_java__build_config_crbug_908819", "//third_party/androidx:androidx_leanback_leanback_grid_java__classes", "//third_party/androidx:androidx_leanback_leanback_grid_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_leanback_leanback_grid_java__classes", "//third_party/androidx:androidx_leanback_leanback_grid_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -71427,6 +71551,7 @@
    "//third_party/androidx:androidx_leanback_leanback_java": {
       "deps": [ "//third_party/androidx:androidx_leanback_leanback_J__unpack_aar", "//third_party/androidx:androidx_leanback_leanback_java__build_config_crbug_908819", "//third_party/androidx:androidx_leanback_leanback_java__classes", "//third_party/androidx:androidx_leanback_leanback_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_leanback_leanback_java__classes", "//third_party/androidx:androidx_leanback_leanback_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -71643,6 +71768,7 @@
    "//third_party/androidx:androidx_leanback_leanback_preference_java": {
       "deps": [ "//third_party/androidx:androidx_leanback_leanback_preference_J__unpack_aar", "//third_party/androidx:androidx_leanback_leanback_preference_java__build_config_crbug_908819", "//third_party/androidx:androidx_leanback_leanback_preference_java__classes", "//third_party/androidx:androidx_leanback_leanback_preference_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_leanback_leanback_preference_java__classes", "//third_party/androidx:androidx_leanback_leanback_preference_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -71859,6 +71985,7 @@
    "//third_party/androidx:androidx_legacy_legacy_support_core_ui_java": {
       "deps": [ "//third_party/androidx:androidx_legacy_legacy_support_core_ui_J__unpack_aar", "//third_party/androidx:androidx_legacy_legacy_support_core_ui_java__build_config_crbug_908819", "//third_party/androidx:androidx_legacy_legacy_support_core_ui_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_legacy_legacy_support_core_ui_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -72042,6 +72169,7 @@
    "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java": {
       "deps": [ "//third_party/androidx:androidx_legacy_legacy_support_core_utils_J__unpack_aar", "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java__build_config_crbug_908819", "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -72225,6 +72353,7 @@
    "//third_party/androidx:androidx_legacy_legacy_support_v4_java": {
       "deps": [ "//third_party/androidx:androidx_legacy_legacy_support_v4_J__unpack_aar", "//third_party/androidx:androidx_legacy_legacy_support_v4_java__build_config_crbug_908819", "//third_party/androidx:androidx_legacy_legacy_support_v4_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_legacy_legacy_support_v4_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -72617,6 +72746,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -72833,6 +72963,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_ktx_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_ktx_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_ktx_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -73034,6 +73165,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -73250,6 +73382,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_process_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_process_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_process_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_process_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_process_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_process_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_process_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -73466,6 +73599,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -73682,6 +73816,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_ktx_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_ktx_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_ktx_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -73898,6 +74033,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_service_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_service_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_service_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_service_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_service_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_service_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_service_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -74114,6 +74250,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -74330,6 +74467,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_ktx_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_ktx_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_ktx_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -74546,6 +74684,7 @@
    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java": {
       "deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_J__unpack_aar", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java__build_config_crbug_908819", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java__classes", "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -74762,6 +74901,7 @@
    "//third_party/androidx:androidx_loader_loader_java": {
       "deps": [ "//third_party/androidx:androidx_loader_loader_J__unpack_aar", "//third_party/androidx:androidx_loader_loader_java__build_config_crbug_908819", "//third_party/androidx:androidx_loader_loader_java__classes", "//third_party/androidx:androidx_loader_loader_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_loader_loader_java__classes", "//third_party/androidx:androidx_loader_loader_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -74978,6 +75118,7 @@
    "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java": {
       "deps": [ "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_J__unpack_aar", "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java__build_config_crbug_908819", "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -75161,6 +75302,7 @@
    "//third_party/androidx:androidx_media3_media3_common_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_common_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_common_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_common_java__classes", "//third_party/androidx:androidx_media3_media3_common_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_common_java__classes", "//third_party/androidx:androidx_media3_media3_common_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -75376,6 +75518,7 @@
    "//third_party/androidx:androidx_media3_media3_database_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_database_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_database_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_database_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_database_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -75559,6 +75702,7 @@
    "//third_party/androidx:androidx_media3_media3_datasource_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_datasource_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_datasource_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_datasource_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_datasource_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -75742,6 +75886,7 @@
    "//third_party/androidx:androidx_media3_media3_decoder_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_decoder_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_decoder_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_decoder_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_decoder_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -75925,6 +76070,7 @@
    "//third_party/androidx:androidx_media3_media3_exoplayer_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_exoplayer_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_exoplayer_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_exoplayer_java__classes", "//third_party/androidx:androidx_media3_media3_exoplayer_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_exoplayer_java__classes", "//third_party/androidx:androidx_media3_media3_exoplayer_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -76141,6 +76287,7 @@
    "//third_party/androidx:androidx_media3_media3_extractor_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_extractor_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_extractor_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_extractor_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_extractor_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -76324,6 +76471,7 @@
    "//third_party/androidx:androidx_media3_media3_session_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_session_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_session_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_session_java__classes", "//third_party/androidx:androidx_media3_media3_session_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_session_java__classes", "//third_party/androidx:androidx_media3_media3_session_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -76540,6 +76688,7 @@
    "//third_party/androidx:androidx_media3_media3_ui_java": {
       "deps": [ "//third_party/androidx:androidx_media3_media3_ui_J__unpack_aar", "//third_party/androidx:androidx_media3_media3_ui_java__build_config_crbug_908819", "//third_party/androidx:androidx_media3_media3_ui_java__classes", "//third_party/androidx:androidx_media3_media3_ui_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media3_media3_ui_java__classes", "//third_party/androidx:androidx_media3_media3_ui_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -76756,6 +76905,7 @@
    "//third_party/androidx:androidx_media_media_java": {
       "deps": [ "//third_party/androidx:androidx_media_media_J__unpack_aar", "//third_party/androidx:androidx_media_media_java__build_config_crbug_908819", "//third_party/androidx:androidx_media_media_java__classes", "//third_party/androidx:androidx_media_media_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_media_media_java__classes", "//third_party/androidx:androidx_media_media_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -76972,6 +77122,7 @@
    "//third_party/androidx:androidx_mediarouter_mediarouter_java": {
       "deps": [ "//third_party/androidx:androidx_mediarouter_mediarouter_J__unpack_aar", "//third_party/androidx:androidx_mediarouter_mediarouter_java__build_config_crbug_908819", "//third_party/androidx:androidx_mediarouter_mediarouter_java__classes", "//third_party/androidx:androidx_mediarouter_mediarouter_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_mediarouter_mediarouter_java__classes", "//third_party/androidx:androidx_mediarouter_mediarouter_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -77188,6 +77339,7 @@
    "//third_party/androidx:androidx_multidex_multidex_java": {
       "deps": [ "//third_party/androidx:androidx_multidex_multidex_J__unpack_aar", "//third_party/androidx:androidx_multidex_multidex_java__build_config_crbug_908819", "//third_party/androidx:androidx_multidex_multidex_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_multidex_multidex_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -77371,6 +77523,7 @@
    "//third_party/androidx:androidx_palette_palette_java": {
       "deps": [ "//third_party/androidx:androidx_palette_palette_J__unpack_aar", "//third_party/androidx:androidx_palette_palette_java__build_config_crbug_908819", "//third_party/androidx:androidx_palette_palette_java__classes", "//third_party/androidx:androidx_palette_palette_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_palette_palette_java__classes", "//third_party/androidx:androidx_palette_palette_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -77587,6 +77740,7 @@
    "//third_party/androidx:androidx_preference_preference_java": {
       "deps": [ "//third_party/androidx:androidx_preference_preference_J__unpack_aar", "//third_party/androidx:androidx_preference_preference_java__build_config_crbug_908819", "//third_party/androidx:androidx_preference_preference_java__classes", "//third_party/androidx:androidx_preference_preference_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_preference_preference_java__classes", "//third_party/androidx:androidx_preference_preference_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -77834,6 +77988,7 @@
    "//third_party/androidx:androidx_print_print_java": {
       "deps": [ "//third_party/androidx:androidx_print_print_J__unpack_aar", "//third_party/androidx:androidx_print_print_java__build_config_crbug_908819", "//third_party/androidx:androidx_print_print_java__classes", "//third_party/androidx:androidx_print_print_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_print_print_java__classes", "//third_party/androidx:androidx_print_print_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -78065,6 +78220,7 @@
    "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java": {
       "deps": [ "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_J__unpack_aar", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java__build_config_crbug_908819", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java__classes", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java__classes", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -78266,6 +78422,7 @@
    "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java_java": {
       "deps": [ "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_J_J__unpack_aar", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java_java__build_config_crbug_908819", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java_java__classes", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java_java__classes", "//third_party/androidx:androidx_privacysandbox_ads_ads_adservices_java_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -78482,6 +78639,7 @@
    "//third_party/androidx:androidx_profileinstaller_profileinstaller_java": {
       "deps": [ "//third_party/androidx:androidx_profileinstaller_profileinstaller_J__unpack_aar", "//third_party/androidx:androidx_profileinstaller_profileinstaller_java__build_config_crbug_908819", "//third_party/androidx:androidx_profileinstaller_profileinstaller_java__classes", "//third_party/androidx:androidx_profileinstaller_profileinstaller_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_profileinstaller_profileinstaller_java__classes", "//third_party/androidx:androidx_profileinstaller_profileinstaller_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -78698,6 +78856,7 @@
    "//third_party/androidx:androidx_recyclerview_recyclerview_java": {
       "deps": [ "//third_party/androidx:androidx_recyclerview_recyclerview_J__unpack_aar", "//third_party/androidx:androidx_recyclerview_recyclerview_java__build_config_crbug_908819", "//third_party/androidx:androidx_recyclerview_recyclerview_java__classes", "//third_party/androidx:androidx_recyclerview_recyclerview_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_recyclerview_recyclerview_java__classes", "//third_party/androidx:androidx_recyclerview_recyclerview_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -78914,6 +79073,7 @@
    "//third_party/androidx:androidx_remotecallback_remotecallback_java": {
       "deps": [ "//third_party/androidx:androidx_remotecallback_remotecallback_J__unpack_aar", "//third_party/androidx:androidx_remotecallback_remotecallback_java__build_config_crbug_908819", "//third_party/androidx:androidx_remotecallback_remotecallback_java__classes", "//third_party/androidx:androidx_remotecallback_remotecallback_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_remotecallback_remotecallback_java__classes", "//third_party/androidx:androidx_remotecallback_remotecallback_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -79324,6 +79484,7 @@
    "//third_party/androidx:androidx_room_room_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_room_room_ktx_J__unpack_aar", "//third_party/androidx:androidx_room_room_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_room_room_ktx_java__classes", "//third_party/androidx:androidx_room_room_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_room_room_ktx_java__classes", "//third_party/androidx:androidx_room_room_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -79540,6 +79701,7 @@
    "//third_party/androidx:androidx_room_room_runtime_java": {
       "deps": [ "//third_party/androidx:androidx_room_room_runtime_J__unpack_aar", "//third_party/androidx:androidx_room_room_runtime_java__build_config_crbug_908819", "//third_party/androidx:androidx_room_room_runtime_java__classes", "//third_party/androidx:androidx_room_room_runtime_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_room_room_runtime_java__classes", "//third_party/androidx:androidx_room_room_runtime_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -79756,6 +79918,7 @@
    "//third_party/androidx:androidx_savedstate_savedstate_java": {
       "deps": [ "//third_party/androidx:androidx_savedstate_savedstate_J__unpack_aar", "//third_party/androidx:androidx_savedstate_savedstate_java__build_config_crbug_908819", "//third_party/androidx:androidx_savedstate_savedstate_java__classes", "//third_party/androidx:androidx_savedstate_savedstate_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_savedstate_savedstate_java__classes", "//third_party/androidx:androidx_savedstate_savedstate_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -79972,6 +80135,7 @@
    "//third_party/androidx:androidx_savedstate_savedstate_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_savedstate_savedstate_ktx_J__unpack_aar", "//third_party/androidx:androidx_savedstate_savedstate_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_savedstate_savedstate_ktx_java__classes", "//third_party/androidx:androidx_savedstate_savedstate_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_savedstate_savedstate_ktx_java__classes", "//third_party/androidx:androidx_savedstate_savedstate_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -80188,6 +80352,7 @@
    "//third_party/androidx:androidx_slice_slice_builders_java": {
       "deps": [ "//third_party/androidx:androidx_slice_slice_builders_J__unpack_aar", "//third_party/androidx:androidx_slice_slice_builders_java__build_config_crbug_908819", "//third_party/androidx:androidx_slice_slice_builders_java__classes", "//third_party/androidx:androidx_slice_slice_builders_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_slice_slice_builders_java__classes", "//third_party/androidx:androidx_slice_slice_builders_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -80404,6 +80569,7 @@
    "//third_party/androidx:androidx_slice_slice_core_java": {
       "deps": [ "//third_party/androidx:androidx_slice_slice_core_J__unpack_aar", "//third_party/androidx:androidx_slice_slice_core_java__build_config_crbug_908819", "//third_party/androidx:androidx_slice_slice_core_java__classes", "//third_party/androidx:androidx_slice_slice_core_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_slice_slice_core_java__classes", "//third_party/androidx:androidx_slice_slice_core_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -80620,6 +80786,7 @@
    "//third_party/androidx:androidx_slice_slice_view_java": {
       "deps": [ "//third_party/androidx:androidx_slice_slice_view_J__unpack_aar", "//third_party/androidx:androidx_slice_slice_view_java__build_config_crbug_908819", "//third_party/androidx:androidx_slice_slice_view_java__classes", "//third_party/androidx:androidx_slice_slice_view_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_slice_slice_view_java__classes", "//third_party/androidx:androidx_slice_slice_view_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -80836,6 +81003,7 @@
    "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java": {
       "deps": [ "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_J__unpack_aar", "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java__build_config_crbug_908819", "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java__classes", "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java__classes", "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -81067,6 +81235,7 @@
    "//third_party/androidx:androidx_sqlite_sqlite_framework_java": {
       "deps": [ "//third_party/androidx:androidx_sqlite_sqlite_framework_J__unpack_aar", "//third_party/androidx:androidx_sqlite_sqlite_framework_java__build_config_crbug_908819", "//third_party/androidx:androidx_sqlite_sqlite_framework_java__classes", "//third_party/androidx:androidx_sqlite_sqlite_framework_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_sqlite_sqlite_framework_java__classes", "//third_party/androidx:androidx_sqlite_sqlite_framework_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -81268,6 +81437,7 @@
    "//third_party/androidx:androidx_sqlite_sqlite_java": {
       "deps": [ "//third_party/androidx:androidx_sqlite_sqlite_J__unpack_aar", "//third_party/androidx:androidx_sqlite_sqlite_java__build_config_crbug_908819", "//third_party/androidx:androidx_sqlite_sqlite_java__classes", "//third_party/androidx:androidx_sqlite_sqlite_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_sqlite_sqlite_java__classes", "//third_party/androidx:androidx_sqlite_sqlite_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -81484,6 +81654,7 @@
    "//third_party/androidx:androidx_startup_startup_runtime_java": {
       "deps": [ "//third_party/androidx:androidx_startup_startup_runtime_J__unpack_aar", "//third_party/androidx:androidx_startup_startup_runtime_java__build_config_crbug_908819", "//third_party/androidx:androidx_startup_startup_runtime_java__classes", "//third_party/androidx:androidx_startup_startup_runtime_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_startup_startup_runtime_java__classes", "//third_party/androidx:androidx_startup_startup_runtime_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -81700,6 +81871,7 @@
    "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java": {
       "deps": [ "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_J__unpack_aar", "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java__build_config_crbug_908819", "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java__classes", "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java__classes", "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -81916,6 +82088,7 @@
    "//third_party/androidx:androidx_test_annotation_java": {
       "deps": [ "//third_party/androidx:androidx_test_annotation_J__unpack_aar", "//third_party/androidx:androidx_test_annotation_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_annotation_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_annotation_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -82099,6 +82272,7 @@
    "//third_party/androidx:androidx_test_core_java": {
       "deps": [ "//third_party/androidx:androidx_test_core_J__unpack_aar", "//third_party/androidx:androidx_test_core_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_core_java__classes", "//third_party/androidx:androidx_test_core_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_core_java__classes", "//third_party/androidx:androidx_test_core_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -82315,6 +82489,7 @@
    "//third_party/androidx:androidx_test_espresso_espresso_contrib_java": {
       "deps": [ "//third_party/androidx:androidx_test_espresso_espresso_contrib_J__unpack_aar", "//third_party/androidx:androidx_test_espresso_espresso_contrib_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_espresso_espresso_contrib_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_espresso_espresso_contrib_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -82498,6 +82673,7 @@
    "//third_party/androidx:androidx_test_espresso_espresso_core_java": {
       "deps": [ "//third_party/androidx:androidx_test_espresso_espresso_core_J__unpack_aar", "//third_party/androidx:androidx_test_espresso_espresso_core_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_espresso_espresso_core_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_espresso_espresso_core_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -82681,6 +82857,7 @@
    "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java": {
       "deps": [ "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_J__unpack_aar", "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -82864,6 +83041,7 @@
    "//third_party/androidx:androidx_test_espresso_espresso_intents_java": {
       "deps": [ "//third_party/androidx:androidx_test_espresso_espresso_intents_J__unpack_aar", "//third_party/androidx:androidx_test_espresso_espresso_intents_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_espresso_espresso_intents_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_espresso_espresso_intents_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -83047,6 +83225,7 @@
    "//third_party/androidx:androidx_test_espresso_espresso_web_java": {
       "deps": [ "//third_party/androidx:androidx_test_espresso_espresso_web_J__unpack_aar", "//third_party/androidx:androidx_test_espresso_espresso_web_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_espresso_espresso_web_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_espresso_espresso_web_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -83230,6 +83409,7 @@
    "//third_party/androidx:androidx_test_ext_junit_java": {
       "deps": [ "//third_party/androidx:androidx_test_ext_U_J__unpack_aar", "//third_party/androidx:androidx_test_ext_junit_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_ext_junit_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_ext_junit_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -83413,6 +83593,7 @@
    "//third_party/androidx:androidx_test_monitor_java": {
       "deps": [ "//third_party/androidx:androidx_test_monitor_J__unpack_aar", "//third_party/androidx:androidx_test_monitor_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_monitor_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_monitor_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -83596,6 +83777,7 @@
    "//third_party/androidx:androidx_test_rules_java": {
       "deps": [ "//third_party/androidx:androidx_test_rules_J__unpack_aar", "//third_party/androidx:androidx_test_rules_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_rules_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_rules_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -83779,6 +83961,7 @@
    "//third_party/androidx:androidx_test_runner_java": {
       "deps": [ "//third_party/androidx:androidx_test_runner_J__unpack_aar", "//third_party/androidx:androidx_test_runner_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_runner_java__classes", "//third_party/androidx:androidx_test_runner_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_runner_java__classes", "//third_party/androidx:androidx_test_runner_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -83994,6 +84177,7 @@
    "//third_party/androidx:androidx_test_services_storage_java": {
       "deps": [ "//third_party/androidx:androidx_test_services_storage_J__unpack_aar", "//third_party/androidx:androidx_test_services_storage_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_services_storage_java__classes" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_services_storage_java__classes" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -84177,6 +84361,7 @@
    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java": {
       "deps": [ "//third_party/androidx:androidx_test_uiautomator_uiautomator_J__unpack_aar", "//third_party/androidx:androidx_test_uiautomator_uiautomator_java__build_config_crbug_908819", "//third_party/androidx:androidx_test_uiautomator_uiautomator_java__classes", "//third_party/androidx:androidx_test_uiautomator_uiautomator_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_test_uiautomator_uiautomator_java__classes", "//third_party/androidx:androidx_test_uiautomator_uiautomator_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -84393,6 +84578,7 @@
    "//third_party/androidx:androidx_tracing_tracing_java": {
       "deps": [ "//third_party/androidx:androidx_tracing_tracing_J__unpack_aar", "//third_party/androidx:androidx_tracing_tracing_java__build_config_crbug_908819", "//third_party/androidx:androidx_tracing_tracing_java__classes", "//third_party/androidx:androidx_tracing_tracing_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_tracing_tracing_java__classes", "//third_party/androidx:androidx_tracing_tracing_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -84609,6 +84795,7 @@
    "//third_party/androidx:androidx_tracing_tracing_ktx_java": {
       "deps": [ "//third_party/androidx:androidx_tracing_tracing_ktx_J__unpack_aar", "//third_party/androidx:androidx_tracing_tracing_ktx_java__build_config_crbug_908819", "//third_party/androidx:androidx_tracing_tracing_ktx_java__classes", "//third_party/androidx:androidx_tracing_tracing_ktx_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_tracing_tracing_ktx_java__classes", "//third_party/androidx:androidx_tracing_tracing_ktx_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -84840,6 +85027,7 @@
    "//third_party/androidx:androidx_tracing_tracing_perfetto_binary_java": {
       "deps": [ "//third_party/androidx:androidx_tracing_tracing_perfetto_binary_J__unpack_aar", "//third_party/androidx:androidx_tracing_tracing_perfetto_binary_java__build_config_crbug_908819", "//third_party/androidx:androidx_tracing_tracing_perfetto_binary_java__classes", "//third_party/androidx:androidx_tracing_tracing_perfetto_binary_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_tracing_tracing_perfetto_binary_java__classes", "//third_party/androidx:androidx_tracing_tracing_perfetto_binary_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -85138,6 +85326,7 @@
    "//third_party/androidx:androidx_tracing_tracing_perfetto_java": {
       "deps": [ "//third_party/androidx:androidx_tracing_tracing_perfetto_J__unpack_aar", "//third_party/androidx:androidx_tracing_tracing_perfetto_java__build_config_crbug_908819", "//third_party/androidx:androidx_tracing_tracing_perfetto_java__classes", "//third_party/androidx:androidx_tracing_tracing_perfetto_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_tracing_tracing_perfetto_java__classes", "//third_party/androidx:androidx_tracing_tracing_perfetto_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -85354,6 +85543,7 @@
    "//third_party/androidx:androidx_transition_transition_java": {
       "deps": [ "//third_party/androidx:androidx_transition_transition_J__unpack_aar", "//third_party/androidx:androidx_transition_transition_java__build_config_crbug_908819", "//third_party/androidx:androidx_transition_transition_java__classes", "//third_party/androidx:androidx_transition_transition_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_transition_transition_java__classes", "//third_party/androidx:androidx_transition_transition_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -85570,6 +85760,7 @@
    "//third_party/androidx:androidx_tvprovider_tvprovider_java": {
       "deps": [ "//third_party/androidx:androidx_tvprovider_tvprovider_J__unpack_aar", "//third_party/androidx:androidx_tvprovider_tvprovider_java__build_config_crbug_908819", "//third_party/androidx:androidx_tvprovider_tvprovider_java__classes", "//third_party/androidx:androidx_tvprovider_tvprovider_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_tvprovider_tvprovider_java__classes", "//third_party/androidx:androidx_tvprovider_tvprovider_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -85801,6 +85992,7 @@
    "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java": {
       "deps": [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_J__unpack_aar", "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java__build_config_crbug_908819", "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java__classes", "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java__classes", "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -86002,6 +86194,7 @@
    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java": {
       "deps": [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_J__unpack_aar", "//third_party/androidx:androidx_vectordrawable_vectordrawable_java__build_config_crbug_908819", "//third_party/androidx:androidx_vectordrawable_vectordrawable_java__classes", "//third_party/androidx:androidx_vectordrawable_vectordrawable_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_java__classes", "//third_party/androidx:androidx_vectordrawable_vectordrawable_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -86218,6 +86411,7 @@
    "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java": {
       "deps": [ "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_J__unpack_aar", "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java__build_config_crbug_908819", "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java__classes", "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java__classes", "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -86434,6 +86628,7 @@
    "//third_party/androidx:androidx_viewpager2_viewpager2_java": {
       "deps": [ "//third_party/androidx:androidx_viewpager2_viewpager2_J__unpack_aar", "//third_party/androidx:androidx_viewpager2_viewpager2_java__build_config_crbug_908819", "//third_party/androidx:androidx_viewpager2_viewpager2_java__classes", "//third_party/androidx:androidx_viewpager2_viewpager2_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_viewpager2_viewpager2_java__classes", "//third_party/androidx:androidx_viewpager2_viewpager2_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -86650,6 +86845,7 @@
    "//third_party/androidx:androidx_viewpager_viewpager_java": {
       "deps": [ "//third_party/androidx:androidx_viewpager_viewpager_J__unpack_aar", "//third_party/androidx:androidx_viewpager_viewpager_java__build_config_crbug_908819", "//third_party/androidx:androidx_viewpager_viewpager_java__classes", "//third_party/androidx:androidx_viewpager_viewpager_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_viewpager_viewpager_java__classes", "//third_party/androidx:androidx_viewpager_viewpager_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -86866,6 +87062,7 @@
    "//third_party/androidx:androidx_webkit_webkit_java": {
       "deps": [ "//third_party/androidx:androidx_webkit_webkit_J__unpack_aar", "//third_party/androidx:androidx_webkit_webkit_java__build_config_crbug_908819", "//third_party/androidx:androidx_webkit_webkit_java__classes", "//third_party/androidx:androidx_webkit_webkit_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_webkit_webkit_java__classes", "//third_party/androidx:androidx_webkit_webkit_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -87082,6 +87279,7 @@
    "//third_party/androidx:androidx_window_extensions_core_core_java": {
       "deps": [ "//third_party/androidx:androidx_window_extensions_core_core_J__unpack_aar", "//third_party/androidx:androidx_window_extensions_core_core_java__build_config_crbug_908819", "//third_party/androidx:androidx_window_extensions_core_core_java__classes", "//third_party/androidx:androidx_window_extensions_core_core_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_window_extensions_core_core_java__classes", "//third_party/androidx:androidx_window_extensions_core_core_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -87298,6 +87496,7 @@
    "//third_party/androidx:androidx_window_extensions_extensions_java": {
       "deps": [ "//third_party/androidx:androidx_window_extensions_extensions_J__unpack_aar", "//third_party/androidx:androidx_window_extensions_extensions_java__build_config_crbug_908819", "//third_party/androidx:androidx_window_extensions_extensions_java__classes", "//third_party/androidx:androidx_window_extensions_extensions_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_window_extensions_extensions_java__classes", "//third_party/androidx:androidx_window_extensions_extensions_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -87514,6 +87713,7 @@
    "//third_party/androidx:androidx_window_sidecar_sidecar_java": {
       "deps": [ "//third_party/androidx:androidx_window_sidecar_sidecar_J__unpack_aar", "//third_party/androidx:androidx_window_sidecar_sidecar_java__build_config_crbug_908819", "//third_party/androidx:androidx_window_sidecar_sidecar_java__classes", "//third_party/androidx:androidx_window_sidecar_sidecar_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_window_sidecar_sidecar_java__classes", "//third_party/androidx:androidx_window_sidecar_sidecar_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -87730,6 +87930,7 @@
    "//third_party/androidx:androidx_window_window_java_java": {
       "deps": [ "//third_party/androidx:androidx_window_window_J_J__unpack_aar", "//third_party/androidx:androidx_window_window_java_java__build_config_crbug_908819", "//third_party/androidx:androidx_window_window_java_java__classes", "//third_party/androidx:androidx_window_window_java_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_window_window_java_java__classes", "//third_party/androidx:androidx_window_window_java_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -87946,6 +88147,7 @@
    "//third_party/androidx:androidx_work_work_runtime_java": {
       "deps": [ "//third_party/androidx:androidx_work_work_runtime_J__unpack_aar", "//third_party/androidx:androidx_work_work_runtime_java__build_config_crbug_908819", "//third_party/androidx:androidx_work_work_runtime_java__classes", "//third_party/androidx:androidx_work_work_runtime_java__resources" ],
       "metadata": {
+         "all_deps": [ "//third_party/androidx:androidx_work_work_runtime_java__classes", "//third_party/androidx:androidx_work_work_runtime_java__resources" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -90753,6 +90955,7 @@
    "//third_party/espresso:espresso_all_java": {
       "deps": [ "//third_party/espresso:espresso_all_java__build_config_crbug_908819", "//third_party/espresso:espresso_contrib_java", "//third_party/espresso:espresso_core_java", "//third_party/espresso:espresso_idling_java", "//third_party/espresso:espresso_intents_java", "//third_party/espresso:espresso_web_java", "//third_party/espresso:replacement_usage_tracker_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/espresso:espresso_contrib_java", "//third_party/espresso:espresso_core_java", "//third_party/espresso:espresso_idling_java", "//third_party/espresso:espresso_intents_java", "//third_party/espresso:espresso_web_java", "//third_party/espresso:replacement_usage_tracker_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -92892,6 +93095,7 @@
    "//third_party/hamcrest:hamcrest_java": {
       "deps": [ "//third_party/hamcrest:hamcrest_core_java", "//third_party/hamcrest:hamcrest_java__build_config_crbug_908819", "//third_party/hamcrest:hamcrest_library_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/hamcrest:hamcrest_core_java", "//third_party/hamcrest:hamcrest_library_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -94316,6 +94520,7 @@
    "//third_party/mockito:mockito_java": {
       "deps": [ "//third_party/android_deps:org_mockito_mockito_android_java", "//third_party/android_deps:org_mockito_mockito_core_java", "//third_party/mockito:mockito_apk_assets", "//third_party/mockito:mockito_java__build_config_crbug_908819", "//third_party/mockito:mockito_modified_files_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/mockito:mockito_apk_assets", "//third_party/mockito:mockito_modified_files_java", "//third_party/android_deps:org_mockito_mockito_android_java", "//third_party/android_deps:org_mockito_mockito_core_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",
@@ -94387,6 +94592,7 @@
    "//third_party/mockito:mockito_jvm_java": {
       "deps": [ "//third_party/android_deps:org_mockito_mockito_core_java", "//third_party/android_deps:org_mockito_mockito_subclass_java", "//third_party/mockito:mockito_jvm_java__build_config_crbug_908819", "//third_party/mockito:mockito_modified_files_java" ],
       "metadata": {
+         "all_deps": [ "//third_party/mockito:mockito_modified_files_java", "//third_party/android_deps:org_mockito_mockito_core_java", "//third_party/android_deps:org_mockito_mockito_subclass_java" ],
          "cur_type": [ "java_library" ]
       },
       "public": "*",

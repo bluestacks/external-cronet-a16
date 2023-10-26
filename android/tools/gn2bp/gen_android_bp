@@ -268,6 +268,12 @@ def add_androidx_test_monitor_java_deps(module, arch):
 def add_androidx_ui_automator_java_deps(module, arch):
   module.static_libs.add("androidx.test.uiautomator_uiautomator")
 
+def add_androidx_test_annotation_java_deps(module, arch):
+  module.static_libs.add("androidx.test.rules")
+
+def add_androidx_test_core_java_deps(module, arch):
+  module.static_libs.add("androidx.test.core")
+
 # Android equivalents for third-party libraries that the upstream project
 # depends on. This will be applied to normal and testing targets.
 _builtin_deps = {
@@ -317,8 +323,12 @@ _builtin_deps = {
         add_android_test_mock_java_deps,
     '//third_party/androidx:androidx_multidex_multidex_java':
         add_androidx_multidex_java_deps,
-    '//third_party/androidx:androidx_test_monitor_jav':
+    '//third_party/androidx:androidx_test_monitor_java':
         add_androidx_test_monitor_java_deps,
+    '//third_party/androidx:androidx_test_annotation_java':
+        add_androidx_test_annotation_java_deps,
+    '//third_party/androidx:androidx_test_core_java':
+        add_androidx_test_core_java_deps,
     '//third_party/androidx:androidx_test_uiautomator_uiautomator_java':
         add_androidx_ui_automator_java_deps,
     '//third_party/hamcrest:hamcrest_java':

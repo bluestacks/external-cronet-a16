@@ -3709,6 +3709,7 @@ java_library {
         "android.test.mock",
         "androidx.annotation_annotation-nodeps",
         "androidx.core_core-nodeps",
+        "androidx.test.monitor",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -9308,6 +9309,7 @@ java_library {
         "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestInterceptor.java",
     ],
     static_libs: [
+        "androidx.test.core",
         "androidx.test.ext.junit",
         "androidx.test.runner",
         "cronet_aml_base_base_java__testing",
@@ -9330,6 +9332,10 @@ java_library {
 // GN: //components/cronet/android:cronet_impl_all_java__testing
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
+    static_libs: [
+        "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_native_base_java__testing",
+    ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
@@ -9366,6 +9372,46 @@ java_library {
     static_libs: [
         "cronet_aml_components_cronet_android_cronet_api_java",
         "cronet_aml_net_android_net_thread_stats_uid_java",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
+    sdk_version: "current",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_impl_common_base_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_http_cache_type_java__testing",
+        ":cronet_aml_components_cronet_android_implementation_api_version__testing",
+        ":cronet_aml_components_cronet_android_integrated_mode_state__testing",
+        ":cronet_aml_components_cronet_android_load_states_list__testing",
+        ":cronet_aml_components_cronet_android_rtt_throughput_values_java__testing",
+        ":cronet_aml_net_effective_connection_type_java__testing",
+        "components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLoggerFactory.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NoOpLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/Preconditions.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/QuicExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RefCountDelegate.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RequestFinishedInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UserAgent.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
+    ],
+    static_libs: [
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_net_android_net_thread_stats_uid_java__testing",
     ],
     libs: [
         "androidx.annotation_annotation-nodeps",
@@ -9415,6 +9461,47 @@ java_library {
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_impl_native_base_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_impl_native_base_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_cronet_jni_headers__testing__java",
+        ":cronet_aml_components_cronet_android_net_idempotency_java__testing",
+        ":cronet_aml_components_cronet_android_net_request_priority_java__testing",
+        ":cronet_aml_components_cronet_android_network_quality_observation_source_java__testing",
+        ":cronet_aml_components_cronet_android_url_request_error_java__testing",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetProvider.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
+        "cronet_aml_components_cronet_android_cronet_urlconnection_impl_java__testing",
+        "cronet_aml_components_cronet_android_request_context_config_java_proto__testing",
+        "cronet_aml_net_android_net_java__testing",
+        "cronet_aml_url_url_java__testing",
+        "libprotobuf-java-lite",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+        "jsr305",
+    ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9696,6 +9783,66 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+}
+
+// GN: //components/cronet/android:cronet_jni_headers__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_cronet_jni_headers__testing__java",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "CronetBidirectionalStream_jni.h " +
+         "--output-name " +
+         "CronetLibraryLoader_jni.h " +
+         "--output-name " +
+         "CronetUploadDataStream_jni.h " +
+         "--output-name " +
+         "CronetUrlRequest_jni.h " +
+         "--output-name " +
+         "CronetUrlRequestContext_jni.h " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java)",
+    out: [
+        "components/cronet/android/cronet_jni_headers.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
     ],
 }
 
@@ -11919,9 +12066,55 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:http_cache_type_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_http_cache_type_java__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location components/cronet/url_request_context_config.h)",
+    out: [
+        "components/cronet/android/http_cache_type_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "components/cronet/url_request_context_config.h",
+    ],
+}
+
 // GN: //components/cronet/android:implementation_api_version
 java_genrule {
     name: "cronet_aml_components_cronet_android_implementation_api_version",
+    cmd: "$(location build/util/version.py) --official " +
+         "-f " +
+         "$(location chrome/VERSION) " +
+         "-f " +
+         "$(location build/util/LASTCHANGE) " +
+         "-e " +
+         "'API_LEVEL=26' " +
+         "-o " +
+         "$(out) " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template)",
+    out: [
+        "components/cronet/android/templates/org/chromium/net/impl/ImplVersion.java",
+    ],
+    tool_files: [
+        "build/util/LASTCHANGE",
+        "build/util/android_chrome_version.py",
+        "build/util/version.py",
+        "chrome/VERSION",
+        "components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template",
+    ],
+}
+
+// GN: //components/cronet/android:implementation_api_version__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_implementation_api_version__testing",
     cmd: "$(location build/util/version.py) --official " +
          "-f " +
          "$(location chrome/VERSION) " +
@@ -11960,6 +12153,51 @@ genrule {
     ],
     defaults: [
         "cronet_aml_defaults",
+    ],
+}
+
+// GN: //components/cronet/android:integrated_mode_state__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_integrated_mode_state__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_integrated_mode_state__testing_preprocess",
+    ],
+    tools: [
+        "soong_zip",
+    ],
+    cmd: "cp $(in) $(genDir)/IntegratedModeState.java && " +
+         "$(location soong_zip) -o $(out) -srcjar -C $(genDir) -f $(genDir)/IntegratedModeState.java",
+    out: [
+        "IntegratedModeState.srcjar",
+    ],
+    defaults: [
+        "cronet_aml_defaults",
+    ],
+}
+
+// GN: //components/cronet/android:integrated_mode_state__testing
+cc_object {
+    name: "cronet_aml_components_cronet_android_integrated_mode_state__testing_preprocess",
+    srcs: [
+        ":cronet_aml_components_cronet_android_integrated_mode_state__testing_rename",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-E",
+        "-P",
+    ],
+    compile_multilib: "first",
+}
+
+// GN: //components/cronet/android:integrated_mode_state__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_integrated_mode_state__testing_rename",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/IntegratedModeState.template",
+    ],
+    cmd: "cp $(in) $(out)",
+    out: [
+        "IntegratedModeState.cc",
     ],
 }
 
@@ -12058,6 +12296,51 @@ genrule {
     ],
 }
 
+// GN: //components/cronet/android:load_states_list__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_load_states_list__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_load_states_list__testing_preprocess",
+    ],
+    tools: [
+        "soong_zip",
+    ],
+    cmd: "cp $(in) $(genDir)/LoadState.java && " +
+         "$(location soong_zip) -o $(out) -srcjar -C $(genDir) -f $(genDir)/LoadState.java",
+    out: [
+        "LoadState.srcjar",
+    ],
+    defaults: [
+        "cronet_aml_defaults",
+    ],
+}
+
+// GN: //components/cronet/android:load_states_list__testing
+cc_object {
+    name: "cronet_aml_components_cronet_android_load_states_list__testing_preprocess",
+    srcs: [
+        ":cronet_aml_components_cronet_android_load_states_list__testing_rename",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-E",
+        "-P",
+    ],
+    compile_multilib: "first",
+}
+
+// GN: //components/cronet/android:load_states_list__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_load_states_list__testing_rename",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/LoadState.template",
+    ],
+    cmd: "cp $(in) $(out)",
+    out: [
+        "LoadState.cc",
+    ],
+}
+
 // GN: //components/cronet/android:load_states_list
 cc_object {
     name: "cronet_aml_components_cronet_android_load_states_list_preprocess",
@@ -12105,6 +12388,27 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:net_idempotency_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_net_idempotency_java__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/base/idempotency.h)",
+    out: [
+        "components/cronet/android/net_idempotency_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/base/idempotency.h",
+    ],
+}
+
 // GN: //components/cronet/android:net_request_priority_java
 java_genrule {
     name: "cronet_aml_components_cronet_android_net_request_priority_java",
@@ -12126,9 +12430,51 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:net_request_priority_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_net_request_priority_java__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/base/request_priority.h)",
+    out: [
+        "components/cronet/android/net_request_priority_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/base/request_priority.h",
+    ],
+}
+
 // GN: //components/cronet/android:network_quality_observation_source_java
 java_genrule {
     name: "cronet_aml_components_cronet_android_network_quality_observation_source_java",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/nqe/network_quality_observation_source.h)",
+    out: [
+        "components/cronet/android/network_quality_observation_source_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/nqe/network_quality_observation_source.h",
+    ],
+}
+
+// GN: //components/cronet/android:network_quality_observation_source_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_network_quality_observation_source_java__testing",
     cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
          "$(out) " +
          "$(location net/nqe/network_quality_observation_source.h)",
@@ -12187,6 +12533,48 @@ java_genrule {
         "build/protoc_java.py",
         "build/zip_helpers.py",
     ],
+}
+
+// GN: //components/cronet/android:request_context_config_java_proto__protoc_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_request_context_config_java_proto__protoc_java__testing",
+    srcs: [
+        "components/cronet/android/proto/request_context_config.proto",
+    ],
+    tools: [
+        "cronet_aml_third_party_protobuf_protoc",
+    ],
+    cmd: "$(location build/protoc_java.py) --protoc " +
+         "$(location cronet_aml_third_party_protobuf_protoc) " +
+         "--proto-path " +
+         "external/cronet/components/cronet/android " +
+         "--srcjar " +
+         "$(out) " +
+         "$(location components/cronet/android/proto/request_context_config.proto)",
+    out: [
+        "components/cronet/android/request_context_config_java_proto__protoc_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/protoc_java.py",
+        "build/zip_helpers.py",
+    ],
+}
+
+// GN: //components/cronet/android:request_context_config_java_proto__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_request_context_config_java_proto__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_request_context_config_java_proto__protoc_java__testing",
+    ],
+    static_libs: [
+        "libprotobuf-java-lite",
+    ],
+    sdk_version: "current",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:request_context_config_proto__testing
@@ -12292,9 +12680,51 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:rtt_throughput_values_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_rtt_throughput_values_java__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/nqe/network_quality.h)",
+    out: [
+        "components/cronet/android/rtt_throughput_values_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/nqe/network_quality.h",
+    ],
+}
+
 // GN: //components/cronet/android:url_request_error_java
 java_genrule {
     name: "cronet_aml_components_cronet_android_url_request_error_java",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location components/cronet/android/url_request_error.h)",
+    out: [
+        "components/cronet/android/url_request_error_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "components/cronet/android/url_request_error.h",
+    ],
+}
+
+// GN: //components/cronet/android:url_request_error_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_url_request_error_java__testing",
     cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
          "$(out) " +
          "$(location components/cronet/android/url_request_error.h)",
@@ -16126,6 +16556,7 @@ java_library {
     ],
     libs: [
         "androidx.annotation_annotation-nodeps",
+        "androidx.test.monitor",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -18323,6 +18754,27 @@ cc_library_static {
 // GN: //net:effective_connection_type_java
 java_genrule {
     name: "cronet_aml_net_effective_connection_type_java",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/nqe/effective_connection_type.h)",
+    out: [
+        "net/effective_connection_type_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/nqe/effective_connection_type.h",
+    ],
+}
+
+// GN: //net:effective_connection_type_java__testing
+java_genrule {
+    name: "cronet_aml_net_effective_connection_type_java__testing",
     cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
          "$(out) " +
          "$(location net/nqe/effective_connection_type.h)",
@@ -42250,20 +42702,6 @@ cc_library_static {
             compile_multilib: "64",
         },
     },
-}
-
-// GN: //third_party/androidx:androidx_test_core_java__testing
-java_library {
-    name: "cronet_aml_third_party_androidx_androidx_test_core_java__testing",
-    sdk_version: "current",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
-}
-
-// GN: //third_party/androidx:androidx_test_monitor_java__testing
-java_library {
-    name: "cronet_aml_third_party_androidx_androidx_test_monitor_java__testing",
-    sdk_version: "current",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //third_party/ashmem:ashmem

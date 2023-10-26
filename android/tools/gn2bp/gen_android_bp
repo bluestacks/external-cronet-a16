@@ -43,6 +43,7 @@ CRONET_LICENSE_NAME = "external_cronet_license"
 
 # Default targets to translate to the blueprint file.
 DEFAULT_TARGETS = [
+    "//components/cronet/android:cronet_api_java",
     '//components/cronet/android:cronet',
     '//components/cronet/android:cronet_impl_native_base_java',
     '//components/cronet/android:cronet_jni_registration_java',

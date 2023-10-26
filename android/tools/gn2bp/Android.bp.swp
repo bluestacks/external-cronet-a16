@@ -9244,6 +9244,9 @@ java_library {
         "androidx.annotation_annotation-nodeps",
     ],
     sdk_version: "current",
+    visibility: [
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10990,6 +10993,7 @@ java_library {
         ":cronet_aml_components_cronet_android_cronet_jni_registration__testing__java",
     ],
     stem: "libcronet_jni_registration_java",
+    sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
@@ -12456,6 +12460,7 @@ java_library {
         ":cronet_aml_components_cronet_android_cronet_tests_jni_registration__testing__java",
     ],
     stem: "libcronet_tests_jni_registration_java",
+    sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],

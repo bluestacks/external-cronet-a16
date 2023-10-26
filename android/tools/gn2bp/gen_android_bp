@@ -1126,8 +1126,6 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
 
   def get_name(self):
     name = super().get_name() + "__java"
-    if self.is_test_target:
-      name += gn_utils.TESTING_SUFFIX
     return name
 
 
@@ -1172,8 +1170,6 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
 class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
   def get_name(self):
     name = super().get_name() + "__java"
-    if self.is_test_target:
-      name += gn_utils.TESTING_SUFFIX
     return name
 
   def _sanitize_outputs(self):

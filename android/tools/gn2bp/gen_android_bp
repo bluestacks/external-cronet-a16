@@ -173,6 +173,11 @@ additional_args = {
       ('static_libs', {
           'modules-utils-build_system'
       })
+    ],
+    'cronet_aml_base_base_java__testing': [
+      ('static_libs', {
+        'modules-utils-build_system'
+      })
     ]
 }
 
@@ -220,6 +225,49 @@ def add_errorprone_annotation_java_deps(module, arch):
 def add_androidx_collection_java_deps(module, arch):
   module.libs.add("androidx.collection_collection-nodeps")
 
+def add_junit_java_deps(module, arch):
+  module.static_libs.add("junit")
+
+def add_truth_java_deps(module, arch):
+  module.static_libs.add("truth")
+
+def add_hamcrest_java_deps(module, arch):
+  module.static_libs.add("hamcrest-library")
+  module.static_libs.add("hamcrest")
+
+def add_mockito_java_deps(module, arch):
+  module.static_libs.add("mockito")
+
+def add_guava_java_deps(module, arch):
+  module.static_libs.add("guava")
+
+def add_androidx_junit_java_deps(module, arch):
+  module.static_libs.add("androidx.test.ext.junit")
+
+def add_androidx_test_runner_java_deps(module, arch):
+  module.static_libs.add("androidx.test.runner")
+
+def add_android_test_base_java_deps(module, arch):
+  module.libs.add("android.test.base")
+
+def add_accessibility_test_framework_java_deps(module, arch):
+  module.static_libs.add("accessibility-test-framework")
+
+def add_espresso_java_deps(module, arch):
+  module.static_libs.add("androidx.test.espresso.contrib")
+
+def add_android_test_mock_java_deps(module, arch):
+  module.libs.add("android.test.mock")
+
+def add_androidx_multidex_java_deps(module, arch):
+  module.libs.add("android-support-multidex")
+
+def add_androidx_test_monitor_java_deps(module, arch):
+  module.libs.add("androidx.test.monitor")
+
+def add_androidx_ui_automator_java_deps(module, arch):
+  module.static_libs.add("androidx.test.uiautomator_uiautomator")
+
 # Android equivalents for third-party libraries that the upstream project
 # depends on. This will be applied to normal and testing targets.
 _builtin_deps = {
@@ -245,6 +293,36 @@ _builtin_deps = {
         add_errorprone_annotation_java_deps,
     '//third_party/androidx:androidx_collection_collection_java':
         add_androidx_collection_java_deps,
+    '//third_party/junit:junit':
+        add_junit_java_deps,
+    '//third_party/google-truth:google_truth_java':
+        add_truth_java_deps,
+    '//third_party/hamcrest:hamcrest_core_java':
+        add_hamcrest_java_deps,
+    '//third_party/mockito:mockito_java':
+        add_mockito_java_deps,
+    '//third_party/android_deps:guava_android_java':
+        add_guava_java_deps,
+    '//third_party/androidx:androidx_test_ext_junit_java':
+        add_androidx_junit_java_deps,
+    '//third_party/androidx:androidx_test_runner_java':
+        add_androidx_test_runner_java_deps,
+    '//third_party/android_sdk:android_test_base_java':
+        add_android_test_base_java_deps,
+    '//third_party/accessibility_test_framework:accessibility_test_framework_java':
+        add_accessibility_test_framework_java_deps,
+    '//third_party/android_deps:espresso_java':
+        add_espresso_java_deps,
+    '//third_party/android_sdk:android_test_mock_java':
+        add_android_test_mock_java_deps,
+    '//third_party/androidx:androidx_multidex_multidex_java':
+        add_androidx_multidex_java_deps,
+    '//third_party/androidx:androidx_test_monitor_jav':
+        add_androidx_test_monitor_java_deps,
+    '//third_party/androidx:androidx_test_uiautomator_uiautomator_java':
+        add_androidx_ui_automator_java_deps,
+    '//third_party/hamcrest:hamcrest_java':
+        add_hamcrest_java_deps,
 }
 builtin_deps = {"{}{}".format(key, suffix): value for key, value in _builtin_deps.items() for suffix in ["", gn_utils.TESTING_SUFFIX] }
 

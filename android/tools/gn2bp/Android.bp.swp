@@ -3462,6 +3462,7 @@ java_library {
         "error_prone_annotations",
         "jsr305",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base:base_java__testing
@@ -3604,6 +3605,117 @@ java_library {
         "error_prone_annotations",
         "jsr305",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //base:base_java_test_support__testing
+java_library {
+    name: "cronet_aml_base_base_java_test_support__testing",
+    srcs: [
+        "base/test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseChromiumRunnerCommon.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4TestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/LoadNative.java",
+        "base/test/android/javatests/src/org/chromium/base/test/MockitoErrorHandler.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ResetCachedFlagValuesTestHook.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ResettersForTestingTestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
+        "base/test/android/javatests/src/org/chromium/base/test/TestListInstrumentationRunListener.java",
+        "base/test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UiThreadStatement.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UiThreadTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UnitTestLifetimeAssertRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UnitTestNoBrowserProcessHook.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/BaseJUnit4RunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/BlockJUnit4RunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/MethodParamAnnotationRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/MethodParamRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterAnnotations.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterProvider.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterSet.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedCommandLineFlags.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedFrameworkMethod.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateCommon.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateFactory.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/SkipCommandLineParameterization.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AdvancedMockContext.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AndroidSdkLevelSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AnnotationProcessingUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AnnotationRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ApplicationContextWrapper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ApplicationTestUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Batch.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CallbackHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Criteria.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CriteriaHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CriteriaNotSatisfiedException.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisableIf.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisableIfSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DoNotBatch.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DoNotRevive.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Feature.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Features.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/FeaturesBase.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferences.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferencesContext.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/JniMocker.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/LooperUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Manual.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/MaxAndroidSdkLevel.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/PayloadCallbackHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Restriction.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/RestrictionSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ScalableTimeout.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/SkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TestFileUtil.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TestThreadUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TimeoutScale.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_url_utils_for_test__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_third_party_junit_junit__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+        "androidx.core_core-nodeps",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //base:base_java_url_utils_for_test__testing
+java_library {
+    name: "cronet_aml_base_base_java_url_utils_for_test__testing",
+    srcs: [
+        "base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_third_party_junit_junit__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base:base_jni
@@ -5570,6 +5682,7 @@ java_library {
     static_libs: [
         "cronet_aml_build_android_build_java",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base:jni_java__testing
@@ -5590,6 +5703,7 @@ java_library {
     static_libs: [
         "cronet_aml_build_android_build_java__testing",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base:logging_buildflags
@@ -5967,6 +6081,7 @@ cc_genrule {
 // GN: //base:process_launcher_aidl__testing
 java_library {
     name: "cronet_aml_base_process_launcher_aidl__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base:process_launcher_java__testing
@@ -5999,6 +6114,7 @@ java_library {
         "androidx.core_core-nodeps",
         "jsr305",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base:process_launcher_jni
@@ -6974,11 +7090,13 @@ java_library {
     libs: [
         "jsr305",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base/test:test_support_java_aidl__testing
 java_library {
     name: "cronet_aml_base_test_test_support_java_aidl__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base/test:test_support_jni_headers__testing
@@ -7609,6 +7727,7 @@ java_library {
         "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
         "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //build/android:build_java__testing
@@ -7627,6 +7746,7 @@ java_library {
         "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
         "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //build/android:native_libraries_gen
@@ -9072,6 +9192,88 @@ java_library {
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_api_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_api_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_interface_api_version__testing",
+        "components/cronet/android/api/src/org/chromium/net/BidirectionalStream.java",
+        "components/cronet/android/api/src/org/chromium/net/CallbackException.java",
+        "components/cronet/android/api/src/org/chromium/net/ConnectionMigrationOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetEngine.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetException.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/DnsOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalBidirectionalStream.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalCronetEngine.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalUrlRequest.java",
+        "components/cronet/android/api/src/org/chromium/net/ICronetEngineBuilder.java",
+        "components/cronet/android/api/src/org/chromium/net/InlineExecutionProhibitedException.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkException.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkQualityRttListener.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkQualityThroughputListener.java",
+        "components/cronet/android/api/src/org/chromium/net/QuicException.java",
+        "components/cronet/android/api/src/org/chromium/net/QuicOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/RequestFinishedInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
+        "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
+        "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/ByteArrayCronetCallback.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/ContentTypeParametersParser.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/CronetRequestCompletionListener.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/CronetResponse.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/ImplicitFlowControlCallback.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/InMemoryTransformCronetCallback.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/JsonCronetCallback.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandler.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandlers.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/StringCronetCallback.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java",
+    ],
+    libs: [
+        "androidx.annotation_annotation-experimental-nodeps",
+        "androidx.annotation_annotation-nodeps",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_common_javatests__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_common_javatests__testing",
+    srcs: [
+        "components/cronet/android/test/javatests/src/org/chromium/net/ContextInterceptor.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRule.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestInterceptor.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_test_support__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
+        "cronet_aml_third_party_junit_junit__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_impl_all_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_impl_common_base_java
@@ -9110,6 +9312,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_impl_native_base_java
@@ -9152,6 +9355,79 @@ java_library {
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_javatests__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_javatests__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_cronet_tests_jni_headers__testing__java__testing",
+        "components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamQuicTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/BrotliTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/Criteria.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetEngineBuilderTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetOnboardingTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetStressTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRuleTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUploadTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/DiskStorageTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/FileUtils.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/GetStatusTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/MetricsTestUtil.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/MockCertVerifierTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/NQETest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/PkpTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/QuicTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestBidirectionalStreamCallback.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestDrivenDataProvider.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetBufferedOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetChunkedOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetFixedModeOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLConnectionTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLStreamHandlerTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetInputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetURLStreamHandlerFactoryTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/MessageLoopTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/QuicUploadTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/TestUtil.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_test_support__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_common_javatests__testing",
+        "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
+        "cronet_aml_components_cronet_android_cronet_urlconnection_impl_java__testing",
+        "cronet_aml_net_android_net_java__testing",
+        "cronet_aml_net_android_net_java_test_support__testing",
+        "cronet_aml_third_party_junit_junit__testing",
+        "cronet_aml_url_url_java__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-experimental-nodeps",
+    ],
+    stem: "libcronet_javatests",
+    visibility: [
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_jni_headers
@@ -10209,6 +10485,7 @@ java_library {
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_static
@@ -10685,6 +10962,39 @@ cc_library_static {
     },
 }
 
+// GN: //components/cronet/android:cronet_test_apk_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_cronet_test_apk_jni__testing__java__testing",
+        "components/cronet/android/test/src/org/chromium/net/CronetTestApplication.java",
+        "components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java",
+        "components/cronet/android/test/src/org/chromium/net/Http2TestHandler.java",
+        "components/cronet/android/test/src/org/chromium/net/Http2TestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java",
+        "components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java",
+        "components/cronet/android/test/src/org/chromium/net/NativeTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/QuicTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/ReportingCollector.java",
+        "components/cronet/android/test/src/org/chromium/net/TestFilesInstaller.java",
+        "components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java",
+        "components/cronet/android/test/src/org/chromium/net/truth/UrlResponseInfoSubject.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_test_support__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_net_android_net_java_test_support__testing",
+        "cronet_aml_third_party_junit_junit__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //components/cronet/android:cronet_test_apk_jni__testing
 cc_genrule {
     name: "cronet_aml_components_cronet_android_cronet_test_apk_jni__testing",
@@ -10756,6 +11066,71 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+}
+
+// GN: //components/cronet/android:cronet_test_apk_jni__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_cronet_test_apk_jni__testing__java__testing",
+    srcs: [
+        "components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java",
+        "components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java",
+        "components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java",
+        "components/cronet/android/test/src/org/chromium/net/NativeTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/QuicTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/components/cronet/android/cronet_test_apk_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_test_apk_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "CronetTestUtil_jni.h " +
+         "--output-name " +
+         "MockCertVerifier_jni.h " +
+         "--output-name " +
+         "MockUrlRequestJobFactory_jni.h " +
+         "--output-name " +
+         "NativeTestServer_jni.h " +
+         "--output-name " +
+         "QuicTestServer_jni.h " +
+         "--output-name " +
+         "TestUploadDataStreamHandler_jni.h " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/NativeTestServer.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/QuicTestServer.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java)",
+    out: [
+        "components/cronet/android/cronet_test_apk_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
     ],
 }
 
@@ -11089,6 +11464,56 @@ cc_genrule {
     ],
 }
 
+// GN: //components/cronet/android:cronet_tests_jni_headers__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_cronet_tests_jni_headers__testing__java__testing",
+    srcs: [
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/components/cronet/android/cronet_tests_jni_headers " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_tests_jni_headers.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "CronetUrlRequestContextTest_jni.h " +
+         "--output-name " +
+         "CronetUrlRequestTest_jni.h " +
+         "--output-name " +
+         "ExperimentalOptionsTest_jni.h " +
+         "--input-file " +
+         "$(location components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java)",
+    out: [
+        "components/cronet/android/cronet_tests_jni_headers.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
 // GN: //components/cronet/android:cronet_unittests_android__library__testing
 cc_library_shared {
     name: "cronet_aml_components_cronet_android_cronet_unittests_android__library__testing",
@@ -11371,6 +11796,30 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_urlconnection_impl_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_urlconnection_impl_java__testing",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetBufferedOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetChunkedOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetFixedModeOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetHttpURLConnection.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetHttpURLStreamHandler.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetInputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetURLStreamHandlerFactory.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java",
+    ],
+    static_libs: [
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:http_cache_type_java
@@ -11467,6 +11916,31 @@ genrule {
 // GN: //components/cronet/android:interface_api_version
 java_genrule {
     name: "cronet_aml_components_cronet_android_interface_api_version",
+    cmd: "$(location build/util/version.py) --official " +
+         "-f " +
+         "$(location chrome/VERSION) " +
+         "-f " +
+         "$(location build/util/LASTCHANGE) " +
+         "-e " +
+         "'API_LEVEL=26' " +
+         "-o " +
+         "$(out) " +
+         "$(location components/cronet/android/api/src/org/chromium/net/ApiVersion.template)",
+    out: [
+        "components/cronet/android/templates/org/chromium/net/ApiVersion.java",
+    ],
+    tool_files: [
+        "build/util/LASTCHANGE",
+        "build/util/android_chrome_version.py",
+        "build/util/version.py",
+        "chrome/VERSION",
+        "components/cronet/android/api/src/org/chromium/net/ApiVersion.template",
+    ],
+}
+
+// GN: //components/cronet/android:interface_api_version__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_interface_api_version__testing",
     cmd: "$(location build/util/version.py) --official " +
          "-f " +
          "$(location chrome/VERSION) " +
@@ -11606,6 +12080,7 @@ java_library {
     static_libs: [
         "libprotobuf-java-lite",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:request_context_config_java_proto__protoc_java
@@ -15281,9 +15756,54 @@ java_library {
     ],
 }
 
+// GN: //net/android:embedded_test_server_aidl__testing
+java_library {
+    name: "cronet_aml_net_android_embedded_test_server_aidl__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //net/android:embedded_test_server_aidl_java__testing
+java_library {
+    name: "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //net/android:net_android_java_enums_srcjar
 java_genrule {
     name: "cronet_aml_net_android_net_android_java_enums_srcjar",
+    srcs: [
+        "net/android/network_change_notifier_android.cc",
+        "net/android/traffic_stats.cc",
+        "net/socket/socket_tag.cc",
+    ],
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/base/network_change_notifier.h) " +
+         "$(location net/socket/socket_tag.cc) " +
+         "$(location net/android/cert_verify_result_android.h) " +
+         "$(location net/android/keystore.h) " +
+         "$(location net/android/network_change_notifier_android.cc) " +
+         "$(location net/android/traffic_stats.cc)",
+    out: [
+        "net/android/net_android_java_enums_srcjar.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/android/cert_verify_result_android.h",
+        "net/android/keystore.h",
+        "net/base/network_change_notifier.h",
+    ],
+}
+
+// GN: //net/android:net_android_java_enums_srcjar__testing
+java_genrule {
+    name: "cronet_aml_net_android_net_android_java_enums_srcjar__testing",
     srcs: [
         "net/android/network_change_notifier_android.cc",
         "net/android/traffic_stats.cc",
@@ -15330,6 +15850,51 @@ genrule {
     ],
     defaults: [
         "cronet_aml_defaults",
+    ],
+}
+
+// GN: //net/android:net_errors_java__testing
+genrule {
+    name: "cronet_aml_net_android_net_errors_java__testing",
+    srcs: [
+        ":cronet_aml_net_android_net_errors_java__testing_preprocess",
+    ],
+    tools: [
+        "soong_zip",
+    ],
+    cmd: "cp $(in) $(genDir)/NetError.java && " +
+         "$(location soong_zip) -o $(out) -srcjar -C $(genDir) -f $(genDir)/NetError.java",
+    out: [
+        "NetError.srcjar",
+    ],
+    defaults: [
+        "cronet_aml_defaults",
+    ],
+}
+
+// GN: //net/android:net_errors_java__testing
+cc_object {
+    name: "cronet_aml_net_android_net_errors_java__testing_preprocess",
+    srcs: [
+        ":cronet_aml_net_android_net_errors_java__testing_rename",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-E",
+        "-P",
+    ],
+    compile_multilib: "first",
+}
+
+// GN: //net/android:net_errors_java__testing
+genrule {
+    name: "cronet_aml_net_android_net_errors_java__testing_rename",
+    srcs: [
+        "net/android/java/NetError.template",
+    ],
+    cmd: "cp $(in) $(out)",
+    out: [
+        "NetError.cc",
     ],
 }
 
@@ -15398,6 +15963,100 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //net/android:net_java__testing
+java_library {
+    name: "cronet_aml_net_android_net_java__testing",
+    srcs: [
+        ":cronet_aml_net_android_net_android_java_enums_srcjar__testing",
+        ":cronet_aml_net_android_net_errors_java__testing",
+        ":cronet_aml_net_net_jni_headers__testing__java__testing",
+        "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
+        "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
+        "net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
+        "net/android/java/src/org/chromium/net/AndroidTrafficStats.java",
+        "net/android/java/src/org/chromium/net/ChromiumNetworkAdapter.java",
+        "net/android/java/src/org/chromium/net/DnsStatus.java",
+        "net/android/java/src/org/chromium/net/GURLUtils.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateConstants.java",
+        "net/android/java/src/org/chromium/net/HttpUtil.java",
+        "net/android/java/src/org/chromium/net/MimeTypeFilter.java",
+        "net/android/java/src/org/chromium/net/NetStringUtil.java",
+        "net/android/java/src/org/chromium/net/NetworkActiveNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+        "net/android/java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
+        "net/android/java/src/org/chromium/net/ProxyBroadcastReceiver.java",
+        "net/android/java/src/org/chromium/net/ProxyChangeListener.java",
+        "net/android/java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
+        "net/android/java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
+        "net/android/java/src/org/chromium/net/X509Util.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_net_android_net_thread_stats_uid_java__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+        "jsr305",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //net/android:net_java_test_support__testing
+java_library {
+    name: "cronet_aml_net_android_net_java_test_support__testing",
+    srcs: [
+        ":cronet_aml_net_android_net_java_test_support_enums_srcjar__testing",
+        ":cronet_aml_net_android_net_test_support_jni__testing__java__testing",
+        "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerRule.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/CertTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/NetworkChangeNotifierTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/TestWebServer.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/WebServer.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_test_support__testing",
+        "cronet_aml_base_base_java_url_utils_for_test__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_net_android_net_java__testing",
+        "cronet_aml_third_party_junit_junit__testing",
+    ],
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //net/android:net_java_test_support_enums_srcjar__testing
+java_genrule {
+    name: "cronet_aml_net_android_net_java_test_support_enums_srcjar__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/test/embedded_test_server/embedded_test_server.h) " +
+         "$(location net/test/url_request/url_request_failed_job.h)",
+    out: [
+        "net/android/net_java_test_support_enums_srcjar.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/test/embedded_test_server/embedded_test_server.h",
+        "net/test/url_request/url_request_failed_job.h",
+    ],
 }
 
 // GN: //net/android:net_test_support_jni__testing
@@ -15441,6 +16100,46 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+}
+
+// GN: //net/android:net_test_support_jni__testing
+java_genrule {
+    name: "cronet_aml_net_android_net_test_support_jni__testing__java__testing",
+    srcs: [
+        "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/net/android/net_test_support_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/net/android/net_test_support_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "AndroidNetworkLibraryTestUtil_jni.h " +
+         "--input-file " +
+         "$(location net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java)",
+    out: [
+        "net/android/net_test_support_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
     ],
 }
 
@@ -15550,6 +16249,16 @@ java_library {
     srcs: [
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //net/android:net_thread_stats_uid_java__testing
+java_library {
+    name: "cronet_aml_net_android_net_thread_stats_uid_java__testing",
+    srcs: [
+        "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //net/base/registry_controlled_domains:lookup_strings_test_sets__testing
@@ -20538,6 +21247,106 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+}
+
+// GN: //net:net_jni_headers__testing
+java_genrule {
+    name: "cronet_aml_net_net_jni_headers__testing__java__testing",
+    srcs: [
+        "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
+        "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
+        "net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
+        "net/android/java/src/org/chromium/net/AndroidTrafficStats.java",
+        "net/android/java/src/org/chromium/net/DnsStatus.java",
+        "net/android/java/src/org/chromium/net/GURLUtils.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
+        "net/android/java/src/org/chromium/net/HttpUtil.java",
+        "net/android/java/src/org/chromium/net/NetStringUtil.java",
+        "net/android/java/src/org/chromium/net/NetworkActiveNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifier.java",
+        "net/android/java/src/org/chromium/net/ProxyChangeListener.java",
+        "net/android/java/src/org/chromium/net/X509Util.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/net/net_jni_headers " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/net/net_jni_headers.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "AndroidCertVerifyResult_jni.h " +
+         "--output-name " +
+         "AndroidKeyStore_jni.h " +
+         "--output-name " +
+         "AndroidNetworkLibrary_jni.h " +
+         "--output-name " +
+         "AndroidTrafficStats_jni.h " +
+         "--output-name " +
+         "DnsStatus_jni.h " +
+         "--output-name " +
+         "GURLUtils_jni.h " +
+         "--output-name " +
+         "HttpNegotiateAuthenticator_jni.h " +
+         "--output-name " +
+         "HttpUtil_jni.h " +
+         "--output-name " +
+         "NetStringUtil_jni.h " +
+         "--output-name " +
+         "NetworkActiveNotifier_jni.h " +
+         "--output-name " +
+         "NetworkChangeNotifier_jni.h " +
+         "--output-name " +
+         "ProxyChangeListener_jni.h " +
+         "--output-name " +
+         "X509Util_jni.h " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidKeyStore.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidTrafficStats.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/DnsStatus.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/GURLUtils.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/HttpUtil.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/NetStringUtil.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/NetworkActiveNotifier.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/NetworkChangeNotifier.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/ProxyChangeListener.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/X509Util.java)",
+    out: [
+        "net/net_jni_headers.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
     ],
 }
 
@@ -27477,6 +28286,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java__testing",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //testing/android/native_test:native_main_runner_jni__testing
@@ -41344,6 +42154,90 @@ cc_library_static {
     },
 }
 
+// GN: //third_party/accessibility_test_framework:accessibility_test_framework_java__testing
+java_library {
+    name: "cronet_aml_third_party_accessibility_test_framework_accessibility_test_framework_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/android_deps:com_android_support_support_core_ui_java__testing
+java_library {
+    name: "cronet_aml_third_party_android_deps_com_android_support_support_core_ui_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java__testing
+java_library {
+    name: "cronet_aml_third_party_android_deps_com_googlecode_java_diff_utils_diffutils_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/android_deps:espresso_java__testing
+java_library {
+    name: "cronet_aml_third_party_android_deps_espresso_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/android_deps:guava_android_java__testing
+java_library {
+    name: "cronet_aml_third_party_android_deps_guava_android_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/android_sdk:android_test_base_java__testing
+java_library {
+    name: "cronet_aml_third_party_android_sdk_android_test_base_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/android_sdk:android_test_mock_java__testing
+java_library {
+    name: "cronet_aml_third_party_android_sdk_android_test_mock_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/android_sdk:android_test_runner_java__testing
+java_library {
+    name: "cronet_aml_third_party_android_sdk_android_test_runner_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/androidx:androidx_multidex_multidex_java__testing
+java_library {
+    name: "cronet_aml_third_party_androidx_androidx_multidex_multidex_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/androidx:androidx_test_core_java__testing
+java_library {
+    name: "cronet_aml_third_party_androidx_androidx_test_core_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/androidx:androidx_test_ext_junit_java__testing
+java_library {
+    name: "cronet_aml_third_party_androidx_androidx_test_ext_junit_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/androidx:androidx_test_monitor_java__testing
+java_library {
+    name: "cronet_aml_third_party_androidx_androidx_test_monitor_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/androidx:androidx_test_runner_java__testing
+java_library {
+    name: "cronet_aml_third_party_androidx_androidx_test_runner_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/androidx:androidx_test_uiautomator_uiautomator_java__testing
+java_library {
+    name: "cronet_aml_third_party_androidx_androidx_test_uiautomator_uiautomator_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //third_party/ashmem:ashmem
 cc_library_static {
     name: "cronet_aml_third_party_ashmem_ashmem",
@@ -42948,6 +43842,15 @@ cc_library_static {
     },
 }
 
+// GN: //third_party/google-truth:google_truth_java__testing
+java_library {
+    name: "cronet_aml_third_party_google_truth_google_truth_java__testing",
+    static_libs: [
+        "cronet_aml_third_party_junit_junit__testing",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //third_party/googletest:gmock__testing
 cc_library_static {
     name: "cronet_aml_third_party_googletest_gmock__testing",
@@ -43333,6 +44236,18 @@ cc_library_static {
             ],
         },
     },
+}
+
+// GN: //third_party/hamcrest:hamcrest_core_java__testing
+java_library {
+    name: "cronet_aml_third_party_hamcrest_hamcrest_core_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //third_party/hamcrest:hamcrest_java__testing
+java_library {
+    name: "cronet_aml_third_party_hamcrest_hamcrest_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //third_party/icu:icui18n
@@ -44629,6 +45544,233 @@ cc_library_static {
     },
 }
 
+// GN: //third_party/junit:junit__testing
+java_library {
+    name: "cronet_aml_third_party_junit_junit__testing",
+    srcs: [
+        "third_party/junit/src/src/main/java/junit/extensions/ActiveTestSuite.java",
+        "third_party/junit/src/src/main/java/junit/extensions/RepeatedTest.java",
+        "third_party/junit/src/src/main/java/junit/extensions/TestDecorator.java",
+        "third_party/junit/src/src/main/java/junit/extensions/TestSetup.java",
+        "third_party/junit/src/src/main/java/junit/extensions/package-info.java",
+        "third_party/junit/src/src/main/java/junit/framework/Assert.java",
+        "third_party/junit/src/src/main/java/junit/framework/AssertionFailedError.java",
+        "third_party/junit/src/src/main/java/junit/framework/ComparisonCompactor.java",
+        "third_party/junit/src/src/main/java/junit/framework/ComparisonFailure.java",
+        "third_party/junit/src/src/main/java/junit/framework/JUnit4TestAdapter.java",
+        "third_party/junit/src/src/main/java/junit/framework/JUnit4TestAdapterCache.java",
+        "third_party/junit/src/src/main/java/junit/framework/JUnit4TestCaseFacade.java",
+        "third_party/junit/src/src/main/java/junit/framework/Protectable.java",
+        "third_party/junit/src/src/main/java/junit/framework/Test.java",
+        "third_party/junit/src/src/main/java/junit/framework/TestCase.java",
+        "third_party/junit/src/src/main/java/junit/framework/TestFailure.java",
+        "third_party/junit/src/src/main/java/junit/framework/TestListener.java",
+        "third_party/junit/src/src/main/java/junit/framework/TestResult.java",
+        "third_party/junit/src/src/main/java/junit/framework/TestSuite.java",
+        "third_party/junit/src/src/main/java/junit/framework/package-info.java",
+        "third_party/junit/src/src/main/java/junit/runner/BaseTestRunner.java",
+        "third_party/junit/src/src/main/java/junit/runner/TestRunListener.java",
+        "third_party/junit/src/src/main/java/junit/runner/Version.java",
+        "third_party/junit/src/src/main/java/junit/runner/package-info.java",
+        "third_party/junit/src/src/main/java/junit/textui/ResultPrinter.java",
+        "third_party/junit/src/src/main/java/junit/textui/TestRunner.java",
+        "third_party/junit/src/src/main/java/junit/textui/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/After.java",
+        "third_party/junit/src/src/main/java/org/junit/AfterClass.java",
+        "third_party/junit/src/src/main/java/org/junit/Assert.java",
+        "third_party/junit/src/src/main/java/org/junit/Assume.java",
+        "third_party/junit/src/src/main/java/org/junit/AssumptionViolatedException.java",
+        "third_party/junit/src/src/main/java/org/junit/Before.java",
+        "third_party/junit/src/src/main/java/org/junit/BeforeClass.java",
+        "third_party/junit/src/src/main/java/org/junit/ClassRule.java",
+        "third_party/junit/src/src/main/java/org/junit/ComparisonFailure.java",
+        "third_party/junit/src/src/main/java/org/junit/FixMethodOrder.java",
+        "third_party/junit/src/src/main/java/org/junit/Ignore.java",
+        "third_party/junit/src/src/main/java/org/junit/Rule.java",
+        "third_party/junit/src/src/main/java/org/junit/Test.java",
+        "third_party/junit/src/src/main/java/org/junit/TestCouldNotBeSkippedException.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/ParallelComputer.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/categories/Categories.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/categories/Category.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/categories/CategoryFilterFactory.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/categories/CategoryValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/categories/ExcludeCategories.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/categories/IncludeCategories.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/max/CouldNotReadCoreException.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/max/MaxCore.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/max/MaxHistory.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/results/FailureList.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/results/PrintableResult.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/results/ResultMatchers.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/runners/Enclosed.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/DataPoint.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/DataPoints.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/FromDataPoints.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/ParameterSignature.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/ParameterSupplier.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/ParametersSuppliedBy.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/PotentialAssignment.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/Theories.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/Theory.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/internal/AllMembersSupplier.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/internal/Assignments.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/internal/BooleanSupplier.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/internal/EnumSupplier.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/internal/ParameterizedAssertionError.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/internal/SpecificDataPointsSupplier.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/suppliers/TestedOn.java",
+        "third_party/junit/src/src/main/java/org/junit/experimental/theories/suppliers/TestedOnSupplier.java",
+        "third_party/junit/src/src/main/java/org/junit/function/ThrowingRunnable.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/ArrayComparisonFailure.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/AssumptionViolatedException.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/Checks.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/Classes.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/ComparisonCriteria.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/ExactComparisonCriteria.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/InexactComparisonCriteria.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/JUnitSystem.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/MethodSorter.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/RealSystem.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/SerializableMatcherDescription.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/SerializableValueDescription.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/TextListener.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/Throwables.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/AllDefaultPossibilitiesBuilder.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/AnnotatedBuilder.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/IgnoredBuilder.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/IgnoredClassRunner.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/JUnit3Builder.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/JUnit4Builder.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/NullBuilder.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/builders/SuiteMethodBuilder.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/management/FakeRuntimeMXBean.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/management/FakeThreadMXBean.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/management/ManagementFactory.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/management/ReflectiveRuntimeMXBean.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/management/ReflectiveThreadMXBean.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/management/RuntimeMXBean.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/management/ThreadMXBean.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/matchers/StacktracePrintingMatcher.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/matchers/ThrowableCauseMatcher.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/matchers/ThrowableMessageMatcher.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/matchers/TypeSafeMatcher.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/requests/ClassRequest.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/requests/FilterRequest.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/requests/MemoizingRequest.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/requests/OrderingRequest.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/requests/SortingRequest.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/requests/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/ClassRoadie.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/ErrorReportingRunner.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/FailedBefore.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/InitializationError.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/JUnit38ClassRunner.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/JUnit4ClassRunner.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/MethodRoadie.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/MethodValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/SuiteMethod.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/TestClass.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/TestMethod.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/model/EachTestNotifier.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/model/MultipleFailureException.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/model/ReflectiveCallable.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/rules/RuleMemberValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/rules/ValidationError.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/statements/ExpectException.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/statements/Fail.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/statements/FailOnTimeout.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/statements/InvokeMethod.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/statements/RunAfters.java",
+        "third_party/junit/src/src/main/java/org/junit/internal/runners/statements/RunBefores.java",
+        "third_party/junit/src/src/main/java/org/junit/matchers/JUnitMatchers.java",
+        "third_party/junit/src/src/main/java/org/junit/matchers/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/DisableOnDebug.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/ErrorCollector.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/ExpectedException.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/ExpectedExceptionMatcherBuilder.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/ExternalResource.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/MethodRule.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/RuleChain.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/RunRules.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/Stopwatch.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/TemporaryFolder.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/TestName.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/TestRule.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/TestWatcher.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/TestWatchman.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/Timeout.java",
+        "third_party/junit/src/src/main/java/org/junit/rules/Verifier.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/Computer.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/Describable.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/Description.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/FilterFactories.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/FilterFactory.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/FilterFactoryParams.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/JUnitCommandLineParseResult.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/JUnitCore.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/OrderWith.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/OrderWithValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/Request.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/Result.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/RunWith.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/Runner.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Alphanumeric.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Filter.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Filterable.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/InvalidOrderingException.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/NoTestsRemainException.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Orderable.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Orderer.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Ordering.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Sortable.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/Sorter.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/manipulation/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/notification/Failure.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/notification/RunListener.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/notification/RunNotifier.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/notification/StoppedByUserException.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/notification/SynchronizedRunListener.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/notification/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/runner/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/AllTests.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/BlockJUnit4ClassRunner.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/JUnit4.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/MethodSorters.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/Parameterized.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/ParentRunner.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/RuleContainer.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/Suite.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/Annotatable.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/FrameworkField.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/FrameworkMember.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/FrameworkMethod.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/InitializationError.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/InvalidTestClassError.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/MemberValueConsumer.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/MultipleFailureException.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/NoGenericTypeParametersValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/RunnerBuilder.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/RunnerScheduler.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/Statement.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/TestClass.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/model/TestTimedOutException.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/package-info.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/parameterized/BlockJUnit4ClassRunnerWithParameters.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/parameterized/BlockJUnit4ClassRunnerWithParametersFactory.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/parameterized/ParametersRunnerFactory.java",
+        "third_party/junit/src/src/main/java/org/junit/runners/parameterized/TestWithParameters.java",
+        "third_party/junit/src/src/main/java/org/junit/validator/AnnotationValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/validator/AnnotationValidatorFactory.java",
+        "third_party/junit/src/src/main/java/org/junit/validator/AnnotationsValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/validator/PublicClassValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/validator/TestClassValidator.java",
+        "third_party/junit/src/src/main/java/org/junit/validator/ValidateWith.java",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //third_party/libevent:libevent
 cc_library_static {
     name: "cronet_aml_third_party_libevent_libevent",
@@ -45425,6 +46567,12 @@ cc_genrule {
     ],
 }
 
+// GN: //third_party/mockito:mockito_java__testing
+java_library {
+    name: "cronet_aml_third_party_mockito_mockito_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //third_party/modp_b64:modp_b64
 cc_library_static {
     name: "cronet_aml_third_party_modp_b64_modp_b64",
@@ -45599,6 +46747,12 @@ cc_library_static {
             compile_multilib: "64",
         },
     },
+}
+
+// GN: //third_party/netty4:netty_all_java__testing
+java_library {
+    name: "cronet_aml_third_party_netty4_netty_all_java__testing",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //third_party/protobuf:protobuf_full
@@ -46745,6 +47899,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //url:url_java__testing
@@ -46756,6 +47911,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java__testing",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //url:url_jni_headers

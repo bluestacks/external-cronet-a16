@@ -9320,6 +9320,7 @@ java_library {
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_build_android_build_java__testing",
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
         "junit",
         "truth",
@@ -9565,8 +9566,10 @@ java_library {
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
         "cronet_aml_components_cronet_android_cronet_common_javatests__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
         "cronet_aml_components_cronet_android_cronet_urlconnection_impl_java__testing",
+        "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
         "cronet_aml_net_android_net_java__testing",
         "cronet_aml_net_android_net_java_test_support__testing",
         "cronet_aml_url_url_java__testing",
@@ -11498,6 +11501,7 @@ java_library {
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_build_android_build_java__testing",
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_net_android_net_java_test_support__testing",
         "junit",
         "truth",
@@ -17283,6 +17287,7 @@ java_library {
         "cronet_aml_base_base_java_test_support__testing",
         "cronet_aml_base_base_java_url_utils_for_test__testing",
         "cronet_aml_base_jni_java__testing",
+        "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
         "cronet_aml_net_android_net_java__testing",
         "junit",
     ],
@@ -47691,13 +47696,6 @@ cc_library_static {
             compile_multilib: "64",
         },
     },
-}
-
-// GN: //third_party/netty4:netty_all_java__testing
-java_library {
-    name: "cronet_aml_third_party_netty4_netty_all_java__testing",
-    sdk_version: "current",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //third_party/protobuf:protobuf_full

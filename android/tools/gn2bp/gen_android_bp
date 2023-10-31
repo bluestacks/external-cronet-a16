@@ -336,6 +336,8 @@ _builtin_deps = {
         add_androidx_ui_automator_java_deps,
     '//third_party/hamcrest:hamcrest_java':
         add_hamcrest_java_deps,
+    '//third_party/netty4:netty_all_java':
+        always_disable
 }
 builtin_deps = {"{}{}".format(key, suffix): value for key, value in _builtin_deps.items() for suffix in ["", gn_utils.TESTING_SUFFIX] }
 
@@ -625,6 +627,8 @@ class Module(object):
     return self.type == "cc_genrule"
 
   def has_input_files(self):
+    if self.type == "java_library":
+        return True
     if len(self.srcs) > 0:
       return True
     if any([len(target.srcs) > 0 for target in self.target.values()]):

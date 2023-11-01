@@ -9547,8 +9547,6 @@ java_library {
         "android.test.base",
         "androidx.annotation_annotation-experimental-nodeps",
     ],
-    stem: "libcronet_javatests",
-    sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],
@@ -11077,7 +11075,6 @@ java_library {
     srcs: [
         ":cronet_aml_components_cronet_android_cronet_jni_registration__testing__java",
     ],
-    stem: "libcronet_jni_registration_java",
     sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
@@ -12552,7 +12549,6 @@ java_library {
     srcs: [
         ":cronet_aml_components_cronet_android_cronet_tests_jni_registration__testing__java",
     ],
-    stem: "libcronet_tests_jni_registration_java",
     sdk_version: "current",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",

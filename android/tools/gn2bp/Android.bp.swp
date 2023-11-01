@@ -3454,7 +3454,6 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java",
         "cronet_aml_build_android_build_java",
-        "modules-utils-build_system",
     ],
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",
@@ -3599,7 +3598,6 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_build_android_build_java__testing",
-        "modules-utils-build_system",
     ],
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",

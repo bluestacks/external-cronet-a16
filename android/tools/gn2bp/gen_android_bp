@@ -172,16 +172,6 @@ additional_args = {
             'libgtest_prod_headers',
         }),
     ],
-    'cronet_aml_base_base_java': [
-      ('static_libs', {
-          'modules-utils-build_system'
-      })
-    ],
-    'cronet_aml_base_base_java__testing': [
-      ('static_libs', {
-        'modules-utils-build_system'
-      })
-    ]
 }
 
 def always_disable(module, arch):

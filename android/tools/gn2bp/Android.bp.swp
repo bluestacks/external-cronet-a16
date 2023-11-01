@@ -8939,7 +8939,7 @@ cc_library_shared {
         "-Wl,-wrap,valloc",
         "-Wl,-wrap,vasprintf",
     ],
-    stem: "libcronet.117.0.5938.0",
+    stem: "libmainlinecronet.117.0.5938.0",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",
     ],

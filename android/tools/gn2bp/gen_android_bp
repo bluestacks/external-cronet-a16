@@ -172,6 +172,18 @@ additional_args = {
             'libgtest_prod_headers',
         }),
     ],
+    'cronet_aml_components_cronet_android_cronet_javatests__testing': [
+        # There's no HTTP2 test server in AOSP, replace with stub.
+        ('srcs', {
+            'components/cronet/android/test/javatests/src/org/chromium/net/Http2TestServer.java',
+        }),
+        # Needed to @SkipPresubmit annotations
+        ('static_libs', {
+            'net-tests-utils',
+        }),
+        # This is necessary because net-tests-utils compiles against private SDK.
+        ('sdk_version', ""),
+    ],
 }
 
 def always_disable(module, arch):

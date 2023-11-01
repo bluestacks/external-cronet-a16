@@ -9504,6 +9504,7 @@ java_library {
         "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/FileUtils.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/GetStatusTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/Http2TestServer.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/MetricsTestUtil.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/NQETest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
@@ -9548,6 +9549,7 @@ java_library {
         "hamcrest-library",
         "junit",
         "mockito",
+        "net-tests-utils",
         "truth",
     ],
     libs: [

@@ -23,6 +23,34 @@ import re
 import collections
 
 LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library', 'source_set')
+# This is a list of java files that should not be collected
+# as they don't exist right now downstream (eg: apihelpers, cronetEngineBuilderTest).
+# This is temporary solution until they are up-streamed.
+JAVA_FILES_TO_IGNORE = (
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/ByteArrayCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/ContentTypeParametersParser.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/CronetRequestCompletionListener.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/CronetResponse.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/ImplicitFlowControlCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/InMemoryTransformCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/JsonCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandler.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandlers.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/StringCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/CronetEngineBuilderTest.java",
+  # The following tests are currently not included in the tests because they
+  # depends on H2 test server.
+  "//components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamTest.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/MockCertVerifierTest.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/PkpTest.java",
+  # Api helpers does not exist downstream, hence the tests shouldn't be collected.
+  "//components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
+  # Netty does not exist currently in AOSP so those classes won't compile. We replace with stubs.
+  "//components/cronet/android/test/src/org/chromium/net/Http2TestHandler.java",
+  "//components/cronet/android/test/src/org/chromium/net/Http2TestServer.java"
+)
 RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"
 AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
@@ -410,7 +438,11 @@ class GnParser(object):
     elif target.is_linker_unit_type():
       target.arch[arch].sources.update(desc.get('sources', []))
     elif target.type == 'java_library':
-      target.sources.update(java_source for java_source in metadata.get("source_files", []) if not java_source.startswith("//out"))
+      sources = set()
+      for java_source in metadata.get("source_files", []):
+        if not java_source.startswith("//out") and java_source not in JAVA_FILES_TO_IGNORE:
+          sources.add(java_source)
+      target.sources.update(sources)
       target.transitive_java_sources.update(target.sources)
       deps = metadata.get("all_deps", {})
       log.info('Found Java Target %s', target.name)

@@ -1297,6 +1297,14 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
   elif target.script == '//third_party/jni_zero/jni_zero.py':
     if target.args[0] == 'generate-final':
       if type == 'java_genrule':
+        # Fill up the sources of the target for JniRegistrationGenerator actions with all
+        # the java sources that were found (include testing if is_test_target).
+        # Only do this for the java part in order to generate a complete GEN_JNI. The C++ part
+        # MUST only include java source files that are listed explicitly otherwise this would result
+        # in undefined symbols as the C++ part generates declarations that would have no definitions.
+        target.sources.update(gn.java_sources)
+        if is_test_target:
+          target.sources.update(gn.java_sources_testing)
         return JavaJniRegistrationGeneratorSanitizer(target, arch, is_test_target)
       else:
         return JniRegistrationGeneratorSanitizer(target, arch, is_test_target)
@@ -1693,98 +1701,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
                       (dep_module.name, target.name, dep_module.type))
   return module
 
-def get_java_sources(gn, predicate):
-  java_sources = set()
-  for target_name, sources in gn.java_sources.items():
-    if predicate(target_name):
-      java_sources.update(sources)
-  return java_sources
-
-def get_java_actions(gn, predicate):
-  java_actions = set()
-  for target_name, actions in gn.java_actions.items():
-    if predicate(target_name):
-      java_actions.update(actions)
-  return java_actions
-
-def get_non_api_java_sources(gn):
-  return get_java_sources(gn, lambda name: name != java_api_target_name)
-
-def get_non_api_java_actions(gn):
-  return get_java_actions(gn, lambda name: name != java_api_target_name)
-
-def get_api_java_sources(gn):
-  return get_java_sources(gn, lambda name: name == java_api_target_name)
-
-def get_api_java_actions(gn):
-  return get_java_actions(gn, lambda name: name == java_api_target_name)
-
-def create_java_module(blueprint, gn, is_test_target):
-  bp_module_name = module_prefix + 'java'
-  if is_test_target:
-    bp_module_name += gn_utils.TESTING_SUFFIX
-  module = Module('java_library', bp_module_name, '//gn:java')
-  module.srcs.update([gn_utils.label_to_path(source) for source in get_non_api_java_sources(gn)])
-  module.libs = {
-    "androidx.annotation_annotation",
-    "androidx.annotation_annotation-experimental-nodeps",
-    "error_prone_annotations",
-    "framework-connectivity-t.stubs.module_lib",
-    "framework-connectivity.stubs.module_lib",
-    "framework-mediaprovider.stubs.module_lib",
-    "framework-tethering.stubs.module_lib",
-    "framework-wifi.stubs.module_lib",
-    "jsr305",
-  }
-  module.static_libs = {
-    "libprotobuf-java-lite",
-    "modules-utils-build_system",
-  }
-
-  module.sdk_version = "module_current"
-  module.min_sdk_version = 30
-  module.apex_available.add(tethering_apex)
-  # TODO: support for this flag is removed upstream in crrev/c/4062652.
-  # Consider reverting this change upstream, or worst-case downstream.  As an
-  # alternative hack, we could rename the generated file to not conflict. This
-  # would be less likely to conflict with upstream changes if the revert is not
-  # accepted.
-  module.javacflags.add("-Aorg.chromium.chrome.skipGenJni")
-  for dep in get_non_api_java_actions(gn):
-    target = gn.get_target(dep)
-    if target.script == '//build/android/gyp/gcc_preprocess.py':
-      module.srcs.add(':' + create_gcc_preprocess_modules(blueprint, target).name)
-    else:
-      module.srcs.add(':' + create_action_module(blueprint, gn, target,
-                                                 'java_genrule',
-                                                 is_test_target).name)
-  module.visibility.append(connectivity_visibility)
-  module.visibility.append("//external/cronet/android:__subpackages__")
-  blueprint.add_module(module)
-  return module
-
-def create_java_api_module(blueprint, gn):
-  source_module = Module('filegroup', module_prefix + 'api_sources', java_api_target_name)
-  # TODO add the API helpers separately after the main API is checked in and thoroughly reviewed
-  source_module.srcs.update([gn_utils.label_to_path(source)
-                             for source in get_api_java_sources(gn)
-                             if "apihelpers" not in source])
-  source_module.comment += "\n// TODO(danstahr): add the API helpers separately after the main" \
-                           " API is checked in and thoroughly reviewed"
-  source_module.srcs.update([
-    ':' + create_action_module(blueprint, gn, gn.get_target(dep), 'java_genrule', False).name
-    for dep in get_api_java_actions(gn)])
-  blueprint.add_module(source_module)
-  source_module.visibility.append(connectivity_visibility)
-  return source_module
-
-def update_jni_registration_module(module, gn):
-  # TODO: java_sources might not contain all the required java files
-  module.srcs.update([gn_utils.label_to_path(source)
-                    for source in get_non_api_java_sources(gn)
-                      if source.endswith('.java')])
-
-
 def turn_off_allocator_shim_for_musl(module):
   allocation_shim = "base/allocator/partition_allocator/shim/allocator_shim.cc"
   allocator_shim_files = {
@@ -1861,14 +1777,7 @@ def create_blueprint_for_targets(gn, targets, test_targets):
     if module:
       module.visibility.append(connectivity_visibility)
 
-  create_java_api_module(blueprint, gn)
-  java_module = create_java_module(blueprint, gn, is_test_target=False)
-  java_module.libs.add(CRONET_API_MODULE_NAME)
-  java_module_testing = create_java_module(blueprint, gn, is_test_target=True)
-  java_module_testing.libs.add(CRONET_API_MODULE_NAME)
   for module in blueprint.modules.values():
-    if 'cronet_jni_registration' in module.name:
-      update_jni_registration_module(module, gn)
     if module.name in ['cronet_aml_base_base', 'cronet_aml_base_base' + gn_utils.TESTING_SUFFIX]:
       turn_off_allocator_shim_for_musl(module)
 

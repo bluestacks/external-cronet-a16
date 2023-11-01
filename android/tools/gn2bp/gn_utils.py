@@ -54,6 +54,7 @@ JAVA_FILES_TO_IGNORE = (
 RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"
 AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
+AIDL_IMPORT_DIRS_REGEX = r'--imports=\[(.*)\]'
 
 def repo_root():
   """Returns an absolute path to the repository root."""
@@ -64,13 +65,29 @@ def repo_root():
 def _clean_string(str):
   return str.replace('\\', '').replace('../../', '').replace('"', '').strip()
 
+def _clean_aidl_import(orig_str):
+  str = _clean_string(orig_str)
+  src_idx = str.find("src/")
+  if src_idx == -1:
+    raise ValueError(f"Unable to clean aidl import {orig_str}")
+  return str[:src_idx + len("src")]
+
 def _extract_includes_from_aidl_args(args):
+  ret = []
   for arg in args:
     is_match = re.match(AIDL_INCLUDE_DIRS_REGEX, arg)
     if is_match:
       local_includes = is_match.group(1).split(",")
-      return [_clean_string(local_include) for local_include in local_includes]
-  return []
+      ret += [_clean_string(local_include) for local_include in local_includes]
+    # Treat imports like include for aidl by removing the package suffix.
+    is_match = re.match(AIDL_IMPORT_DIRS_REGEX, arg)
+    if is_match:
+      local_imports = is_match.group(1).split(",")
+      # Skip "third_party/android_sdk/public/platforms/android-34/framework.aidl" because Soong
+      # already links against the AIDL framework implicitly.
+      ret += [_clean_aidl_import(local_import) for local_import in local_imports
+              if "framework.aidl" not in local_import]
+  return ret
 
 def contains_aidl(sources):
   return any([src.endswith(".aidl") for src in sources])

@@ -16915,6 +16915,9 @@ java_library {
         include_dirs: [
             "frameworks/base/core/java/",
         ],
+        local_include_dirs: [
+            "net/test/android/javatests/src",
+        ],
     },
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",

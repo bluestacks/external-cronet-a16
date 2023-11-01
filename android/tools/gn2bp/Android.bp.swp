@@ -8941,6 +8941,7 @@ cc_library_shared {
     ],
     stem: "libmainlinecronet.117.0.5938.0",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -9159,6 +9160,7 @@ cc_library_shared {
     ],
     stem: "libcronet",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -9223,6 +9225,7 @@ java_library {
     ],
     sdk_version: "current",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -9430,6 +9433,7 @@ java_library {
     ],
     sdk_version: "current",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -9548,6 +9552,7 @@ java_library {
         "androidx.annotation_annotation-experimental-nodeps",
     ],
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11064,6 +11069,7 @@ java_library {
     ],
     sdk_version: "current",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11077,6 +11083,7 @@ java_library {
     ],
     sdk_version: "current",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11977,6 +11984,7 @@ cc_library_shared {
     ],
     stem: "libcronet_tests",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -12551,6 +12559,7 @@ java_library {
     ],
     sdk_version: "current",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -12790,6 +12799,7 @@ cc_library_shared {
     ],
     stem: "libcronet_unittests_android__library",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -23749,6 +23759,7 @@ cc_library_shared {
     ],
     stem: "libnet_unittests__library",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {

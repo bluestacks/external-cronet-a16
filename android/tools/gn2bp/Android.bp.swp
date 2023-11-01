@@ -11101,7 +11101,6 @@ java_library {
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_jni_registration_java__testing
@@ -11115,7 +11114,6 @@ java_library {
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_static
@@ -12608,7 +12606,6 @@ java_library {
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_unittests_android__library__testing

@@ -174,6 +174,17 @@ additional_args = {
             'libgtest_prod_headers',
         }),
     ],
+    # TODO(b/309920629): Remove once upstreamed.
+    'cronet_aml_components_cronet_android_cronet_api_java': [
+        ('srcs', {
+            'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
+        }),
+    ],
+    'cronet_aml_components_cronet_android_cronet_api_java__testing': [
+        ('srcs', {
+            'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
+        }),
+    ],
     'cronet_aml_components_cronet_android_cronet_javatests__testing': [
         # There's no HTTP2 test server in AOSP, replace with stub.
         ('srcs', {

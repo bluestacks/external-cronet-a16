@@ -11121,6 +11121,17 @@ java_genrule {
         "net/android/java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
         "net/android/java/src/org/chromium/net/X509Util.java",
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
+        "net/android/javatests/src/org/chromium/net/HttpUtilTest.java",
+        "net/android/javatests/src/org/chromium/net/MimeTypeFilterTest.java",
+        "net/android/javatests/src/org/chromium/net/NetErrorsTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierNoNativeTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "net/android/javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
+        "net/android/javatests/src/org/chromium/net/X509UtilTest.java",
         "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
         "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
         "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
@@ -12636,6 +12647,17 @@ java_genrule {
         "net/android/java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
         "net/android/java/src/org/chromium/net/X509Util.java",
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
+        "net/android/javatests/src/org/chromium/net/HttpUtilTest.java",
+        "net/android/javatests/src/org/chromium/net/MimeTypeFilterTest.java",
+        "net/android/javatests/src/org/chromium/net/NetErrorsTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierNoNativeTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "net/android/javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
+        "net/android/javatests/src/org/chromium/net/X509UtilTest.java",
         "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
         "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
         "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
@@ -17748,6 +17770,49 @@ java_genrule {
     ],
 }
 
+// GN: //net/android:net_tests_java__testing
+java_library {
+    name: "cronet_aml_net_android_net_tests_java__testing",
+    srcs: [
+        ":cronet_aml_net_android_net_tests_jni__testing__java",
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
+        "net/android/javatests/src/org/chromium/net/HttpUtilTest.java",
+        "net/android/javatests/src/org/chromium/net/MimeTypeFilterTest.java",
+        "net/android/javatests/src/org/chromium/net/NetErrorsTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierNoNativeTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "net/android/javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
+        "net/android/javatests/src/org/chromium/net/X509UtilTest.java",
+    ],
+    static_libs: [
+        "androidx.test.runner",
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_test_support__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_net_android_net_java__testing",
+        "cronet_aml_net_android_net_java_test_support__testing",
+        "junit",
+        "mockito",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "android.test.mock",
+        "androidx.test.monitor",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //net/android:net_tests_jni__testing
 cc_genrule {
     name: "cronet_aml_net_android_net_tests_jni__testing",
@@ -17795,6 +17860,51 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+}
+
+// GN: //net/android:net_tests_jni__testing
+java_genrule {
+    name: "cronet_aml_net_android_net_tests_jni__testing__java",
+    srcs: [
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/net/android/net_tests_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/net/android/net_tests_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "AndroidKeyStoreTestUtil_jni.h " +
+         "--output-name " +
+         "AndroidProxyConfigServiceTestUtil_jni.h " +
+         "--input-file " +
+         "$(location net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java) " +
+         "--input-file " +
+         "$(location net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java)",
+    out: [
+        "net/android/net_tests_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
     ],
 }
 

@@ -26,15 +26,6 @@ package {
     ],
 }
 
-// GN: //components/cronet/android:cronet_api_java
-// TODO(danstahr): add the API helpers separately after the main API is checked in and thoroughly reviewed
-filegroup {
-    name: "cronet_aml_api_sources",
-    visibility: [
-        "//packages/modules/Connectivity:__subpackages__",
-    ],
-}
-
 // GN: //base/allocator:buildflags
 cc_genrule {
     name: "cronet_aml_base_allocator_buildflags",
@@ -2843,6 +2834,15 @@ cc_library_static {
                 "cronet_aml_base_process_launcher_jni__testing",
                 "cronet_aml_build_chromeos_buildflags__testing",
             ],
+            export_generated_headers: [
+                "cronet_aml_base_android_runtime_jni_headers__testing",
+                "cronet_aml_base_android_runtime_unchecked_jni_headers__testing",
+                "cronet_aml_base_base_jni__testing",
+                "cronet_aml_base_debugging_buildflags__testing",
+                "cronet_aml_base_logging_buildflags__testing",
+                "cronet_aml_base_process_launcher_jni__testing",
+                "cronet_aml_build_chromeos_buildflags__testing",
+            ],
             ldflags: [
                 "-Wl,-wrap,asprintf",
                 "-Wl,-wrap,calloc",
@@ -2953,6 +2953,15 @@ cc_library_static {
                 "third_party/cpu_features/src/ndk_compat/",
             ],
             generated_headers: [
+                "cronet_aml_base_android_runtime_jni_headers__testing",
+                "cronet_aml_base_android_runtime_unchecked_jni_headers__testing",
+                "cronet_aml_base_base_jni__testing",
+                "cronet_aml_base_debugging_buildflags__testing",
+                "cronet_aml_base_logging_buildflags__testing",
+                "cronet_aml_base_process_launcher_jni__testing",
+                "cronet_aml_build_chromeos_buildflags__testing",
+            ],
+            export_generated_headers: [
                 "cronet_aml_base_android_runtime_jni_headers__testing",
                 "cronet_aml_base_android_runtime_unchecked_jni_headers__testing",
                 "cronet_aml_base_base_jni__testing",
@@ -3076,6 +3085,15 @@ cc_library_static {
                 "cronet_aml_base_process_launcher_jni__testing",
                 "cronet_aml_build_chromeos_buildflags__testing",
             ],
+            export_generated_headers: [
+                "cronet_aml_base_android_runtime_jni_headers__testing",
+                "cronet_aml_base_android_runtime_unchecked_jni_headers__testing",
+                "cronet_aml_base_base_jni__testing",
+                "cronet_aml_base_debugging_buildflags__testing",
+                "cronet_aml_base_logging_buildflags__testing",
+                "cronet_aml_base_process_launcher_jni__testing",
+                "cronet_aml_build_chromeos_buildflags__testing",
+            ],
             ldflags: [
                 "-Wl,-wrap,asprintf",
                 "-Wl,-wrap,calloc",
@@ -3184,6 +3202,15 @@ cc_library_static {
                 "third_party/cpu_features/src/ndk_compat/",
             ],
             generated_headers: [
+                "cronet_aml_base_android_runtime_jni_headers__testing",
+                "cronet_aml_base_android_runtime_unchecked_jni_headers__testing",
+                "cronet_aml_base_base_jni__testing",
+                "cronet_aml_base_debugging_buildflags__testing",
+                "cronet_aml_base_logging_buildflags__testing",
+                "cronet_aml_base_process_launcher_jni__testing",
+                "cronet_aml_build_chromeos_buildflags__testing",
+            ],
+            export_generated_headers: [
                 "cronet_aml_base_android_runtime_jni_headers__testing",
                 "cronet_aml_base_android_runtime_unchecked_jni_headers__testing",
                 "cronet_aml_base_base_jni__testing",
@@ -3454,14 +3481,18 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java",
         "cronet_aml_build_android_build_java",
-        "modules-utils-build_system",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
         "error_prone_annotations",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -3470,7 +3501,7 @@ java_library {
     name: "cronet_aml_base_base_java__testing",
     srcs: [
         ":cronet_aml_base_base_android_java_enums_srcjar__testing",
-        ":cronet_aml_base_base_jni__testing__java__testing",
+        ":cronet_aml_base_base_jni__testing__java",
         ":cronet_aml_base_java_features_srcjar__testing",
         ":cronet_aml_base_java_switches_srcjar__testing",
         "base/android/java/src/org/chromium/base/ActivityState.java",
@@ -3598,14 +3629,18 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_build_android_build_java__testing",
-        "modules-utils-build_system",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
         "error_prone_annotations",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -3701,13 +3736,19 @@ java_library {
         "hamcrest-library",
         "junit",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "android-support-multidex",
         "android.test.base",
         "android.test.mock",
         "androidx.annotation_annotation-nodeps",
         "androidx.core_core-nodeps",
+        "androidx.test.monitor",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -3723,9 +3764,14 @@ java_library {
         "cronet_aml_build_android_build_java__testing",
         "junit",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -4560,7 +4606,7 @@ cc_genrule {
 
 // GN: //base:base_jni__testing
 java_genrule {
-    name: "cronet_aml_base_base_jni__testing__java__testing",
+    name: "cronet_aml_base_base_jni__testing__java",
     srcs: [
         "base/android/java/src/org/chromium/base/ApkAssets.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
@@ -4991,7 +5037,7 @@ cc_library_static {
 cc_genrule {
     name: "cronet_aml_base_build_date",
     cmd: "$(location base/write_build_date_header.py) $(out) " +
-         "1696866978",
+         "1692289734",
     out: [
         "base/generated_build_date.h",
     ],
@@ -5007,7 +5053,7 @@ cc_genrule {
 cc_genrule {
     name: "cronet_aml_base_build_date__testing",
     cmd: "$(location base/write_build_date_header.py) $(out) " +
-         "1696866978",
+         "1692289734",
     host_supported: true,
     out: [
         "base/generated_build_date.h",
@@ -5693,6 +5739,11 @@ java_library {
     static_libs: [
         "cronet_aml_build_android_build_java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -5714,6 +5765,11 @@ java_library {
     static_libs: [
         "cronet_aml_build_android_build_java__testing",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -6092,6 +6148,23 @@ cc_genrule {
 // GN: //base:process_launcher_aidl__testing
 java_library {
     name: "cronet_aml_base_process_launcher_aidl__testing",
+    srcs: [
+        "base/android/java/src/org/chromium/base/process_launcher/IChildProcessService.aidl",
+        "base/android/java/src/org/chromium/base/process_launcher/IParentProcess.aidl",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    aidl: {
+        include_dirs: [
+            "frameworks/base/core/java/",
+        ],
+        local_include_dirs: [
+            "base/android/java/src",
+        ],
+    },
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -6099,7 +6172,7 @@ java_library {
 java_library {
     name: "cronet_aml_base_process_launcher_java__testing",
     srcs: [
-        ":cronet_aml_base_process_launcher_jni__testing__java__testing",
+        ":cronet_aml_base_process_launcher_jni__testing__java",
         "base/android/java/src/org/chromium/base/process_launcher/BindService.java",
         "base/android/java/src/org/chromium/base/process_launcher/ChildConnectionAllocator.java",
         "base/android/java/src/org/chromium/base/process_launcher/ChildProcessConnection.java",
@@ -6116,8 +6189,13 @@ java_library {
     static_libs: [
         "cronet_aml_base_base_java__testing",
         "cronet_aml_base_jni_java__testing",
+        "cronet_aml_base_process_launcher_aidl__testing",
         "cronet_aml_build_android_build_java__testing",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
@@ -6125,6 +6203,7 @@ java_library {
         "androidx.core_core-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -6220,7 +6299,7 @@ cc_genrule {
 
 // GN: //base:process_launcher_jni__testing
 java_genrule {
-    name: "cronet_aml_base_process_launcher_jni__testing__java__testing",
+    name: "cronet_aml_base_process_launcher_jni__testing__java",
     srcs: [
         "base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
     ],
@@ -7096,17 +7175,41 @@ java_library {
         "cronet_aml_base_base_java__testing",
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_base_process_launcher_java__testing",
+        "cronet_aml_base_test_test_support_java_aidl__testing",
         "cronet_aml_testing_android_native_test_native_main_runner_java__testing",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //base/test:test_support_java_aidl__testing
 java_library {
     name: "cronet_aml_base_test_test_support_java_aidl__testing",
+    srcs: [
+        "base/test/android/java/src/org/chromium/base/ITestCallback.aidl",
+        "base/test/android/java/src/org/chromium/base/ITestController.aidl",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    aidl: {
+        include_dirs: [
+            "frameworks/base/core/java/",
+        ],
+        local_include_dirs: [
+            "base/android/java/src",
+            "base/test/android/java/src",
+        ],
+    },
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -7738,6 +7841,11 @@ java_library {
         "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
         "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -7757,6 +7865,28 @@ java_library {
         "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
         "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //build/android/gtest_apk:native_test_instrumentation_test_runner_java__testing
+java_library {
+    name: "cronet_aml_build_android_gtest_apk_native_test_instrumentation_test_runner_java__testing",
+    srcs: [
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/NativeTestInstrumentationTestRunner.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/NativeTestIntent.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/TestStatusIntent.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/TestStatusReceiver.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -8910,8 +9040,9 @@ cc_library_shared {
         "-Wl,-wrap,valloc",
         "-Wl,-wrap,vasprintf",
     ],
-    stem: "libcronet.117.0.5938.0",
+    stem: "libmainlinecronet.117.0.5938.0",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -9130,6 +9261,7 @@ cc_library_shared {
     ],
     stem: "libcronet",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -9183,13 +9315,24 @@ java_library {
         "components/cronet/android/api/src/org/chromium/net/QuicOptions.java",
         "components/cronet/android/api/src/org/chromium/net/RequestFinishedInfo.java",
         "components/cronet/android/api/src/org/chromium/net/UploadDataProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java",
         "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
@@ -9219,14 +9362,21 @@ java_library {
         "components/cronet/android/api/src/org/chromium/net/QuicOptions.java",
         "components/cronet/android/api/src/org/chromium/net/RequestFinishedInfo.java",
         "components/cronet/android/api/src/org/chromium/net/UploadDataProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java",
         "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9243,6 +9393,7 @@ java_library {
         "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestInterceptor.java",
     ],
     static_libs: [
+        "androidx.test.core",
         "androidx.test.ext.junit",
         "androidx.test.runner",
         "cronet_aml_base_base_java__testing",
@@ -9250,20 +9401,35 @@ java_library {
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_build_android_build_java__testing",
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
         "junit",
         "truth",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "android.test.base",
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:cronet_impl_all_java__testing
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
+    static_libs: [
+        "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_native_base_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9300,9 +9466,58 @@ java_library {
         "cronet_aml_components_cronet_android_cronet_api_java",
         "cronet_aml_net_android_net_thread_stats_uid_java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_impl_common_base_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_http_cache_type_java__testing",
+        ":cronet_aml_components_cronet_android_implementation_api_version__testing",
+        ":cronet_aml_components_cronet_android_integrated_mode_state__testing",
+        ":cronet_aml_components_cronet_android_load_states_list__testing",
+        ":cronet_aml_components_cronet_android_rtt_throughput_values_java__testing",
+        ":cronet_aml_net_effective_connection_type_java__testing",
+        "components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLoggerFactory.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NoOpLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/Preconditions.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/QuicExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RefCountDelegate.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RequestFinishedInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UserAgent.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
+    ],
+    static_libs: [
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_net_android_net_thread_stats_uid_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9339,13 +9554,64 @@ java_library {
         "cronet_aml_url_url_java",
         "libprotobuf-java-lite",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_impl_native_base_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_impl_native_base_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_cronet_jni_headers__testing__java",
+        ":cronet_aml_components_cronet_android_net_idempotency_java__testing",
+        ":cronet_aml_components_cronet_android_net_request_priority_java__testing",
+        ":cronet_aml_components_cronet_android_network_quality_observation_source_java__testing",
+        ":cronet_aml_components_cronet_android_url_request_error_java__testing",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetProvider.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
+        "cronet_aml_components_cronet_android_cronet_urlconnection_impl_java__testing",
+        "cronet_aml_components_cronet_android_request_context_config_java_proto__testing",
+        "cronet_aml_net_android_net_java__testing",
+        "cronet_aml_url_url_java__testing",
+        "libprotobuf-java-lite",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+        "jsr305",
+    ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -9353,9 +9619,8 @@ java_library {
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_javatests__testing",
     srcs: [
-        ":cronet_aml_components_cronet_android_cronet_tests_jni_headers__testing__java__testing",
+        ":cronet_aml_components_cronet_android_cronet_tests_jni_headers__testing__java",
         "components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamQuicTest.java",
-        "components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/BrotliTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/Criteria.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/CronetOnboardingTest.java",
@@ -9369,12 +9634,10 @@ java_library {
         "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/FileUtils.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/GetStatusTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/Http2TestServer.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/MetricsTestUtil.java",
-        "components/cronet/android/test/javatests/src/org/chromium/net/MockCertVerifierTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/NQETest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
-        "components/cronet/android/test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
-        "components/cronet/android/test/javatests/src/org/chromium/net/PkpTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/QuicTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/TestBidirectionalStreamCallback.java",
@@ -9382,7 +9645,6 @@ java_library {
         "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
-        "components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
@@ -9405,8 +9667,10 @@ java_library {
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
         "cronet_aml_components_cronet_android_cronet_common_javatests__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
         "cronet_aml_components_cronet_android_cronet_urlconnection_impl_java__testing",
+        "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
         "cronet_aml_net_android_net_java__testing",
         "cronet_aml_net_android_net_java_test_support__testing",
         "cronet_aml_url_url_java__testing",
@@ -9415,14 +9679,19 @@ java_library {
         "hamcrest-library",
         "junit",
         "mockito",
+        "net-tests-utils",
         "truth",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "android.test.base",
         "androidx.annotation_annotation-experimental-nodeps",
     ],
-    stem: "libcronet_javatests",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -9628,6 +9897,66 @@ cc_genrule {
     ],
 }
 
+// GN: //components/cronet/android:cronet_jni_headers__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_cronet_jni_headers__testing__java",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "CronetBidirectionalStream_jni.h " +
+         "--output-name " +
+         "CronetLibraryLoader_jni.h " +
+         "--output-name " +
+         "CronetUploadDataStream_jni.h " +
+         "--output-name " +
+         "CronetUrlRequest_jni.h " +
+         "--output-name " +
+         "CronetUrlRequestContext_jni.h " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java)",
+    out: [
+        "components/cronet/android/cronet_jni_headers.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
 // GN: //components/cronet/android:cronet_jni_registration
 cc_genrule {
     name: "cronet_aml_components_cronet_android_cronet_jni_registration",
@@ -9795,6 +10124,7 @@ cc_genrule {
         "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
         "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
         "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
@@ -10067,6 +10397,7 @@ java_genrule {
         "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
         "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
         "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
@@ -10335,6 +10666,7 @@ cc_genrule {
         "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
         "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
         "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
@@ -10438,16 +10770,496 @@ cc_genrule {
     ],
 }
 
+// GN: //components/cronet/android:cronet_jni_registration__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_cronet_jni_registration__testing__java",
+    srcs: [
+        "base/android/java/src/org/chromium/base/ActivityState.java",
+        "base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java",
+        "base/android/java/src/org/chromium/base/ApkAssets.java",
+        "base/android/java/src/org/chromium/base/ApplicationStatus.java",
+        "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
+        "base/android/java/src/org/chromium/base/BuildInfo.java",
+        "base/android/java/src/org/chromium/base/BundleUtils.java",
+        "base/android/java/src/org/chromium/base/Callback.java",
+        "base/android/java/src/org/chromium/base/CallbackController.java",
+        "base/android/java/src/org/chromium/base/CollectionUtil.java",
+        "base/android/java/src/org/chromium/base/CommandLine.java",
+        "base/android/java/src/org/chromium/base/CommandLineInitUtil.java",
+        "base/android/java/src/org/chromium/base/ContentUriUtils.java",
+        "base/android/java/src/org/chromium/base/ContextUtils.java",
+        "base/android/java/src/org/chromium/base/CpuFeatures.java",
+        "base/android/java/src/org/chromium/base/DiscardableReferencePool.java",
+        "base/android/java/src/org/chromium/base/EarlyTraceEvent.java",
+        "base/android/java/src/org/chromium/base/EventLog.java",
+        "base/android/java/src/org/chromium/base/FeatureList.java",
+        "base/android/java/src/org/chromium/base/FeatureMap.java",
+        "base/android/java/src/org/chromium/base/Features.java",
+        "base/android/java/src/org/chromium/base/FieldTrialList.java",
+        "base/android/java/src/org/chromium/base/FileUtils.java",
+        "base/android/java/src/org/chromium/base/Flag.java",
+        "base/android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
+        "base/android/java/src/org/chromium/base/IntStringCallback.java",
+        "base/android/java/src/org/chromium/base/JNIUtils.java",
+        "base/android/java/src/org/chromium/base/JavaExceptionReporter.java",
+        "base/android/java/src/org/chromium/base/JavaHandlerThread.java",
+        "base/android/java/src/org/chromium/base/JniException.java",
+        "base/android/java/src/org/chromium/base/JniStaticTestMocker.java",
+        "base/android/java/src/org/chromium/base/LifetimeAssert.java",
+        "base/android/java/src/org/chromium/base/LocaleUtils.java",
+        "base/android/java/src/org/chromium/base/Log.java",
+        "base/android/java/src/org/chromium/base/MathUtils.java",
+        "base/android/java/src/org/chromium/base/MemoryPressureListener.java",
+        "base/android/java/src/org/chromium/base/NativeLibraryLoadedStatus.java",
+        "base/android/java/src/org/chromium/base/ObserverList.java",
+        "base/android/java/src/org/chromium/base/PackageManagerUtils.java",
+        "base/android/java/src/org/chromium/base/PackageUtils.java",
+        "base/android/java/src/org/chromium/base/PathService.java",
+        "base/android/java/src/org/chromium/base/PathUtils.java",
+        "base/android/java/src/org/chromium/base/PiiElider.java",
+        "base/android/java/src/org/chromium/base/PowerMonitor.java",
+        "base/android/java/src/org/chromium/base/PowerMonitorForQ.java",
+        "base/android/java/src/org/chromium/base/Promise.java",
+        "base/android/java/src/org/chromium/base/RadioUtils.java",
+        "base/android/java/src/org/chromium/base/RequiredCallback.java",
+        "base/android/java/src/org/chromium/base/ResettersForTesting.java",
+        "base/android/java/src/org/chromium/base/StreamUtil.java",
+        "base/android/java/src/org/chromium/base/StrictModeContext.java",
+        "base/android/java/src/org/chromium/base/SysUtils.java",
+        "base/android/java/src/org/chromium/base/ThreadUtils.java",
+        "base/android/java/src/org/chromium/base/TimeUtils.java",
+        "base/android/java/src/org/chromium/base/TimezoneUtils.java",
+        "base/android/java/src/org/chromium/base/TraceEvent.java",
+        "base/android/java/src/org/chromium/base/UnguessableToken.java",
+        "base/android/java/src/org/chromium/base/UnownedUserData.java",
+        "base/android/java/src/org/chromium/base/UnownedUserDataHost.java",
+        "base/android/java/src/org/chromium/base/UnownedUserDataKey.java",
+        "base/android/java/src/org/chromium/base/UserData.java",
+        "base/android/java/src/org/chromium/base/UserDataHost.java",
+        "base/android/java/src/org/chromium/base/WrappedClassLoader.java",
+        "base/android/java/src/org/chromium/base/annotations/AccessedByNative.java",
+        "base/android/java/src/org/chromium/base/annotations/CalledByNative.java",
+        "base/android/java/src/org/chromium/base/annotations/CalledByNativeForTesting.java",
+        "base/android/java/src/org/chromium/base/annotations/CalledByNativeUnchecked.java",
+        "base/android/java/src/org/chromium/base/annotations/JNINamespace.java",
+        "base/android/java/src/org/chromium/base/annotations/NativeClassQualifiedName.java",
+        "base/android/java/src/org/chromium/base/annotations/NativeMethods.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForM.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForN.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForO.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForOMR1.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForP.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForQ.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForR.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForS.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/FrameMetricsStore.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/JankMetrics.java",
+        "base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
+        "base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",
+        "base/android/java/src/org/chromium/base/library_loader/Linker.java",
+        "base/android/java/src/org/chromium/base/library_loader/LinkerJni.java",
+        "base/android/java/src/org/chromium/base/library_loader/LoaderErrors.java",
+        "base/android/java/src/org/chromium/base/library_loader/NativeLibraryPreloader.java",
+        "base/android/java/src/org/chromium/base/library_loader/ProcessInitException.java",
+        "base/android/java/src/org/chromium/base/lifetime/DestroyChecker.java",
+        "base/android/java/src/org/chromium/base/lifetime/Destroyable.java",
+        "base/android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPressureCallback.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPressureMonitor.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPressureUma.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
+        "base/android/java/src/org/chromium/base/metrics/CachingUmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/HistogramBucket.java",
+        "base/android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/NoopUmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/RecordHistogram.java",
+        "base/android/java/src/org/chromium/base/metrics/RecordUserAction.java",
+        "base/android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
+        "base/android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java",
+        "base/android/java/src/org/chromium/base/metrics/TimingMetric.java",
+        "base/android/java/src/org/chromium/base/metrics/UmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/UmaRecorderHolder.java",
+        "base/android/java/src/org/chromium/base/process_launcher/BindService.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildConnectionAllocator.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessConnection.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessConstants.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessLauncher.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessServiceDelegate.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnection.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionDelegate.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionFactory.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
+        "base/android/java/src/org/chromium/base/process_launcher/FileDescriptorInfo.java",
+        "base/android/java/src/org/chromium/base/supplier/DestroyableObservableSupplier.java",
+        "base/android/java/src/org/chromium/base/supplier/ObservableSupplier.java",
+        "base/android/java/src/org/chromium/base/supplier/ObservableSupplierImpl.java",
+        "base/android/java/src/org/chromium/base/supplier/OneShotCallback.java",
+        "base/android/java/src/org/chromium/base/supplier/OneshotSupplier.java",
+        "base/android/java/src/org/chromium/base/supplier/OneshotSupplierImpl.java",
+        "base/android/java/src/org/chromium/base/supplier/Supplier.java",
+        "base/android/java/src/org/chromium/base/supplier/UnownedUserDataSupplier.java",
+        "base/android/java/src/org/chromium/base/task/AsyncTask.java",
+        "base/android/java/src/org/chromium/base/task/BackgroundOnlyAsyncTask.java",
+        "base/android/java/src/org/chromium/base/task/ChainedTasks.java",
+        "base/android/java/src/org/chromium/base/task/ChromeThreadPoolExecutor.java",
+        "base/android/java/src/org/chromium/base/task/PostTask.java",
+        "base/android/java/src/org/chromium/base/task/SequencedTaskRunner.java",
+        "base/android/java/src/org/chromium/base/task/SequencedTaskRunnerImpl.java",
+        "base/android/java/src/org/chromium/base/task/SerialExecutor.java",
+        "base/android/java/src/org/chromium/base/task/SingleThreadTaskRunner.java",
+        "base/android/java/src/org/chromium/base/task/SingleThreadTaskRunnerImpl.java",
+        "base/android/java/src/org/chromium/base/task/TaskExecutor.java",
+        "base/android/java/src/org/chromium/base/task/TaskRunner.java",
+        "base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
+        "base/android/java/src/org/chromium/base/task/ThreadPoolTaskExecutor.java",
+        "base/android/java/src/org/chromium/base/task/UiThreadTaskExecutor.java",
+        "base/test/android/java/src/org/chromium/base/GarbageCollectionTestUtils.java",
+        "base/test/android/java/src/org/chromium/base/MainReturnCodeResult.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService0.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService1.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService2.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService3.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService4.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService5.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService6.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService7.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService8.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService9.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientServiceDelegate.java",
+        "base/test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseChromiumRunnerCommon.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4TestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/LoadNative.java",
+        "base/test/android/javatests/src/org/chromium/base/test/MockitoErrorHandler.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ResetCachedFlagValuesTestHook.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ResettersForTestingTestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
+        "base/test/android/javatests/src/org/chromium/base/test/TestListInstrumentationRunListener.java",
+        "base/test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UiThreadStatement.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UiThreadTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UnitTestLifetimeAssertRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UnitTestNoBrowserProcessHook.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/BaseJUnit4RunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/BlockJUnit4RunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/MethodParamAnnotationRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/MethodParamRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterAnnotations.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterProvider.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterSet.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedCommandLineFlags.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedFrameworkMethod.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateCommon.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateFactory.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/SkipCommandLineParameterization.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AdvancedMockContext.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AndroidSdkLevelSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AnnotationProcessingUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AnnotationRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ApplicationContextWrapper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ApplicationTestUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Batch.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CallbackHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Criteria.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CriteriaHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CriteriaNotSatisfiedException.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisableIf.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisableIfSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DoNotBatch.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DoNotRevive.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Feature.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Features.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/FeaturesBase.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferences.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferencesContext.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/JniMocker.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/LooperUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Manual.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/MaxAndroidSdkLevel.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/PayloadCallbackHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Restriction.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/RestrictionSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ScalableTimeout.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/SkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TestFileUtil.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TestThreadUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TimeoutScale.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/NativeTestInstrumentationTestRunner.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/NativeTestIntent.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/TestStatusIntent.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/TestStatusReceiver.java",
+        "build/android/java/src/org/chromium/build/annotations/AlwaysInline.java",
+        "build/android/java/src/org/chromium/build/annotations/CheckDiscard.java",
+        "build/android/java/src/org/chromium/build/annotations/DoNotClassMerge.java",
+        "build/android/java/src/org/chromium/build/annotations/DoNotInline.java",
+        "build/android/java/src/org/chromium/build/annotations/DoNotStripLogs.java",
+        "build/android/java/src/org/chromium/build/annotations/IdentifierNameString.java",
+        "build/android/java/src/org/chromium/build/annotations/MainDex.java",
+        "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
+        "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
+        "components/cronet/android/api/src/org/chromium/net/BidirectionalStream.java",
+        "components/cronet/android/api/src/org/chromium/net/CallbackException.java",
+        "components/cronet/android/api/src/org/chromium/net/ConnectionMigrationOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetEngine.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetException.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/DnsOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalBidirectionalStream.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalCronetEngine.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalUrlRequest.java",
+        "components/cronet/android/api/src/org/chromium/net/ICronetEngineBuilder.java",
+        "components/cronet/android/api/src/org/chromium/net/InlineExecutionProhibitedException.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkException.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkQualityRttListener.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkQualityThroughputListener.java",
+        "components/cronet/android/api/src/org/chromium/net/QuicException.java",
+        "components/cronet/android/api/src/org/chromium/net/QuicOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/RequestFinishedInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
+        "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
+        "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLoggerFactory.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetProvider.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NoOpLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/Preconditions.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/QuicExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RefCountDelegate.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RequestFinishedInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UserAgent.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetBufferedOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetChunkedOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetFixedModeOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetHttpURLConnection.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetHttpURLStreamHandler.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetInputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetURLStreamHandlerFactory.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamQuicTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/BrotliTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ContextInterceptor.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/Criteria.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetOnboardingTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetStressTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRule.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRuleTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUploadTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/DiskStorageTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/FileUtils.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/GetStatusTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/MetricsTestUtil.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/NQETest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/QuicTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestBidirectionalStreamCallback.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestDrivenDataProvider.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestInterceptor.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetBufferedOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetChunkedOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetFixedModeOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLConnectionTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLStreamHandlerTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetInputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetURLStreamHandlerFactoryTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/MessageLoopTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/QuicUploadTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/TestUtil.java",
+        "components/cronet/android/test/src/org/chromium/net/CronetTestApplication.java",
+        "components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java",
+        "components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java",
+        "components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java",
+        "components/cronet/android/test/src/org/chromium/net/NativeTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/QuicTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/ReportingCollector.java",
+        "components/cronet/android/test/src/org/chromium/net/TestFilesInstaller.java",
+        "components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java",
+        "components/cronet/android/test/src/org/chromium/net/truth/UrlResponseInfoSubject.java",
+        "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
+        "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
+        "net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
+        "net/android/java/src/org/chromium/net/AndroidTrafficStats.java",
+        "net/android/java/src/org/chromium/net/ChromiumNetworkAdapter.java",
+        "net/android/java/src/org/chromium/net/DnsStatus.java",
+        "net/android/java/src/org/chromium/net/GURLUtils.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateConstants.java",
+        "net/android/java/src/org/chromium/net/HttpUtil.java",
+        "net/android/java/src/org/chromium/net/MimeTypeFilter.java",
+        "net/android/java/src/org/chromium/net/NetStringUtil.java",
+        "net/android/java/src/org/chromium/net/NetworkActiveNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+        "net/android/java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
+        "net/android/java/src/org/chromium/net/ProxyBroadcastReceiver.java",
+        "net/android/java/src/org/chromium/net/ProxyChangeListener.java",
+        "net/android/java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
+        "net/android/java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
+        "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
+        "net/android/java/src/org/chromium/net/X509Util.java",
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
+        "net/android/javatests/src/org/chromium/net/HttpUtilTest.java",
+        "net/android/javatests/src/org/chromium/net/MimeTypeFilterTest.java",
+        "net/android/javatests/src/org/chromium/net/NetErrorsTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierNoNativeTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "net/android/javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
+        "net/android/javatests/src/org/chromium/net/X509UtilTest.java",
+        "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerRule.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerService.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/CertTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/NetworkChangeNotifierTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/TestWebServer.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/WebServer.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTestActivity.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTestApplication.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTestApplication.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTestActivity.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTestNativeActivity.java",
+        "testing/android/reporter/java/src/org/chromium/test/reporter/TestStatusReporter.java",
+        "url/android/java/src/org/chromium/url/IDNStringUtil.java",
+    ],
+    cmd: "current_dir=`basename \\`pwd\\``; " +
+         "for f in $(in); " +
+         "do " +
+         "echo \"../$$current_dir/$$f\" >> $(genDir)/java.sources; " +
+         "done; " +
+         "python3 $(location third_party/jni_zero/jni_zero.py) generate-final " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_jni_registration.srcjar " +
+         "--java-sources-file " +
+         "$(genDir)/java.sources " +
+         "--include-test-only " +
+         "--use-proxy-hash " +
+         "--manual-jni-registration " +
+         "--header-path " +
+         "$(genDir)/components/cronet/android/cronet_jni_registration_generated.h",
+    out: [
+        "components/cronet/android/cronet_jni_registration.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
 // GN: //components/cronet/android:cronet_jni_registration_java
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_jni_registration_java",
     srcs: [
         ":cronet_aml_components_cronet_android_cronet_jni_registration__java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
+// GN: //components/cronet/android:cronet_jni_registration_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_jni_registration_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_cronet_jni_registration__testing__java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
 }
 
 // GN: //components/cronet/android:cronet_static
@@ -10928,11 +11740,9 @@ cc_library_static {
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
     srcs: [
-        ":cronet_aml_components_cronet_android_cronet_test_apk_jni__testing__java__testing",
+        ":cronet_aml_components_cronet_android_cronet_test_apk_jni__testing__java",
         "components/cronet/android/test/src/org/chromium/net/CronetTestApplication.java",
         "components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java",
-        "components/cronet/android/test/src/org/chromium/net/Http2TestHandler.java",
-        "components/cronet/android/test/src/org/chromium/net/Http2TestServer.java",
         "components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java",
         "components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java",
         "components/cronet/android/test/src/org/chromium/net/NativeTestServer.java",
@@ -10948,15 +11758,21 @@ java_library {
         "cronet_aml_base_jni_java__testing",
         "cronet_aml_build_android_build_java__testing",
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
+        "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_net_android_net_java_test_support__testing",
         "junit",
         "truth",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "android-support-multidex",
         "android.test.base",
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -11036,7 +11852,7 @@ cc_genrule {
 
 // GN: //components/cronet/android:cronet_test_apk_jni__testing
 java_genrule {
-    name: "cronet_aml_components_cronet_android_cronet_test_apk_jni__testing__java__testing",
+    name: "cronet_aml_components_cronet_android_cronet_test_apk_jni__testing__java",
     srcs: [
         "components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java",
         "components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java",
@@ -11343,8 +12159,10 @@ cc_library_shared {
         "-Wl,-wrap,valloc",
         "-Wl,-wrap,vasprintf",
     ],
+    version_script: "build/android/android_only_jni_exports.lst",
     stem: "libcronet_tests",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -11431,7 +12249,7 @@ cc_genrule {
 
 // GN: //components/cronet/android:cronet_tests_jni_headers__testing
 java_genrule {
-    name: "cronet_aml_components_cronet_android_cronet_tests_jni_headers__testing__java__testing",
+    name: "cronet_aml_components_cronet_android_cronet_tests_jni_headers__testing__java",
     srcs: [
         "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
         "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
@@ -11476,6 +12294,483 @@ java_genrule {
         "third_party/jni_zero/jni_zero.py",
         "third_party/jni_zero/parse.py",
         "third_party/jni_zero/proxy.py",
+    ],
+}
+
+// GN: //components/cronet/android:cronet_tests_jni_registration__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_cronet_tests_jni_registration__testing__java",
+    srcs: [
+        "base/android/java/src/org/chromium/base/ActivityState.java",
+        "base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java",
+        "base/android/java/src/org/chromium/base/ApkAssets.java",
+        "base/android/java/src/org/chromium/base/ApplicationStatus.java",
+        "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
+        "base/android/java/src/org/chromium/base/BuildInfo.java",
+        "base/android/java/src/org/chromium/base/BundleUtils.java",
+        "base/android/java/src/org/chromium/base/Callback.java",
+        "base/android/java/src/org/chromium/base/CallbackController.java",
+        "base/android/java/src/org/chromium/base/CollectionUtil.java",
+        "base/android/java/src/org/chromium/base/CommandLine.java",
+        "base/android/java/src/org/chromium/base/CommandLineInitUtil.java",
+        "base/android/java/src/org/chromium/base/ContentUriUtils.java",
+        "base/android/java/src/org/chromium/base/ContextUtils.java",
+        "base/android/java/src/org/chromium/base/CpuFeatures.java",
+        "base/android/java/src/org/chromium/base/DiscardableReferencePool.java",
+        "base/android/java/src/org/chromium/base/EarlyTraceEvent.java",
+        "base/android/java/src/org/chromium/base/EventLog.java",
+        "base/android/java/src/org/chromium/base/FeatureList.java",
+        "base/android/java/src/org/chromium/base/FeatureMap.java",
+        "base/android/java/src/org/chromium/base/Features.java",
+        "base/android/java/src/org/chromium/base/FieldTrialList.java",
+        "base/android/java/src/org/chromium/base/FileUtils.java",
+        "base/android/java/src/org/chromium/base/Flag.java",
+        "base/android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
+        "base/android/java/src/org/chromium/base/IntStringCallback.java",
+        "base/android/java/src/org/chromium/base/JNIUtils.java",
+        "base/android/java/src/org/chromium/base/JavaExceptionReporter.java",
+        "base/android/java/src/org/chromium/base/JavaHandlerThread.java",
+        "base/android/java/src/org/chromium/base/JniException.java",
+        "base/android/java/src/org/chromium/base/JniStaticTestMocker.java",
+        "base/android/java/src/org/chromium/base/LifetimeAssert.java",
+        "base/android/java/src/org/chromium/base/LocaleUtils.java",
+        "base/android/java/src/org/chromium/base/Log.java",
+        "base/android/java/src/org/chromium/base/MathUtils.java",
+        "base/android/java/src/org/chromium/base/MemoryPressureListener.java",
+        "base/android/java/src/org/chromium/base/NativeLibraryLoadedStatus.java",
+        "base/android/java/src/org/chromium/base/ObserverList.java",
+        "base/android/java/src/org/chromium/base/PackageManagerUtils.java",
+        "base/android/java/src/org/chromium/base/PackageUtils.java",
+        "base/android/java/src/org/chromium/base/PathService.java",
+        "base/android/java/src/org/chromium/base/PathUtils.java",
+        "base/android/java/src/org/chromium/base/PiiElider.java",
+        "base/android/java/src/org/chromium/base/PowerMonitor.java",
+        "base/android/java/src/org/chromium/base/PowerMonitorForQ.java",
+        "base/android/java/src/org/chromium/base/Promise.java",
+        "base/android/java/src/org/chromium/base/RadioUtils.java",
+        "base/android/java/src/org/chromium/base/RequiredCallback.java",
+        "base/android/java/src/org/chromium/base/ResettersForTesting.java",
+        "base/android/java/src/org/chromium/base/StreamUtil.java",
+        "base/android/java/src/org/chromium/base/StrictModeContext.java",
+        "base/android/java/src/org/chromium/base/SysUtils.java",
+        "base/android/java/src/org/chromium/base/ThreadUtils.java",
+        "base/android/java/src/org/chromium/base/TimeUtils.java",
+        "base/android/java/src/org/chromium/base/TimezoneUtils.java",
+        "base/android/java/src/org/chromium/base/TraceEvent.java",
+        "base/android/java/src/org/chromium/base/UnguessableToken.java",
+        "base/android/java/src/org/chromium/base/UnownedUserData.java",
+        "base/android/java/src/org/chromium/base/UnownedUserDataHost.java",
+        "base/android/java/src/org/chromium/base/UnownedUserDataKey.java",
+        "base/android/java/src/org/chromium/base/UserData.java",
+        "base/android/java/src/org/chromium/base/UserDataHost.java",
+        "base/android/java/src/org/chromium/base/WrappedClassLoader.java",
+        "base/android/java/src/org/chromium/base/annotations/AccessedByNative.java",
+        "base/android/java/src/org/chromium/base/annotations/CalledByNative.java",
+        "base/android/java/src/org/chromium/base/annotations/CalledByNativeForTesting.java",
+        "base/android/java/src/org/chromium/base/annotations/CalledByNativeUnchecked.java",
+        "base/android/java/src/org/chromium/base/annotations/JNINamespace.java",
+        "base/android/java/src/org/chromium/base/annotations/NativeClassQualifiedName.java",
+        "base/android/java/src/org/chromium/base/annotations/NativeMethods.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForM.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForN.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForO.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForOMR1.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForP.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForQ.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForR.java",
+        "base/android/java/src/org/chromium/base/compat/ApiHelperForS.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/FrameMetricsStore.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/JankMetrics.java",
+        "base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
+        "base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",
+        "base/android/java/src/org/chromium/base/library_loader/Linker.java",
+        "base/android/java/src/org/chromium/base/library_loader/LinkerJni.java",
+        "base/android/java/src/org/chromium/base/library_loader/LoaderErrors.java",
+        "base/android/java/src/org/chromium/base/library_loader/NativeLibraryPreloader.java",
+        "base/android/java/src/org/chromium/base/library_loader/ProcessInitException.java",
+        "base/android/java/src/org/chromium/base/lifetime/DestroyChecker.java",
+        "base/android/java/src/org/chromium/base/lifetime/Destroyable.java",
+        "base/android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPressureCallback.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPressureMonitor.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPressureUma.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
+        "base/android/java/src/org/chromium/base/metrics/CachingUmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/HistogramBucket.java",
+        "base/android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/NoopUmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/RecordHistogram.java",
+        "base/android/java/src/org/chromium/base/metrics/RecordUserAction.java",
+        "base/android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
+        "base/android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java",
+        "base/android/java/src/org/chromium/base/metrics/TimingMetric.java",
+        "base/android/java/src/org/chromium/base/metrics/UmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/UmaRecorderHolder.java",
+        "base/android/java/src/org/chromium/base/process_launcher/BindService.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildConnectionAllocator.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessConnection.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessConstants.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessLauncher.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildProcessServiceDelegate.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnection.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionDelegate.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionFactory.java",
+        "base/android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
+        "base/android/java/src/org/chromium/base/process_launcher/FileDescriptorInfo.java",
+        "base/android/java/src/org/chromium/base/supplier/DestroyableObservableSupplier.java",
+        "base/android/java/src/org/chromium/base/supplier/ObservableSupplier.java",
+        "base/android/java/src/org/chromium/base/supplier/ObservableSupplierImpl.java",
+        "base/android/java/src/org/chromium/base/supplier/OneShotCallback.java",
+        "base/android/java/src/org/chromium/base/supplier/OneshotSupplier.java",
+        "base/android/java/src/org/chromium/base/supplier/OneshotSupplierImpl.java",
+        "base/android/java/src/org/chromium/base/supplier/Supplier.java",
+        "base/android/java/src/org/chromium/base/supplier/UnownedUserDataSupplier.java",
+        "base/android/java/src/org/chromium/base/task/AsyncTask.java",
+        "base/android/java/src/org/chromium/base/task/BackgroundOnlyAsyncTask.java",
+        "base/android/java/src/org/chromium/base/task/ChainedTasks.java",
+        "base/android/java/src/org/chromium/base/task/ChromeThreadPoolExecutor.java",
+        "base/android/java/src/org/chromium/base/task/PostTask.java",
+        "base/android/java/src/org/chromium/base/task/SequencedTaskRunner.java",
+        "base/android/java/src/org/chromium/base/task/SequencedTaskRunnerImpl.java",
+        "base/android/java/src/org/chromium/base/task/SerialExecutor.java",
+        "base/android/java/src/org/chromium/base/task/SingleThreadTaskRunner.java",
+        "base/android/java/src/org/chromium/base/task/SingleThreadTaskRunnerImpl.java",
+        "base/android/java/src/org/chromium/base/task/TaskExecutor.java",
+        "base/android/java/src/org/chromium/base/task/TaskRunner.java",
+        "base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
+        "base/android/java/src/org/chromium/base/task/ThreadPoolTaskExecutor.java",
+        "base/android/java/src/org/chromium/base/task/UiThreadTaskExecutor.java",
+        "base/test/android/java/src/org/chromium/base/GarbageCollectionTestUtils.java",
+        "base/test/android/java/src/org/chromium/base/MainReturnCodeResult.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService0.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService1.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService2.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService3.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService4.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService5.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService6.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService7.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService8.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientService9.java",
+        "base/test/android/java/src/org/chromium/base/MultiprocessTestClientServiceDelegate.java",
+        "base/test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseChromiumRunnerCommon.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4TestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/LoadNative.java",
+        "base/test/android/javatests/src/org/chromium/base/test/MockitoErrorHandler.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ResetCachedFlagValuesTestHook.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ResettersForTestingTestRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
+        "base/test/android/javatests/src/org/chromium/base/test/TestListInstrumentationRunListener.java",
+        "base/test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UiThreadStatement.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UiThreadTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UnitTestLifetimeAssertRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/UnitTestNoBrowserProcessHook.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/BaseJUnit4RunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/BlockJUnit4RunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/MethodParamAnnotationRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/MethodParamRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterAnnotations.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterProvider.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterSet.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedCommandLineFlags.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedFrameworkMethod.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunner.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegate.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateCommon.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateFactory.java",
+        "base/test/android/javatests/src/org/chromium/base/test/params/SkipCommandLineParameterization.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AdvancedMockContext.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AndroidSdkLevelSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AnnotationProcessingUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/AnnotationRule.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ApplicationContextWrapper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ApplicationTestUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Batch.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CallbackHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Criteria.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CriteriaHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/CriteriaNotSatisfiedException.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisableIf.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisableIfSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DoNotBatch.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/DoNotRevive.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Feature.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Features.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/FeaturesBase.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferences.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferencesContext.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/JniMocker.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/LooperUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Manual.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/MaxAndroidSdkLevel.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/PayloadCallbackHelper.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/Restriction.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/RestrictionSkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/ScalableTimeout.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/SkipCheck.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TestFileUtil.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TestThreadUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TimeoutScale.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
+        "base/test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/NativeTestInstrumentationTestRunner.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/NativeTestIntent.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/TestStatusIntent.java",
+        "build/android/gtest_apk/java/src/org/chromium/build/gtest_apk/TestStatusReceiver.java",
+        "build/android/java/src/org/chromium/build/annotations/AlwaysInline.java",
+        "build/android/java/src/org/chromium/build/annotations/CheckDiscard.java",
+        "build/android/java/src/org/chromium/build/annotations/DoNotClassMerge.java",
+        "build/android/java/src/org/chromium/build/annotations/DoNotInline.java",
+        "build/android/java/src/org/chromium/build/annotations/DoNotStripLogs.java",
+        "build/android/java/src/org/chromium/build/annotations/IdentifierNameString.java",
+        "build/android/java/src/org/chromium/build/annotations/MainDex.java",
+        "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
+        "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
+        "components/cronet/android/api/src/org/chromium/net/BidirectionalStream.java",
+        "components/cronet/android/api/src/org/chromium/net/CallbackException.java",
+        "components/cronet/android/api/src/org/chromium/net/ConnectionMigrationOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetEngine.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetException.java",
+        "components/cronet/android/api/src/org/chromium/net/CronetProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/DnsOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalBidirectionalStream.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalCronetEngine.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalOptionsTranslatingCronetEngineBuilder.java",
+        "components/cronet/android/api/src/org/chromium/net/ExperimentalUrlRequest.java",
+        "components/cronet/android/api/src/org/chromium/net/ICronetEngineBuilder.java",
+        "components/cronet/android/api/src/org/chromium/net/InlineExecutionProhibitedException.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkException.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkQualityRttListener.java",
+        "components/cronet/android/api/src/org/chromium/net/NetworkQualityThroughputListener.java",
+        "components/cronet/android/api/src/org/chromium/net/QuicException.java",
+        "components/cronet/android/api/src/org/chromium/net/QuicOptions.java",
+        "components/cronet/android/api/src/org/chromium/net/RequestFinishedInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataProvider.java",
+        "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
+        "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
+        "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLoggerFactory.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NativeCronetProvider.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/NoOpLogger.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/Preconditions.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/QuicExceptionImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RefCountDelegate.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/RequestFinishedInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBase.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlRequestBuilderImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/UserAgent.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetBufferedOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetChunkedOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetFixedModeOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetHttpURLConnection.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetHttpURLStreamHandler.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetInputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetOutputStream.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/CronetURLStreamHandlerFactory.java",
+        "components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamQuicTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/BrotliTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ContextInterceptor.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/Criteria.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetOnboardingTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetStressTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRule.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRuleTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUploadTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/DiskStorageTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/FileUtils.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/GetStatusTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/MetricsTestUtil.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/NQETest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/QuicTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestBidirectionalStreamCallback.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestDrivenDataProvider.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestInterceptor.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetBufferedOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetChunkedOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetFixedModeOutputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLConnectionTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLStreamHandlerTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetInputStreamTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/CronetURLStreamHandlerFactoryTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/MessageLoopTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/QuicUploadTest.java",
+        "components/cronet/android/test/javatests/src/org/chromium/net/urlconnection/TestUtil.java",
+        "components/cronet/android/test/src/org/chromium/net/CronetTestApplication.java",
+        "components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java",
+        "components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java",
+        "components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java",
+        "components/cronet/android/test/src/org/chromium/net/NativeTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/QuicTestServer.java",
+        "components/cronet/android/test/src/org/chromium/net/ReportingCollector.java",
+        "components/cronet/android/test/src/org/chromium/net/TestFilesInstaller.java",
+        "components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java",
+        "components/cronet/android/test/src/org/chromium/net/truth/UrlResponseInfoSubject.java",
+        "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
+        "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
+        "net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
+        "net/android/java/src/org/chromium/net/AndroidTrafficStats.java",
+        "net/android/java/src/org/chromium/net/ChromiumNetworkAdapter.java",
+        "net/android/java/src/org/chromium/net/DnsStatus.java",
+        "net/android/java/src/org/chromium/net/GURLUtils.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateConstants.java",
+        "net/android/java/src/org/chromium/net/HttpUtil.java",
+        "net/android/java/src/org/chromium/net/MimeTypeFilter.java",
+        "net/android/java/src/org/chromium/net/NetStringUtil.java",
+        "net/android/java/src/org/chromium/net/NetworkActiveNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+        "net/android/java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
+        "net/android/java/src/org/chromium/net/ProxyBroadcastReceiver.java",
+        "net/android/java/src/org/chromium/net/ProxyChangeListener.java",
+        "net/android/java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
+        "net/android/java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
+        "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
+        "net/android/java/src/org/chromium/net/X509Util.java",
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
+        "net/android/javatests/src/org/chromium/net/HttpUtilTest.java",
+        "net/android/javatests/src/org/chromium/net/MimeTypeFilterTest.java",
+        "net/android/javatests/src/org/chromium/net/NetErrorsTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierNoNativeTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "net/android/javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
+        "net/android/javatests/src/org/chromium/net/X509UtilTest.java",
+        "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerRule.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerService.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/CertTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/NetworkChangeNotifierTestUtil.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/TestWebServer.java",
+        "net/test/android/javatests/src/org/chromium/net/test/util/WebServer.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTestActivity.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTestApplication.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTestApplication.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTestActivity.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTestNativeActivity.java",
+        "testing/android/reporter/java/src/org/chromium/test/reporter/TestStatusReporter.java",
+        "url/android/java/src/org/chromium/url/IDNStringUtil.java",
+    ],
+    cmd: "current_dir=`basename \\`pwd\\``; " +
+         "for f in $(in); " +
+         "do " +
+         "echo \"../$$current_dir/$$f\" >> $(genDir)/java.sources; " +
+         "done; " +
+         "python3 $(location third_party/jni_zero/jni_zero.py) generate-final " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_tests_jni_registration.srcjar " +
+         "--java-sources-file " +
+         "$(genDir)/java.sources " +
+         "--include-test-only " +
+         "--use-proxy-hash " +
+         "--manual-jni-registration " +
+         "--header-path " +
+         "$(genDir)/components/cronet/android/cronet_tests_jni_registration_generated.h " +
+         "--module-name " +
+         "cronet_tests",
+    out: [
+        "components/cronet/android/cronet_tests_jni_registration.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
+// GN: //components/cronet/android:cronet_tests_jni_registration_java__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_cronet_tests_jni_registration_java__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_cronet_tests_jni_registration__testing__java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
     ],
 }
 
@@ -11713,6 +13008,7 @@ cc_library_shared {
     ],
     stem: "libcronet_unittests_android__library",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -11758,9 +13054,14 @@ java_library {
     static_libs: [
         "cronet_aml_components_cronet_android_cronet_api_java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -11781,15 +13082,41 @@ java_library {
     static_libs: [
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:http_cache_type_java
 java_genrule {
     name: "cronet_aml_components_cronet_android_http_cache_type_java",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location components/cronet/url_request_context_config.h)",
+    out: [
+        "components/cronet/android/http_cache_type_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "components/cronet/url_request_context_config.h",
+    ],
+}
+
+// GN: //components/cronet/android:http_cache_type_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_http_cache_type_java__testing",
     cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
          "$(out) " +
          "$(location components/cronet/url_request_context_config.h)",
@@ -11833,6 +13160,31 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:implementation_api_version__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_implementation_api_version__testing",
+    cmd: "$(location build/util/version.py) --official " +
+         "-f " +
+         "$(location chrome/VERSION) " +
+         "-f " +
+         "$(location build/util/LASTCHANGE) " +
+         "-e " +
+         "'API_LEVEL=26' " +
+         "-o " +
+         "$(out) " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template)",
+    out: [
+        "components/cronet/android/templates/org/chromium/net/impl/ImplVersion.java",
+    ],
+    tool_files: [
+        "build/util/LASTCHANGE",
+        "build/util/android_chrome_version.py",
+        "build/util/version.py",
+        "chrome/VERSION",
+        "components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template",
+    ],
+}
+
 // GN: //components/cronet/android:integrated_mode_state
 genrule {
     name: "cronet_aml_components_cronet_android_integrated_mode_state",
@@ -11849,6 +13201,51 @@ genrule {
     ],
     defaults: [
         "cronet_aml_defaults",
+    ],
+}
+
+// GN: //components/cronet/android:integrated_mode_state__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_integrated_mode_state__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_integrated_mode_state__testing_preprocess",
+    ],
+    tools: [
+        "soong_zip",
+    ],
+    cmd: "cp $(in) $(genDir)/IntegratedModeState.java && " +
+         "$(location soong_zip) -o $(out) -srcjar -C $(genDir) -f $(genDir)/IntegratedModeState.java",
+    out: [
+        "IntegratedModeState.srcjar",
+    ],
+    defaults: [
+        "cronet_aml_defaults",
+    ],
+}
+
+// GN: //components/cronet/android:integrated_mode_state__testing
+cc_object {
+    name: "cronet_aml_components_cronet_android_integrated_mode_state__testing_preprocess",
+    srcs: [
+        ":cronet_aml_components_cronet_android_integrated_mode_state__testing_rename",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-E",
+        "-P",
+    ],
+    compile_multilib: "first",
+}
+
+// GN: //components/cronet/android:integrated_mode_state__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_integrated_mode_state__testing_rename",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/IntegratedModeState.template",
+    ],
+    cmd: "cp $(in) $(out)",
+    out: [
+        "IntegratedModeState.cc",
     ],
 }
 
@@ -11947,6 +13344,51 @@ genrule {
     ],
 }
 
+// GN: //components/cronet/android:load_states_list__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_load_states_list__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_load_states_list__testing_preprocess",
+    ],
+    tools: [
+        "soong_zip",
+    ],
+    cmd: "cp $(in) $(genDir)/LoadState.java && " +
+         "$(location soong_zip) -o $(out) -srcjar -C $(genDir) -f $(genDir)/LoadState.java",
+    out: [
+        "LoadState.srcjar",
+    ],
+    defaults: [
+        "cronet_aml_defaults",
+    ],
+}
+
+// GN: //components/cronet/android:load_states_list__testing
+cc_object {
+    name: "cronet_aml_components_cronet_android_load_states_list__testing_preprocess",
+    srcs: [
+        ":cronet_aml_components_cronet_android_load_states_list__testing_rename",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-E",
+        "-P",
+    ],
+    compile_multilib: "first",
+}
+
+// GN: //components/cronet/android:load_states_list__testing
+genrule {
+    name: "cronet_aml_components_cronet_android_load_states_list__testing_rename",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/LoadState.template",
+    ],
+    cmd: "cp $(in) $(out)",
+    out: [
+        "LoadState.cc",
+    ],
+}
+
 // GN: //components/cronet/android:load_states_list
 cc_object {
     name: "cronet_aml_components_cronet_android_load_states_list_preprocess",
@@ -11994,9 +13436,51 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:net_idempotency_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_net_idempotency_java__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/base/idempotency.h)",
+    out: [
+        "components/cronet/android/net_idempotency_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/base/idempotency.h",
+    ],
+}
+
 // GN: //components/cronet/android:net_request_priority_java
 java_genrule {
     name: "cronet_aml_components_cronet_android_net_request_priority_java",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/base/request_priority.h)",
+    out: [
+        "components/cronet/android/net_request_priority_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/base/request_priority.h",
+    ],
+}
+
+// GN: //components/cronet/android:net_request_priority_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_net_request_priority_java__testing",
     cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
          "$(out) " +
          "$(location net/base/request_priority.h)",
@@ -12036,6 +13520,27 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:network_quality_observation_source_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_network_quality_observation_source_java__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/nqe/network_quality_observation_source.h)",
+    out: [
+        "components/cronet/android/network_quality_observation_source_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/nqe/network_quality_observation_source.h",
+    ],
+}
+
 // GN: //components/cronet/android:request_context_config_java_proto
 java_library {
     name: "cronet_aml_components_cronet_android_request_context_config_java_proto",
@@ -12045,6 +13550,11 @@ java_library {
     static_libs: [
         "libprotobuf-java-lite",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -12075,6 +13585,52 @@ java_genrule {
         "build/protoc_java.py",
         "build/zip_helpers.py",
     ],
+}
+
+// GN: //components/cronet/android:request_context_config_java_proto__protoc_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_request_context_config_java_proto__protoc_java__testing",
+    srcs: [
+        "components/cronet/android/proto/request_context_config.proto",
+    ],
+    tools: [
+        "cronet_aml_third_party_protobuf_protoc",
+    ],
+    cmd: "$(location build/protoc_java.py) --protoc " +
+         "$(location cronet_aml_third_party_protobuf_protoc) " +
+         "--proto-path " +
+         "external/cronet/components/cronet/android " +
+         "--srcjar " +
+         "$(out) " +
+         "$(location components/cronet/android/proto/request_context_config.proto)",
+    out: [
+        "components/cronet/android/request_context_config_java_proto__protoc_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/protoc_java.py",
+        "build/zip_helpers.py",
+    ],
+}
+
+// GN: //components/cronet/android:request_context_config_java_proto__testing
+java_library {
+    name: "cronet_aml_components_cronet_android_request_context_config_java_proto__testing",
+    srcs: [
+        ":cronet_aml_components_cronet_android_request_context_config_java_proto__protoc_java__testing",
+    ],
+    static_libs: [
+        "libprotobuf-java-lite",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //components/cronet/android:request_context_config_proto__testing
@@ -12180,9 +13736,51 @@ java_genrule {
     ],
 }
 
+// GN: //components/cronet/android:rtt_throughput_values_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_rtt_throughput_values_java__testing",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/nqe/network_quality.h)",
+    out: [
+        "components/cronet/android/rtt_throughput_values_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/nqe/network_quality.h",
+    ],
+}
+
 // GN: //components/cronet/android:url_request_error_java
 java_genrule {
     name: "cronet_aml_components_cronet_android_url_request_error_java",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location components/cronet/android/url_request_error.h)",
+    out: [
+        "components/cronet/android/url_request_error_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "components/cronet/android/url_request_error.h",
+    ],
+}
+
+// GN: //components/cronet/android:url_request_error_java__testing
+java_genrule {
+    name: "cronet_aml_components_cronet_android_url_request_error_java__testing",
     cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
          "$(out) " +
          "$(location components/cronet/android/url_request_error.h)",
@@ -15655,81 +17253,40 @@ cc_defaults {
     },
 }
 
-// GN: //gn:java
-java_library {
-    name: "cronet_aml_java",
-    static_libs: [
-        "libprotobuf-java-lite",
-        "modules-utils-build_system",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental-nodeps",
-        "cronet_aml_api_java",
-        "error_prone_annotations",
-        "framework-connectivity-t.stubs.module_lib",
-        "framework-connectivity.stubs.module_lib",
-        "framework-mediaprovider.stubs.module_lib",
-        "framework-tethering.stubs.module_lib",
-        "framework-wifi.stubs.module_lib",
-        "jsr305",
-    ],
-    sdk_version: "module_current",
-    javacflags: [
-        "-Aorg.chromium.chrome.skipGenJni",
-    ],
-    visibility: [
-        "//external/cronet/android:__subpackages__",
-        "//packages/modules/Connectivity:__subpackages__",
-    ],
-}
-
-// GN: //gn:java
-java_library {
-    name: "cronet_aml_java__testing",
-    static_libs: [
-        "libprotobuf-java-lite",
-        "modules-utils-build_system",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental-nodeps",
-        "cronet_aml_api_java",
-        "error_prone_annotations",
-        "framework-connectivity-t.stubs.module_lib",
-        "framework-connectivity.stubs.module_lib",
-        "framework-mediaprovider.stubs.module_lib",
-        "framework-tethering.stubs.module_lib",
-        "framework-wifi.stubs.module_lib",
-        "jsr305",
-    ],
-    sdk_version: "module_current",
-    javacflags: [
-        "-Aorg.chromium.chrome.skipGenJni",
-    ],
-    visibility: [
-        "//external/cronet/android:__subpackages__",
-        "//packages/modules/Connectivity:__subpackages__",
-    ],
-}
-
 // GN: //net/android:embedded_test_server_aidl__testing
 java_library {
     name: "cronet_aml_net_android_embedded_test_server_aidl__testing",
+    srcs: [
+        "net/test/android/javatests/src/org/chromium/net/test/IConnectionListener.aidl",
+        "net/test/android/javatests/src/org/chromium/net/test/IEmbeddedTestServerImpl.aidl",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    aidl: {
+        include_dirs: [
+            "frameworks/base/core/java/",
+        ],
+        local_include_dirs: [
+            "net/test/android/javatests/src",
+        ],
+    },
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //net/android:embedded_test_server_aidl_java__testing
 java_library {
     name: "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
+    static_libs: [
+        "cronet_aml_net_android_embedded_test_server_aidl__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -15924,10 +17481,15 @@ java_library {
         "cronet_aml_build_android_build_java",
         "cronet_aml_net_android_net_thread_stats_uid_java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -15937,7 +17499,7 @@ java_library {
     srcs: [
         ":cronet_aml_net_android_net_android_java_enums_srcjar__testing",
         ":cronet_aml_net_android_net_errors_java__testing",
-        ":cronet_aml_net_net_jni_headers__testing__java__testing",
+        ":cronet_aml_net_net_jni_headers__testing__java",
         "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
         "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
         "net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
@@ -15966,10 +17528,15 @@ java_library {
         "cronet_aml_build_android_build_java__testing",
         "cronet_aml_net_android_net_thread_stats_uid_java__testing",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -15978,7 +17545,7 @@ java_library {
     name: "cronet_aml_net_android_net_java_test_support__testing",
     srcs: [
         ":cronet_aml_net_android_net_java_test_support_enums_srcjar__testing",
-        ":cronet_aml_net_android_net_test_support_jni__testing__java__testing",
+        ":cronet_aml_net_android_net_test_support_jni__testing__java",
         "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
         "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",
         "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerRule.java",
@@ -15993,12 +17560,19 @@ java_library {
         "cronet_aml_base_base_java_test_support__testing",
         "cronet_aml_base_base_java_url_utils_for_test__testing",
         "cronet_aml_base_jni_java__testing",
+        "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
         "cronet_aml_net_android_net_java__testing",
         "junit",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation-nodeps",
+        "androidx.test.monitor",
     ],
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -16071,7 +17645,7 @@ cc_genrule {
 
 // GN: //net/android:net_test_support_jni__testing
 java_genrule {
-    name: "cronet_aml_net_android_net_test_support_jni__testing__java__testing",
+    name: "cronet_aml_net_android_net_test_support_jni__testing__java",
     srcs: [
         "net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
     ],
@@ -16107,6 +17681,35 @@ java_genrule {
         "third_party/jni_zero/parse.py",
         "third_party/jni_zero/proxy.py",
     ],
+}
+
+// GN: //net/android:net_test_support_provider_java__testing
+java_library {
+    name: "cronet_aml_net_android_net_test_support_provider_java__testing",
+    srcs: [
+        ":cronet_aml_net_android_net_test_support_provider_jni__testing__java",
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerService.java",
+    ],
+    static_libs: [
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_url_utils_for_test__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_net_android_embedded_test_server_aidl_java__testing",
+        "cronet_aml_net_android_net_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //net/android:net_test_support_provider_jni__testing
@@ -16159,6 +17762,94 @@ cc_genrule {
     ],
 }
 
+// GN: //net/android:net_test_support_provider_jni__testing
+java_genrule {
+    name: "cronet_aml_net_android_net_test_support_provider_jni__testing__java",
+    srcs: [
+        "net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
+        "net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/net/android/net_test_support_provider_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/net/android/net_test_support_provider_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "DummySpnegoAuthenticator_jni.h " +
+         "--output-name " +
+         "EmbeddedTestServerImpl_jni.h " +
+         "--input-file " +
+         "$(location net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java) " +
+         "--input-file " +
+         "$(location net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java)",
+    out: [
+        "net/android/net_test_support_provider_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
+// GN: //net/android:net_tests_java__testing
+java_library {
+    name: "cronet_aml_net_android_net_tests_java__testing",
+    srcs: [
+        ":cronet_aml_net_android_net_tests_jni__testing__java",
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
+        "net/android/javatests/src/org/chromium/net/HttpUtilTest.java",
+        "net/android/javatests/src/org/chromium/net/MimeTypeFilterTest.java",
+        "net/android/javatests/src/org/chromium/net/NetErrorsTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierNoNativeTest.java",
+        "net/android/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+        "net/android/javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
+        "net/android/javatests/src/org/chromium/net/X509UtilTest.java",
+    ],
+    static_libs: [
+        "androidx.test.runner",
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_test_support__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_net_android_net_java__testing",
+        "cronet_aml_net_android_net_java_test_support__testing",
+        "junit",
+        "mockito",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "android.test.mock",
+        "androidx.test.monitor",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
+}
+
 // GN: //net/android:net_tests_jni__testing
 cc_genrule {
     name: "cronet_aml_net_android_net_tests_jni__testing",
@@ -16209,12 +17900,62 @@ cc_genrule {
     ],
 }
 
+// GN: //net/android:net_tests_jni__testing
+java_genrule {
+    name: "cronet_aml_net_android_net_tests_jni__testing__java",
+    srcs: [
+        "net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+        "net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/net/android/net_tests_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/net/android/net_tests_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "AndroidKeyStoreTestUtil_jni.h " +
+         "--output-name " +
+         "AndroidProxyConfigServiceTestUtil_jni.h " +
+         "--input-file " +
+         "$(location net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java) " +
+         "--input-file " +
+         "$(location net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java)",
+    out: [
+        "net/android/net_tests_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+}
+
 // GN: //net/android:net_thread_stats_uid_java
 java_library {
     name: "cronet_aml_net_android_net_thread_stats_uid_java",
     srcs: [
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -16224,6 +17965,11 @@ java_library {
     srcs: [
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -18192,6 +19938,27 @@ cc_library_static {
 // GN: //net:effective_connection_type_java
 java_genrule {
     name: "cronet_aml_net_effective_connection_type_java",
+    cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
+         "$(out) " +
+         "$(location net/nqe/effective_connection_type.h)",
+    out: [
+        "net/effective_connection_type_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/java_cpp_enum.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/android/gyp/util/java_cpp_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "net/nqe/effective_connection_type.h",
+    ],
+}
+
+// GN: //net:effective_connection_type_java__testing
+java_genrule {
+    name: "cronet_aml_net_effective_connection_type_java__testing",
     cmd: "$(location build/android/gyp/java_cpp_enum.py) --srcjar " +
          "$(out) " +
          "$(location net/nqe/effective_connection_type.h)",
@@ -21218,7 +22985,7 @@ cc_genrule {
 
 // GN: //net:net_jni_headers__testing
 java_genrule {
-    name: "cronet_aml_net_net_jni_headers__testing__java__testing",
+    name: "cronet_aml_net_net_jni_headers__testing__java",
     srcs: [
         "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
         "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
@@ -22407,6 +24174,7 @@ cc_library_shared {
     ],
     stem: "libnet_unittests__library",
     visibility: [
+        "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
     target: {
@@ -28246,12 +30014,17 @@ cc_library_static {
 java_library {
     name: "cronet_aml_testing_android_native_test_native_main_runner_java__testing",
     srcs: [
-        ":cronet_aml_testing_android_native_test_native_main_runner_jni__testing__java__testing",
+        ":cronet_aml_testing_android_native_test_native_main_runner_jni__testing__java",
         "testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java",
     ],
     static_libs: [
         "cronet_aml_base_jni_java__testing",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -28301,7 +30074,7 @@ cc_genrule {
 
 // GN: //testing/android/native_test:native_main_runner_jni__testing
 java_genrule {
-    name: "cronet_aml_testing_android_native_test_native_main_runner_jni__testing__java__testing",
+    name: "cronet_aml_testing_android_native_test_native_main_runner_jni__testing__java",
     srcs: [
         "testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java",
     ],
@@ -28337,6 +30110,43 @@ java_genrule {
         "third_party/jni_zero/parse.py",
         "third_party/jni_zero/proxy.py",
     ],
+}
+
+// GN: //testing/android/native_test:native_test_java__testing
+java_library {
+    name: "cronet_aml_testing_android_native_test_native_test_java__testing",
+    srcs: [
+        ":cronet_aml_testing_android_native_test_native_test_jni__testing__java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTestActivity.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTestApplication.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTestApplication.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTestActivity.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeUnitTestNativeActivity.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/SignalMaskInfo.java",
+    ],
+    static_libs: [
+        "androidx.fragment_fragment",
+        "cronet_aml_base_base_java__testing",
+        "cronet_aml_base_base_java_test_support__testing",
+        "cronet_aml_base_jni_java__testing",
+        "cronet_aml_build_android_build_java__testing",
+        "cronet_aml_build_android_gtest_apk_native_test_instrumentation_test_runner_java__testing",
+        "cronet_aml_testing_android_native_test_native_main_runner_java__testing",
+        "cronet_aml_testing_android_reporter_reporter_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //testing/android/native_test:native_test_jni__testing
@@ -28386,6 +30196,51 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+}
+
+// GN: //testing/android/native_test:native_test_jni__testing
+java_genrule {
+    name: "cronet_aml_testing_android_native_test_native_test_jni__testing__java",
+    srcs: [
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTest.java",
+        "testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/testing/android/native_test/native_test_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/testing/android/native_test/native_test_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "NativeBrowserTest_jni.h " +
+         "--output-name " +
+         "NativeTest_jni.h " +
+         "--input-file " +
+         "$(location testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTest.java) " +
+         "--input-file " +
+         "$(location testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java)",
+    out: [
+        "testing/android/native_test/native_test_jni.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
     ],
 }
 
@@ -28811,6 +30666,26 @@ cc_library_static {
             ],
         },
     },
+}
+
+// GN: //testing/android/reporter:reporter_java__testing
+java_library {
+    name: "cronet_aml_testing_android_reporter_reporter_java__testing",
+    srcs: [
+        "testing/android/reporter/java/src/org/chromium/test/reporter/TestStatusReporter.java",
+    ],
+    static_libs: [
+        "cronet_aml_build_android_gtest_apk_native_test_instrumentation_test_runner_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "android.test.base",
+    ],
+    sdk_version: "current",
+    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
 // GN: //testing/gtest:gtest__testing
@@ -42120,18 +43995,6 @@ cc_library_static {
     },
 }
 
-// GN: //third_party/androidx:androidx_test_core_java__testing
-java_library {
-    name: "cronet_aml_third_party_androidx_androidx_test_core_java__testing",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
-}
-
-// GN: //third_party/androidx:androidx_test_monitor_java__testing
-java_library {
-    name: "cronet_aml_third_party_androidx_androidx_test_monitor_java__testing",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
-}
-
 // GN: //third_party/ashmem:ashmem
 cc_library_static {
     name: "cronet_aml_third_party_ashmem_ashmem",
@@ -46389,12 +48252,6 @@ cc_library_static {
     },
 }
 
-// GN: //third_party/netty4:netty_all_java__testing
-java_library {
-    name: "cronet_aml_third_party_netty4_netty_all_java__testing",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
-}
-
 // GN: //third_party/protobuf:protobuf_full
 cc_library_static {
     name: "cronet_aml_third_party_protobuf_protobuf_full",
@@ -47539,6 +49396,11 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -47551,6 +49413,11 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java__testing",
     ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 

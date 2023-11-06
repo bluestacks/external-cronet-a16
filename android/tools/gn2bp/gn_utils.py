@@ -437,23 +437,18 @@ class GnParser(object):
 
     target.testonly = desc.get('testonly', False)
 
-    proto_target_type, proto_desc = self.get_proto_target_type(gn_desc, gn_target_name)
     deps = desc.get("deps", {})
-    if proto_target_type is not None:
+    if desc.get("script", "") == "//tools/protoc_wrapper/protoc_wrapper.py":
       target.type = 'proto_library'
-      target.proto_plugin = proto_target_type
-      target.proto_paths.update(self.get_proto_paths(proto_desc))
-      target.proto_exports.update(self.get_proto_exports(proto_desc))
-      target.proto_in_dir = self.get_proto_in_dir(proto_desc)
-      for gn_proto_deps_name in proto_desc.get('deps', []):
-        dep = self.parse_gn_desc(gn_desc, gn_proto_deps_name)
-        target.deps.add(dep.name)
-      target.arch[arch].sources.update(proto_desc.get('sources', []))
-      assert (all(x.endswith('.proto') for x in target.arch[arch].sources))
+      target.proto_plugin = "proto"
+      target.proto_paths.update(self.get_proto_paths(desc))
+      target.proto_exports.update(self.get_proto_exports(desc))
+      target.proto_in_dir = self.get_proto_in_dir(desc)
+      target.arch[arch].sources.update(desc.get('sources', []))
     elif target.type == 'source_set':
-      target.arch[arch].sources.update(desc.get('sources', []))
+      target.arch[arch].sources.update(source for source in desc.get('sources', []) if not source.startswith("//out"))
     elif target.is_linker_unit_type():
-      target.arch[arch].sources.update(desc.get('sources', []))
+      target.arch[arch].sources.update(source for source in desc.get('sources', []) if not source.startswith("//out"))
     elif target.type == 'java_library':
       sources = set()
       for java_source in metadata.get("source_files", []):
@@ -523,8 +518,7 @@ class GnParser(object):
       elif dep.type == 'group':
         target.update(dep, arch)  # Bubble up groups's cflags/ldflags etc.
       elif dep.type in ['action', 'action_foreach', 'copy']:
-        if proto_target_type is None:
-          target.arch[arch].deps.add(dep.name)
+        target.arch[arch].deps.add(dep.name)
       elif dep.is_linker_unit_type():
         target.arch[arch].deps.add(dep.name)
       elif dep.type == 'java_library':
@@ -558,46 +552,3 @@ class GnParser(object):
   def get_proto_in_dir(self, proto_desc):
     args = proto_desc.get('args')
     return re.sub('^\.\./\.\./', '', args[args.index('--proto-in-dir') + 1])
-
-  def get_proto_target_type(self, gn_desc, gn_target_name):
-    """ Checks if the target is a proto library and return the plugin.
-
-        Returns:
-            (None, None): if the target is not a proto library.
-            (plugin, proto_desc) where |plugin| is 'proto' in the default (lite)
-            case or 'protozero' or 'ipc' or 'descriptor'; |proto_desc| is the GN
-            json desc of the target with the .proto sources (_gen target for
-            non-descriptor types or the target itself for descriptor type).
-        """
-    parts = gn_target_name.split('(', 1)
-    name = parts[0]
-    toolchain = '(' + parts[1] if len(parts) > 1 else ''
-
-    # Descriptor targets don't have a _gen target; instead we look for the
-    # characteristic flag in the args of the target itself.
-    desc = gn_desc.get(gn_target_name)
-    if '--descriptor_set_out' in desc.get('args', []):
-      return 'descriptor', desc
-
-    # Source set proto targets have a non-empty proto_library_sources in the
-    # metadata of the description.
-    metadata = desc.get('metadata', {})
-    if 'proto_library_sources' in metadata:
-      return 'source_set', desc
-
-    # In all other cases, we want to look at the _gen target as that has the
-    # important information.
-    gen_desc = gn_desc.get('%s_gen%s' % (name, toolchain))
-    if gen_desc is None or gen_desc['type'] != 'action':
-      return None, None
-    if gen_desc['script'] != '//tools/protoc_wrapper/protoc_wrapper.py':
-      return None, None
-    plugin = 'proto'
-    args = gen_desc.get('args', [])
-    for arg in (arg for arg in args if arg.startswith('--plugin=')):
-      # |arg| at this point looks like:
-      #  --plugin=protoc-gen-plugin=gcc_like_host/protozero_plugin
-      # or
-      #  --plugin=protoc-gen-plugin=protozero_plugin
-      plugin = arg.split('=')[-1].split('/')[-1].replace('_plugin', '')
-    return plugin, gen_desc

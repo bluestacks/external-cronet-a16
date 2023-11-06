@@ -143,12 +143,12 @@ additional_args = {
         "net/third_party/quiche/src",
       })
     ],
-    'cronet_aml_net_third_party_quiche_net_quic_test_tools_proto__testing_gen_headers': [
+    'cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers': [
         ('export_include_dirs', {
         "net/third_party/quiche/src",
         })
      ],
-    'cronet_aml_third_party_quic_trace_quic_trace_proto__testing_gen_headers': [
+    'cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers': [
         ('export_include_dirs', {
           "third_party/quic_trace/src",
         })
@@ -773,7 +773,7 @@ def create_proto_modules(blueprint, gn, target):
   # generated files needs to declare two different types of dependencies --
   # source files in 'srcs' and headers in 'generated_headers' -- and it's not
   # valid to generate .h files from a source dependency and vice versa.
-  source_module_name = target_module_name + '_gen'
+  source_module_name = target_module_name
   source_module = Module('cc_genrule', source_module_name, target.name)
   blueprint.add_module(source_module)
   source_module.srcs.update(

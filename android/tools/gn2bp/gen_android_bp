@@ -153,12 +153,6 @@ additional_args = {
           "third_party/quic_trace/src",
         })
     ],
-    'cronet_aml_net_net': [
-        ('export_static_lib_headers', {
-            'cronet_aml_net_third_party_quiche_quiche',
-            'cronet_aml_crypto_crypto',
-        }),
-    ],
     # TODO: fix upstream. Both //base:base and
     # //base/allocator/partition_allocator:partition_alloc do not create a
     # dependency on gtest despite using gtest_prod.h.
@@ -1715,10 +1709,12 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
     if dep_module.type == 'cc_library_shared':
       module_target.shared_libs.add(dep_module.name)
     elif dep_module.type == 'cc_library_static':
-      if module.type in ['cc_library_shared', 'cc_binary'] and dep_module.gn_type == 'source_set':
+      if module.type in ['cc_library_shared', 'cc_binary'] and dep_module.type == 'cc_library_static':
         module_target.whole_static_libs.add(dep_module.name)
       else:
-        module_target.static_libs.add(dep_module.name)
+        module_target.generated_headers.update(dep_module.generated_headers)
+        module_target.shared_libs.update(dep_module.shared_libs)
+        module_target.header_libs.update(dep_module.header_libs)
     elif dep_module.type == 'cc_genrule':
       module_target.generated_headers.update(dep_module.genrule_headers)
       module_target.srcs.update(dep_module.genrule_srcs)
@@ -1813,9 +1809,7 @@ def create_blueprint_for_targets(gn, targets, test_targets):
     if module:
       module.visibility.update(root_modules_visibility)
 
-  for module in blueprint.modules.values():
-    if module.name in ['cronet_aml_base_base', 'cronet_aml_base_base' + gn_utils.TESTING_SUFFIX]:
-      turn_off_allocator_shim_for_musl(module)
+
 
   # Merge in additional hardcoded arguments.
   for module in blueprint.modules.values():

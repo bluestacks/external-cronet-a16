@@ -9198,7 +9198,7 @@ cc_library_shared {
         "-Wl,-wrap,valloc",
         "-Wl,-wrap,vasprintf",
     ],
-    stem: "libcronet",
+    stem: "libmainlinecronet.117.0.5938.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

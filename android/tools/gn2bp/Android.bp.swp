@@ -3326,7 +3326,7 @@ java_library {
     name: "cronet_aml_base_base_java",
     srcs: [
         ":cronet_aml_base_base_android_java_enums_srcjar",
-        ":cronet_aml_base_base_jni",
+        ":cronet_aml_base_base_jni__java",
         ":cronet_aml_base_java_features_srcjar",
         ":cronet_aml_base_java_switches_srcjar",
         "base/android/java/src/org/chromium/base/ActivityState.java",
@@ -3454,6 +3454,7 @@ java_library {
     static_libs: [
         "cronet_aml_base_jni_java",
         "cronet_aml_build_android_build_java",
+        "modules-utils-build_system",
     ],
     libs: [
         "androidx.annotation_annotation-experimental-nodeps",
@@ -3468,7 +3469,7 @@ java_library {
     name: "cronet_aml_base_base_java__testing",
     srcs: [
         ":cronet_aml_base_base_android_java_enums_srcjar__testing",
-        ":cronet_aml_base_base_jni__testing__testing",
+        ":cronet_aml_base_base_jni__testing__java__testing",
         ":cronet_aml_base_java_features_srcjar__testing",
         ":cronet_aml_base_java_switches_srcjar__testing",
         "base/android/java/src/org/chromium/base/ActivityState.java",
@@ -3606,8 +3607,300 @@ java_library {
 }
 
 // GN: //base:base_jni
-java_genrule {
+cc_genrule {
     name: "cronet_aml_base_base_jni",
+    srcs: [
+        "base/android/java/src/org/chromium/base/ApkAssets.java",
+        "base/android/java/src/org/chromium/base/ApplicationStatus.java",
+        "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
+        "base/android/java/src/org/chromium/base/BuildInfo.java",
+        "base/android/java/src/org/chromium/base/BundleUtils.java",
+        "base/android/java/src/org/chromium/base/Callback.java",
+        "base/android/java/src/org/chromium/base/CommandLine.java",
+        "base/android/java/src/org/chromium/base/ContentUriUtils.java",
+        "base/android/java/src/org/chromium/base/CpuFeatures.java",
+        "base/android/java/src/org/chromium/base/EarlyTraceEvent.java",
+        "base/android/java/src/org/chromium/base/EventLog.java",
+        "base/android/java/src/org/chromium/base/FeatureList.java",
+        "base/android/java/src/org/chromium/base/FeatureMap.java",
+        "base/android/java/src/org/chromium/base/Features.java",
+        "base/android/java/src/org/chromium/base/FieldTrialList.java",
+        "base/android/java/src/org/chromium/base/FileUtils.java",
+        "base/android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
+        "base/android/java/src/org/chromium/base/IntStringCallback.java",
+        "base/android/java/src/org/chromium/base/JNIUtils.java",
+        "base/android/java/src/org/chromium/base/JavaExceptionReporter.java",
+        "base/android/java/src/org/chromium/base/JavaHandlerThread.java",
+        "base/android/java/src/org/chromium/base/LocaleUtils.java",
+        "base/android/java/src/org/chromium/base/MemoryPressureListener.java",
+        "base/android/java/src/org/chromium/base/PathService.java",
+        "base/android/java/src/org/chromium/base/PathUtils.java",
+        "base/android/java/src/org/chromium/base/PiiElider.java",
+        "base/android/java/src/org/chromium/base/PowerMonitor.java",
+        "base/android/java/src/org/chromium/base/RadioUtils.java",
+        "base/android/java/src/org/chromium/base/SysUtils.java",
+        "base/android/java/src/org/chromium/base/ThreadUtils.java",
+        "base/android/java/src/org/chromium/base/TimezoneUtils.java",
+        "base/android/java/src/org/chromium/base/TraceEvent.java",
+        "base/android/java/src/org/chromium/base/UnguessableToken.java",
+        "base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
+        "base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
+        "base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",
+        "base/android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java",
+        "base/android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
+        "base/android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
+        "base/android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java",
+        "base/android/java/src/org/chromium/base/task/PostTask.java",
+        "base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/base/base_jni " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/base/base_jni.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "ApkAssets_jni.h " +
+         "--output-name " +
+         "ApplicationStatus_jni.h " +
+         "--output-name " +
+         "BaseFeatureMap_jni.h " +
+         "--output-name " +
+         "BuildInfo_jni.h " +
+         "--output-name " +
+         "BundleUtils_jni.h " +
+         "--output-name " +
+         "Callback_jni.h " +
+         "--output-name " +
+         "CommandLine_jni.h " +
+         "--output-name " +
+         "ContentUriUtils_jni.h " +
+         "--output-name " +
+         "CpuFeatures_jni.h " +
+         "--output-name " +
+         "EarlyTraceEvent_jni.h " +
+         "--output-name " +
+         "EventLog_jni.h " +
+         "--output-name " +
+         "FeatureList_jni.h " +
+         "--output-name " +
+         "FeatureMap_jni.h " +
+         "--output-name " +
+         "Features_jni.h " +
+         "--output-name " +
+         "FieldTrialList_jni.h " +
+         "--output-name " +
+         "FileUtils_jni.h " +
+         "--output-name " +
+         "ImportantFileWriterAndroid_jni.h " +
+         "--output-name " +
+         "IntStringCallback_jni.h " +
+         "--output-name " +
+         "JNIUtils_jni.h " +
+         "--output-name " +
+         "JavaExceptionReporter_jni.h " +
+         "--output-name " +
+         "JavaHandlerThread_jni.h " +
+         "--output-name " +
+         "LocaleUtils_jni.h " +
+         "--output-name " +
+         "MemoryPressureListener_jni.h " +
+         "--output-name " +
+         "PathService_jni.h " +
+         "--output-name " +
+         "PathUtils_jni.h " +
+         "--output-name " +
+         "PiiElider_jni.h " +
+         "--output-name " +
+         "PowerMonitor_jni.h " +
+         "--output-name " +
+         "RadioUtils_jni.h " +
+         "--output-name " +
+         "SysUtils_jni.h " +
+         "--output-name " +
+         "ThreadUtils_jni.h " +
+         "--output-name " +
+         "TimezoneUtils_jni.h " +
+         "--output-name " +
+         "TraceEvent_jni.h " +
+         "--output-name " +
+         "UnguessableToken_jni.h " +
+         "--output-name " +
+         "JankMetricUMARecorder_jni.h " +
+         "--output-name " +
+         "LibraryLoader_jni.h " +
+         "--output-name " +
+         "LibraryPrefetcher_jni.h " +
+         "--output-name " +
+         "JavaHeapDumpGenerator_jni.h " +
+         "--output-name " +
+         "MemoryInfoBridge_jni.h " +
+         "--output-name " +
+         "NativeUmaRecorder_jni.h " +
+         "--output-name " +
+         "StatisticsRecorderAndroid_jni.h " +
+         "--output-name " +
+         "PostTask_jni.h " +
+         "--output-name " +
+         "TaskRunnerImpl_jni.h " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/ApkAssets.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/ApplicationStatus.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/BaseFeatureMap.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/BuildInfo.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/BundleUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/Callback.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/CommandLine.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/ContentUriUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/CpuFeatures.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/EarlyTraceEvent.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/EventLog.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/FeatureList.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/FeatureMap.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/Features.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/FieldTrialList.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/FileUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/ImportantFileWriterAndroid.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/IntStringCallback.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/JNIUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/JavaExceptionReporter.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/JavaHandlerThread.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/LocaleUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/MemoryPressureListener.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/PathService.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/PathUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/PiiElider.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/PowerMonitor.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/RadioUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/SysUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/ThreadUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/TimezoneUtils.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/TraceEvent.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/UnguessableToken.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/memory/MemoryInfoBridge.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/task/PostTask.java) " +
+         "--input-file " +
+         "$(location base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java) " +
+         "--package-prefix " +
+         "android.net.connectivity",
+    out: [
+        "base/base_jni.srcjar",
+        "base/base_jni/ApkAssets_jni.h",
+        "base/base_jni/ApplicationStatus_jni.h",
+        "base/base_jni/BaseFeatureMap_jni.h",
+        "base/base_jni/BuildInfo_jni.h",
+        "base/base_jni/BundleUtils_jni.h",
+        "base/base_jni/Callback_jni.h",
+        "base/base_jni/CommandLine_jni.h",
+        "base/base_jni/ContentUriUtils_jni.h",
+        "base/base_jni/CpuFeatures_jni.h",
+        "base/base_jni/EarlyTraceEvent_jni.h",
+        "base/base_jni/EventLog_jni.h",
+        "base/base_jni/FeatureList_jni.h",
+        "base/base_jni/FeatureMap_jni.h",
+        "base/base_jni/Features_jni.h",
+        "base/base_jni/FieldTrialList_jni.h",
+        "base/base_jni/FileUtils_jni.h",
+        "base/base_jni/ImportantFileWriterAndroid_jni.h",
+        "base/base_jni/IntStringCallback_jni.h",
+        "base/base_jni/JNIUtils_jni.h",
+        "base/base_jni/JankMetricUMARecorder_jni.h",
+        "base/base_jni/JavaExceptionReporter_jni.h",
+        "base/base_jni/JavaHandlerThread_jni.h",
+        "base/base_jni/JavaHeapDumpGenerator_jni.h",
+        "base/base_jni/LibraryLoader_jni.h",
+        "base/base_jni/LibraryPrefetcher_jni.h",
+        "base/base_jni/LocaleUtils_jni.h",
+        "base/base_jni/MemoryInfoBridge_jni.h",
+        "base/base_jni/MemoryPressureListener_jni.h",
+        "base/base_jni/NativeUmaRecorder_jni.h",
+        "base/base_jni/PathService_jni.h",
+        "base/base_jni/PathUtils_jni.h",
+        "base/base_jni/PiiElider_jni.h",
+        "base/base_jni/PostTask_jni.h",
+        "base/base_jni/PowerMonitor_jni.h",
+        "base/base_jni/RadioUtils_jni.h",
+        "base/base_jni/StatisticsRecorderAndroid_jni.h",
+        "base/base_jni/SysUtils_jni.h",
+        "base/base_jni/TaskRunnerImpl_jni.h",
+        "base/base_jni/ThreadUtils_jni.h",
+        "base/base_jni/TimezoneUtils_jni.h",
+        "base/base_jni/TraceEvent_jni.h",
+        "base/base_jni/UnguessableToken_jni.h",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+// GN: //base:base_jni
+java_genrule {
+    name: "cronet_aml_base_base_jni__java",
     srcs: [
         "base/android/java/src/org/chromium/base/ApkAssets.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
@@ -4145,7 +4438,7 @@ cc_genrule {
 
 // GN: //base:base_jni__testing
 java_genrule {
-    name: "cronet_aml_base_base_jni__testing__testing",
+    name: "cronet_aml_base_base_jni__testing__java__testing",
     srcs: [
         "base/android/java/src/org/chromium/base/ApkAssets.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
@@ -5682,7 +5975,7 @@ java_library {
 java_library {
     name: "cronet_aml_base_process_launcher_java__testing",
     srcs: [
-        ":cronet_aml_base_process_launcher_jni__testing__testing",
+        ":cronet_aml_base_process_launcher_jni__testing__java__testing",
         "base/android/java/src/org/chromium/base/process_launcher/BindService.java",
         "base/android/java/src/org/chromium/base/process_launcher/ChildConnectionAllocator.java",
         "base/android/java/src/org/chromium/base/process_launcher/ChildProcessConnection.java",
@@ -5802,7 +6095,7 @@ cc_genrule {
 
 // GN: //base:process_launcher_jni__testing
 java_genrule {
-    name: "cronet_aml_base_process_launcher_jni__testing__testing",
+    name: "cronet_aml_base_process_launcher_jni__testing__java__testing",
     srcs: [
         "base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
     ],
@@ -6445,7 +6738,6 @@ cc_library_static {
         "cronet_aml_base_i18n__testing",
         "cronet_aml_base_nodebug_assertion__testing",
         "cronet_aml_base_test_test_config__testing",
-        "cronet_aml_base_test_test_support_java__testing",
         "cronet_aml_base_third_party_double_conversion_double_conversion__testing",
         "cronet_aml_base_third_party_dynamic_annotations_dynamic_annotations__testing",
         "cronet_aml_testing_gtest_gtest__testing",
@@ -8827,7 +9119,7 @@ java_library {
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_impl_native_base_java",
     srcs: [
-        ":cronet_aml_components_cronet_android_cronet_jni_headers",
+        ":cronet_aml_components_cronet_android_cronet_jni_headers__java",
         ":cronet_aml_components_cronet_android_net_idempotency_java",
         ":cronet_aml_components_cronet_android_net_request_priority_java",
         ":cronet_aml_components_cronet_android_network_quality_observation_source_java",
@@ -8866,8 +9158,78 @@ java_library {
 }
 
 // GN: //components/cronet/android:cronet_jni_headers
-java_genrule {
+cc_genrule {
     name: "cronet_aml_components_cronet_android_cronet_jni_headers",
+    srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "CronetBidirectionalStream_jni.h " +
+         "--output-name " +
+         "CronetLibraryLoader_jni.h " +
+         "--output-name " +
+         "CronetUploadDataStream_jni.h " +
+         "--output-name " +
+         "CronetUrlRequest_jni.h " +
+         "--output-name " +
+         "CronetUrlRequestContext_jni.h " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java) " +
+         "--input-file " +
+         "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java) " +
+         "--package-prefix " +
+         "android.net.connectivity",
+    out: [
+        "components/cronet/android/cronet_jni_headers.srcjar",
+        "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+// GN: //components/cronet/android:cronet_jni_headers
+java_genrule {
+    name: "cronet_aml_components_cronet_android_cronet_jni_headers__java",
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
@@ -14240,7 +14602,7 @@ java_library {
     srcs: [
         ":cronet_aml_net_android_net_android_java_enums_srcjar",
         ":cronet_aml_net_android_net_errors_java",
-        ":cronet_aml_net_net_jni_headers",
+        ":cronet_aml_net_net_jni_headers__java",
         "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
         "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
         "net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
@@ -19081,8 +19443,126 @@ cc_library_static {
 }
 
 // GN: //net:net_jni_headers
-java_genrule {
+cc_genrule {
     name: "cronet_aml_net_net_jni_headers",
+    srcs: [
+        "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
+        "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
+        "net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java",
+        "net/android/java/src/org/chromium/net/AndroidTrafficStats.java",
+        "net/android/java/src/org/chromium/net/DnsStatus.java",
+        "net/android/java/src/org/chromium/net/GURLUtils.java",
+        "net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
+        "net/android/java/src/org/chromium/net/HttpUtil.java",
+        "net/android/java/src/org/chromium/net/NetStringUtil.java",
+        "net/android/java/src/org/chromium/net/NetworkActiveNotifier.java",
+        "net/android/java/src/org/chromium/net/NetworkChangeNotifier.java",
+        "net/android/java/src/org/chromium/net/ProxyChangeListener.java",
+        "net/android/java/src/org/chromium/net/X509Util.java",
+    ],
+    cmd: "$(location third_party/jni_zero/jni_zero.py) from-source " +
+         "--output-dir " +
+         "$(genDir)/net/net_jni_headers " +
+         "--extra-include " +
+         "base/android/jni_generator/jni_generator_helper.h " +
+         "--srcjar-path " +
+         "$(genDir)/net/net_jni_headers.srcjar " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "AndroidCertVerifyResult_jni.h " +
+         "--output-name " +
+         "AndroidKeyStore_jni.h " +
+         "--output-name " +
+         "AndroidNetworkLibrary_jni.h " +
+         "--output-name " +
+         "AndroidTrafficStats_jni.h " +
+         "--output-name " +
+         "DnsStatus_jni.h " +
+         "--output-name " +
+         "GURLUtils_jni.h " +
+         "--output-name " +
+         "HttpNegotiateAuthenticator_jni.h " +
+         "--output-name " +
+         "HttpUtil_jni.h " +
+         "--output-name " +
+         "NetStringUtil_jni.h " +
+         "--output-name " +
+         "NetworkActiveNotifier_jni.h " +
+         "--output-name " +
+         "NetworkChangeNotifier_jni.h " +
+         "--output-name " +
+         "ProxyChangeListener_jni.h " +
+         "--output-name " +
+         "X509Util_jni.h " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidKeyStore.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/AndroidTrafficStats.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/DnsStatus.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/GURLUtils.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/HttpUtil.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/NetStringUtil.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/NetworkActiveNotifier.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/NetworkChangeNotifier.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/ProxyChangeListener.java) " +
+         "--input-file " +
+         "$(location net/android/java/src/org/chromium/net/X509Util.java) " +
+         "--package-prefix " +
+         "android.net.connectivity",
+    out: [
+        "net/net_jni_headers.srcjar",
+        "net/net_jni_headers/AndroidCertVerifyResult_jni.h",
+        "net/net_jni_headers/AndroidKeyStore_jni.h",
+        "net/net_jni_headers/AndroidNetworkLibrary_jni.h",
+        "net/net_jni_headers/AndroidTrafficStats_jni.h",
+        "net/net_jni_headers/DnsStatus_jni.h",
+        "net/net_jni_headers/GURLUtils_jni.h",
+        "net/net_jni_headers/HttpNegotiateAuthenticator_jni.h",
+        "net/net_jni_headers/HttpUtil_jni.h",
+        "net/net_jni_headers/NetStringUtil_jni.h",
+        "net/net_jni_headers/NetworkActiveNotifier_jni.h",
+        "net/net_jni_headers/NetworkChangeNotifier_jni.h",
+        "net/net_jni_headers/ProxyChangeListener_jni.h",
+        "net/net_jni_headers/X509Util_jni.h",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+// GN: //net:net_jni_headers
+java_genrule {
+    name: "cronet_aml_net_net_jni_headers__java",
     srcs: [
         "net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java",
         "net/android/java/src/org/chromium/net/AndroidKeyStore.java",
@@ -26229,7 +26709,7 @@ cc_library_static {
 java_library {
     name: "cronet_aml_testing_android_native_test_native_main_runner_java__testing",
     srcs: [
-        ":cronet_aml_testing_android_native_test_native_main_runner_jni__testing__testing",
+        ":cronet_aml_testing_android_native_test_native_main_runner_jni__testing__java__testing",
         "testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java",
     ],
     static_libs: [
@@ -26283,7 +26763,7 @@ cc_genrule {
 
 // GN: //testing/android/native_test:native_main_runner_jni__testing
 java_genrule {
-    name: "cronet_aml_testing_android_native_test_native_main_runner_jni__testing__testing",
+    name: "cronet_aml_testing_android_native_test_native_main_runner_jni__testing__java__testing",
     srcs: [
         "testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java",
     ],
@@ -45176,7 +45656,6 @@ cc_library_static {
         "cronet_aml_third_party_icu_icuuc_private",
         "cronet_aml_third_party_libevent_libevent",
         "cronet_aml_third_party_modp_b64_modp_b64",
-        "cronet_aml_url_url_java",
     ],
     generated_headers: [
         "cronet_aml_base_debugging_buildflags",
@@ -45394,7 +45873,6 @@ cc_library_static {
         "cronet_aml_third_party_icu_icuuc_private__testing",
         "cronet_aml_third_party_libevent_libevent__testing",
         "cronet_aml_third_party_modp_b64_modp_b64__testing",
-        "cronet_aml_url_url_java__testing",
     ],
     generated_headers: [
         "cronet_aml_base_debugging_buildflags__testing",

@@ -4122,8 +4122,7 @@ java_genrule {
          "--input-file " +
          "$(location base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java) " +
          "--package-prefix " +
-         "android.net.connectivity " +
-         "&& zipinfo -1 $(genDir)/base/base_jni.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/base/base_jni.srcjar",
+         "android.net.connectivity",
     out: [
         "base/base_jni.srcjar",
     ],
@@ -4658,8 +4657,7 @@ java_genrule {
          "--input-file " +
          "$(location base/android/java/src/org/chromium/base/task/PostTask.java) " +
          "--input-file " +
-         "$(location base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java) " +
-         "&& zipinfo -1 $(genDir)/base/base_jni.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/base/base_jni.srcjar",
+         "$(location base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java)",
     out: [
         "base/base_jni.srcjar",
     ],
@@ -6110,8 +6108,7 @@ java_genrule {
          "--output-name " +
          "ChildProcessService_jni.h " +
          "--input-file " +
-         "$(location base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java) " +
-         "&& zipinfo -1 $(genDir)/base/process_launcher_jni.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/base/process_launcher_jni.srcjar",
+         "$(location base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java)",
     out: [
         "base/process_launcher_jni.srcjar",
     ],
@@ -9266,8 +9263,7 @@ java_genrule {
          "--input-file " +
          "$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java) " +
          "--package-prefix " +
-         "android.net.connectivity " +
-         "&& zipinfo -1 $(genDir)/components/cronet/android/cronet_jni_headers.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/components/cronet/android/cronet_jni_headers.srcjar",
+         "android.net.connectivity",
     out: [
         "components/cronet/android/cronet_jni_headers.srcjar",
     ],
@@ -19639,8 +19635,7 @@ java_genrule {
          "--input-file " +
          "$(location net/android/java/src/org/chromium/net/X509Util.java) " +
          "--package-prefix " +
-         "android.net.connectivity " +
-         "&& zipinfo -1 $(genDir)/net/net_jni_headers.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/net/net_jni_headers.srcjar",
+         "android.net.connectivity",
     out: [
         "net/net_jni_headers.srcjar",
     ],
@@ -26778,8 +26773,7 @@ java_genrule {
          "--output-name " +
          "MainRunner_jni.h " +
          "--input-file " +
-         "$(location testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java) " +
-         "&& zipinfo -1 $(genDir)/testing/android/native_test/native_main_runner_jni.srcjar | grep GEN_JNI.java | zip -d -@ $(genDir)/testing/android/native_test/native_main_runner_jni.srcjar",
+         "$(location testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java)",
     out: [
         "testing/android/native_test/native_main_runner_jni.srcjar",
     ],

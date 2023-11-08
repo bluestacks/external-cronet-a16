@@ -1038,15 +1038,6 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
                            out.endswith(".srcjar")]
     super()._sanitize_outputs()
 
-  def get_cmd(self):
-    cmd = super().get_cmd()
-    # Delete intermediates GEN_JNI If a srcjar-path exist
-    commands = [cmd]
-    if self._has_arg('--srcjar-path'):
-      commands = [cmd,
-                  "&& zipinfo -1 {src_jar} | grep GEN_JNI.java | zip -d -@ {src_jar}".format(src_jar =self._get_value_arg('--srcjar-path'))]
-    return NEWLINE.join(commands)
-
   def get_deps(self):
     return {}
 

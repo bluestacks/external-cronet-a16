@@ -35,8 +35,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 
-import com.android.modules.utils.build.SdkLevel;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -294,7 +292,7 @@ public class ApiCompatibilityUtils {
      */
     public static void setActivityOptionsBackgroundActivityStartMode(
             @NonNull ActivityOptions options) {
-        if (!SdkLevel.isAtLeastU()) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
 
         // options.setPendingIntentBackgroundActivityStartMode(
         //     ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
@@ -319,7 +317,7 @@ public class ApiCompatibilityUtils {
     public static void clearHandwritingBoundsOffsetBottom(View view) {
         // TODO(crbug.com/1427112): Replace uses of this method with direct calls once the API is
         // available.
-        if (!SdkLevel.isAtLeastU()) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         // Set the bottom handwriting bounds offset to 0 so that the view doesn't intercept
         // stylus events meant for the web contents.
         try {

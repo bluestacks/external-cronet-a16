@@ -24,8 +24,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.build.BuildConfig;
 
-import com.android.modules.utils.build.SdkLevel;
-
 /**
  * BuildInfo is a utility class providing easy access to {@link PackageInfo} information. This is
  * primarily of use for accessing package information from native code.
@@ -110,9 +108,9 @@ public class BuildInfo {
                 isTV ? "1" : "0",
                 Build.VERSION.INCREMENTAL,
                 Build.HARDWARE,
-                isAtLeastT() ? "1" : "0",
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? "1" : "0",
                 isAutomotive ? "1" : "0",
-                SdkLevel.isAtLeastU() ? "1" : "0",
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ? "1" : "0",
                 targetsAtLeastU() ? "1" : "0",
                 Build.VERSION.CODENAME,
                 String.valueOf(vulkanDeqpLevel),
@@ -283,7 +281,7 @@ public class BuildInfo {
      */
     @Deprecated
     public static boolean isAtLeastT() {
-        return SdkLevel.isAtLeastT();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
     }
 
     /**

@@ -23,23 +23,38 @@ import re
 import collections
 
 LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library', 'source_set')
-JAVA_BANNED_SCRIPTS = [
-    "//build/android/gyp/turbine.py",
-    "//build/android/gyp/compile_java.py",
-    "//build/android/gyp/filter_zip.py",
-    "//build/android/gyp/dex.py",
-    "//build/android/gyp/write_build_config.py",
-    "//build/android/gyp/create_r_java.py",
-    "//build/android/gyp/ijar.py",
-    "//build/android/gyp/create_r_java.py",
-    "//build/android/gyp/bytecode_processor.py",
-    "//build/android/gyp/prepare_resources.py",
-    "//build/android/gyp/aar.py",
-    "//build/android/gyp/zip.py",
-]
+# This is a list of java files that should not be collected
+# as they don't exist right now downstream (eg: apihelpers, cronetEngineBuilderTest).
+# This is temporary solution until they are up-streamed.
+JAVA_FILES_TO_IGNORE = (
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/ByteArrayCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/ContentTypeParametersParser.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/CronetRequestCompletionListener.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/CronetResponse.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/ImplicitFlowControlCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/InMemoryTransformCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/JsonCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandler.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/RedirectHandlers.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/StringCronetCallback.java",
+  "//components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/CronetEngineBuilderTest.java",
+  # The following tests are currently not included in the tests because they
+  # depends on H2 test server.
+  "//components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamTest.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/MockCertVerifierTest.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
+  "//components/cronet/android/test/javatests/src/org/chromium/net/PkpTest.java",
+  # Api helpers does not exist downstream, hence the tests shouldn't be collected.
+  "//components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
+  # Netty does not exist currently in AOSP so those classes won't compile. We replace with stubs.
+  "//components/cronet/android/test/src/org/chromium/net/Http2TestHandler.java",
+  "//components/cronet/android/test/src/org/chromium/net/Http2TestServer.java"
+)
 RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"
 AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
+AIDL_IMPORT_DIRS_REGEX = r'--imports=\[(.*)\]'
 
 def repo_root():
   """Returns an absolute path to the repository root."""
@@ -50,14 +65,32 @@ def repo_root():
 def _clean_string(str):
   return str.replace('\\', '').replace('../../', '').replace('"', '').strip()
 
+def _clean_aidl_import(orig_str):
+  str = _clean_string(orig_str)
+  src_idx = str.find("src/")
+  if src_idx == -1:
+    raise ValueError(f"Unable to clean aidl import {orig_str}")
+  return str[:src_idx + len("src")]
+
 def _extract_includes_from_aidl_args(args):
+  ret = []
   for arg in args:
     is_match = re.match(AIDL_INCLUDE_DIRS_REGEX, arg)
     if is_match:
       local_includes = is_match.group(1).split(",")
-      return [_clean_string(local_include) for local_include in local_includes]
-  return []
+      ret += [_clean_string(local_include) for local_include in local_includes]
+    # Treat imports like include for aidl by removing the package suffix.
+    is_match = re.match(AIDL_IMPORT_DIRS_REGEX, arg)
+    if is_match:
+      local_imports = is_match.group(1).split(",")
+      # Skip "third_party/android_sdk/public/platforms/android-34/framework.aidl" because Soong
+      # already links against the AIDL framework implicitly.
+      ret += [_clean_aidl_import(local_import) for local_import in local_imports
+              if "framework.aidl" not in local_import]
+  return ret
 
+def contains_aidl(sources):
+  return any([src.endswith(".aidl") for src in sources])
 
 def label_to_path(label):
   """Turn a GN output label (e.g., //some_dir/file.cc) into a path."""
@@ -159,6 +192,12 @@ class GnParser(object):
 
       # This is used to get the name/version of libcronet
       self.output_name = None
+      # Local Includes used for AIDL
+      self.local_aidl_includes = set()
+      # Deps for JNI Registration
+      self.jni_registration_java_deps = set()
+      # Transitive Java Sources
+      self.transitive_java_sources = set()
 
     # Properties to forward access to common arch.
     # TODO: delete these after the transition has been completed.
@@ -213,6 +252,11 @@ class GnParser(object):
     @property
     def deps(self):
       return self.arch['common'].deps
+
+    @deps.setter
+    def deps(self, val):
+      self.arch['common'].deps = val
+
 
     @property
     def include_dirs(self):
@@ -310,9 +354,8 @@ class GnParser(object):
   def __init__(self, builtin_deps):
     self.builtin_deps = builtin_deps
     self.all_targets = {}
-    self.java_sources = collections.defaultdict(set)
-    self.aidl_local_include_dirs = set()
-    self.java_actions = collections.defaultdict(set)
+    self.java_sources = set()
+    self.java_sources_testing = set()
 
   def _get_response_file_contents(self, action_desc):
     # response_file_contents are formatted as:
@@ -370,9 +413,7 @@ class GnParser(object):
     desc = gn_desc[gn_target_name]
     type_ = desc['type']
     arch = self._get_arch(desc['toolchain'])
-
-    if self._is_java_group(type_, target_name):
-      java_group_name = target_name
+    metadata = desc.get("metadata", {})
 
     if is_test_target:
       target_name += TESTING_SUFFIX
@@ -387,6 +428,9 @@ class GnParser(object):
     else:
       return target  # Target already processed.
 
+    if 'cur_type' in metadata.keys() and metadata["cur_type"][0] == 'java_library':
+      target.type = 'java_library'
+
     if target.name in self.builtin_deps:
       # return early, no need to parse any further as the module is a builtin.
       return target
@@ -394,6 +438,7 @@ class GnParser(object):
     target.testonly = desc.get('testonly', False)
 
     proto_target_type, proto_desc = self.get_proto_target_type(gn_desc, gn_target_name)
+    deps = desc.get("deps", {})
     if proto_target_type is not None:
       target.type = 'proto_library'
       target.proto_plugin = proto_target_type
@@ -409,16 +454,22 @@ class GnParser(object):
       target.arch[arch].sources.update(desc.get('sources', []))
     elif target.is_linker_unit_type():
       target.arch[arch].sources.update(desc.get('sources', []))
-    elif (desc.get("script", "") in JAVA_BANNED_SCRIPTS
-          or self._is_java_group(target.type, target.name)):
-      # java_group identifies the group target generated by the android_library
-      # or java_library template. A java_group must not be added as a
-      # dependency, but sources are collected.
-      log.debug('Found java target %s', target.name)
-      if target.type == "action":
-        # Convert java actions into java_group and keep the inputs for collection.
-        target.inputs.update(desc.get('inputs', []))
-      target.type = 'java_group'
+    elif target.type == 'java_library':
+      sources = set()
+      for java_source in metadata.get("source_files", []):
+        if not java_source.startswith("//out") and java_source not in JAVA_FILES_TO_IGNORE:
+          sources.add(java_source)
+      target.sources.update(sources)
+      target.transitive_java_sources.update(target.sources)
+      self.java_sources_testing.update(target.sources)
+      if not is_test_target:
+        self.java_sources.update(target.sources)
+      deps = metadata.get("all_deps", {})
+      log.info('Found Java Target %s', target.name)
+    elif target.script == "//build/android/gyp/aidl.py":
+      target.type = "java_library"
+      target.sources.update(desc.get('sources', {}))
+      target.local_aidl_includes = _extract_includes_from_aidl_args(desc.get('args', ''))
     elif target.type in ['action', 'action_foreach']:
       target.arch[arch].inputs.update(desc.get('inputs', []))
       target.arch[arch].sources.update(desc.get('sources', []))
@@ -429,9 +480,15 @@ class GnParser(object):
       target.script = desc['script']
       target.arch[arch].args = desc['args']
       target.arch[arch].response_file_contents = self._get_response_file_contents(desc)
+      target.jni_registration_java_deps.update(metadata.get("java_deps", set()))
     elif target.type == 'copy':
       # TODO: copy rules are not currently implemented.
       pass
+    elif target.type == 'group':
+      # Groups are bubbled upward without creating an equivalent GN target.
+      pass
+    else:
+      raise Exception(f"Encountered GN target with unknown type\nCulprit target: {gn_target_name}\ntype: {type_}")
 
     # Default for 'public' is //* - all headers in 'sources' are public.
     # TODO(primiano): if a 'public' section is specified (even if empty), then
@@ -450,9 +507,14 @@ class GnParser(object):
     if "-frtti" in target.arch[arch].cflags:
       target.rtti = True
 
-    # Recurse in dependencies.
-    for gn_dep_name in desc.get('deps', []):
+    for gn_dep_name in set(target.jni_registration_java_deps):
       dep = self.parse_gn_desc(gn_desc, gn_dep_name, java_group_name, is_test_target)
+      target.sources.update(dep.transitive_java_sources)
+
+    # Recurse in dependencies.
+    for gn_dep_name in set(deps):
+      dep = self.parse_gn_desc(gn_desc, gn_dep_name, java_group_name, is_test_target)
+
       if dep.type == 'proto_library':
         target.proto_deps.add(dep.name)
         target.transitive_proto_deps.add(dep.name)
@@ -465,11 +527,9 @@ class GnParser(object):
           target.arch[arch].deps.add(dep.name)
       elif dep.is_linker_unit_type():
         target.arch[arch].deps.add(dep.name)
-      elif dep.type == 'java_group':
-        # Explicitly break dependency chain when a java_group is added.
-        # Java sources are collected and eventually compiled as one large
-        # java_library.
-        pass
+      elif dep.type == 'java_library':
+        target.deps.add(dep.name)
+        target.transitive_java_sources.update(dep.transitive_java_sources)
 
       if dep.type in ['static_library', 'source_set']:
         # Bubble up static_libs and source_set. Necessary, since soong does not propagate
@@ -482,35 +542,6 @@ class GnParser(object):
         target.arch[arch].transitive_static_libs_deps.update(
             dep.arch[arch].transitive_static_libs_deps)
         target.arch[arch].deps.update(target.arch[arch].transitive_static_libs_deps)
-
-      # Collect java sources. Java sources are kept inside the __compile_java target.
-      # This target can be used for both host and target compilation; only add
-      # the sources if they are destined for the target (i.e. they are a
-      # dependency of the __dex target)
-      # Note: this skips prebuilt java dependencies. These will have to be
-      # added manually when building the jar.
-      if target.name.endswith('__dex'):
-        if dep.name.endswith('__compile_java'):
-          log.debug('Adding java sources for %s', dep.name)
-          java_srcs = [src for src in dep.inputs if _is_java_source(src)]
-          if not is_test_target:
-            # TODO(aymanm): Fix collecting sources for testing modules for java.
-            # Don't collect java source files for test targets.
-            # We only need a specific set of java sources which are hardcoded in gen_android_bp
-            self.java_sources[java_group_name].update(java_srcs)
-      if dep.type in ["action"] and target.type == "java_group":
-        # GN uses an action to compile aidl files. However, this is not needed in soong
-        # as soong can directly have .aidl files in srcs. So adding .aidl files to the java_sources.
-        # TODO: Find a better way/place to do this.
-        if not is_test_target:
-          if '_aidl' in dep.name:
-            self.java_sources[java_group_name].update(dep.arch[arch].sources)
-            self.aidl_local_include_dirs.update(
-                _extract_includes_from_aidl_args(dep.arch[arch].args))
-          else:
-            # TODO(aymanm): Fix collecting actions for testing modules for java.
-            # Don't collect java actions for test targets.
-            self.java_actions[java_group_name].add(dep.name)
     return target
 
   def get_proto_exports(self, proto_desc):

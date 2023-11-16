@@ -143,7 +143,6 @@ class GnParser(object):
         self.include_dirs = set()
         self.deps = set()
         self.transitive_static_libs_deps = set()
-        self.source_set_deps = set()
         self.ldflags = set()
 
         # These are valid only for type == 'action'
@@ -266,10 +265,6 @@ class GnParser(object):
     def ldflags(self):
       return self.arch['common'].ldflags
 
-    @property
-    def source_set_deps(self):
-      return self.arch['common'].source_set_deps
-
     def host_supported(self):
       return 'host' in self.arch
 
@@ -295,12 +290,11 @@ class GnParser(object):
                         sort_keys=True)
 
     def update(self, other, arch):
-      for key in ('cflags', 'defines', 'deps', 'include_dirs', 'ldflags',
-                  'source_set_deps', 'proto_deps', 'transitive_proto_deps',
-                  'libs', 'proto_paths'):
+      for key in ('cflags', 'defines', 'deps', 'include_dirs', 'ldflags', 'proto_deps',
+                  'transitive_proto_deps', 'libs', 'proto_paths'):
         getattr(self, key).update(getattr(other, key, []))
 
-      for key_in_arch in ('cflags', 'defines', 'include_dirs', 'source_set_deps', 'ldflags'):
+      for key_in_arch in ('cflags', 'defines', 'include_dirs', 'deps', 'ldflags'):
         getattr(self.arch[arch], key_in_arch).update(getattr(other.arch[arch], key_in_arch, []))
 
     def get_archs(self):
@@ -343,7 +337,7 @@ class GnParser(object):
       if len(self.arch) == 1:
         return
 
-      for key in ('sources', 'cflags', 'defines', 'include_dirs', 'deps', 'source_set_deps',
+      for key in ('sources', 'cflags', 'defines', 'include_dirs', 'deps',
                   'inputs', 'outputs', 'args', 'response_file_contents', 'ldflags'):
         self._finalize_attribute(key)
 

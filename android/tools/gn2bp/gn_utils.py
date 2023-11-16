@@ -428,7 +428,7 @@ class GnParser(object):
     else:
       return target  # Target already processed.
 
-    if 'cur_type' in metadata.keys() and metadata["cur_type"][0] == 'java_library':
+    if 'target_type' in metadata.keys() and metadata["target_type"][0] == 'java_library':
       target.type = 'java_library'
 
     if target.name in self.builtin_deps:

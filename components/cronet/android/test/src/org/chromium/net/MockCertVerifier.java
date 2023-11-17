@@ -7,6 +7,7 @@ package org.chromium.net;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.UrlUtils;
 
 /**

@@ -173,11 +173,13 @@ additional_args = {
     'cronet_aml_components_cronet_android_cronet_api_java': [
         ('srcs', {
             'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
+            'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
         }),
     ],
     'cronet_aml_components_cronet_android_cronet_api_java__testing': [
         ('srcs', {
             'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
+            'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
         }),
     ],
     'cronet_aml_components_cronet_android_cronet_javatests__testing': [

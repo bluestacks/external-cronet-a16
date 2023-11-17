@@ -10180,6 +10180,7 @@ java_library {
         "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
     ],
     apex_available: [
         "com.android.tethering",
@@ -10226,6 +10227,7 @@ java_library {
         "components/cronet/android/api/src/org/chromium/net/UploadDataSink.java",
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
+        "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
     ],
     apex_available: [
         "com.android.tethering",

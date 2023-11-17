@@ -998,7 +998,15 @@ class BaseActionSanitizer():
   def _update_all_args(self, func):
     self.target.args = [func(arg) for arg in self.target.args]
 
-  def get_cmd(self):
+  def get_pre_cmd(self):
+    pre_cmd = []
+    out_dirs = [out[:out.rfind("/")] for out in self.target.outputs if "/" in out]
+    # Sort the list to make the output deterministic.
+    for out_dir in sorted(set(out_dirs)):
+        pre_cmd.append("mkdir -p $(genDir)/{} && ".format(out_dir))
+    return NEWLINE.join(pre_cmd)
+
+  def get_base_cmd(self):
     arg_string = NEWLINE.join(self.target.args)
     cmd = '$(location %s) %s' % (
     gn_utils.label_to_path(self.target.script), arg_string)
@@ -1007,6 +1015,9 @@ class BaseActionSanitizer():
       # Pipe response file contents into script
       cmd = 'echo \'%s\' |%s%s' % (self.target.response_file_contents, NEWLINE, cmd)
     return cmd
+
+  def get_cmd(self):
+      return self.get_pre_cmd() + self.get_base_cmd()
 
   def get_outputs(self):
     return self.target.outputs
@@ -1041,9 +1052,6 @@ class BaseActionSanitizer():
       self.target.args = ['/dev/stdin' if it == gn_utils.RESPONSE_FILE else it
                           for it in self.target.args]
 
-  def _sanitize_outputs(self):
-    pass
-
   def _sanitize_inputs(self):
     pass
 
@@ -1052,7 +1060,6 @@ class BaseActionSanitizer():
 
   def sanitize(self):
     self._sanitize_args()
-    self._sanitize_outputs()
     self._sanitize_inputs()
 
   # Whether this target generates header files
@@ -1106,7 +1113,7 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
 
   def get_cmd(self):
     # Remove the script and use the binary right away
-    return NEWLINE.join(self.target.args)
+    return self.get_pre_cmd() + NEWLINE.join(self.target.args)
 
 class JniGeneratorSanitizer(BaseActionSanitizer):
   def __init__(self, target, arch, is_test_target):
@@ -1140,10 +1147,9 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
       self._append_arg('--package-prefix', 'android.net.connectivity')
     super()._sanitize_args()
 
-  def _sanitize_outputs(self):
+  def get_outputs(self):
     # fix target.output directory to match #include statements.
-    self.target.outputs = {re.sub('^jni_headers/', '', out) for out in self.target.outputs}
-    super()._sanitize_outputs()
+    return {re.sub('^jni_headers/', '', out) for out in super().get_outputs()}
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()
@@ -1167,12 +1173,12 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
     self.is_test_target = is_test_target
     super().__init__(target, arch, is_test_target)
 
-  def _sanitize_outputs(self):
+  def get_outputs(self):
     # fix target.output directory to match #include statements.
-    self.target.outputs = {re.sub('^jni_headers/', '', out) for out in self.target.outputs}
-    self.target.outputs = [out for out in self.target.outputs if
+    outputs = {re.sub('^jni_headers/', '', out) for out in super().get_outputs()}
+    self.target.outputs = [out for out in outputs if
                            out.endswith(".srcjar")]
-    super()._sanitize_outputs()
+    return outputs
 
   def get_deps(self):
     return {}
@@ -1192,8 +1198,8 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
   def _sanitize_inputs(self):
     self.target.inputs = [file for file in self.target.inputs if not file.startswith('//out/')]
 
-  def _sanitize_outputs(self):
-    self.target.outputs = {re.sub('^jni_headers/', '', out) for out in self.target.outputs}
+  def get_outputs(self):
+    return {re.sub('^jni_headers/', '', out) for out in super().get_outputs()}
 
   def _sanitize_args(self):
     self._update_value_arg('--depfile', self._sanitize_filepath)
@@ -1208,7 +1214,7 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
 
   def get_cmd(self):
     # jni_registration_generator.py doesn't work with python2
-    cmd = "python3 " + super().get_cmd()
+    cmd = "python3 " + super().get_base_cmd()
     # Path in the original sources file does not work in genrule.
     # So creating sources file in cmd based on the srcs of this target.
     # Adding ../$(current_dir)/ to the head because jni_registration_generator.py uses the files
@@ -1220,17 +1226,16 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
                 "done;",
                 cmd]
 
-    return NEWLINE.join(commands)
+    return self.get_pre_cmd() + NEWLINE.join(commands)
 
 class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
   def get_name(self):
     name = super().get_name() + "__java"
     return name
 
-  def _sanitize_outputs(self):
-    self.target.outputs = [out for out in self.target.outputs if
+  def get_outputs(self):
+    return [out for out in super().get_outputs() if
                            out.endswith(".srcjar")]
-    super()._sanitize_outputs()
 
   def get_deps(self):
     return {}

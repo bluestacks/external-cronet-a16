@@ -10809,45 +10809,6 @@ java_library {
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
-// GN: //components/cronet/android:cronet_fake_javatests__testing
-java_library {
-    name: "cronet_aml_components_cronet_android_cronet_fake_javatests__testing",
-    srcs: [
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetControllerTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetEngineTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetProviderTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeUrlRequestTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeUrlResponseTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/UrlResponseMatcherTest.java",
-    ],
-    static_libs: [
-        "androidx.test.core",
-        "androidx.test.ext.junit",
-        "androidx.test.runner",
-        "cronet_aml_base_base_java_test_support__testing",
-        "cronet_aml_components_cronet_android_cronet_api_helpers_java__testing",
-        "cronet_aml_components_cronet_android_cronet_api_java__testing",
-        "cronet_aml_components_cronet_android_cronet_common_javatests__testing",
-        "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
-        "cronet_aml_components_cronet_android_cronet_impl_fake_base_java__testing",
-        "cronet_aml_components_cronet_android_cronet_impl_platform_base_java__testing",
-        "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
-        "guava",
-        "junit",
-        "truth",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "android.test.base",
-        "androidx.annotation_annotation-nodeps",
-    ],
-    sdk_version: "current",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
-}
-
 // GN: //components/cronet/android:cronet_impl_all_java__testing
 java_library {
     name: "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
@@ -10982,35 +10943,6 @@ java_library {
     static_libs: [
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
         "cronet_aml_net_android_net_thread_stats_uid_java__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation-nodeps",
-    ],
-    sdk_version: "current",
-    jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
-}
-
-// GN: //components/cronet/android:cronet_impl_fake_base_java__testing
-java_library {
-    name: "cronet_aml_components_cronet_android_cronet_impl_fake_base_java__testing",
-    srcs: [
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetController.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetEngine.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetProvider.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeRequestFinishedInfo.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeUrlRequest.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeUrlResponse.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/ResponseMatcher.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/UrlResponseMatcher.java",
-    ],
-    static_libs: [
-        "cronet_aml_components_cronet_android_cronet_api_java__testing",
-        "cronet_aml_components_cronet_android_cronet_impl_common_base_java__testing",
-        "cronet_aml_components_cronet_android_cronet_impl_java_util_java__testing",
     ],
     apex_available: [
         "com.android.tethering",
@@ -11233,7 +11165,6 @@ java_library {
         "cronet_aml_components_cronet_android_cronet_api_helpers_java__testing",
         "cronet_aml_components_cronet_android_cronet_api_java__testing",
         "cronet_aml_components_cronet_android_cronet_common_javatests__testing",
-        "cronet_aml_components_cronet_android_cronet_fake_javatests__testing",
         "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_components_cronet_android_cronet_test_apk_java__testing",
         "cronet_aml_components_cronet_android_cronet_urlconnection_impl_java__testing",
@@ -12653,20 +12584,6 @@ java_genrule {
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
         "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetController.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetEngine.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetProvider.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeRequestFinishedInfo.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeUrlRequest.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeUrlResponse.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/ResponseMatcher.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/UrlResponseMatcher.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetControllerTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetEngineTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetProviderTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeUrlRequestTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeUrlResponseTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/UrlResponseMatcherTest.java",
         "components/cronet/android/java/src/org/chromium/net/httpflags/BaseFeature.java",
         "components/cronet/android/java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
         "components/cronet/android/java/src/org/chromium/net/httpflags/ResolvedFlags.java",
@@ -14211,20 +14128,6 @@ java_genrule {
         "components/cronet/android/api/src/org/chromium/net/UrlRequest.java",
         "components/cronet/android/api/src/org/chromium/net/UrlResponseInfo.java",
         "components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetController.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetEngine.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeCronetProvider.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeRequestFinishedInfo.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeUrlRequest.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/FakeUrlResponse.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/ResponseMatcher.java",
-        "components/cronet/android/fake/java/org/chromium/net/test/UrlResponseMatcher.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetControllerTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetEngineTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeCronetProviderTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeUrlRequestTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/FakeUrlResponseTest.java",
-        "components/cronet/android/fake/javatests/org/chromium/net/test/UrlResponseMatcherTest.java",
         "components/cronet/android/java/src/org/chromium/net/httpflags/BaseFeature.java",
         "components/cronet/android/java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
         "components/cronet/android/java/src/org/chromium/net/httpflags/ResolvedFlags.java",

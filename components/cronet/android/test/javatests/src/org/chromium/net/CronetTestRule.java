@@ -120,7 +120,7 @@ public class CronetTestRule implements TestRule {
      */
     @Deprecated
     public boolean testingJavaImpl() {
-        return false;
+        return mImplementation.equals(CronetImplementation.FALLBACK);
     }
 
     public CronetImplementation implementationUnderTest() {
@@ -642,6 +642,9 @@ public class CronetTestRule implements TestRule {
         STATICALLY_LINKED(context
                 -> (ExperimentalCronetEngine.Builder) new NativeCronetProvider(context)
                            .createBuilder()),
+        FALLBACK((context)
+                         -> (ExperimentalCronetEngine.Builder) new JavaCronetProvider(context)
+                                    .createBuilder()),
         AOSP_PLATFORM(
                 context ->
                         (ExperimentalCronetEngine.Builder)

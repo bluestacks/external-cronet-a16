@@ -1069,4 +1069,49 @@ final class JavaUrlRequest extends UrlRequestBase {
 
         return null;
     }
+
+    @Override
+    public int getTrafficStatsUid() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public int getPriority() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public boolean hasTrafficStatsTag() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public boolean hasTrafficStatsUid() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public int getTrafficStatsTag() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public boolean isDirectExecutorAllowed() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public boolean isCacheDisabled() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public UrlResponseInfo.HeaderBlock getHeaders() {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
+    public String getHttpMethod() {
+        throw new IllegalStateException("Not Implemented");
+    }
 }

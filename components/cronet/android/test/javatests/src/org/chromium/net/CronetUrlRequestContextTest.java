@@ -1291,7 +1291,6 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SkipPresubmit(reason = "b/293141085 Tests that enable disk cache are flaky")
     // Tests that if CronetEngine is shut down on the network thread, an appropriate exception
     // is thrown.
@@ -1350,7 +1349,6 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SkipPresubmit(reason = "b/293141085 Tests that enable disk cache are flaky")
     // Tests that if CronetEngine is shut down when reading from disk cache,
     // there isn't a crash. See crbug.com/486120.
@@ -1736,7 +1734,6 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SkipPresubmit(reason = "b/293141085 Tests that enable disk cache are flaky")
     public void testNoConcurrentDiskUsage() throws Exception {
         CronetEngine cronetEngine =
@@ -2040,7 +2037,6 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @Ignore("b/298380508")
     public void testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider() throws Exception {
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
@@ -2061,7 +2057,6 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @Ignore("b/298380508")
     public void testSetLibraryLoaderIsIgnoredInNativeCronetEngineBuilderImpl() throws Exception {
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(

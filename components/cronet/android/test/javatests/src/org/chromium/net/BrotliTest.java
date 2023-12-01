@@ -91,7 +91,6 @@ public class BrotliTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @Ignore // TODO(danstahr): Add test server support for setting the Brotli header
     public void testBrotliDecoded() throws Exception {
         mTestRule

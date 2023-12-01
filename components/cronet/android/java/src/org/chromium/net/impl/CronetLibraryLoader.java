@@ -34,7 +34,8 @@ public class CronetLibraryLoader {
     // Synchronize initialization.
     private static final Object sLoadLock = new Object();
     private static final String LIBRARY_NAME = "mainlinecronet." + ImplVersion.getCronetVersion();
-    private static final String TAG = CronetLibraryLoader.class.getSimpleName();
+    @VisibleForTesting
+    public static final String TAG = CronetLibraryLoader.class.getSimpleName();
     // Thread used for initialization work and processing callbacks for
     // long-lived global singletons. This thread lives forever as things like
     // the global singleton NetworkChangeNotifier live on it and are never killed.

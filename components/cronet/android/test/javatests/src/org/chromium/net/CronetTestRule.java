@@ -400,7 +400,7 @@ public class CronetTestRule implements TestRule {
             assert sContextWrapper.getBaseContext() == ApplicationProvider.getApplicationContext();
             sContextWrapper.setBaseContext(mContextWrapper);
             mBuilder = implementation.createBuilder(sContextWrapper)
-                               .setUserAgent(UserAgent.from(sContextWrapper))
+                               .setUserAgent(UserAgent.getDefault())
                                .enableQuic(true);
             mImplementation = implementation;
             mTestName = testName;

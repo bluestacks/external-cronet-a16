@@ -55,6 +55,7 @@ RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"
 AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
 AIDL_IMPORT_DIRS_REGEX = r'--imports=\[(.*)\]'
+PROTO_IMPORT_DIRS_REGEX = r'--import-dir=(.*)'
 
 def repo_root():
   """Returns an absolute path to the repository root."""
@@ -555,9 +556,13 @@ class GnParser(object):
     return metadata.get('exports', [])
 
   def get_proto_paths(self, proto_desc):
-    # import_dirs in metadata will be available for source_set targets.
-    metadata = proto_desc.get('metadata', {})
-    return metadata.get('import_dirs', [])
+    args = proto_desc.get('args')
+    proto_paths = set()
+    for arg in args:
+      is_match = re.match(PROTO_IMPORT_DIRS_REGEX, arg)
+      if is_match:
+        proto_paths.add(re.sub('^\.\./\.\./', '', is_match.group(1)))
+    return proto_paths
 
 
   def get_proto_in_dir(self, proto_desc):

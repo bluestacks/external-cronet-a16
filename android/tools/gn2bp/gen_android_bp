@@ -738,6 +738,8 @@ def create_proto_modules(blueprint, gn, target):
   cmd = ['$(location %s)' % protoc_module_name]
   cmd += ['--proto_path=%s/%s' % (tree_path, target.proto_in_dir)]
 
+  for proto_path in target.proto_paths:
+    cmd += [f'--proto_path={tree_path}/{proto_path}']
   if buildtools_protobuf_src in target.proto_paths:
     cmd += ['--proto_path=%s' % android_protobuf_src]
 

@@ -28458,7 +28458,7 @@ cc_genrule {
     tools: [
         "cronet_aml_third_party_protobuf_protoc",
     ],
-    cmd: "$(location cronet_aml_third_party_protobuf_protoc) --proto_path=external/cronet/net/third_party/quiche/src --cpp_out=lite=true:$(genDir)/external/cronet/net/third_party/quiche/src/ $(in)",
+    cmd: "$(location cronet_aml_third_party_protobuf_protoc) --proto_path=external/cronet/net/third_party/quiche/src --proto_path=external/cronet/third_party/anonymous_tokens/src/ --cpp_out=lite=true:$(genDir)/external/cronet/net/third_party/quiche/src/ $(in)",
     out: [
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/any.pb.cc",
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/attestation.pb.cc",
@@ -28492,7 +28492,7 @@ cc_genrule {
     tools: [
         "cronet_aml_third_party_protobuf_protoc",
     ],
-    cmd: "$(location cronet_aml_third_party_protobuf_protoc) --proto_path=external/cronet/net/third_party/quiche/src --cpp_out=lite=true:$(genDir)/external/cronet/net/third_party/quiche/src/ $(in)",
+    cmd: "$(location cronet_aml_third_party_protobuf_protoc) --proto_path=external/cronet/net/third_party/quiche/src --proto_path=external/cronet/third_party/anonymous_tokens/src/ --cpp_out=lite=true:$(genDir)/external/cronet/net/third_party/quiche/src/ $(in)",
     out: [
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/any.pb.h",
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/attestation.pb.h",

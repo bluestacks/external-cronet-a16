@@ -4776,7 +4776,7 @@
       "visibility": [ "*" ]
    },
    "//base:build_date": {
-      "args": [ "gen/base/generated_build_date.h", "1701360610" ],
+      "args": [ "gen/base/generated_build_date.h", "1701865170" ],
       "deps": [  ],
       "metadata": {
 
@@ -4790,7 +4790,7 @@
       "visibility": [ "*" ]
    },
    "//base:build_date(//build/toolchain/linux:clang_x64)": {
-      "args": [ "clang_x64/gen/base/generated_build_date.h", "1701360610" ],
+      "args": [ "clang_x64/gen/base/generated_build_date.h", "1701865170" ],
       "deps": [  ],
       "metadata": {
 
@@ -18649,7 +18649,7 @@
    "//net/http:transport_security_state_unittest_data": {
       "args": [ "clang_x64/transport_security_state_generator", "../../net/http/{{source_name_part}}.json", "../../net/http/{{source_name_part}}_pins.json", "../../net/http/transport_security_state_static_unittest.pins", "../../net/http/transport_security_state_static_unittest.template", "gen/net/http/{{source_name_part}}.h" ],
       "deps": [ "//net/tools/transport_security_state_generator:transport_security_state_generator(//build/toolchain/linux:clang_x64)" ],
-      "inputs": [ "//net/http/transport_security_state_static_unittest.pins", "//net/http/transport_security_state_static_unittest.template" ],
+      "inputs": [ "//net/http/transport_security_state_static_unittest1_pins.json", "//net/http/transport_security_state_static_unittest2_pins.json", "//net/http/transport_security_state_static_unittest3_pins.json", "//net/http/transport_security_state_static_unittest.pins", "//net/http/transport_security_state_static_unittest.template" ],
       "metadata": {
 
       },
@@ -18734,9 +18734,9 @@
       "cflags_objc": [ "-std=c11", "--sysroot=../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot" ],
       "cflags_objcc": [ "-std=c++20", "-Wno-trigraphs", "-fexperimental-relative-c++-abi-vtables", "-gsimple-template-names", "-fno-exceptions", "-fno-rtti", "-nostdinc++", "-isystem../../third_party/libc++/src/include", "-isystem../../third_party/libc++abi/src/include", "--sysroot=../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot", "-fvisibility-inlines-hidden" ],
       "check_includes": true,
-      "configs": [ "//build/config:feature_flags", "//build/config/compiler:afdo", "//build/config/compiler:afdo_optimize_size", "//build/config/compiler:cet_shadow_stack", "//build/config/compiler:chromium_code", "//build/config/compiler:compiler", "//build/config/compiler:compiler_arm_fpu", "//build/config/compiler:compiler_arm_thumb", "//build/config/compiler:default_include_dirs", "//build/config/compiler:default_init_stack_vars", "//build/config/compiler:default_optimization", "//build/config/compiler:default_stack_frames", "//build/config/compiler:default_symbols", "//build/config/compiler:export_dynamic", "//build/config/compiler:no_exceptions", "//build/config/compiler:no_rtti", "//build/config/compiler:no_unresolved_symbols", "//build/config/compiler:runtime_library", "//build/config/compiler:thin_archive", "//build/config/compiler:thinlto_optimize_default", "//build/config/compiler/pgo:default_pgo_flags", "//build/config/coverage:default_coverage", "//build/config/sanitizers:default_sanitizer_flags", "//build/config/gcc:symbol_visibility_hidden", "//build/config/android:default_orderfile_instrumentation", "//build/config/clang:find_bad_constructs", "//build/config/clang:extra_warnings", "//build/config:release", "//build/config/compiler:wexit_time_destructors", "//build/config/sanitizers:not_fuzzed", "//third_party/protobuf:using_proto", "//third_party/protobuf:allow_deprecated_proto_fields", "//net/third_party/quiche:blind_sign_auth_proto_config", "//base/allocator/partition_allocator/src/partition_alloc:wrap_malloc_symbols", "//third_party/protobuf:protobuf_config", "//base:android_system_libs", "//base/allocator/partition_allocator/src/partition_alloc:public_includes", "//third_party/abseil-cpp:absl_include_config", "//third_party/boringssl:external_config", "//third_party/anonymous_tokens:anonymous_tokens_cc_proto_config" ],
+      "configs": [ "//build/config:feature_flags", "//build/config/compiler:afdo", "//build/config/compiler:afdo_optimize_size", "//build/config/compiler:cet_shadow_stack", "//build/config/compiler:chromium_code", "//build/config/compiler:compiler", "//build/config/compiler:compiler_arm_fpu", "//build/config/compiler:compiler_arm_thumb", "//build/config/compiler:default_include_dirs", "//build/config/compiler:default_init_stack_vars", "//build/config/compiler:default_optimization", "//build/config/compiler:default_stack_frames", "//build/config/compiler:default_symbols", "//build/config/compiler:export_dynamic", "//build/config/compiler:no_exceptions", "//build/config/compiler:no_rtti", "//build/config/compiler:no_unresolved_symbols", "//build/config/compiler:runtime_library", "//build/config/compiler:thin_archive", "//build/config/compiler:thinlto_optimize_default", "//build/config/compiler/pgo:default_pgo_flags", "//build/config/coverage:default_coverage", "//build/config/sanitizers:default_sanitizer_flags", "//build/config/gcc:symbol_visibility_hidden", "//build/config/android:default_orderfile_instrumentation", "//build/config/clang:find_bad_constructs", "//build/config/clang:extra_warnings", "//build/config:release", "//build/config/compiler:wexit_time_destructors", "//build/config/sanitizers:not_fuzzed", "//third_party/protobuf:using_proto", "//third_party/protobuf:allow_deprecated_proto_fields", "//net/third_party/quiche:blind_sign_auth_proto_config", "//base/allocator/partition_allocator/src/partition_alloc:wrap_malloc_symbols", "//third_party/protobuf:protobuf_config", "//base:android_system_libs", "//base/allocator/partition_allocator/src/partition_alloc:public_includes", "//third_party/abseil-cpp:absl_include_config", "//third_party/boringssl:external_config" ],
       "defines": [ "IS_QUICHE_IMPL", "OFFICIAL_BUILD", "__STDC_CONSTANT_MACROS", "__STDC_FORMAT_MACROS", "_FORTIFY_SOURCE=2", "NO_UNWIND_TABLES", "_GNU_SOURCE", "_LIBCPP_ENABLE_SAFE_MODE=1", "ANDROID", "HAVE_SYS_UIO_H", "ANDROID_NDK_VERSION_ROLL=r25c_1", "CR_CLANG_REVISION=\"llvmorg-18-init-9505-g10664813-1\"", "_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS", "_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS", "CR_LIBCXX_REVISION=a12821e5f87e0054c1885dc8982cbe53f2c24899", "NDEBUG", "NVALGRIND", "DYNAMIC_ANNOTATIONS_ENABLED=0", "GOOGLE_PROTOBUF_NO_RTTI", "GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER", "GOOGLE_PROTOBUF_INTERNAL_DONATE_STEAL_INLINE=0", "HAVE_PTHREAD" ],
-      "deps": [ "//base:base", "//net/third_party/quiche:blind_sign_auth_proto_gen", "//third_party/anonymous_tokens:anonymous_tokens_cc_proto", "//third_party/protobuf:protobuf_lite" ],
+      "deps": [ "//base:base", "//net/third_party/quiche:blind_sign_auth_proto_gen", "//third_party/protobuf:protobuf_lite" ],
       "externs": {
 
       },
@@ -18761,7 +18761,7 @@
       "all_dependent_configs": [ "//base/allocator/partition_allocator/src/partition_alloc:wrap_malloc_symbols" ],
       "args": [ "quiche/blind_sign_auth/proto/any.proto", "quiche/blind_sign_auth/proto/attestation.proto", "quiche/blind_sign_auth/proto/auth_and_sign.proto", "quiche/blind_sign_auth/proto/blind_sign_auth_options.proto", "quiche/blind_sign_auth/proto/get_initial_data.proto", "quiche/blind_sign_auth/proto/key_services.proto", "quiche/blind_sign_auth/proto/proxy_layer.proto", "quiche/blind_sign_auth/proto/public_metadata.proto", "quiche/blind_sign_auth/proto/spend_token_data.proto", "--protoc", "./clang_x64/protoc", "--proto-in-dir", "../../net/third_party/quiche/src", "--cc-out-dir", "gen/net/third_party/quiche/src", "--cc-options", "lite=true,dllexport_decl=COMPONENT_EXPORT(QUICHE):", "--include", "base/component_export.h", "--py-out-dir", "pyproto/net/third_party/quiche/src", "--import-dir=../../third_party/anonymous_tokens/src/" ],
       "deps": [ "//base:base", "//third_party/anonymous_tokens:anonymous_tokens_cc_proto", "//third_party/protobuf:protoc(//build/toolchain/linux:clang_x64)" ],
-      "inputs": [ "//out/cronet/clang_x64/protoc" ],
+      "inputs": [ "//third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.proto", "//out/cronet/clang_x64/protoc" ],
       "libs": [ "android", "log", "//base/android/library_loader/anchor_functions.lds" ],
       "metadata": {
 
@@ -88145,7 +88145,7 @@
       "testonly": false,
       "toolchain": "//build/toolchain/android:android_clang_arm64",
       "type": "static_library",
-      "visibility": [ "//third_party/anonymous_tokens:*", "//net/third_party/quiche:blind_sign_auth_proto", "//net/third_party/quiche:blind_sign_auth_proto_gen" ]
+      "visibility": [ "*" ]
    },
    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto_gen": {
       "args": [ "anonymous_tokens/proto/anonymous_tokens.proto", "--protoc", "./clang_x64/protoc", "--proto-in-dir", "../../third_party/anonymous_tokens/src", "--cc-out-dir", "gen/third_party/anonymous_tokens/src", "--cc-options", "lite=true:", "--py-out-dir", "pyproto/third_party/anonymous_tokens/src" ],

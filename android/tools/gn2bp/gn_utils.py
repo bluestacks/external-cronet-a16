@@ -190,7 +190,6 @@ class GnParser(object):
       # on a source_set target.
       self.libs = set()
       self.proto_deps = set()
-      self.transitive_proto_deps = set()
       self.rtti = False
 
       # TODO: come up with a better way to only run this once.
@@ -303,8 +302,8 @@ class GnParser(object):
                         sort_keys=True)
 
     def update(self, other, arch):
-      for key in ('cflags', 'defines', 'deps', 'include_dirs', 'ldflags', 'proto_deps',
-                  'transitive_proto_deps', 'libs', 'proto_paths'):
+      for key in ('cflags', 'defines', 'deps', 'include_dirs', 'ldflags',
+                  'proto_deps', 'libs', 'proto_paths'):
         getattr(self, key).update(getattr(other, key, []))
 
       for key_in_arch in ('cflags', 'defines', 'include_dirs', 'deps', 'ldflags'):
@@ -452,6 +451,7 @@ class GnParser(object):
       target.proto_exports.update(self.get_proto_exports(desc))
       target.proto_in_dir = self.get_proto_in_dir(desc)
       target.arch[arch].sources.update(desc.get('sources', []))
+      target.arch[arch].inputs.update(desc.get('inputs', []))
     elif target.type == 'source_set':
       target.arch[arch].sources.update(source for source in desc.get('sources', []) if not source.startswith("//out"))
     elif target.is_linker_unit_type():
@@ -523,9 +523,6 @@ class GnParser(object):
 
       if dep.type == 'proto_library':
         target.proto_deps.add(dep.name)
-        target.transitive_proto_deps.add(dep.name)
-        target.proto_paths.update(dep.proto_paths)
-        target.transitive_proto_deps.update(dep.transitive_proto_deps)
       elif dep.type == 'group':
         target.update(dep, arch)  # Bubble up groups's cflags/ldflags etc.
       elif dep.type in ['action', 'action_foreach', 'copy']:

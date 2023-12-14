@@ -132,7 +132,7 @@ filegroup {
         "net/data/**/*",
         "net/third_party/nist-pkits/**/*",
         "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*",
-        "net/third_party/quiche/src/quiche/common/anonymous_tokens/testdata/**/*",
+        "third_party/anonymous_tokens/src/anonymous_tokens/testdata/**/*",
     ],
 }
 

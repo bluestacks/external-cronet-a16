@@ -697,7 +697,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/test/android/java/src/org/chromium/base/ContentUriTestUtils.java", "//base/test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/java/src/org/chromium/base/ContentUriTestUtils.java", "android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java" ]
+         "jni_source_files": [ "android/java/src/org/chromium/base/ContentUriTestUtils.java", "android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java" ],
+         "jni_source_files_abs": [ "//base/test/android/java/src/org/chromium/base/ContentUriTestUtils.java", "//base/test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/test/base_unittests_jni_headers.srcjar", "//out/cronet/gen/jni_headers/base/test/base_unittests_jni_headers/ContentUriTestUtils_jni.h", "//out/cronet/gen/jni_headers/base/test/base_unittests_jni_headers/JavaHandlerThreadHelpers_jni.h" ],
       "public": "*",
@@ -1325,7 +1326,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/test/android/java/src/org/chromium/base/MainReturnCodeResult.java", "//base/test/android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java", "//base/test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "//base/test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java", "//base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/java/src/org/chromium/base/MainReturnCodeResult.java", "android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java", "android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java", "android/javatests/src/org/chromium/base/test/util/UrlUtils.java" ]
+         "jni_source_files": [ "android/java/src/org/chromium/base/MainReturnCodeResult.java", "android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java", "android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java", "android/javatests/src/org/chromium/base/test/util/UrlUtils.java" ],
+         "jni_source_files_abs": [ "//base/test/android/java/src/org/chromium/base/MainReturnCodeResult.java", "//base/test/android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java", "//base/test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "//base/test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java", "//base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/test/test_support_jni_headers.srcjar", "//out/cronet/gen/jni_headers/base/test/test_support_jni_headers/MainReturnCodeResult_jni.h", "//out/cronet/gen/jni_headers/base/test/test_support_jni_headers/MultiprocessTestClientLauncher_jni.h", "//out/cronet/gen/jni_headers/base/test/test_support_jni_headers/ReachedCodeProfiler_jni.h", "//out/cronet/gen/jni_headers/base/test/test_support_jni_headers/ThreadPoolTestHelpers_jni.h", "//out/cronet/gen/jni_headers/base/test/test_support_jni_headers/UrlUtils_jni.h" ],
       "public": "*",
@@ -2049,7 +2051,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//base:base_i18n_perftests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/base/base_i18n_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -2647,7 +2649,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "//base/test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java" ]
+         "jni_source_files": [ "test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java" ],
+         "jni_source_files_abs": [ "//base/test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java", "//base/test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_java_test_support_uncommon_jni.srcjar", "//out/cronet/gen/jni_headers/base/base_java_test_support_uncommon_jni/ReachedCodeProfiler_jni.h", "//out/cronet/gen/jni_headers/base/base_java_test_support_uncommon_jni/ThreadPoolTestHelpers_jni.h" ],
       "public": "*",
@@ -3050,7 +3053,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java" ]
+         "jni_source_files": [ "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java" ],
+         "jni_source_files_abs": [ "//base/android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_javatests_jni.srcjar", "//out/cronet/gen/jni_headers/base/base_javatests_jni/EarlyNativeTest_jni.h" ],
       "public": "*",
@@ -3098,7 +3102,8 @@
       "deps": [ "//base:android_runtime_jni_headers", "//base:android_runtime_unchecked_jni_headers", "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/android/java/src/org/chromium/base/ApkAssets.java", "//base/android/java/src/org/chromium/base/ApplicationStatus.java", "//base/android/java/src/org/chromium/base/BaseFeatureMap.java", "//base/android/java/src/org/chromium/base/BuildInfo.java", "//base/android/java/src/org/chromium/base/BundleUtils.java", "//base/android/java/src/org/chromium/base/Callback.java", "//base/android/java/src/org/chromium/base/CommandLine.java", "//base/android/java/src/org/chromium/base/ContentUriUtils.java", "//base/android/java/src/org/chromium/base/CpuFeatures.java", "//base/android/java/src/org/chromium/base/EarlyTraceEvent.java", "//base/android/java/src/org/chromium/base/EventLog.java", "//base/android/java/src/org/chromium/base/FeatureList.java", "//base/android/java/src/org/chromium/base/FeatureMap.java", "//base/android/java/src/org/chromium/base/Features.java", "//base/android/java/src/org/chromium/base/FieldTrialList.java", "//base/android/java/src/org/chromium/base/FileUtils.java", "//base/android/java/src/org/chromium/base/ImportantFileWriterAndroid.java", "//base/android/java/src/org/chromium/base/IntStringCallback.java", "//base/android/java/src/org/chromium/base/JNIUtils.java", "//base/android/java/src/org/chromium/base/JavaExceptionReporter.java", "//base/android/java/src/org/chromium/base/JavaHandlerThread.java", "//base/android/java/src/org/chromium/base/LocaleUtils.java", "//base/android/java/src/org/chromium/base/MemoryPressureListener.java", "//base/android/java/src/org/chromium/base/PathService.java", "//base/android/java/src/org/chromium/base/PathUtils.java", "//base/android/java/src/org/chromium/base/PiiElider.java", "//base/android/java/src/org/chromium/base/PowerMonitor.java", "//base/android/java/src/org/chromium/base/RadioUtils.java", "//base/android/java/src/org/chromium/base/SysUtils.java", "//base/android/java/src/org/chromium/base/ThreadUtils.java", "//base/android/java/src/org/chromium/base/TimezoneUtils.java", "//base/android/java/src/org/chromium/base/TraceEvent.java", "//base/android/java/src/org/chromium/base/UnguessableToken.java", "//base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java", "//base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java", "//base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java", "//base/android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java", "//base/android/java/src/org/chromium/base/memory/MemoryInfoBridge.java", "//base/android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java", "//base/android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java", "//base/android/java/src/org/chromium/base/task/PostTask.java", "//base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/java/src/org/chromium/base/ApkAssets.java", "android/java/src/org/chromium/base/ApplicationStatus.java", "android/java/src/org/chromium/base/BaseFeatureMap.java", "android/java/src/org/chromium/base/BuildInfo.java", "android/java/src/org/chromium/base/BundleUtils.java", "android/java/src/org/chromium/base/Callback.java", "android/java/src/org/chromium/base/CommandLine.java", "android/java/src/org/chromium/base/ContentUriUtils.java", "android/java/src/org/chromium/base/CpuFeatures.java", "android/java/src/org/chromium/base/EarlyTraceEvent.java", "android/java/src/org/chromium/base/EventLog.java", "android/java/src/org/chromium/base/FeatureList.java", "android/java/src/org/chromium/base/FeatureMap.java", "android/java/src/org/chromium/base/Features.java", "android/java/src/org/chromium/base/FieldTrialList.java", "android/java/src/org/chromium/base/FileUtils.java", "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java", "android/java/src/org/chromium/base/IntStringCallback.java", "android/java/src/org/chromium/base/JNIUtils.java", "android/java/src/org/chromium/base/JavaExceptionReporter.java", "android/java/src/org/chromium/base/JavaHandlerThread.java", "android/java/src/org/chromium/base/LocaleUtils.java", "android/java/src/org/chromium/base/MemoryPressureListener.java", "android/java/src/org/chromium/base/PathService.java", "android/java/src/org/chromium/base/PathUtils.java", "android/java/src/org/chromium/base/PiiElider.java", "android/java/src/org/chromium/base/PowerMonitor.java", "android/java/src/org/chromium/base/RadioUtils.java", "android/java/src/org/chromium/base/SysUtils.java", "android/java/src/org/chromium/base/ThreadUtils.java", "android/java/src/org/chromium/base/TimezoneUtils.java", "android/java/src/org/chromium/base/TraceEvent.java", "android/java/src/org/chromium/base/UnguessableToken.java", "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java", "android/java/src/org/chromium/base/library_loader/LibraryLoader.java", "android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java", "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java", "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java", "android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java", "android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java", "android/java/src/org/chromium/base/task/PostTask.java", "android/java/src/org/chromium/base/task/TaskRunnerImpl.java" ]
+         "jni_source_files": [ "android/java/src/org/chromium/base/ApkAssets.java", "android/java/src/org/chromium/base/ApplicationStatus.java", "android/java/src/org/chromium/base/BaseFeatureMap.java", "android/java/src/org/chromium/base/BuildInfo.java", "android/java/src/org/chromium/base/BundleUtils.java", "android/java/src/org/chromium/base/Callback.java", "android/java/src/org/chromium/base/CommandLine.java", "android/java/src/org/chromium/base/ContentUriUtils.java", "android/java/src/org/chromium/base/CpuFeatures.java", "android/java/src/org/chromium/base/EarlyTraceEvent.java", "android/java/src/org/chromium/base/EventLog.java", "android/java/src/org/chromium/base/FeatureList.java", "android/java/src/org/chromium/base/FeatureMap.java", "android/java/src/org/chromium/base/Features.java", "android/java/src/org/chromium/base/FieldTrialList.java", "android/java/src/org/chromium/base/FileUtils.java", "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java", "android/java/src/org/chromium/base/IntStringCallback.java", "android/java/src/org/chromium/base/JNIUtils.java", "android/java/src/org/chromium/base/JavaExceptionReporter.java", "android/java/src/org/chromium/base/JavaHandlerThread.java", "android/java/src/org/chromium/base/LocaleUtils.java", "android/java/src/org/chromium/base/MemoryPressureListener.java", "android/java/src/org/chromium/base/PathService.java", "android/java/src/org/chromium/base/PathUtils.java", "android/java/src/org/chromium/base/PiiElider.java", "android/java/src/org/chromium/base/PowerMonitor.java", "android/java/src/org/chromium/base/RadioUtils.java", "android/java/src/org/chromium/base/SysUtils.java", "android/java/src/org/chromium/base/ThreadUtils.java", "android/java/src/org/chromium/base/TimezoneUtils.java", "android/java/src/org/chromium/base/TraceEvent.java", "android/java/src/org/chromium/base/UnguessableToken.java", "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java", "android/java/src/org/chromium/base/library_loader/LibraryLoader.java", "android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java", "android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java", "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java", "android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java", "android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java", "android/java/src/org/chromium/base/task/PostTask.java", "android/java/src/org/chromium/base/task/TaskRunnerImpl.java" ],
+         "jni_source_files_abs": [ "//base/android/java/src/org/chromium/base/ApkAssets.java", "//base/android/java/src/org/chromium/base/ApplicationStatus.java", "//base/android/java/src/org/chromium/base/BaseFeatureMap.java", "//base/android/java/src/org/chromium/base/BuildInfo.java", "//base/android/java/src/org/chromium/base/BundleUtils.java", "//base/android/java/src/org/chromium/base/Callback.java", "//base/android/java/src/org/chromium/base/CommandLine.java", "//base/android/java/src/org/chromium/base/ContentUriUtils.java", "//base/android/java/src/org/chromium/base/CpuFeatures.java", "//base/android/java/src/org/chromium/base/EarlyTraceEvent.java", "//base/android/java/src/org/chromium/base/EventLog.java", "//base/android/java/src/org/chromium/base/FeatureList.java", "//base/android/java/src/org/chromium/base/FeatureMap.java", "//base/android/java/src/org/chromium/base/Features.java", "//base/android/java/src/org/chromium/base/FieldTrialList.java", "//base/android/java/src/org/chromium/base/FileUtils.java", "//base/android/java/src/org/chromium/base/ImportantFileWriterAndroid.java", "//base/android/java/src/org/chromium/base/IntStringCallback.java", "//base/android/java/src/org/chromium/base/JNIUtils.java", "//base/android/java/src/org/chromium/base/JavaExceptionReporter.java", "//base/android/java/src/org/chromium/base/JavaHandlerThread.java", "//base/android/java/src/org/chromium/base/LocaleUtils.java", "//base/android/java/src/org/chromium/base/MemoryPressureListener.java", "//base/android/java/src/org/chromium/base/PathService.java", "//base/android/java/src/org/chromium/base/PathUtils.java", "//base/android/java/src/org/chromium/base/PiiElider.java", "//base/android/java/src/org/chromium/base/PowerMonitor.java", "//base/android/java/src/org/chromium/base/RadioUtils.java", "//base/android/java/src/org/chromium/base/SysUtils.java", "//base/android/java/src/org/chromium/base/ThreadUtils.java", "//base/android/java/src/org/chromium/base/TimezoneUtils.java", "//base/android/java/src/org/chromium/base/TraceEvent.java", "//base/android/java/src/org/chromium/base/UnguessableToken.java", "//base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java", "//base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java", "//base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java", "//base/android/java/src/org/chromium/base/memory/JavaHeapDumpGenerator.java", "//base/android/java/src/org/chromium/base/memory/MemoryInfoBridge.java", "//base/android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java", "//base/android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java", "//base/android/java/src/org/chromium/base/task/PostTask.java", "//base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_jni.srcjar", "//out/cronet/gen/jni_headers/base/base_jni/ApkAssets_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/ApplicationStatus_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/BaseFeatureMap_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/BuildInfo_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/BundleUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/Callback_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/CommandLine_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/ContentUriUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/CpuFeatures_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/EarlyTraceEvent_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/EventLog_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/FeatureList_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/FeatureMap_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/Features_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/FieldTrialList_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/FileUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/ImportantFileWriterAndroid_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/IntStringCallback_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/JNIUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/JavaExceptionReporter_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/JavaHandlerThread_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/LocaleUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/MemoryPressureListener_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/PathService_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/PathUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/PiiElider_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/PowerMonitor_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/RadioUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/SysUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/ThreadUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/TimezoneUtils_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/TraceEvent_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/UnguessableToken_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/JankMetricUMARecorder_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/LibraryLoader_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/LibraryPrefetcher_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/JavaHeapDumpGenerator_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/MemoryInfoBridge_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/NativeUmaRecorder_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/StatisticsRecorderAndroid_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/PostTask_jni.h", "//out/cronet/gen/jni_headers/base/base_jni/TaskRunnerImpl_jni.h" ],
       "public": "*",
@@ -3323,7 +3328,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//base:base_junit_tests__java_binary" ]
+
       },
       "outputs": [ "//out/cronet/gen/base/base_junit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -3827,7 +3832,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//base:base_perftests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/base/base_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -4065,7 +4070,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/android/javatests/src/org/chromium/base/profiler/TestSupport.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/javatests/src/org/chromium/base/profiler/TestSupport.java" ]
+         "jni_source_files": [ "android/javatests/src/org/chromium/base/profiler/TestSupport.java" ],
+         "jni_source_files_abs": [ "//base/android/javatests/src/org/chromium/base/profiler/TestSupport.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_profiler_test_support_jni.srcjar", "//out/cronet/gen/jni_headers/base/base_profiler_test_support_jni/TestSupport_jni.h" ],
       "public": "*",
@@ -4242,7 +4248,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
+         "jni_source_files": [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ],
+         "jni_source_files_abs": [ "//base/android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/base_shared_preferences_jni.srcjar", "//out/cronet/gen/jni_headers/base/base_shared_preferences_jni/SharedPreferencesManager_jni.h" ],
       "public": "*",
@@ -4696,7 +4703,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//base:base_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/base/base_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -4769,7 +4776,7 @@
       "visibility": [ "*" ]
    },
    "//base:build_date": {
-      "args": [ "gen/base/generated_build_date.h", "1699011758" ],
+      "args": [ "gen/base/generated_build_date.h", "1701360610" ],
       "deps": [  ],
       "metadata": {
 
@@ -4783,7 +4790,7 @@
       "visibility": [ "*" ]
    },
    "//base:build_date(//build/toolchain/linux:clang_x64)": {
-      "args": [ "clang_x64/gen/base/generated_build_date.h", "1699011758" ],
+      "args": [ "clang_x64/gen/base/generated_build_date.h", "1701360610" ],
       "deps": [  ],
       "metadata": {
 
@@ -5706,7 +5713,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
+         "jni_source_files": [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ],
+         "jni_source_files_abs": [ "//base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
       },
       "outputs": [ "//out/cronet/gen/base/process_launcher_jni.srcjar", "//out/cronet/gen/jni_headers/base/process_launcher_jni/ChildProcessService_jni.h" ],
       "public": "*",
@@ -6903,7 +6911,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//build/android:build_junit_tests__java_binary" ]
+
       },
       "outputs": [ "//out/cronet/gen/build/android/build_junit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -9685,7 +9693,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "java/src/org/chromium/net/impl/CronetBidirectionalStream.java", "java/src/org/chromium/net/impl/CronetLibraryLoader.java", "java/src/org/chromium/net/impl/CronetUploadDataStream.java", "java/src/org/chromium/net/impl/CronetUrlRequest.java", "java/src/org/chromium/net/impl/CronetUrlRequestContext.java" ]
+         "jni_source_files": [ "java/src/org/chromium/net/impl/CronetBidirectionalStream.java", "java/src/org/chromium/net/impl/CronetLibraryLoader.java", "java/src/org/chromium/net/impl/CronetUploadDataStream.java", "java/src/org/chromium/net/impl/CronetUrlRequest.java", "java/src/org/chromium/net/impl/CronetUrlRequestContext.java" ],
+         "jni_source_files_abs": [ "//components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java", "//components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java" ]
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_jni_headers.srcjar", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h" ],
       "public": "*",
@@ -9702,7 +9711,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//components/cronet/android:cronet_impl_native_base_java" ]
+
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_jni_registration.srcjar", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_jni_registration_generated.h" ],
       "public": "*",
@@ -11891,7 +11900,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java", "//components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java", "//components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java", "//components/cronet/android/test/src/org/chromium/net/NativeTestServer.java", "//components/cronet/android/test/src/org/chromium/net/QuicTestServer.java", "//components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "test/src/org/chromium/net/CronetTestUtil.java", "test/src/org/chromium/net/MockCertVerifier.java", "test/src/org/chromium/net/MockUrlRequestJobFactory.java", "test/src/org/chromium/net/NativeTestServer.java", "test/src/org/chromium/net/QuicTestServer.java", "test/src/org/chromium/net/TestUploadDataStreamHandler.java" ]
+         "jni_source_files": [ "test/src/org/chromium/net/CronetTestUtil.java", "test/src/org/chromium/net/MockCertVerifier.java", "test/src/org/chromium/net/MockUrlRequestJobFactory.java", "test/src/org/chromium/net/NativeTestServer.java", "test/src/org/chromium/net/QuicTestServer.java", "test/src/org/chromium/net/TestUploadDataStreamHandler.java" ],
+         "jni_source_files_abs": [ "//components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java", "//components/cronet/android/test/src/org/chromium/net/MockCertVerifier.java", "//components/cronet/android/test/src/org/chromium/net/MockUrlRequestJobFactory.java", "//components/cronet/android/test/src/org/chromium/net/NativeTestServer.java", "//components/cronet/android/test/src/org/chromium/net/QuicTestServer.java", "//components/cronet/android/test/src/org/chromium/net/TestUploadDataStreamHandler.java" ]
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_test_apk_jni.srcjar", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_test_apk_jni/CronetTestUtil_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_test_apk_jni/MockCertVerifier_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_test_apk_jni/MockUrlRequestJobFactory_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_test_apk_jni/NativeTestServer_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_test_apk_jni/TestUploadDataStreamHandler_jni.h" ],
       "public": "*",
@@ -12652,7 +12662,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//components/cronet/android:cronet_tests_android__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_tests_android__library__jni_registration.srcjar" ],
       "public": "*",
@@ -12729,7 +12739,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java", "//components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java", "//components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java", "test/javatests/src/org/chromium/net/CronetUrlRequestTest.java", "test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java" ]
+         "jni_source_files": [ "test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java", "test/javatests/src/org/chromium/net/CronetUrlRequestTest.java", "test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java" ],
+         "jni_source_files_abs": [ "//components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java", "//components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java", "//components/cronet/android/test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java" ]
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_tests_jni_headers.srcjar", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestContextTest_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestTest_jni.h", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h" ],
       "public": "*",
@@ -12746,7 +12757,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//components/cronet/android:cronet_common_javatests", "//components/cronet/android:cronet_test_apk_java", "//components/cronet/android:flags_java_proto", "//base:base_java", "//third_party/jni_zero:jni_zero_java", "//base:base_java_test_support", "//net/android:embedded_test_server_aidl_java", "//net/android:net_java", "//net/android:net_java_test_support", "//url:url_java", "//third_party/androidx:androidx_annotation_annotation_experimental_java", "//components/cronet/android:cronet_javatests", "//third_party/netty4:netty_all_java" ]
+
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_tests_jni_registration.srcjar", "//out/cronet/gen/jni_headers/components/cronet/android/cronet_tests_jni_registration_generated.h" ],
       "public": "*",
@@ -13251,7 +13262,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//components/cronet/android:cronet_unittests_android__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/components/cronet/android/cronet_unittests_android__library__jni_registration.srcjar" ],
       "public": "*",
@@ -15795,7 +15806,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "java/src/org/chromium/components/prefs/PrefService.java" ]
+         "jni_source_files": [ "java/src/org/chromium/components/prefs/PrefService.java" ],
+         "jni_source_files_abs": [ "//components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java" ]
       },
       "outputs": [ "//out/cronet/gen/components/prefs/android/jni_headers.srcjar", "//out/cronet/gen/jni_headers/components/prefs/android/jni_headers/PrefService_jni.h" ],
       "public": "*",
@@ -16449,7 +16461,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//crypto:crypto_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/crypto/crypto_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -16937,7 +16949,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//net/android:net_test_support_apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/net/android/net_java_test_native_support__jni_registration.srcjar" ],
       "public": "*",
@@ -17212,7 +17224,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//net/android:net_junit_tests__java_binary" ]
+
       },
       "outputs": [ "//out/cronet/gen/net/android/net_junit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -17631,7 +17643,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "../test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java" ]
+         "jni_source_files": [ "../test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java" ],
+         "jni_source_files_abs": [ "//net/test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java" ]
       },
       "outputs": [ "//out/cronet/gen/net/android/net_test_support_jni.srcjar", "//out/cronet/gen/jni_headers/net/android/net_test_support_jni/AndroidNetworkLibraryTestUtil_jni.h" ],
       "public": "*",
@@ -17776,7 +17789,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java", "//net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java", "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java" ]
+         "jni_source_files": [ "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java", "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java" ],
+         "jni_source_files_abs": [ "//net/test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java", "//net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java" ]
       },
       "outputs": [ "//out/cronet/gen/net/android/net_test_support_provider_jni.srcjar", "//out/cronet/gen/jni_headers/net/android/net_test_support_provider_jni/DummySpnegoAuthenticator_jni.h", "//out/cronet/gen/jni_headers/net/android/net_test_support_provider_jni/EmbeddedTestServerImpl_jni.h" ],
       "public": "*",
@@ -17921,7 +17935,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java", "//net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java", "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java" ]
+         "jni_source_files": [ "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java", "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java" ],
+         "jni_source_files_abs": [ "//net/android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java", "//net/android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java" ]
       },
       "outputs": [ "//out/cronet/gen/net/android/net_tests_jni.srcjar", "//out/cronet/gen/jni_headers/net/android/net_tests_jni/AndroidKeyStoreTestUtil_jni.h", "//out/cronet/gen/jni_headers/net/android/net_tests_jni/AndroidProxyConfigServiceTestUtil_jni.h" ],
       "public": "*",
@@ -20504,7 +20519,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java", "//net/android/java/src/org/chromium/net/AndroidKeyStore.java", "//net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java", "//net/android/java/src/org/chromium/net/AndroidTrafficStats.java", "//net/android/java/src/org/chromium/net/DnsStatus.java", "//net/android/java/src/org/chromium/net/GURLUtils.java", "//net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java", "//net/android/java/src/org/chromium/net/HttpUtil.java", "//net/android/java/src/org/chromium/net/NetStringUtil.java", "//net/android/java/src/org/chromium/net/NetworkActiveNotifier.java", "//net/android/java/src/org/chromium/net/NetworkChangeNotifier.java", "//net/android/java/src/org/chromium/net/ProxyChangeListener.java", "//net/android/java/src/org/chromium/net/X509Util.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/java/src/org/chromium/net/AndroidCertVerifyResult.java", "android/java/src/org/chromium/net/AndroidKeyStore.java", "android/java/src/org/chromium/net/AndroidNetworkLibrary.java", "android/java/src/org/chromium/net/AndroidTrafficStats.java", "android/java/src/org/chromium/net/DnsStatus.java", "android/java/src/org/chromium/net/GURLUtils.java", "android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java", "android/java/src/org/chromium/net/HttpUtil.java", "android/java/src/org/chromium/net/NetStringUtil.java", "android/java/src/org/chromium/net/NetworkActiveNotifier.java", "android/java/src/org/chromium/net/NetworkChangeNotifier.java", "android/java/src/org/chromium/net/ProxyChangeListener.java", "android/java/src/org/chromium/net/X509Util.java" ]
+         "jni_source_files": [ "android/java/src/org/chromium/net/AndroidCertVerifyResult.java", "android/java/src/org/chromium/net/AndroidKeyStore.java", "android/java/src/org/chromium/net/AndroidNetworkLibrary.java", "android/java/src/org/chromium/net/AndroidTrafficStats.java", "android/java/src/org/chromium/net/DnsStatus.java", "android/java/src/org/chromium/net/GURLUtils.java", "android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java", "android/java/src/org/chromium/net/HttpUtil.java", "android/java/src/org/chromium/net/NetStringUtil.java", "android/java/src/org/chromium/net/NetworkActiveNotifier.java", "android/java/src/org/chromium/net/NetworkChangeNotifier.java", "android/java/src/org/chromium/net/ProxyChangeListener.java", "android/java/src/org/chromium/net/X509Util.java" ],
+         "jni_source_files_abs": [ "//net/android/java/src/org/chromium/net/AndroidCertVerifyResult.java", "//net/android/java/src/org/chromium/net/AndroidKeyStore.java", "//net/android/java/src/org/chromium/net/AndroidNetworkLibrary.java", "//net/android/java/src/org/chromium/net/AndroidTrafficStats.java", "//net/android/java/src/org/chromium/net/DnsStatus.java", "//net/android/java/src/org/chromium/net/GURLUtils.java", "//net/android/java/src/org/chromium/net/HttpNegotiateAuthenticator.java", "//net/android/java/src/org/chromium/net/HttpUtil.java", "//net/android/java/src/org/chromium/net/NetStringUtil.java", "//net/android/java/src/org/chromium/net/NetworkActiveNotifier.java", "//net/android/java/src/org/chromium/net/NetworkChangeNotifier.java", "//net/android/java/src/org/chromium/net/ProxyChangeListener.java", "//net/android/java/src/org/chromium/net/X509Util.java" ]
       },
       "outputs": [ "//out/cronet/gen/net/net_jni_headers.srcjar", "//out/cronet/gen/jni_headers/net/net_jni_headers/AndroidCertVerifyResult_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/AndroidKeyStore_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/AndroidNetworkLibrary_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/AndroidTrafficStats_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/DnsStatus_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/GURLUtils_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/HttpNegotiateAuthenticator_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/HttpUtil_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/NetStringUtil_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/NetworkActiveNotifier_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/NetworkChangeNotifier_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/ProxyChangeListener_jni.h", "//out/cronet/gen/jni_headers/net/net_jni_headers/X509Util_jni.h" ],
       "public": "*",
@@ -21012,7 +21028,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//net:net_perftests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/net/net_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -21607,7 +21623,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//net:net_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/net/net_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -22517,7 +22533,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//sql:sql_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/sql/sql_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -22944,7 +22960,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//testing/android/junit:junit_unit_tests__java_binary" ]
+
       },
       "outputs": [ "//out/cronet/gen/testing/android/junit/junit_unit_tests__final_jni.srcjar" ],
       "public": "*",
@@ -23247,7 +23263,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "java/src/org/chromium/native_test/MainRunner.java" ]
+         "jni_source_files": [ "java/src/org/chromium/native_test/MainRunner.java" ],
+         "jni_source_files_abs": [ "//testing/android/native_test/java/src/org/chromium/native_test/MainRunner.java" ]
       },
       "outputs": [ "//out/cronet/gen/testing/android/native_test/native_main_runner_jni.srcjar", "//out/cronet/gen/jni_headers/testing/android/native_test/native_main_runner_jni/MainRunner_jni.h" ],
       "public": "*",
@@ -23392,7 +23409,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTest.java", "//testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "java/src/org/chromium/native_test/NativeBrowserTest.java", "java/src/org/chromium/native_test/NativeTest.java" ]
+         "jni_source_files": [ "java/src/org/chromium/native_test/NativeBrowserTest.java", "java/src/org/chromium/native_test/NativeTest.java" ],
+         "jni_source_files_abs": [ "//testing/android/native_test/java/src/org/chromium/native_test/NativeBrowserTest.java", "//testing/android/native_test/java/src/org/chromium/native_test/NativeTest.java" ]
       },
       "outputs": [ "//out/cronet/gen/testing/android/native_test/native_test_jni.srcjar", "//out/cronet/gen/jni_headers/testing/android/native_test/native_test_jni/NativeBrowserTest_jni.h", "//out/cronet/gen/jni_headers/testing/android/native_test/native_test_jni/NativeTest_jni.h" ],
       "public": "*",
@@ -39126,7 +39144,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/abseil-cpp:absl_hardening_tests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/abseil-cpp/absl_hardening_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -39546,7 +39564,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/abseil-cpp:absl_tests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/abseil-cpp/absl_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -89449,7 +89467,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/boringssl:boringssl_crypto_tests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/boringssl/boringssl_crypto_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -90089,7 +90107,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/boringssl:boringssl_pki_tests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/boringssl/boringssl_pki_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -90587,7 +90605,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/boringssl:boringssl_ssl_tests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/boringssl/boringssl_ssl_tests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -91725,7 +91743,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/ced:ced_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/ced/ced_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -93296,7 +93314,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/flatbuffers:flatbuffers_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/flatbuffers/flatbuffers_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -97906,7 +97924,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//third_party/zlib:zlib_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/third_party/zlib/zlib_unittests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -98685,7 +98703,8 @@
       "deps": [ "//base:debugging_buildflags", "//base:logging_buildflags", "//build:chromeos_buildflags" ],
       "inputs": [ "//url/android/java/src/org/chromium/url/IDNStringUtil.java", "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "jni_source_files": [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
+         "jni_source_files": [ "android/java/src/org/chromium/url/IDNStringUtil.java" ],
+         "jni_source_files_abs": [ "//url/android/java/src/org/chromium/url/IDNStringUtil.java" ]
       },
       "outputs": [ "//out/cronet/gen/url/url_jni_headers.srcjar", "//out/cronet/gen/jni_headers/url/url_jni_headers/IDNStringUtil_jni.h" ],
       "public": "*",
@@ -99045,7 +99064,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//url:url_perftests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/url/url_perftests__library__jni_registration.srcjar" ],
       "public": "*",
@@ -99499,7 +99518,7 @@
       "deps": [  ],
       "inputs": [ "//third_party/jni_zero/codegen/placeholder_gen_jni_java.py", "//third_party/jni_zero/codegen/proxy_impl_java.py", "//third_party/jni_zero/common.py", "//third_party/jni_zero/java_lang_classes.py", "//third_party/jni_zero/java_types.py", "//third_party/jni_zero/jni_generator.py", "//third_party/jni_zero/jni_registration_generator.py", "//third_party/jni_zero/jni_zero.py", "//third_party/jni_zero/parse.py", "//third_party/jni_zero/proxy.py" ],
       "metadata": {
-         "java_deps": [ "//url:url_unittests__apk" ]
+
       },
       "outputs": [ "//out/cronet/gen/url/url_unittests__library__jni_registration.srcjar" ],
       "public": "*",

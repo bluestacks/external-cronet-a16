@@ -1123,7 +1123,11 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     super().__init__(target, arch)
 
   def get_srcs(self):
-      return set(src for src in super().get_srcs() if src.endswith(".java"))
+    all_srcs = super().get_srcs()
+    all_srcs.update({gn_utils.label_to_path(file)
+                     for file in self.target.transitive_jni_java_sources
+                     if is_supported_source_file(file)})
+    return set(src for src in all_srcs if src.endswith(".java"))
 
   def _add_location_tag_to_filepath(self, arg):
     if not arg.endswith('.class'):
@@ -1195,7 +1199,11 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     super().__init__(target, arch)
 
   def get_srcs(self):
-      return set(src for src in super().get_srcs() if src.endswith(".java"))
+    all_srcs = super().get_srcs()
+    all_srcs.update({gn_utils.label_to_path(file)
+                     for file in self.target.transitive_jni_java_sources
+                     if is_supported_source_file(file)})
+    return set(src for src in all_srcs if src.endswith(".java"))
 
   def _sanitize_inputs(self):
     self.target.inputs = [file for file in self.target.inputs if not file.startswith('//out/')]
@@ -1334,14 +1342,26 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
   elif target.script == '//third_party/jni_zero/jni_zero.py':
     if target.args[0] == 'generate-final':
       if type == 'java_genrule':
-        # Fill up the sources of the target for JniRegistrationGenerator actions with all
-        # the java sources that were found (include testing if is_test_target).
-        # Only do this for the java part in order to generate a complete GEN_JNI. The C++ part
-        # MUST only include java source files that are listed explicitly otherwise this would result
-        # in undefined symbols as the C++ part generates declarations that would have no definitions.
-        target.sources.update(gn.java_sources)
+        # Fill up the sources of the target for JniRegistrationGenerator
+        # actions with all the java sources found under targets of type
+        # `generate_jni`. Note 1: Only do this for the java part in order to
+        # generate a complete GEN_JNI. The C++ part MUST only include java
+        # source files that are listed explicitly in `generate_jni` targets
+        # in the transitive dependency, this is handled inside the action
+        # sanitizer itself (See `get_srcs`). Adding java sources that are not
+        # listed to the C++ version of JniRegistrationGenerator will result
+        # in undefined symbols as the C++ part generates declarations that
+        # would have no definitions. Note 2: This is only done for the
+        # testing targets because their JniRegistration is not complete,
+        # Chromium generates Jni files for testing targets implicitly (See
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing
+        # /test.gni;l=422;bpv=1;bpt=0;drc
+        # =02820c1b362c3a00f426d7c4eab18703d89cda03) to avoid having to
+        # replicate the same setup, just fill up the java JniRegistration
+        # with all  java sources found under `generate_jni` targets and fill
+        # the C++ version with the exact files.
         if is_test_target:
-          target.sources.update(gn.java_sources_testing)
+          target.sources.update(gn.jni_java_sources)
         return JavaJniRegistrationGeneratorSanitizer(target, arch, is_test_target)
       else:
         return JniRegistrationGeneratorSanitizer(target, arch, is_test_target)

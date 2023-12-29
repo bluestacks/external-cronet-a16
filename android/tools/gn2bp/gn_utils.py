@@ -92,6 +92,16 @@ def _extract_includes_from_aidl_args(args):
 def contains_aidl(sources):
   return any([src.endswith(".aidl") for src in sources])
 
+def _get_jni_registration_deps(gn_target_name, gn_desc):
+  # the dependencies are stored within another target with the same name
+  # and a __java_sources suffix, see
+  # https://source.chromium.org/chromium/chromium/src/+/main:third_party/jni_zero/jni_zero.gni;l=117;drc=78e8e27142ed3fddf04fbcd122507517a87cb9ad
+  # for the auto-generated target name.
+  jni_registration_java_target = f'{gn_target_name}__java_sources'
+  if jni_registration_java_target in gn_desc.keys():
+    return gn_desc[jni_registration_java_target]["deps"]
+  return set()
+
 def label_to_path(label):
   """Turn a GN output label (e.g., //some_dir/file.cc) into a path."""
   assert label.startswith('//')
@@ -193,10 +203,12 @@ class GnParser(object):
       self.output_name = None
       # Local Includes used for AIDL
       self.local_aidl_includes = set()
-      # Deps for JNI Registration
+      # Each java_target will contain the transitive java sources found
+      # in generate_jni type target.
+      self.transitive_jni_java_sources = set()
+      # Deps for JNI Registration. Those are not added to deps so that
+      # the generated module would not depend on those deps.
       self.jni_registration_java_deps = set()
-      # Transitive Java Sources
-      self.transitive_java_sources = set()
 
     # Properties to forward access to common arch.
     # TODO: delete these after the transition has been completed.
@@ -348,8 +360,8 @@ class GnParser(object):
   def __init__(self, builtin_deps):
     self.builtin_deps = builtin_deps
     self.all_targets = {}
-    self.java_sources = set()
-    self.java_sources_testing = set()
+    self.jni_java_sources = set()
+
 
   def _get_response_file_contents(self, action_desc):
     # response_file_contents are formatted as:
@@ -449,10 +461,6 @@ class GnParser(object):
         if not java_source.startswith("//out") and java_source not in JAVA_FILES_TO_IGNORE:
           sources.add(java_source)
       target.sources.update(sources)
-      target.transitive_java_sources.update(target.sources)
-      self.java_sources_testing.update(target.sources)
-      if not is_test_target:
-        self.java_sources.update(target.sources)
       deps = metadata.get("all_deps", {})
       log.info('Found Java Target %s', target.name)
     elif target.script == "//build/android/gyp/aidl.py":
@@ -469,7 +477,15 @@ class GnParser(object):
       target.script = desc['script']
       target.arch[arch].args = desc['args']
       target.arch[arch].response_file_contents = self._get_response_file_contents(desc)
-      target.jni_registration_java_deps.update(metadata.get("java_deps", set()))
+      # _get_jni_registration_deps will return the dependencies of a target if
+      # the target is of type `generate_jni_registration` otherwise it will
+      # return an empty set.
+      target.jni_registration_java_deps.update(_get_jni_registration_deps(gn_target_name, gn_desc))
+      # JNI java sources are embedded as metadata inside `jni_headers` targets.
+      # See https://source.chromium.org/chromium/chromium/src/+/main:third_party/jni_zero/jni_zero.gni;l=421;drc=78e8e27142ed3fddf04fbcd122507517a87cb9ad
+      # for more details
+      target.transitive_jni_java_sources.update(metadata.get("jni_source_files_abs", set()))
+      self.jni_java_sources.update(metadata.get("jni_source_files_abs", set()))
     elif target.type == 'copy':
       # TODO: copy rules are not currently implemented.
       pass
@@ -498,7 +514,7 @@ class GnParser(object):
 
     for gn_dep_name in set(target.jni_registration_java_deps):
       dep = self.parse_gn_desc(gn_desc, gn_dep_name, java_group_name, is_test_target)
-      target.sources.update(dep.transitive_java_sources)
+      target.transitive_jni_java_sources.update(dep.transitive_jni_java_sources)
 
     # Recurse in dependencies.
     for gn_dep_name in set(deps):
@@ -513,11 +529,12 @@ class GnParser(object):
         target.update(dep, arch)  # Bubble up groups's cflags/ldflags etc.
       elif dep.type in ['action', 'action_foreach', 'copy']:
         target.arch[arch].deps.add(dep.name)
+        target.transitive_jni_java_sources.update(dep.transitive_jni_java_sources)
       elif dep.is_linker_unit_type():
         target.arch[arch].deps.add(dep.name)
       elif dep.type == 'java_library':
         target.deps.add(dep.name)
-        target.transitive_java_sources.update(dep.transitive_java_sources)
+        target.transitive_jni_java_sources.update(dep.transitive_jni_java_sources)
 
       if dep.type in ['static_library', 'source_set']:
         # Bubble up static_libs and source_set. Necessary, since soong does not propagate

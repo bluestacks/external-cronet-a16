@@ -81,7 +81,7 @@ PartitionAlloc guarantees that returned pointers are aligned on
 64-bit systems, and 8B on 32-bit).
 
 PartitionAlloc also supports higher levels of alignment, that can be requested
-via `PartitionAlloc::AlignedAllocWithFlags()` or platform-specific APIs (such as
+via `PartitionAlloc::AlignedAlloc()` or platform-specific APIs (such as
 `posix_memalign()`). The requested
 alignment has to be a power of two. PartitionAlloc reserves the right to round
 up the requested size to the nearest power of two, greater than or equal to the
@@ -197,7 +197,7 @@ the inaccuracy can't happen in the other direction, i.e. an active span can only
 be on the active list, and an empty span can only be on the active or empty
 list.
 
-[PartitionPage]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=314;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
-[SlotSpanMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=120;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
-[SubsequentPageMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=295;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
-[payload-start]: https://source.chromium.org/chromium/chromium/src/+/35b2deed603dedd4abb37f204d516ed62aa2b85c:base/allocator/partition_allocator/partition_page.h;l=454
+[PartitionPage]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=314;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[SlotSpanMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=120;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[SubsequentPageMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=295;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[payload-start]: https://source.chromium.org/chromium/chromium/src/+/35b2deed603dedd4abb37f204d516ed62aa2b85c:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=454

@@ -5,6 +5,7 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.fail;
 
@@ -171,6 +172,10 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         mDone.block();
     }
 
+    public void blockForDone(long timeoutMs) {
+        assertWithMessage("Request didn't terminate in time").that(mDone.block(timeoutMs)).isTrue();
+    }
+
     public void waitForNextStep() {
         mStepBlock.block();
         mStepBlock.close();
@@ -288,9 +293,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // Shouldn't happen after success.
         assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single request.
+        assertThat(mError).isNull();
         assertThat(mOnErrorCalled).isFalse();
         assertThat(mOnCanceledCalled).isFalse();
-        assertThat(mError).isNull();
         if (mCallbackExceptionThrown) {
             assertThat(error).isInstanceOf(CallbackException.class);
             assertThat(error).hasMessageThat().contains(

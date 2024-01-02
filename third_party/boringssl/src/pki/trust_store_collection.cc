@@ -4,13 +4,15 @@
 
 #include "trust_store_collection.h"
 
+#include <openssl/base.h>
+
 namespace bssl {
 
 TrustStoreCollection::TrustStoreCollection() = default;
 TrustStoreCollection::~TrustStoreCollection() = default;
 
 void TrustStoreCollection::AddTrustStore(TrustStore* store) {
-  DCHECK(store);
+  BSSL_CHECK(store);
   stores_.push_back(store);
 }
 
@@ -21,14 +23,12 @@ void TrustStoreCollection::SyncGetIssuersOf(const ParsedCertificate* cert,
   }
 }
 
-CertificateTrust TrustStoreCollection::GetTrust(
-    const ParsedCertificate* cert,
-    void* debug_data) {
+CertificateTrust TrustStoreCollection::GetTrust(const ParsedCertificate* cert) {
   // The current aggregate result.
   CertificateTrust result = CertificateTrust::ForUnspecified();
 
   for (auto* store : stores_) {
-    CertificateTrust cur_trust = store->GetTrust(cert, debug_data);
+    CertificateTrust cur_trust = store->GetTrust(cert);
 
     // * If any stores distrust the certificate, consider it untrusted.
     // * If multiple stores consider it trusted, use the trust result from the

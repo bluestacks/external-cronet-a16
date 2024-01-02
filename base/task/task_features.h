@@ -12,9 +12,8 @@
 
 namespace base {
 
-// Amount of threads that will be system-wide restricted from being used
-// by thread pools.
-BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap);
+// Fixed amount of threads that will be used as a cap for thread pools.
+BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap2);
 
 extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
 
@@ -47,9 +46,18 @@ constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
 #endif  // #if !BUILDFLAG(IS_WIN)
 extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
 
+// We consider that delayed tasks above |kMaxPreciseDelay| never need
+// DelayPolicy::kPrecise. The default value is slightly above 30Hz timer.
+constexpr TimeDelta kDefaultMaxPreciseDelay = Milliseconds(36);
+extern const BASE_EXPORT base::FeatureParam<TimeDelta> kMaxPreciseDelay;
+
 // Under this feature, wake ups are aligned at a 8ms boundary when allowed per
 // DelayPolicy.
 BASE_EXPORT BASE_DECLARE_FEATURE(kAlignWakeUps);
+
+// Under this feature, slack is added on mac message pumps that support it when
+// allowed per DelayPolicy.
+BASE_EXPORT BASE_DECLARE_FEATURE(kTimerSlackMac);
 
 // Under this feature, tasks that need high resolution timer are determined
 // based on explicit DelayPolicy rather than based on a threshold.

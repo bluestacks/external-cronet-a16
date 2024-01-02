@@ -449,6 +449,9 @@ if (icu_use_data_file) {
     copy("icudata_hash") {
       sources = [ "chromeos/icudtl.dat.hash" ]
       outputs = [ "$root_out_dir/icudtl.dat.hash" ]
+      if (icu_copy_icudata_to_root_build_dir) {
+        data = [ "$root_out_dir/icudtl.dat.hash" ]
+      }
     }
   }
 } else {

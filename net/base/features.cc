@@ -65,7 +65,7 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
 
 BASE_FEATURE(kUseDnsHttpsSvcbAlpn,
              "UseDnsHttpsSvcbAlpn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{
     &kUseAlternativePortForGloballyReachableCheck,
@@ -75,9 +75,13 @@ BASE_FEATURE(kUseAlternativePortForGloballyReachableCheck,
              "UseAlternativePortForGloballyReachableCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableIPv6ReachabilityOverride,
+             "EnableIPv6ReachabilityOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSHA1ServerSignature,
              "SHA1ServerSignature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableTLS13EarlyData,
              "EnableTLS13EarlyData",
@@ -85,7 +89,7 @@ BASE_FEATURE(kEnableTLS13EarlyData,
 
 BASE_FEATURE(kEncryptedClientHello,
              "EncryptedClientHello",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEncryptedClientHelloQuic,
              "EncryptedClientHelloQuic",
@@ -166,18 +170,10 @@ BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-// Enables the dual certificate verification trial feature.
-// https://crbug.com/649026
-BASE_FEATURE(kCertDualVerificationTrialFeature,
-             "CertDualVerificationTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 BASE_FEATURE(kChromeRootStoreUsed,
              "ChromeRootStoreUsed",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -249,18 +245,14 @@ BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
 
 BASE_FEATURE(kWaitForFirstPartySetsInit,
              "WaitForFirstPartySetsInit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartitionedCookies,
              "PartitionedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNoncedPartitionedCookies,
-             "NoncedPartitionedCookies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClampCookieExpiryTo400Days,
-             "ClampCookieExpiryTo400Days",
+BASE_FEATURE(kBlockTruncatedCookies,
+             "BlockTruncatedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStaticKeyPinningEnforcement,
@@ -271,26 +263,25 @@ BASE_FEATURE(kCookieDomainRejectNonASCII,
              "CookieDomainRejectNonASCII",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBlockSetCookieHeader,
-             "BlockSetCookieHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables partitioning of third party storage (IndexedDB, CacheStorage, etc.)
 // by the top level site to reduce fingerprinting.
 BASE_FEATURE(kThirdPartyStoragePartitioning,
              "ThirdPartyStoragePartitioning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to use the new code paths needed to support partitioning Blob URLs.
 // This exists as a kill-switch in case an issue is identified with the Blob
 // URL implementation that causes breakage.
-// TODO(https://crbug.com/1407944): Kill-switch activated - investigate cause of
-// increased renderer hangs.
 BASE_FEATURE(kSupportPartitionedBlobUrl,
              "SupportPartitionedBlobUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTpcdSupportSettings,
              "TpcdSupportSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTpcdMetadataGrants,
+             "TpcdMetadataGrants",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlpsParsing, "AlpsParsing", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -323,6 +314,11 @@ BASE_FEATURE(kBlockNewForbiddenHeaders,
 BASE_FEATURE(kPlatformKeyProbeSHA256,
              "PlatformKeyProbeSHA256",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Disabled because of https://crbug.com/1489696.
+BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
+             "EnableGetNetworkConnectivityHintAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Prefetch to follow normal semantics instead of 5-minute rule
@@ -363,20 +359,54 @@ BASE_FEATURE(kEnableIpProtectionProxy,
              "EnableIpPrivacyProxy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string> kIpPrivacyProxyServer{
-    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyServer",
-    /*default_value=*/""};
+const base::FeatureParam<std::string> kIpPrivacyTokenServer{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
+    /*default_value=*/"https://phosphor-pa.googleapis.com"};
 
-const base::FeatureParam<std::string> kIpPrivacyProxyAllowlist{
-    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAllowlist",
-    /*default_value=*/""};
+const base::FeatureParam<std::string> kIpPrivacyTokenServerGetInitialDataPath{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyTokenServerGetInitialDataPath",
+    /*default_value=*/"/v1/ipblinding/getInitialData"};
+
+const base::FeatureParam<std::string> kIpPrivacyTokenServerGetTokensPath{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServerGetTokensPath",
+    /*default_value=*/"/v1/ipblinding/auth"};
+
+const base::FeatureParam<std::string> kIpPrivacyTokenServerGetProxyConfigPath{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyTokenServerGetProxyConfigPath",
+    /*default_value=*/"/v1/ipblinding/getProxyConfig"};
+
+const base::FeatureParam<int> kIpPrivacyAuthTokenCacheBatchSize{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAuthTokenCacheBatchSize",
+    /*default_value=*/64};
+
+const base::FeatureParam<int> kIpPrivacyAuthTokenCacheLowWaterMark{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAuthTokenCacheLowWaterMark",
+    /*default_value=*/16};
+
+const base::FeatureParam<base::TimeDelta> kIpPrivacyProxyListFetchInterval{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyListFetchInterval",
+    /*default_value=*/base::Hours(1)};
+
+const base::FeatureParam<base::TimeDelta> kIpPrivacyProxyListMinFetchInterval{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyMinListFetchInterval",
+    /*default_value=*/base::Minutes(1)};
+
+const base::FeatureParam<bool> kIpPrivacyDirectOnly{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyDirectOnly",
+    /*default_value=*/false};
+
+const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyBsaEnablePrivacyPass",
+    /*default_value=*/false};
 
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
-    base::FEATURE_ENABLED_BY_DEFAULT;
+    base::FEATURE_DISABLED_BY_DEFAULT;
 #else   // !BUILDFLAG(IS_ANDROID)
 inline constexpr auto kMigrateSessionsOnNetworkChangeV2Default =
     base::FEATURE_DISABLED_BY_DEFAULT;
@@ -411,12 +441,6 @@ BASE_FEATURE(kForceThirdPartyCookieBlocking,
              "ForceThirdPartyCookieBlockingEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If the HTTP Cache Transaction write lock should be acquired async with
-// sending the HTTP request.
-BASE_FEATURE(kAsyncCacheLock,
-             "AsyncCacheLock",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableEarlyHintsOnHttp11,
              "EnableEarlyHintsOnHttp11",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -429,12 +453,27 @@ BASE_FEATURE(kZstdContentEncoding,
              "ZstdContentEncoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClearSiteDataWildcardSupport,
-             "ClearSiteDataWildcardSupport",
+// When enabled, partitioned storage will be allowed even if third-party cookies
+// are disabled by default. Partitioned storage will not be allowed if
+// third-party cookies are disabled due to a specific rule.
+BASE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault,
+             "ThirdPartyPartitionedStorageAllowedByDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDigestAuthEnableSecureAlgorithms,
-             "DigestAuthEnableSecureAlgorithms",
+BASE_FEATURE(kPriorityHeader,
+             "PriorityHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
+             "SpdyHeadersToHttpResponseUseBuilder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReceiveEcn, "ReceiveEcn", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/634470): Remove this feature flag in January 2024 if the new
+// limit sticks.
+BASE_FEATURE(kNewCertPathBuilderIterationLimit,
+             "NewCertPathBuilderIterationLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features

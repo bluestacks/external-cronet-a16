@@ -6,7 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
@@ -22,6 +24,7 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/url_request/url_request_context.h"
 #include "url/scheme_host_port.h"
@@ -29,6 +32,7 @@
 namespace net {
 
 namespace {
+
 // From
 // https://wicg.github.io/web-transport/#dom-quictransportconfiguration-server_certificate_fingerprints
 constexpr int kCustomCertificateMaxValidityDays = 14;
@@ -36,6 +40,23 @@ constexpr int kCustomCertificateMaxValidityDays = 14;
 // The time the client would wait for the server to acknowledge the session
 // being closed.
 constexpr base::TimeDelta kMaxCloseTimeout = base::Seconds(2);
+
+// Enables custom congestion control for WebTransport over HTTP/3.
+BASE_FEATURE(kWebTransportCongestionControl,
+             "WebTransportCongestionControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<quic::CongestionControlType>::Option
+    kWebTransportCongestionControlAlgorithms[] = {
+        {quic::kCubicBytes, "CUBIC"},
+        {quic::kRenoBytes, "Reno"},
+        {quic::kBBR, "BBRv1"},
+        {quic::kBBRv2, "BBRv2"},
+};
+constexpr base::FeatureParam<quic::CongestionControlType>
+    kWebTransportCongestionControlAlgorithm{
+        &kWebTransportCongestionControl, /*name=*/"algorithm",
+        /*default_value=*/quic::kCubicBytes,
+        &kWebTransportCongestionControlAlgorithms};
 
 std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   std::set<std::string> hosts;
@@ -101,15 +122,15 @@ void RecordNetLogQuicSessionClientStateChanged(
     const absl::optional<WebTransportError>& error) {
   net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
-        base::Value::Dict dict;
-        dict.Set("last_state", WebTransportStateString(last_state));
-        dict.Set("next_state", WebTransportStateString(next_state));
+        auto dict = base::Value::Dict()
+                        .Set("last_state", WebTransportStateString(last_state))
+                        .Set("next_state", WebTransportStateString(next_state));
         if (error.has_value()) {
-          base::Value::Dict error_dict;
-          error_dict.Set("net_error", error->net_error);
-          error_dict.Set("quic_error", error->quic_error);
-          error_dict.Set("details", error->details);
-          dict.Set("error", std::move(error_dict));
+          dict.Set("error",
+                   base::Value::Dict()
+                       .Set("net_error", error->net_error)
+                       .Set("quic_error", static_cast<int>(error->quic_error))
+                       .Set("details", error->details));
         }
         return dict;
       });
@@ -168,14 +189,12 @@ class DedicatedWebTransportHttp3ClientSession
       quic::QuicConnection* connection,
       const quic::QuicServerId& server_id,
       quic::QuicCryptoClientConfig* crypto_config,
-      quic::QuicClientPushPromiseIndex* push_promise_index,
       DedicatedWebTransportHttp3Client* client)
       : quic::QuicSpdyClientSession(config,
                                     supported_versions,
                                     connection,
                                     server_id,
-                                    crypto_config,
-                                    push_promise_index),
+                                    crypto_config),
         client_(client) {}
 
   bool OnSettingsFrame(const quic::SettingsFrame& frame) override {
@@ -247,7 +266,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   void OnIncomingUnidirectionalStreamAvailable() override {
     visitor_->OnIncomingUnidirectionalStreamAvailable();
   }
-  void OnDatagramReceived(absl::string_view datagram) override {
+  void OnDatagramReceived(std::string_view datagram) override {
     visitor_->OnDatagramReceived(datagram);
   }
   void OnCanCreateNewOutgoingBidirectionalStream() override {
@@ -324,6 +343,14 @@ void RecordNegotiatedWebTransportVersion(
   }
   base::UmaHistogramEnumeration(
       "Net.WebTransport.NegotiatedWebTransportVersion", negotiated);
+}
+
+void AdjustSendAlgorithm(quic::QuicConnection& connection) {
+  if (!base::FeatureList::IsEnabled(kWebTransportCongestionControl)) {
+    return;
+  }
+  connection.sent_packet_manager().SetSendAlgorithm(
+      kWebTransportCongestionControlAlgorithm.Get());
 }
 
 }  // namespace
@@ -581,14 +608,15 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
       InitializeQuicConfig(*quic_context_->params()), supported_versions_,
       connection.release(),
       quic::QuicServerId(url_.host(), url_.EffectiveIntPort()), &crypto_config_,
-      &push_promise_index_, this);
+      this);
   if (!original_supported_versions_.empty()) {
     session_->set_client_original_supported_versions(
         original_supported_versions_);
   }
 
   packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
-      socket_.get(), quic_context_->clock(), this, kQuicYieldAfterPacketsRead,
+      std::move(socket_), quic_context_->clock(), this,
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_);
@@ -596,6 +624,7 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   event_logger_ = std::make_unique<QuicEventLogger>(session_.get(), net_log_);
   connection_->set_debug_visitor(event_logger_.get());
   connection_->set_creator_debug_delegate(event_logger_.get());
+  AdjustSendAlgorithm(*connection_);
 
   session_->Initialize();
   packet_reader_->StartReading();
@@ -846,7 +875,7 @@ void DedicatedWebTransportHttp3Client::
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramReceived(
-    absl::string_view datagram) {
+    std::string_view datagram) {
   visitor_->OnDatagramReceived(datagram);
 }
 

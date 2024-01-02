@@ -5,12 +5,15 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -62,8 +65,15 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanBrowserOnly);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanRendererOnly);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeThreadCacheSize);
+BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValue();
+BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid();
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSchedulerLoopQuarantine);
+extern const BASE_EXPORT base::FeatureParam<int>
+    kPartitionAllocSchedulerLoopQuarantineCapacity;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 enum class BackupRefPtrEnabledProcesses {
@@ -147,6 +157,7 @@ extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
 // Kill switch for memory tagging. Skips any code related to memory tagging when
 // enabled.
 BASE_EXPORT BASE_DECLARE_FEATURE(kKillPartitionAllocMemoryTagging);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableDereferenceCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
@@ -164,18 +175,24 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanStackScanning);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDCScan);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanImmediateFreeing);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanEagerClearing);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseDenserDistribution);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryReclaimer);
 extern const BASE_EXPORT base::FeatureParam<TimeDelta>
     kPartitionAllocMemoryReclaimerInterval;
+BASE_EXPORT BASE_DECLARE_FEATURE(
+    kPartitionAllocStraightenLargerSlotSpanFreeLists);
+extern const BASE_EXPORT
+    base::FeatureParam<partition_alloc::StraightenLargerSlotSpanFreeListsMode>
+        kPartitionAllocStraightenLargerSlotSpanFreeListsMode;
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
 
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 extern const base::FeatureParam<bool>
     kPartialLowEndModeExcludePartitionAllocSupport;
 #endif
@@ -184,6 +201,24 @@ extern const base::FeatureParam<bool>
 // all processes.
 inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =
     "BackupRefPtrRendererLive";
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCacheMultiplier);
+BASE_EXPORT double GetThreadCacheMultiplier();
+BASE_EXPORT double GetThreadCacheMultiplierForAndroid();
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCachePurgeInterval);
+extern const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMinPurgeInterval();
+extern const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMaxPurgeInterval();
+extern const partition_alloc::internal::base::TimeDelta
+GetThreadCacheDefaultPurgeInterval();
+
+BASE_EXPORT BASE_DECLARE_FEATURE(
+    kEnableConfigurableThreadCacheMinCachedMemoryForPurging);
+BASE_EXPORT int GetThreadCacheMinCachedMemoryForPurgingBytes();
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
 
 }  // namespace features
 }  // namespace base

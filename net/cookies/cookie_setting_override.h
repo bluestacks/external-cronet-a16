@@ -14,21 +14,14 @@ namespace net {
 // together. The notion of no overrides is conveyable via an empty set.
 enum class CookieSettingOverride {
   kMinValue = 0,
-
-  // When specified, the user has indicated to force allowing third-party
-  // cookies.
-  kForceThirdPartyByUser = kMinValue,
   // When specified, third-party cookies may be allowed based on existence of
   // TopLevelStorageAccess grants.
-  kTopLevelStorageAccessGrantEligible = 1,
+  kTopLevelStorageAccessGrantEligible = kMinValue,
   // When present, the caller may use an existing Storage Access API grant (if
   // a matching grant exists) to access third-party cookies. Otherwise, Storage
   // Access API grants do not apply.
-  kStorageAccessGrantEligible = 2,
-  // When present, 3PCD support settings (ContentSettingsType::TPCD_SUPPORT)
-  // will be respected.
-  k3pcdSupport = 3,
-  kMaxValue = k3pcdSupport,
+  kStorageAccessGrantEligible = 1,
+  kMaxValue = kStorageAccessGrantEligible,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,

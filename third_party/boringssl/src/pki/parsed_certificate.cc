@@ -243,9 +243,8 @@ std::shared_ptr<const ParsedCertificate> ParsedCertificate::Create(
 
     // Inhibit Any Policy.
     if (result->GetExtension(der::Input(kInhibitAnyPolicyOid), &extension)) {
-      result->has_inhibit_any_policy_ = true;
-      if (!ParseInhibitAnyPolicy(extension.value,
-                                 &result->inhibit_any_policy_)) {
+      result->inhibit_any_policy_ = ParseInhibitAnyPolicy(extension.value);
+      if (!result->inhibit_any_policy_) {
         errors->AddError(kFailedParsingInhibitAnyPolicy);
         return nullptr;
       }
@@ -282,7 +281,7 @@ std::shared_ptr<const ParsedCertificate> ParsedCertificate::Create(
 bool ParsedCertificate::CreateAndAddToVector(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
     const ParseCertificateOptions& options,
-    std::vector<std::shared_ptr<const ParsedCertificate>>* chain,
+    std::vector<std::shared_ptr<const bssl::ParsedCertificate>>* chain,
     CertErrors* errors) {
   std::shared_ptr<const ParsedCertificate> cert(
       Create(std::move(cert_data), options, errors));

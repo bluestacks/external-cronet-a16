@@ -526,7 +526,7 @@ def GetTestName(test, sep='#'):
     The test name as a string.
   """
   test_name = '%s%s%s' % (test['class'], sep, test['method'])
-  assert ' *-:' not in test_name, (
+  assert not any(char in test_name for char in ' *-:'), (
       'The test name must not contain any of the characters in " *-:". See '
       'https://crbug.com/912199')
   return test_name
@@ -571,7 +571,7 @@ def GetUniqueTestName(test, sep='#'):
     sanitized_flags = [x.replace('-', '_') for x in test['flags']]
     display_name = '%s_with_%s' % (display_name, '_'.join(sanitized_flags))
 
-  assert ' *-:' not in display_name, (
+  assert not any(char in display_name for char in ' *-:'), (
       'The test name must not contain any of the characters in " *-:". See '
       'https://crbug.com/912199')
 
@@ -607,9 +607,11 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._data_deps = None
     self._data_deps_delegate = None
     self._runtime_deps_path = None
-    self._store_data_in_app_directory = False
+    self._variations_test_seed_path = args.variations_test_seed_path
+    self._webview_variations_test_seed_path = (
+        args.webview_variations_test_seed_path)
+    self._store_data_dependencies_in_temp = False
     self._initializeDataDependencyAttributes(args, data_deps_delegate)
-
     self._annotations = None
     self._excluded_annotations = None
     self._test_filters = None
@@ -621,6 +623,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._flags = None
     self._use_apk_under_test_flags_file = False
+    self._webview_flags = args.webview_command_line_arg
     self._initializeFlagAttributes(args)
 
     self._screenshot_dir = None
@@ -749,10 +752,11 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     if self._junit4_runner_class:
       if self._test_apk_incremental_install_json:
-        self._junit4_runner_supports_listing = next(
-            (True for x in self._test_apk.GetAllMetadata()
-             if 'real-instr' in x[0] and x[1] in _TEST_LIST_JUNIT4_RUNNERS),
-            False)
+        for name, value in self._test_apk.GetAllMetadata():
+          if (name.startswith('incremental-install-instrumentation-')
+              and value in _TEST_LIST_JUNIT4_RUNNERS):
+            self._junit4_runner_supports_listing = True
+            break
       else:
         self._junit4_runner_supports_listing = (
             self._junit4_runner_class in _TEST_LIST_JUNIT4_RUNNERS)
@@ -789,8 +793,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   def _initializeDataDependencyAttributes(self, args, data_deps_delegate):
     self._data_deps = []
     self._data_deps_delegate = data_deps_delegate
+    self._store_data_dependencies_in_temp = args.store_data_dependencies_in_temp
     self._runtime_deps_path = args.runtime_deps_path
-    self._store_data_in_app_directory = args.store_data_in_app_directory
+
     if not self._runtime_deps_path:
       logging.warning('No data dependencies will be pushed.')
 
@@ -971,7 +976,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   @property
   def flags(self):
-    return self._flags
+    return self._flags[:]
 
   @property
   def is_unit_test(self):
@@ -1014,6 +1019,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     return self._use_webview_provider
 
   @property
+  def webview_flags(self):
+    return self._webview_flags[:]
+
+  @property
   def screenshot_dir(self):
     return self._screenshot_dir
 
@@ -1022,8 +1031,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     return self._skia_gold_properties
 
   @property
-  def store_data_in_app_directory(self):
-    return self._store_data_in_app_directory
+  def store_data_dependencies_in_temp(self):
+    return self._store_data_dependencies_in_temp
 
   @property
   def store_tombstones(self):
@@ -1080,6 +1089,14 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def use_apk_under_test_flags_file(self):
     return self._use_apk_under_test_flags_file
+
+  @property
+  def variations_test_seed_path(self):
+    return self._variations_test_seed_path
+
+  @property
+  def webview_variations_test_seed_path(self):
+    return self._webview_variations_test_seed_path
 
   @property
   def wait_for_java_debugger(self):

@@ -1,5 +1,5 @@
 # -*- bazel-starlark -*-
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Siso config version of clang_code_coverage_wrapper.py"""
@@ -39,7 +39,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
     "fuchsia": [
         # TODO(crbug.com/1174725): These files caused clang to crash while
         # compiling them.
-        "../../base/allocator/partition_allocator/pcscan.cc",
+        "../../base/allocator/partition_allocator/src/partition_alloc/pcscan.cc",
         "../../third_party/skia/src/core/SkOpts.cpp",
         "../../third_party/skia/src/opts/SkOpts_hsw.cpp",
         "../../third_party/skia/third_party/skcms/skcms.cc",

@@ -12,7 +12,6 @@
 
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
-#include "url/third_party/mozilla/url_parse.h"
 #include "quiche/quic/core/io/quic_default_event_loop.h"
 #include "quiche/quic/core/io/quic_event_loop.h"
 #include "quiche/quic/core/quic_default_clock.h"
@@ -26,6 +25,7 @@
 #include "quiche/quic/platform/api/quic_socket_address.h"
 #include "quiche/quic/tools/fake_proof_verifier.h"
 #include "quiche/common/platform/api/quiche_command_line_flags.h"
+#include "quiche/common/platform/api/quiche_googleurl.h"
 #include "quiche/common/platform/api/quiche_system_event_loop.h"
 
 DEFINE_QUICHE_COMMAND_LINE_FLAG(
@@ -214,7 +214,10 @@ class MasqueTapSession
 };
 
 int RunMasqueClient(int argc, char* argv[]) {
-  const char* usage = "Usage: masque_client [options] <url>";
+  const char* usage =
+      "Usage: masque_client [options] <proxy-url> <urls>..\n"
+      "  <proxy-url> is the URI template of the MASQUE server,\n"
+      "  or host:port to use the default template";
 
   // The first non-flag argument is the URI template of the MASQUE server.
   // All subsequent ones are interpreted as URLs to fetch via the MASQUE server.

@@ -10,8 +10,8 @@
 #include <atomic>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
@@ -34,12 +34,12 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-#include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #endif
 
 namespace base::internal {
@@ -442,7 +442,7 @@ void WorkerThread::RunWorker() {
   bool got_work_this_wakeup = false;
   while (!ShouldExit()) {
 #if BUILDFLAG(IS_APPLE)
-    mac::ScopedNSAutoreleasePool autorelease_pool;
+    apple::ScopedNSAutoreleasePool autorelease_pool;
 #endif
     absl::optional<WatchHangsInScope> hang_watch_scope;
     if (watch_for_hangs)

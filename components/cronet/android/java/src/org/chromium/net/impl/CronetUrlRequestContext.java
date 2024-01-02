@@ -10,12 +10,13 @@ import android.os.Process;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeClassQualifiedName;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeClassQualifiedName;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
@@ -56,9 +57,6 @@ import javax.annotation.concurrent.GuardedBy;
 @UsedByReflection("CronetEngine.java")
 @VisibleForTesting
 public class CronetUrlRequestContext extends CronetEngineBase {
-    private static final int LOG_NONE = 3; // LOG(FATAL), no VLOG.
-    private static final int LOG_DEBUG = -1; // LOG(FATAL...INFO), VLOG(1)
-    private static final int LOG_VERBOSE = -2; // LOG(FATAL...INFO), VLOG(2)
     static final String LOG_TAG = CronetUrlRequestContext.class.getSimpleName();
 
     /**
@@ -205,9 +203,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         mThroughputListenerList.disableThreadAsserts();
         mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
         CronetLibraryLoader.ensureInitialized(builder.getContext(), builder);
-        if (!IntegratedModeState.INTEGRATED_MODE_ENABLED) {
-            CronetUrlRequestContextJni.get().setMinLogLevel(getLoggingLevel());
-        }
         if (builder.httpCacheMode() == HttpCacheType.DISK) {
             mInUseStoragePath = builder.storagePath();
             synchronized (sInUseStoragePaths) {
@@ -717,21 +712,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return mUrlRequestContextAdapter != 0;
     }
 
-    /**
-     * @return loggingLevel see {@link #LOG_NONE}, {@link #LOG_DEBUG} and {@link #LOG_VERBOSE}.
-     */
-    private int getLoggingLevel() {
-        int loggingLevel;
-        if (Log.isLoggable(LOG_TAG, Log.VERBOSE)) {
-            loggingLevel = LOG_VERBOSE;
-        } else if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-            loggingLevel = LOG_DEBUG;
-        } else {
-            loggingLevel = LOG_NONE;
-        }
-        return loggingLevel;
-    }
-
     private static int convertConnectionTypeToApiValue(@EffectiveConnectionType int type) {
         switch (type) {
             case EffectiveConnectionType.TYPE_OFFLINE:
@@ -757,11 +737,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     private void initNetworkThread() {
         mNetworkThread = Thread.currentThread();
         mInitCompleted.open();
-        if (!IntegratedModeState.INTEGRATED_MODE_ENABLED) {
-            // In integrated mode, network thread is shared from the host.
-            // Cronet shouldn't change the property of the thread.
-            Thread.currentThread().setName("ChromiumNet");
-        }
+        Thread.currentThread().setName("ChromiumNet");
     }
 
     @SuppressWarnings("unused")
@@ -876,7 +852,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         void addPkp(long urlRequestContextConfig, String host, byte[][] hashes,
                 boolean includeSubdomains, long expirationTime);
         long createRequestContextAdapter(long urlRequestContextConfig);
-        int setMinLogLevel(int loggingLevel);
         byte[] getHistogramDeltas();
         @NativeClassQualifiedName("CronetContextAdapter")
         void destroy(long nativePtr, CronetUrlRequestContext caller);

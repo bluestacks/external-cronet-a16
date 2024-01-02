@@ -345,25 +345,24 @@ class MetricsServiceTest : public testing::Test {
 
 class MetricsServiceTestWithFeatures
     : public MetricsServiceTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool>> {
  public:
   MetricsServiceTestWithFeatures() = default;
   ~MetricsServiceTestWithFeatures() override = default;
 
-  bool ShouldClearLogsOnClonedInstall() { return GetParam(); }
+  bool ShouldSnapshotInBg() { return std::get<0>(GetParam()); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (ShouldClearLogsOnClonedInstall()) {
-      enabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall,
-          /*params=*/std::map<std::string, std::string>());
+    if (ShouldSnapshotInBg()) {
+      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
+                                    base::FieldTrialParams());
     } else {
       disabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall);
+          features::kMetricsServiceDeltaSnapshotInBg);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -387,20 +386,19 @@ class MetricsServiceTestWithStartupVisibility
   MetricsServiceTestWithStartupVisibility() = default;
   ~MetricsServiceTestWithStartupVisibility() override = default;
 
-  bool ShouldClearLogsOnClonedInstall() { return std::get<1>(GetParam()); }
+  bool ShouldSnapshotInBg() { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (ShouldClearLogsOnClonedInstall()) {
-      enabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall,
-          /*params=*/std::map<std::string, std::string>());
+    if (ShouldSnapshotInBg()) {
+      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
+                                    base::FieldTrialParams());
     } else {
       disabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall);
+          features::kMetricsServiceDeltaSnapshotInBg);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -450,7 +448,9 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All, MetricsServiceTestWithFeatures, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         MetricsServiceTestWithFeatures,
+                         ::testing::Combine(::testing::Bool()));
 
 TEST_P(MetricsServiceTestWithFeatures, RecordId) {
   EnableMetricsReporting();
@@ -574,6 +574,8 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
   EXPECT_EQ(0, uma_log.user_action_event_size());
   EXPECT_EQ(0, uma_log.omnibox_event_size());
   CheckForNonStabilityHistograms(uma_log);
+  EXPECT_EQ(
+      1, GetHistogramSampleCount(uma_log, "UMA.InitialStabilityRecordBeacon"));
 
   // As there wasn't an unclean shutdown, no browser crash samples should have
   // been emitted.
@@ -864,6 +866,8 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   EXPECT_EQ(0, uma_log.user_action_event_size());
   EXPECT_EQ(0, uma_log.omnibox_event_size());
   CheckForNonStabilityHistograms(uma_log);
+  EXPECT_EQ(
+      1, GetHistogramSampleCount(uma_log, "UMA.InitialStabilityRecordBeacon"));
 
   // Verify that the histograms emitted by the test provider made it into the
   // log.
@@ -1473,15 +1477,9 @@ TEST_P(MetricsServiceTestWithFeatures, PurgeLogsOnClonedInstallDetected) {
   // Save a machine id that will cause a clone to be detected.
   GetLocalState()->SetInteger(prefs::kMetricsMachineId, kTestHashedId + 1);
   cloned_install_detector->SaveMachineId(GetLocalState(), kTestRawId);
-  // Verify that the logs were purged if the |kMetricsClearLogsOnClonedInstall|
-  // feature is enabled.
-  if (ShouldClearLogsOnClonedInstall()) {
-    EXPECT_FALSE(test_log_store->has_staged_log());
-    EXPECT_FALSE(test_log_store->has_unsent_logs());
-  } else {
-    EXPECT_TRUE(test_log_store->has_staged_log());
-    EXPECT_TRUE(test_log_store->has_unsent_logs());
-  }
+  // Verify that the logs were purged.
+  EXPECT_FALSE(test_log_store->has_staged_log());
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

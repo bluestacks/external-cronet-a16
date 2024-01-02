@@ -232,7 +232,6 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_DNS_TASK)
 //   {
 //     "extraction_error": <The DnsResponseResultExtractor::ExtractionError>
 //     "dns_query_type": <The DnsQueryType requested from the extractor>
-//     "results": <The HostCache::Entry returned by the extractor>
 //   }
 EVENT_TYPE(HOST_RESOLVER_MANAGER_DNS_TASK_EXTRACTION_FAILURE)
 
@@ -401,6 +400,26 @@ EVENT_TYPE(SUBMITTED_TO_RESOLVER_THREAD)
 //     "source_dependency": <Source identifier for the controlling entity>,
 //   }
 EVENT_TYPE(SOCKET_ALIVE)
+
+// Records Open calls to sockets.
+//   {
+//     "net_error": <On failure; net integer error code>
+//   }
+EVENT_TYPE(SOCKET_OPEN)
+
+// Records Connect calls to sockets.
+//   {
+//     "address": <Remote address being connected to>
+//     "net_error": <On failure; net integer error code>
+//   }
+EVENT_TYPE(SOCKET_CONNECT)
+
+// Records BindToNetwork calls to sockets.
+//   {
+//     "network": <Network this socket is being bound to>
+//     "net_error": <On failure; net integer error code>
+//   }
+EVENT_TYPE(SOCKET_BIND_TO_NETWORK)
 
 // ------------------------------------------------------------------------
 // Brokered Socket (Shared by stream and datagram sockets)
@@ -1777,6 +1796,23 @@ EVENT_TYPE(HTTP2_PROXY_CLIENT_SESSION)
 //   }
 
 // ------------------------------------------------------------------------
+// QuicStreamFactory
+// ------------------------------------------------------------------------
+
+// This event is emitted whenever a platform notification is received that
+// could possibly trigger connection migration.
+//   {
+//     "signal": <Type of the platform notification>
+//   }
+EVENT_TYPE(QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION)
+
+// These events track QuicStreamFactory's handling of OnIPAddressChanged and
+// whether QuicSessions are closed or marked as going away.
+EVENT_TYPE(QUIC_STREAM_FACTORY_ON_IP_ADDRESS_CHANGED)
+EVENT_TYPE(QUIC_STREAM_FACTORY_CLOSE_ALL_SESSIONS)
+EVENT_TYPE(QUIC_STREAM_FACTORY_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY)
+
+// ------------------------------------------------------------------------
 // QuicStreamFactory::Job
 // ------------------------------------------------------------------------
 
@@ -2169,6 +2205,24 @@ EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_SESSION_READY)
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
 
+// Records that the QUIC session received a default network change signal.
+//   {
+//     "new_default_network": <The new default network>
+//   }
+EVENT_TYPE(QUIC_SESSION_NETWORK_MADE_DEFAULT)
+
+// Records that the QUIC session received a network disconnected signal.
+//   {
+//     "disconnected_network": <The network which was disconnected>
+//   }
+EVENT_TYPE(QUIC_SESSION_NETWORK_DISCONNECTED)
+
+// Records that the QUIC session received a network connected signal.
+//   {
+//     "connected_network": <The network which was connected>
+//   }
+EVENT_TYPE(QUIC_SESSION_NETWORK_CONNECTED)
+
 // Session was closed, either remotely or by the peer.
 //   {
 //     "quic_error": <quic::QuicErrorCode which caused the connection to be
@@ -2442,13 +2496,6 @@ EVENT_TYPE(QUIC_CONNECTION_MIGRATION_TRIGGERED)
 //  }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_FAILURE)
 
-// This event is emitted whenenver a platform notification is received that
-// could possibly trigger connection migration.
-//   {
-//     "signal": <Type of the platform notification>
-//   }
-EVENT_TYPE(QUIC_CONNECTION_MIGRATION_PLATFORM_NOTIFICATION)
-
 // Records a successful QUIC connection migration attempt of the session
 // identified by connection_id.
 //  {
@@ -2458,19 +2505,35 @@ EVENT_TYPE(QUIC_CONNECTION_MIGRATION_SUCCESS)
 
 // Records that a QUIC connection migration attempt due to new network
 // being connected.
+// {
+//     "connected_network": <The network we will try to migrate to>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED)
 
 // Records that a QUIC connection migration attempt due to new network
 // being marked as default network.
+// {
+//     "new_default_network": <The new default network>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_NETWORK_MADE_DEFAULT)
 
 // Records that a QUIC connection migration attempt due to old network
 // being disconnected.
+// {
+//     "disconnected_network": <The network which was disconnected>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_NETWORK_DISCONNECTED)
 
 // Records that a QUIC connection migration attempt due to encountering
 // packet write error on the current network.
+// {
+//     "network": <Current network where we encountered the write error>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_WRITE_ERROR)
+
+// Records that no alternate networks were available after either the default
+// network was or a we encountered a packet write error.
+EVENT_TYPE(QUIC_CONNECTION_MIGRATION_WAITING_FOR_NEW_NETWORK)
 
 // Records that a QUIC connection migration attempt due to path
 // degrading on the current network.
@@ -2478,13 +2541,29 @@ EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_PATH_DEGRADING)
 
 // Records that a QUIC connection migration attempt due to efforts to
 // migrate back to the default network.
+// {
+//     "retry_count": <Number of attempts to migrate back so far>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_MIGRATE_BACK)
 
 // Records a QUIC connection migration failure after probing.
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING)
 
 // Records a QUIC connection migration success after probing.
+// {
+//     "migrate_to_network": <The network the probe was successful for>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_SUCCESS_AFTER_PROBING)
+
+// Records a QUIC connection migration timeout while waiting for a new network.
+EVENT_TYPE(QUIC_CONNECTION_MIGRATION_FAILURE_WAITING_FOR_NETWORK)
+
+// Records that a new network was found before QUIC connection migration timed
+// out.
+// {
+//     "network": <The network that was found and we will try to migrate to>
+// }
+EVENT_TYPE(QUIC_CONNECTION_MIGRATION_SUCCESS_WAITING_FOR_NETWORK)
 
 // ------------------------------------------------------------------------
 // QuicConnectivityProbingManager
@@ -2970,6 +3049,19 @@ EVENT_TYPE(SPECIFIC_NETWORK_MADE_DEFAULT)
 EVENT_TYPE(CERTIFICATE_DATABASE_TRUST_STORE_CHANGED)
 EVENT_TYPE(CERTIFICATE_DATABASE_CLIENT_CERT_STORE_CHANGED)
 
+// This event is logged when a request to conditionally clear the cached client
+// certificate for a specific host has been received. It contains the following
+// parameters:
+// {
+//    "host": <Serialized scheme/host/port of the request>,
+//    "certificates": <A list of PEM encoded certificates, the first one
+//                    being the new client certificate and the remaining
+//                    being intermediate certificates. May be an empty
+//                    list if no client certificate should be cached.>,
+//    "is_cleared": <boolean>,
+// }
+EVENT_TYPE(CLEAR_CACHED_CLIENT_CERT)
+
 // ------------------------------------------------------------------------
 // Exponential back-off throttling events
 // ------------------------------------------------------------------------
@@ -3281,25 +3373,6 @@ EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT)
 //                 encountered while building or verifying the path.>
 //   }
 EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILT)
-
-// This event is created when a TrialComparisonCertVerifier starts a
-// verification using the trial verifier.
-//
-// The event parameters are:
-//   {
-//      "trial_success": <True if the trial verification had the same result>,
-//   }
-EVENT_TYPE(TRIAL_CERT_VERIFIER_JOB)
-
-// This event is created when a TrialComparisonCertVerifier begins a trial
-// comparison job for a regular CertVerifier job.
-//
-// The event parameters are:
-//   {
-//      "source_dependency": <Source identifier for the trial comparison job
-//                            that was started>,
-//   }
-EVENT_TYPE(TRIAL_CERT_VERIFIER_JOB_COMPARISON_STARTED)
 
 // -----------------------------------------------------------------------------
 // FTP events.
@@ -4297,3 +4370,12 @@ EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_DATA)
 // OBLIVIOUS_HTTP_RESPONSE_HEADERS logs headers of the response, after
 // decryption.
 EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_HEADERS)
+
+// This event is logged when First-Party Sets metadata is requested/received.
+// The following parameters are attached to the "end" event:
+//   {
+//     "cache_filter": <string>,
+//     "frame_entry": <string>,
+//     "top_frame_entry": <string>,
+//   }
+EVENT_TYPE(FIRST_PARTY_SETS_METADATA)

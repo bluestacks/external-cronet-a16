@@ -158,9 +158,10 @@ class BASE_EXPORT TraceLog :
 
   // Asynchronous enabled state listeners. When tracing is enabled or disabled,
   // for each observer, a task for invoking its appropriate callback is posted
-  // to the thread from which AddAsyncEnabledStateObserver() was called. This
-  // allows the observer to be safely destroyed, provided that it happens on the
-  // same thread that invoked AddAsyncEnabledStateObserver().
+  // to the `SequencedTaskRunner` from which AddAsyncEnabledStateObserver() was
+  // called. This allows the observer to be safely destroyed, provided that it
+  // happens on the same `SequencedTaskRunner` that invoked
+  // AddAsyncEnabledStateObserver().
   class BASE_EXPORT AsyncEnabledStateObserver {
    public:
     virtual ~AsyncEnabledStateObserver() = default;
@@ -279,6 +280,7 @@ class BASE_EXPORT TraceLog :
                                    const char* name,
                                    uint64_t id,
                                    PlatformThreadId thread_id,
+                                   const TimeTicks timestamp,
                                    TraceArguments* args);
   TraceEventHandle AddTraceEvent(char phase,
                                  const unsigned char* category_group_enabled,

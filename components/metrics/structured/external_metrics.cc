@@ -4,9 +4,11 @@
 
 #include "components/metrics/structured/external_metrics.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_set.h"
+#include "base/files/dir_reader_posix.h"
 #include "base/files/file.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,6 +34,67 @@ void FilterEvents(
     } else {
       ++it;
     }
+  }
+}
+
+std::string_view Platform2ProjectName(uint64_t project_name_hash) {
+  switch (project_name_hash) {
+    case UINT64_C(827233605053062635):
+      return "AudioPeripheral";
+    case UINT64_C(524369188505453537):
+      return "AudioPeripheralInfo";
+    case UINT64_C(9074739597929991885):
+      return "Bluetooth";
+    case UINT64_C(1745381000935843040):
+      return "BluetoothDevice";
+    case UINT64_C(11181229631788078243):
+      return "BluetoothChipset";
+    case UINT64_C(8206859287963243715):
+      return "Cellular";
+    case UINT64_C(11294265225635075664):
+      return "HardwareVerifier";
+    case UINT64_C(4905803635010729907):
+      return "RollbackEnterprise";
+    case UINT64_C(9675127341789951965):
+      return "Rmad";
+    case UINT64_C(4690103929823698613):
+      return "WiFiChipset";
+    case UINT64_C(17922303533051575891):
+      return "UsbDevice";
+    case UINT64_C(1370722622176744014):
+      return "UsbError";
+    case UINT64_C(17319042894491683836):
+      return "UsbPdDevice";
+    case UINT64_C(6962789877417678651):
+      return "UsbSession";
+    case UINT64_C(4320592646346933548):
+      return "WiFi";
+    case UINT64_C(7302676440391025918):
+      return "WiFiAP";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+void IncrementProjectCount(base::flat_map<uint64_t, int>& project_count_map,
+                           uint64_t project_name_hash) {
+  if (project_count_map.contains(project_name_hash)) {
+    project_count_map[project_name_hash] += 1;
+  } else {
+    project_count_map[project_name_hash] = 1;
+  }
+}
+
+void ProcessEventProtosProjectCounts(
+    base::flat_map<uint64_t, int>& project_count_map,
+    const EventsProto& proto) {
+  // Process all events that were packed in the proto.
+  for (const auto& event : proto.uma_events()) {
+    IncrementProjectCount(project_count_map, event.project_name_hash());
+  }
+
+  for (const auto& event : proto.non_uma_events()) {
+    IncrementProjectCount(project_count_map, event.project_name_hash());
   }
 }
 
@@ -86,31 +149,42 @@ EventsProto ReadAndDeleteEvents(
     return result;
   }
 
-  base::FileEnumerator enumerator(directory, false,
-                                  base::FileEnumerator::FILES);
+  base::DirReaderPosix dir_reader(directory.value().c_str());
+  if (!dir_reader.IsValid()) {
+    VLOG(2) << "Failed to load External Metrics directory: " << directory;
+    return result;
+  }
+
   int file_counter = 0;
   int dropped_events = 0;
+  base::flat_map<uint64_t, int> dropped_projects_count, produced_projects_count;
 
-  for (base::FilePath path = enumerator.Next(); !path.empty();
-       path = enumerator.Next()) {
-    std::string proto_str;
-    int64_t file_size;
-    EventsProto proto;
+  while (dir_reader.Next()) {
+    base::FilePath path = directory.Append(dir_reader.name());
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_OPEN_ALWAYS);
+
+    // This will fail on '.' and '..' files.
+    if (!file.IsValid()) {
+      continue;
+    }
+
+    // Ignore any directory.
+    base::File::Info info;
+    if (!file.GetInfo(&info) || info.is_directory) {
+      continue;
+    }
+
+    // If recording is disabled delete the file.
+    if (!recording_enabled) {
+      base::DeleteFile(path);
+      continue;
+    }
 
     ++file_counter;
 
-    // There may be too many messages in the directory to hold in-memory. This
-    // could happen if the process in which Structured metrics resides is
-    // either crash-looping or taking too long to process externally recorded
-    // events.
-    //
-    // Events will be dropped in that case so that more recent events can be
-    // processed. Events will be dropped if recording has been disabled.
-    if (!recording_enabled || file_counter > GetFileLimitPerScan()) {
-      base::DeleteFile(path);
-      ++dropped_events;
-      continue;
-    }
+    std::string proto_str;
+    int64_t file_size;
+    EventsProto proto;
 
     // If an event is abnormally large, ignore it to prevent OOM.
     bool fs_ok = base::GetFileSize(path, &file_size);
@@ -129,6 +203,24 @@ EventsProto ReadAndDeleteEvents(
                    proto.ParseFromString(proto_str);
     base::DeleteFile(path);
 
+    // Process all events that were packed in the proto.
+    ProcessEventProtosProjectCounts(produced_projects_count, proto);
+
+    // There may be too many messages in the directory to hold in-memory.
+    // This could happen if the process in which Structured metrics resides
+    // is either crash-looping or taking too long to process externally
+    // recorded events.
+    //
+    // Events will be dropped in that case so that more recent events can be
+    // processed. Events will be dropped if recording has been disabled.
+    if (file_counter > GetFileLimitPerScan()) {
+      ++dropped_events;
+
+      // Process all events that were packed in the proto.
+      ProcessEventProtosProjectCounts(dropped_projects_count, proto);
+      continue;
+    }
+
     if (!read_ok) {
       continue;
     }
@@ -145,12 +237,25 @@ EventsProto ReadAndDeleteEvents(
 
   if (recording_enabled) {
     LogDroppedExternalMetrics(dropped_events);
+
+    // Log histograms for each project with their appropriate counts.
+    // If a project isn't seen then it will not be logged.
+    for (const auto& project_counts : produced_projects_count) {
+      LogProducedProjectExternalMetrics(
+          Platform2ProjectName(project_counts.first), project_counts.second);
+    }
+
+    for (const auto& project_counts : dropped_projects_count) {
+      LogDroppedProjectExternalMetrics(
+          Platform2ProjectName(project_counts.first), project_counts.second);
+    }
   }
 
   LogNumFilesPerExternalMetricsScan(file_counter);
 
   MaybeFilterBluetoothEvents(result.mutable_uma_events());
   MaybeFilterBluetoothEvents(result.mutable_non_uma_events());
+
   return result;
 }
 

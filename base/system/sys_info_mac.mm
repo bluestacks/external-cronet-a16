@@ -12,15 +12,19 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include <string_view>
+
+#include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/posix/sysctl.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -37,19 +41,6 @@ bool g_is_cpu_security_mitigation_enabled = false;
 // Whether NumberOfProcessors() was called. Used to detect when the CPU security
 // mitigations state changes after a call to NumberOfProcessors().
 bool g_is_cpu_security_mitigation_enabled_read = false;
-
-// Queries sysctlbyname() for the given key and returns the value from the
-// system or the empty string on failure.
-std::string GetSysctlStringValue(const char* key_name) {
-  char value[256];
-  size_t len = sizeof(value);
-  if (sysctlbyname(key_name, &value, &len, nullptr, 0) != 0)
-    return std::string();
-  DCHECK_GE(len, 1u);
-  DCHECK_LE(len, sizeof(value));
-  DCHECK_EQ('\0', value[len - 1]);
-  return std::string(value, len - 1);
-}
 
 }  // namespace
 
@@ -113,7 +104,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
 uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   int result = host_info(host.get(), HOST_BASIC_INFO,
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {
@@ -136,12 +127,45 @@ uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
 
 // static
 std::string SysInfo::CPUModelName() {
-  return GetSysctlStringValue("machdep.cpu.brand_string");
+  return StringSysctlByName("machdep.cpu.brand_string").value_or(std::string{});
 }
 
 // static
 std::string SysInfo::HardwareModelName() {
-  return GetSysctlStringValue("hw.model");
+  // The old "hw.machine" and "hw.model" sysctls are discouraged in favor of the
+  // new "hw.product" and "hw.target". See
+  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/sys/sysctl.h#L1168-L1169
+  // and
+  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/kern/kern_mib.c#L534-L536
+  if (base::mac::MacOSMajorVersion() < 11) {
+    return StringSysctl({CTL_HW, HW_MODEL}).value_or(std::string{});
+  } else {
+    return StringSysctl({CTL_HW, HW_PRODUCT}).value_or(std::string{});
+  }
+}
+
+// static
+absl::optional<SysInfo::HardwareModelNameSplit>
+SysInfo::SplitHardwareModelNameDoNotUse(std::string_view name) {
+  size_t number_loc = name.find_first_of("0123456789");
+  if (number_loc == std::string::npos) {
+    return absl::nullopt;
+  }
+  size_t comma_loc = name.find(',', number_loc);
+  if (comma_loc == std::string::npos) {
+    return absl::nullopt;
+  }
+
+  HardwareModelNameSplit split;
+  const auto* begin = name.begin();
+  if (!StringToInt(std::string_view(begin + number_loc, begin + comma_loc),
+                   &split.model) ||
+      !StringToInt(std::string_view(begin + comma_loc + 1, name.end()),
+                   &split.variant)) {
+    return absl::nullopt;
+  }
+  split.category = name.substr(0, number_loc);
+  return split;
 }
 
 // static

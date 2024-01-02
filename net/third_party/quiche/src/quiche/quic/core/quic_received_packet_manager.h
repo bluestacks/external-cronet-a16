@@ -27,7 +27,7 @@ class UberReceivedPacketManagerPeer;
 struct QuicConnectionStats;
 
 // Records all received packets by a connection.
-class QUIC_EXPORT_PRIVATE QuicReceivedPacketManager {
+class QUICHE_EXPORT QuicReceivedPacketManager {
  public:
   QuicReceivedPacketManager();
   explicit QuicReceivedPacketManager(QuicConnectionStats* stats);
@@ -205,9 +205,6 @@ class QUIC_EXPORT_PRIVATE QuicReceivedPacketManager {
   QuicTime time_of_previous_received_packet_;
   // Whether the most recent packet was missing before it was received.
   bool was_last_packet_missing_;
-
-  const bool trim_ack_ranges_early_ =
-      GetQuicReloadableFlag(quic_rpm_trim_ack_ranges_early);
 
   // Last sent largest acked, which gets updated when ACK was successfully sent.
   QuicPacketNumber last_sent_largest_acked_;

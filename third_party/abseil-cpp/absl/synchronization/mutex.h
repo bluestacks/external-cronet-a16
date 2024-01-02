@@ -64,6 +64,7 @@
 #include <iterator>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "absl/base/const_init.h"
 #include "absl/base/internal/identity.h"
 #include "absl/base/internal/low_level_alloc.h"
@@ -324,7 +325,9 @@ class ABSL_LOCKABLE Mutex {
   // `true`, `Await()` *may* skip the release/re-acquire step.
   //
   // `Await()` requires that this thread holds this `Mutex` in some mode.
-  void Await(const Condition& cond);
+  void Await(const Condition& cond) {
+    AwaitCommon(cond, synchronization_internal::KernelTimeout::Never());
+  }
 
   // Mutex::LockWhen()
   // Mutex::ReaderLockWhen()
@@ -334,9 +337,15 @@ class ABSL_LOCKABLE Mutex {
   // be acquired, then atomically acquires this `Mutex`. `LockWhen()` is
   // logically equivalent to `*Lock(); Await();` though they may have different
   // performance characteristics.
-  void LockWhen(const Condition& cond) ABSL_EXCLUSIVE_LOCK_FUNCTION();
+  void LockWhen(const Condition& cond) ABSL_EXCLUSIVE_LOCK_FUNCTION() {
+    LockWhenCommon(cond, synchronization_internal::KernelTimeout::Never(),
+                   true);
+  }
 
-  void ReaderLockWhen(const Condition& cond) ABSL_SHARED_LOCK_FUNCTION();
+  void ReaderLockWhen(const Condition& cond) ABSL_SHARED_LOCK_FUNCTION() {
+    LockWhenCommon(cond, synchronization_internal::KernelTimeout::Never(),
+                   false);
+  }
 
   void WriterLockWhen(const Condition& cond) ABSL_EXCLUSIVE_LOCK_FUNCTION() {
     this->LockWhen(cond);
@@ -363,9 +372,13 @@ class ABSL_LOCKABLE Mutex {
   // Negative timeouts are equivalent to a zero timeout.
   //
   // This method requires that this thread holds this `Mutex` in some mode.
-  bool AwaitWithTimeout(const Condition& cond, absl::Duration timeout);
+  bool AwaitWithTimeout(const Condition& cond, absl::Duration timeout) {
+    return AwaitCommon(cond, synchronization_internal::KernelTimeout{timeout});
+  }
 
-  bool AwaitWithDeadline(const Condition& cond, absl::Time deadline);
+  bool AwaitWithDeadline(const Condition& cond, absl::Time deadline) {
+    return AwaitCommon(cond, synchronization_internal::KernelTimeout{deadline});
+  }
 
   // Mutex::LockWhenWithTimeout()
   // Mutex::ReaderLockWhenWithTimeout()
@@ -379,9 +392,15 @@ class ABSL_LOCKABLE Mutex {
   //
   // Negative timeouts are equivalent to a zero timeout.
   bool LockWhenWithTimeout(const Condition& cond, absl::Duration timeout)
-      ABSL_EXCLUSIVE_LOCK_FUNCTION();
+      ABSL_EXCLUSIVE_LOCK_FUNCTION() {
+    return LockWhenCommon(
+        cond, synchronization_internal::KernelTimeout{timeout}, true);
+  }
   bool ReaderLockWhenWithTimeout(const Condition& cond, absl::Duration timeout)
-      ABSL_SHARED_LOCK_FUNCTION();
+      ABSL_SHARED_LOCK_FUNCTION() {
+    return LockWhenCommon(
+        cond, synchronization_internal::KernelTimeout{timeout}, false);
+  }
   bool WriterLockWhenWithTimeout(const Condition& cond, absl::Duration timeout)
       ABSL_EXCLUSIVE_LOCK_FUNCTION() {
     return this->LockWhenWithTimeout(cond, timeout);
@@ -399,9 +418,15 @@ class ABSL_LOCKABLE Mutex {
   //
   // Deadlines in the past are equivalent to an immediate deadline.
   bool LockWhenWithDeadline(const Condition& cond, absl::Time deadline)
-      ABSL_EXCLUSIVE_LOCK_FUNCTION();
+      ABSL_EXCLUSIVE_LOCK_FUNCTION() {
+    return LockWhenCommon(
+        cond, synchronization_internal::KernelTimeout{deadline}, true);
+  }
   bool ReaderLockWhenWithDeadline(const Condition& cond, absl::Time deadline)
-      ABSL_SHARED_LOCK_FUNCTION();
+      ABSL_SHARED_LOCK_FUNCTION() {
+    return LockWhenCommon(
+        cond, synchronization_internal::KernelTimeout{deadline}, false);
+  }
   bool WriterLockWhenWithDeadline(const Condition& cond, absl::Time deadline)
       ABSL_EXCLUSIVE_LOCK_FUNCTION() {
     return this->LockWhenWithDeadline(cond, deadline);
@@ -497,15 +522,22 @@ class ABSL_LOCKABLE Mutex {
                 int flags) ABSL_ATTRIBUTE_COLD;
   // slow path release
   void UnlockSlow(SynchWaitParams* waitp) ABSL_ATTRIBUTE_COLD;
+  // TryLock slow path.
+  bool TryLockSlow();
+  // ReaderTryLock slow path.
+  bool ReaderTryLockSlow();
   // Common code between Await() and AwaitWithTimeout/Deadline()
   bool AwaitCommon(const Condition& cond,
                    synchronization_internal::KernelTimeout t);
+  bool LockWhenCommon(const Condition& cond,
+                      synchronization_internal::KernelTimeout t, bool write);
   // Attempt to remove thread s from queue.
   void TryRemove(base_internal::PerThreadSynch* s);
   // Block a thread on mutex.
   void Block(base_internal::PerThreadSynch* s);
   // Wake a thread; return successor.
   base_internal::PerThreadSynch* Wakeup(base_internal::PerThreadSynch* w);
+  void Dtor();
 
   friend class CondVar;   // for access to Trans()/Fer().
   void Trans(MuHow how);  // used for CondVar->Mutex transfer
@@ -833,8 +865,10 @@ class Condition {
     std::memcpy(callback, callback_, sizeof(*callback));
   }
 
+  static bool AlwaysTrue(const Condition*) { return true; }
+
   // Used only to create kTrue.
-  constexpr Condition() = default;
+  constexpr Condition() : eval_(AlwaysTrue), arg_(nullptr) {}
 };
 
 // -----------------------------------------------------------------------------
@@ -877,7 +911,6 @@ class CondVar {
   // A `CondVar` allocated on the heap or on the stack can use the this
   // constructor.
   CondVar();
-  ~CondVar();
 
   // CondVar::Wait()
   //
@@ -886,7 +919,9 @@ class CondVar {
   // spurious wakeup), then reacquires the `Mutex` and returns.
   //
   // Requires and ensures that the current thread holds the `Mutex`.
-  void Wait(Mutex* mu);
+  void Wait(Mutex* mu) {
+    WaitCommon(mu, synchronization_internal::KernelTimeout::Never());
+  }
 
   // CondVar::WaitWithTimeout()
   //
@@ -901,7 +936,9 @@ class CondVar {
   // to return `true` or `false`.
   //
   // Requires and ensures that the current thread holds the `Mutex`.
-  bool WaitWithTimeout(Mutex* mu, absl::Duration timeout);
+  bool WaitWithTimeout(Mutex* mu, absl::Duration timeout) {
+    return WaitCommon(mu, synchronization_internal::KernelTimeout(timeout));
+  }
 
   // CondVar::WaitWithDeadline()
   //
@@ -918,7 +955,9 @@ class CondVar {
   // to return `true` or `false`.
   //
   // Requires and ensures that the current thread holds the `Mutex`.
-  bool WaitWithDeadline(Mutex* mu, absl::Time deadline);
+  bool WaitWithDeadline(Mutex* mu, absl::Time deadline) {
+    return WaitCommon(mu, synchronization_internal::KernelTimeout(deadline));
+  }
 
   // CondVar::Signal()
   //
@@ -940,7 +979,6 @@ class CondVar {
  private:
   bool WaitCommon(Mutex* mutex, synchronization_internal::KernelTimeout t);
   void Remove(base_internal::PerThreadSynch* s);
-  void Wakeup(base_internal::PerThreadSynch* w);
   std::atomic<intptr_t> cv_;  // Condition variable state.
   CondVar(const CondVar&) = delete;
   CondVar& operator=(const CondVar&) = delete;
@@ -1023,6 +1061,21 @@ inline Mutex::Mutex() : mu_(0) {
 }
 
 inline constexpr Mutex::Mutex(absl::ConstInitType) : mu_(0) {}
+
+#if !defined(__APPLE__) && !defined(ABSL_BUILD_DLL)
+ABSL_ATTRIBUTE_ALWAYS_INLINE
+inline Mutex::~Mutex() { Dtor(); }
+#endif
+
+#if defined(NDEBUG) && !defined(ABSL_HAVE_THREAD_SANITIZER)
+// Use default (empty) destructor in release build for performance reasons.
+// We need to mark both Dtor and ~Mutex as always inline for inconsistent
+// builds that use both NDEBUG and !NDEBUG with dynamic libraries. In these
+// cases we want the empty functions to dissolve entirely rather than being
+// exported from dynamic libraries and potentially override the non-empty ones.
+ABSL_ATTRIBUTE_ALWAYS_INLINE
+inline void Mutex::Dtor() {}
+#endif
 
 inline CondVar::CondVar() : cv_(0) {}
 

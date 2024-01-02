@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <random>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -27,6 +28,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/i18n/icu_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -66,7 +68,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
@@ -75,7 +76,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -833,10 +834,6 @@ class TestRunner {
   // |done|.
   void CleanupTask(base::ScopedTempDir task_temp_dir, bool done);
 
-  // No-op error function that replaces libxml's default, which writes to
-  // stderr.
-  static void NullXmlErrorFunc(void* context, const char* message, ...) {}
-
   ThreadChecker thread_checker_;
 
   const raw_ptr<TestLauncher> launcher_;
@@ -849,9 +846,6 @@ class TestRunner {
   // Protects member used concurrently by worker tasks.
   base::Lock lock_;
   std::vector<std::string> tests_to_run_ GUARDED_BY(lock_);
-  // Set the global libxml error context and function pointer for the lifetime
-  // of this test runner.
-  ScopedXmlErrorFunc xml_error_func_{nullptr, &NullXmlErrorFunc};
 
   base::WeakPtrFactory<TestRunner> weak_ptr_factory_{this};
 };
@@ -1493,6 +1487,25 @@ bool LoadFilterFile(const FilePath& file_path,
   return true;
 }
 
+bool TestLauncher::IsOnlyExactPositiveFilterFromFile(
+    const CommandLine* command_line) const {
+  if (command_line->HasSwitch(kGTestFilterFlag)) {
+    LOG(ERROR) << "Found " << switches::kTestLauncherFilterFile;
+    return false;
+  }
+  if (!negative_test_filter_.empty()) {
+    LOG(ERROR) << "Found negative filters in the filter file.";
+    return false;
+  }
+  for (const auto& filter : positive_test_filter_) {
+    if (Contains(filter, '*')) {
+      LOG(ERROR) << "Found wildcard positive filters in the filter file.";
+      return false;
+    }
+  }
+  return true;
+}
+
 bool TestLauncher::Init(CommandLine* command_line) {
   // Initialize sharding. Command line takes precedence over legacy environment
   // variables.
@@ -1612,6 +1625,10 @@ bool TestLauncher::Init(CommandLine* command_line) {
   fprintf(stdout, "Using %zu parallel jobs.\n", parallel_jobs_);
   fflush(stdout);
 
+  if (!base::i18n::InitializeICU()) {
+    return false;
+  }
+
   CreateAndStartThreadPool(parallel_jobs_);
 
   std::vector<std::string> positive_file_filter;
@@ -1643,6 +1660,18 @@ bool TestLauncher::Init(CommandLine* command_line) {
   // tests in testing/buildbot/filters.
   if (command_line->HasSwitch(kGTestRunDisabledTestsFlag)) {
     negative_test_filter_.clear();
+  }
+
+  // If `kEnforceExactPositiveFilter` is set, only accept exact positive
+  // filters from the filter file.
+  enforce_exact_postive_filter_ =
+      command_line->HasSwitch(switches::kEnforceExactPositiveFilter);
+  if (enforce_exact_postive_filter_ &&
+      !IsOnlyExactPositiveFilterFromFile(command_line)) {
+    LOG(ERROR) << "With " << switches::kEnforceExactPositiveFilter
+               << ", only accept exact positive filters via "
+               << switches::kTestLauncherFilterFile;
+    return false;
   }
 
   // Split --gtest_filter at '-', if there is one, to separate into
@@ -1973,14 +2002,23 @@ void TestLauncher::CombinePositiveTestFilters(
   }
 }
 
+bool TestLauncher::ShouldRunInCurrentShard(
+    std::string_view prefix_stripped_name) const {
+  CHECK(!StartsWith(prefix_stripped_name, kPreTestPrefix));
+  CHECK(!StartsWith(prefix_stripped_name, kDisabledTestPrefix));
+  return PersistentHash(prefix_stripped_name) % total_shards_ ==
+         static_cast<uint32_t>(shard_index_);
+}
+
 std::vector<std::string> TestLauncher::CollectTests() {
   std::vector<std::string> test_names;
   // To support RTS(regression test selection), which may have 100,000 or
   // more exact gtest filter, we first split filter into exact filter
   // and wildcards filter, then exact filter can match faster.
   std::vector<StringPiece> positive_wildcards_filter;
-  std::unordered_set<StringPiece, StringPieceHash> positive_exact_filter;
+  std::unordered_set<StringPiece> positive_exact_filter;
   positive_exact_filter.reserve(positive_test_filter_.size());
+  std::unordered_set<std::string> enforced_positive_tests;
   for (const std::string& filter : positive_test_filter_) {
     if (filter.find('*') != std::string::npos) {
       positive_wildcards_filter.push_back(filter);
@@ -1990,7 +2028,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
   }
 
   std::vector<StringPiece> negative_wildcards_filter;
-  std::unordered_set<StringPiece, StringPieceHash> negative_exact_filter;
+  std::unordered_set<StringPiece> negative_exact_filter;
   negative_exact_filter.reserve(negative_test_filter_.size());
   for (const std::string& filter : negative_test_filter_) {
     if (filter.find('*') != std::string::npos) {
@@ -2011,6 +2049,9 @@ std::vector<std::string> TestLauncher::CollectTests() {
                        positive_exact_filter.end() ||
                    positive_exact_filter.find(prefix_stripped_name) !=
                        positive_exact_filter.end();
+      if (found && enforce_exact_postive_filter_) {
+        enforced_positive_tests.insert(prefix_stripped_name);
+      }
       if (!found) {
         for (const StringPiece& filter : positive_wildcards_filter) {
           if (MatchPattern(test_name, filter) ||
@@ -2044,8 +2085,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
 
     // Tests with the name XYZ will cause tests with the name PRE_XYZ to run. We
     // should bucket all of these tests together.
-    if (PersistentHash(prefix_stripped_name) % total_shards_ !=
-        static_cast<uint32_t>(shard_index_)) {
+    if (!ShouldRunInCurrentShard(prefix_stripped_name)) {
       continue;
     }
 
@@ -2063,6 +2103,26 @@ std::vector<std::string> TestLauncher::CollectTests() {
     }
 
     test_names.push_back(test_name);
+  }
+
+  // If `kEnforceExactPositiveFilter` is set, all test cases listed in the
+  // exact positive filter for the current shard should exist in the
+  // `enforced_positive_tests`. Otherwise, print the missing cases and fail
+  // loudly.
+  if (enforce_exact_postive_filter_) {
+    bool found_exact_positive_filter_not_enforced = false;
+    for (const auto& filter : positive_exact_filter) {
+      if (!ShouldRunInCurrentShard(filter) ||
+          Contains(enforced_positive_tests, std::string(filter))) {
+        continue;
+      }
+      if (!found_exact_positive_filter_not_enforced) {
+        LOG(ERROR) << "Found exact positive filter not enforced:";
+        found_exact_positive_filter_not_enforced = true;
+      }
+      LOG(ERROR) << filter;
+    }
+    CHECK(!found_exact_positive_filter_not_enforced);
   }
 
   return test_names;

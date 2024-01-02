@@ -110,6 +110,11 @@ class MetricsService {
   // recording is not currently running.
   std::string GetClientId() const;
 
+  // Get the low entropy source values.
+  int GetLowEntropySource();
+  int GetOldLowEntropySource();
+  int GetPseudoLowEntropySource();
+
   // Set an external provided id for the metrics service. This method can be
   // set by a caller which wants to explicitly control the *next* id used by the
   // metrics service. Note that setting the external client id will *not* change
@@ -538,7 +543,7 @@ class MetricsService {
 
   // Called via a callback after a periodic ongoing log (created through the
   // MetricsRotationScheduler) was stored in |log_store()|.
-  void OnPeriodicOngoingLogStored();
+  void OnAsyncPeriodicOngoingLogStored();
 
   // Prepares the initial stability log, which is only logged when the previous
   // run of Chrome crashed.  This log contains any stability metrics left over
@@ -582,6 +587,8 @@ class MetricsService {
   // Snapshots histogram deltas using the passed |log_histogram_writer| and then
   // finalizes |log| by calling FinalizeLog(). |log|, |current_app_version| and
   // |signing_key| are used to finalize the log (see FinalizeLog()).
+  // Semantically, this is equivalent to SnapshotUnloggedSamplesAndFinalizeLog()
+  // followed by MarkUnloggedSamplesAsLogged().
   static FinalizedLog SnapshotDeltasAndFinalizeLog(
       std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
       std::unique_ptr<MetricsLog> log,

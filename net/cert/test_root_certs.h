@@ -5,7 +5,11 @@
 #ifndef NET_CERT_TEST_ROOT_CERTS_H_
 #define NET_CERT_TEST_ROOT_CERTS_H_
 
+#include <set>
+
+#include "base/containers/span.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/trust_store.h"
@@ -14,7 +18,7 @@
 #if BUILDFLAG(IS_IOS)
 #include <CoreFoundation/CFArray.h>
 #include <Security/SecTrust.h>
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #endif
 
 namespace net {
@@ -82,7 +86,7 @@ class NET_EXPORT TestRootCerts {
   void ClearImpl();
 
 #if BUILDFLAG(IS_IOS)
-  base::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
 #endif
 
   TrustStoreInMemory test_trust_store_;
@@ -105,7 +109,7 @@ class NET_EXPORT ScopedTestRoot {
   // |trust| may be specified to change the details of how the trust is
   // interpreted (applies only to CertVerifyProcBuiltin).
   explicit ScopedTestRoot(
-      X509Certificate* cert,
+      scoped_refptr<X509Certificate> cert,
       CertificateTrust trust = CertificateTrust::ForTrustAnchor());
   // Creates a ScopedTestRoot that adds |certs| to the TestRootCerts store.
   // |trust| may be specified to change the details of how the trust is

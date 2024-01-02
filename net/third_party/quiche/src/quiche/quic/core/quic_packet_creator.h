@@ -39,10 +39,10 @@ namespace test {
 class QuicPacketCreatorPeer;
 }
 
-class QUIC_EXPORT_PRIVATE QuicPacketCreator {
+class QUICHE_EXPORT QuicPacketCreator {
  public:
   // A delegate interface for further processing serialized packet.
-  class QUIC_EXPORT_PRIVATE DelegateInterface {
+  class QUICHE_EXPORT DelegateInterface {
    public:
     virtual ~DelegateInterface() {}
     // Get a buffer of kMaxOutgoingPacketSize bytes to serialize the next
@@ -60,9 +60,9 @@ class QUIC_EXPORT_PRIVATE QuicPacketCreator {
     // Consults delegate whether a packet should be generated.
     virtual bool ShouldGeneratePacket(HasRetransmittableData retransmittable,
                                       IsHandshake handshake) = 0;
-    // Called when there is data to be sent. Retrieves updated ACK frame from
-    // the delegate.
-    virtual const QuicFrames MaybeBundleAckOpportunistically() = 0;
+    // Called when there is data to be sent. Gives delegate a chance to bundle
+    // anything with to-be-sent data.
+    virtual void MaybeBundleOpportunistically() = 0;
 
     // Returns the packet fate for serialized packets which will be handed over
     // to delegate via OnSerializedPacket(). Called when a packet is about to be
@@ -74,7 +74,7 @@ class QUIC_EXPORT_PRIVATE QuicPacketCreator {
   // Interface which gets callbacks from the QuicPacketCreator at interesting
   // points.  Implementations must not mutate the state of the creator
   // as a result of these callbacks.
-  class QUIC_EXPORT_PRIVATE DebugDelegate {
+  class QUICHE_EXPORT DebugDelegate {
    public:
     virtual ~DebugDelegate() {}
 
@@ -89,7 +89,7 @@ class QUIC_EXPORT_PRIVATE QuicPacketCreator {
   // Set the peer address and connection IDs with which the serialized packet
   // will be sent to during the scope of this object. Upon exiting the scope,
   // the original peer address and connection IDs are restored.
-  class QUIC_EXPORT_PRIVATE ScopedPeerAddressContext {
+  class QUICHE_EXPORT ScopedPeerAddressContext {
    public:
     ScopedPeerAddressContext(QuicPacketCreator* creator,
                              QuicSocketAddress address,
@@ -369,10 +369,6 @@ class QUIC_EXPORT_PRIVATE QuicPacketCreator {
   // Generates an MTU discovery packet of specified size.
   void GenerateMtuDiscoveryPacket(QuicByteCount target_mtu);
 
-  // Called when there is data to be sent, Retrieves updated ACK frame from
-  // delegate_ and flushes it.
-  void MaybeBundleAckOpportunistically();
-
   // Called to flush ACK and STOP_WAITING frames, returns false if the flush
   // fails.
   bool FlushAckFrame(const QuicFrames& frames);
@@ -482,7 +478,7 @@ class QUIC_EXPORT_PRIVATE QuicPacketCreator {
 
   // Used to 1) clear queued_frames_, 2) report unrecoverable error (if
   // serialization fails) upon exiting the scope.
-  class QUIC_EXPORT_PRIVATE ScopedSerializationFailureHandler {
+  class QUICHE_EXPORT ScopedSerializationFailureHandler {
    public:
     explicit ScopedSerializationFailureHandler(QuicPacketCreator* creator);
     ~ScopedSerializationFailureHandler();

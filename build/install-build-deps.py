@@ -744,15 +744,16 @@ def missing_packages(packages):
         ["dpkg-query", "-W", "-f", " "] + packages,
         check=True,
         capture_output=True,
-    ).decode()
+    )
     return []
   except subprocess.CalledProcessError as e:
-    return [line.split(" ")[-1] for line in e.stderr.strip().splitlines()]
+    return [
+        line.split(" ")[-1] for line in e.stderr.decode().strip().splitlines()
+    ]
 
 
 def package_is_installable(package):
-  result = subprocess.run(["apt-cache", "show", package],
-                          capture_output=True).decode()
+  result = subprocess.run(["apt-cache", "show", package], capture_output=True)
   return result.returncode == 0
 
 
@@ -874,7 +875,7 @@ def install_chromeos_fonts(options):
 def install_locales():
   print("Installing locales.", file=sys.stderr)
   CHROMIUM_LOCALES = [
-      "da_DK.UTF-8", "fr_FR.UTF-8", "he_IL.UTF-8", "zh_TW.UTF-8"
+      "da_DK.UTF-8", "en_US.utf8", "fr_FR.UTF-8", "he_IL.UTF-8", "zh_TW.UTF-8"
   ]
   LOCALE_GEN = "/etc/locale.gen"
   if os.path.exists(LOCALE_GEN):

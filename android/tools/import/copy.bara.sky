@@ -83,6 +83,9 @@ cronet_origin_files = glob(
         "net/third_party/uri_template/**",
         "third_party/abseil-cpp/**",
         "third_party/android_ndk/sources/android/cpufeatures/**",
+        # See https://chromium-review.googlesource.com/c/chromium/src/+/4885470
+        # Note: Only used for tests.
+        "third_party/anonymous_tokens/**",
         "third_party/ashmem/**",
         "third_party/boringssl/**",
         "third_party/brotli/**",

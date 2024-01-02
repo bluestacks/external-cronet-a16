@@ -115,6 +115,10 @@ class NET_EXPORT CanonicalCookie {
   // will be unpartitioned even when the cookie line has the Partitioned
   // attribute.
   //
+  // The `block_truncated` argument indicates whether the '\0', '\n', and '\r'
+  // characters should cause the cookie to fail to be created if present
+  // (instead of truncating `cookie_line` at the first occurrence).
+  //
   // If a cookie is returned, |cookie->IsCanonical()| will be true.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
@@ -122,6 +126,7 @@ class NET_EXPORT CanonicalCookie {
       const base::Time& creation_time,
       absl::optional<base::Time> server_time,
       absl::optional<CookiePartitionKey> cookie_partition_key,
+      bool block_truncated = true,
       CookieInclusionStatus* status = nullptr);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the
@@ -197,6 +202,10 @@ class NET_EXPORT CanonicalCookie {
     return UniqueKey() < other.UniqueKey();
   }
 
+  bool operator==(const CanonicalCookie& other) const {
+    return IsEquivalent(other);
+  }
+
   const std::string& Name() const { return name_; }
   const std::string& Value() const { return value_; }
   // We represent the cookie's host-only-flag as the absence of a leading dot in
@@ -232,6 +241,15 @@ class NET_EXPORT CanonicalCookie {
   bool IsDomainCookie() const {
     return !domain_.empty() && domain_[0] == '.'; }
   bool IsHostCookie() const { return !IsDomainCookie(); }
+
+  // Returns whether this cookie is Partitioned and its partition key matches a
+  // a same-site context by checking if the cookies domain site is the same as
+  // the partition key's site.
+  // Returns false if the cookie has no partition key.
+  bool IsFirstPartyPartitioned() const;
+
+  // Returns whether the cookie is partitioned in a third-party context.
+  bool IsThirdPartyPartitioned() const;
 
   // Returns the cookie's domain, with the leading dot removed, if present.
   // This corresponds to the "cookie's domain" as described in RFC 6265bis.
@@ -312,7 +330,22 @@ class NET_EXPORT CanonicalCookie {
            priority_ == other.priority_ && same_party_ == other.same_party_ &&
            partition_key_ == other.partition_key_ && name_ == other.name_ &&
            value_ == other.value_ && domain_ == other.domain_ &&
-           path_ == other.path_ && last_update_date_ == other.last_update_date_;
+           path_ == other.path_ &&
+           last_update_date_ == other.last_update_date_ &&
+           source_scheme_ == other.source_scheme_ &&
+           source_port_ == other.source_port_;
+  }
+
+  // Similar to operator<, but considers all data members.
+  bool DataMembersPrecede(const CanonicalCookie& other) const {
+    auto f = [](const CanonicalCookie& c) {
+      return std::tie(c.creation_date_, c.last_access_date_, c.expiry_date_,
+                      c.secure_, c.httponly_, c.same_site_, c.priority_,
+                      c.same_party_, c.partition_key_, c.name_, c.value_,
+                      c.domain_, c.path_, c.last_update_date_, c.source_scheme_,
+                      c.source_port_);
+    };
+    return f(*this) < f(other);
   }
 
   void SetSourceScheme(CookieSourceScheme source_scheme) {
@@ -391,7 +424,7 @@ class NET_EXPORT CanonicalCookie {
                                     const base::Time& server_time);
 
   // Per rfc6265bis the maximum expiry date is no further than 400 days in the
-  // future. Clamping only occurs when kClampCookieExpiryTo400Days is enabled.
+  // future.
   static base::Time ValidateAndAdjustExpiryDate(
       const base::Time& expiry_date,
       const base::Time& creation_date);

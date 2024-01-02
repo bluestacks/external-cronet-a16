@@ -11,20 +11,21 @@
 #include <string>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_allocator/allocation_guard.h"
-#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/memory_reclaimer.h"
-#include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
-#include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
-#include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/allocation_guard.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/cpu.h"
@@ -55,12 +56,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/shim/nonscannable_allocator.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
-#include "base/allocator/partition_allocator/starscan/stack/stack.h"
-#include "base/allocator/partition_allocator/starscan/stats_collector.h"
-#include "base/allocator/partition_allocator/starscan/stats_reporter.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan_scheduling.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stack/stack.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stats_collector.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stats_reporter.h"
 #endif  // BUILDFLAG(USE_STARSCAN)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -68,7 +69,7 @@
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
 #endif
 
 namespace base::allocator {
@@ -413,6 +414,9 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
       // Mac signatures
       "internal::RawPtrBackupRefImpl<false, false>::ReleaseInternal",
       "internal::RawPtrBackupRefImpl<false, true>::ReleaseInternal",
+
+      // ChromeOS signatures
+      "base::allocator::dispatcher::internal::DispatcherImpl<>::FreeFn()",
 
       // Task traces are prefixed with "Task trace:" in
       // |TaskTrace::OutputToStream|
@@ -1097,6 +1101,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       break;
   }
 
+  const size_t scheduler_loop_quarantine_capacity_in_bytes =
+      static_cast<size_t>(
+          base::features::kPartitionAllocSchedulerLoopQuarantineCapacity.Get());
+
   bool enable_memory_tagging = false;
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
       partition_alloc::TagViolationReportingMode::kUndefined;
@@ -1127,6 +1135,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                 partition_alloc::TagViolationReportingMode::kAsynchronous;
             break;
         }
+        partition_alloc::PermissiveMte::SetEnabled(base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocPermissiveMte));
         partition_alloc::internal::
             ChangeMemoryTaggingModeForAllThreadsPerProcess(
                 memory_tagging_reporting_mode);
@@ -1168,7 +1178,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                                          enable_memory_tagging),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
-      brp_config.ref_count_size, bucket_distribution);
+      brp_config.ref_count_size, bucket_distribution,
+      scheduler_loop_quarantine_capacity_in_bytes);
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to
@@ -1277,16 +1288,38 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   // initialized later.
   DCHECK(process_type != switches::kZygoteProcess);
 
+  partition_alloc::ThreadCacheRegistry::Instance().SetPurgingConfiguration(
+      base::features::GetThreadCacheMinPurgeInterval(),
+      base::features::GetThreadCacheMaxPurgeInterval(),
+      base::features::GetThreadCacheDefaultPurgeInterval(),
+      size_t(base::features::GetThreadCacheMinCachedMemoryForPurgingBytes()));
+
   base::allocator::StartThreadCachePeriodicPurge();
 
+  if (base::FeatureList::IsEnabled(
+          base::features::kEnableConfigurableThreadCacheMultiplier)) {
+    // If kEnableConfigurableThreadCacheMultiplier is enabled, override the
+    // multiplier value with the corresponding feature param.
 #if BUILDFLAG(IS_ANDROID)
-  // Lower thread cache limits to avoid stranding too much memory in the caches.
-  if (SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
-          features::kPartialLowEndModeExcludePartitionAllocSupport)) {
     ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-        ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
-  }
+        base::features::GetThreadCacheMultiplierForAndroid());
+#else   // BUILDFLAG(IS_ANDROID)
+    ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+        base::features::GetThreadCacheMultiplier());
 #endif  // BUILDFLAG(IS_ANDROID)
+  } else {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+    // If kEnableConfigurableThreadCacheMultiplier is not enabled, lower
+    // thread cache limits on Android low end device to avoid stranding too much
+    // memory in the caches.
+    if (SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
+            features::kPartialLowEndModeExcludePartitionAllocSupport)) {
+      ::partition_alloc::ThreadCacheRegistry::Instance()
+          .SetThreadCacheMultiplier(
+              ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
+    }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  }
 
   // Renderer processes are more performance-sensitive, increase thread cache
   // limits.
@@ -1294,16 +1327,19 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
     largest_cached_size_ =
-        ::partition_alloc::ThreadCacheLimits::kLargeSizeThreshold;
+        size_t(base::features::GetPartitionAllocLargeThreadCacheSizeValue());
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_ANDROID)
+    // Use appropriately lower amount for Android devices with 3GB or less.
     // Devices almost always report less physical memory than what they actually
-    // have, so anything above 3GiB will catch 4GiB and above.
-    if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 3500) {
-      largest_cached_size_ =
-          ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
+    // have, so use 3.2GB (a threshold commonly uses throughout code) to avoid
+    // accidentally catching devices advertised as 4GB.
+    if (base::SysInfo::AmountOfPhysicalMemoryMB() < 3.2 * 1024) {
+      largest_cached_size_ = size_t(
+          base::features::
+              GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid());
     }
-#endif  // BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
     ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
   }
@@ -1329,10 +1365,17 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocSortActiveSlotSpans)) {
-    partition_alloc::PartitionRoot::EnableSortActiveSlotSpans();
-  }
+  partition_alloc::PartitionRoot::SetStraightenLargerSlotSpanFreeListsMode(
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocStraightenLargerSlotSpanFreeLists)
+          ? features::kPartitionAllocStraightenLargerSlotSpanFreeListsMode.Get()
+          : partition_alloc::StraightenLargerSlotSpanFreeListsMode::kNever);
+  partition_alloc::PartitionRoot::SetSortSmallerSlotSpanFreeListsEnabled(
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSortSmallerSlotSpanFreeLists));
+  partition_alloc::PartitionRoot::SetSortActiveSlotSpansEnabled(
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSortActiveSlotSpans));
 }
 
 void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {

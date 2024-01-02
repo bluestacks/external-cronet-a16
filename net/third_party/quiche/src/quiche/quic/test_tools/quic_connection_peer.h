@@ -51,10 +51,6 @@ class QuicConnectionPeer {
 
   static QuicTime::Delta GetHandshakeTimeout(QuicConnection* connection);
 
-  static QuicTime::Delta GetBandwidthUpdateTimeout(QuicConnection* connection);
-
-  static void DisableBandwidthUpdate(QuicConnection* connection);
-
   static void SetPerspective(QuicConnection* connection,
                              Perspective perspective);
 
@@ -238,6 +234,8 @@ class QuicConnectionPeer {
 
   // Overrides restrictions on sending ECN for test purposes.
   static void DisableEcnCodepointValidation(QuicConnection* connection);
+
+  static void OnForwardProgressMade(QuicConnection* connection);
 };
 
 }  // namespace test

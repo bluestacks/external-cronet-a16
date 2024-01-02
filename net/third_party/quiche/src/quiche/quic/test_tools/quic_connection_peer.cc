@@ -54,23 +54,6 @@ QuicTime::Delta QuicConnectionPeer::GetHandshakeTimeout(
 }
 
 // static
-QuicTime::Delta QuicConnectionPeer::GetBandwidthUpdateTimeout(
-    QuicConnection* connection) {
-  return connection->idle_network_detector_.bandwidth_update_timeout_;
-}
-
-// static
-void QuicConnectionPeer::DisableBandwidthUpdate(QuicConnection* connection) {
-  if (connection->idle_network_detector_.bandwidth_update_timeout_
-          .IsInfinite()) {
-    return;
-  }
-  connection->idle_network_detector_.bandwidth_update_timeout_ =
-      QuicTime::Delta::Infinite();
-  connection->idle_network_detector_.SetAlarm();
-}
-
-// static
 void QuicConnectionPeer::SetPerspective(QuicConnection* connection,
                                         Perspective perspective) {
   connection->perspective_ = perspective;
@@ -604,6 +587,11 @@ void QuicConnectionPeer::DisableEcnCodepointValidation(
   QUIC_BUG_IF(quic_bug_518619343_03, !GetQuicReloadableFlag(quic_send_ect1))
       << "Test disables ECN validation without setting quic_send_ect1";
   connection->disable_ecn_codepoint_validation_ = true;
+}
+
+// static
+void QuicConnectionPeer::OnForwardProgressMade(QuicConnection* connection) {
+  connection->OnForwardProgressMade();
 }
 
 }  // namespace test

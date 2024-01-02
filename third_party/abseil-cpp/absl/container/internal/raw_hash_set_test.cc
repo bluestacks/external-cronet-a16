@@ -48,8 +48,11 @@
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/hashtable_debug.h"
+#include "absl/container/internal/test_allocator.h"
+#include "absl/functional/function_ref.h"
 #include "absl/log/log.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/optional.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -408,19 +411,15 @@ struct StringTable
   using Base::Base;
 };
 
-struct IntTable
-    : raw_hash_set<IntPolicy, container_internal::hash_default_hash<int64_t>,
-                   std::equal_to<int64_t>, std::allocator<int64_t>> {
-  using Base = typename IntTable::raw_hash_set;
+template <typename T>
+struct ValueTable : raw_hash_set<ValuePolicy<T>, hash_default_hash<T>,
+                                 std::equal_to<T>, std::allocator<T>> {
+  using Base = typename ValueTable::raw_hash_set;
   using Base::Base;
 };
 
-struct Uint8Table
-    : raw_hash_set<Uint8Policy, container_internal::hash_default_hash<uint8_t>,
-                   std::equal_to<uint8_t>, std::allocator<uint8_t>> {
-  using Base = typename Uint8Table::raw_hash_set;
-  using Base::Base;
-};
+using IntTable = ValueTable<int64_t>;
+using Uint8Table = ValueTable<uint8_t>;
 
 template <typename T>
 struct CustomAlloc : std::allocator<T> {
@@ -435,42 +434,14 @@ struct CustomAlloc : std::allocator<T> {
 };
 
 struct CustomAllocIntTable
-    : raw_hash_set<IntPolicy, container_internal::hash_default_hash<int64_t>,
+    : raw_hash_set<IntPolicy, hash_default_hash<int64_t>,
                    std::equal_to<int64_t>, CustomAlloc<int64_t>> {
   using Base = typename CustomAllocIntTable::raw_hash_set;
   using Base::Base;
 };
 
-// Tries to allocate memory at the minimum alignment even when the default
-// allocator uses a higher alignment.
-template <typename T>
-struct MinimumAlignmentAlloc : std::allocator<T> {
-  MinimumAlignmentAlloc() = default;
-
-  template <typename U>
-  explicit MinimumAlignmentAlloc(const MinimumAlignmentAlloc<U>& /*other*/) {}
-
-  template <class U>
-  struct rebind {
-    using other = MinimumAlignmentAlloc<U>;
-  };
-
-  T* allocate(size_t n) {
-    T* ptr = std::allocator<T>::allocate(n + 1);
-    char* cptr = reinterpret_cast<char*>(ptr);
-    cptr += alignof(T);
-    return reinterpret_cast<T*>(cptr);
-  }
-
-  void deallocate(T* ptr, size_t n) {
-    char* cptr = reinterpret_cast<char*>(ptr);
-    cptr -= alignof(T);
-    std::allocator<T>::deallocate(reinterpret_cast<T*>(cptr), n + 1);
-  }
-};
-
 struct MinimumAlignmentUint8Table
-    : raw_hash_set<Uint8Policy, container_internal::hash_default_hash<uint8_t>,
+    : raw_hash_set<Uint8Policy, hash_default_hash<uint8_t>,
                    std::equal_to<uint8_t>, MinimumAlignmentAlloc<uint8_t>> {
   using Base = typename MinimumAlignmentUint8Table::raw_hash_set;
   using Base::Base;
@@ -524,13 +495,6 @@ TEST(Table, EmptyFunctorOptimization) {
   static_assert(std::is_empty<std::allocator<int>>::value, "");
 
   struct MockTable {
-    void* infoz;
-    void* ctrl;
-    void* slots;
-    size_t size;
-    size_t capacity;
-  };
-  struct MockTableInfozDisabled {
     void* ctrl;
     void* slots;
     size_t size;
@@ -555,9 +519,7 @@ TEST(Table, EmptyFunctorOptimization) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
 #endif
-  constexpr size_t mock_size = std::is_empty<HashtablezInfoHandle>()
-                                   ? sizeof(MockTableInfozDisabled)
-                                   : sizeof(MockTable);
+  constexpr size_t mock_size = sizeof(MockTable);
   constexpr size_t generation_size =
       SwisstableGenerationsEnabled() ? sizeof(GenerationData) : 0;
 #if defined(__clang__)
@@ -1638,7 +1600,7 @@ TEST(Table, CopyConstructWithAlloc) {
 }
 
 struct ExplicitAllocIntTable
-    : raw_hash_set<IntPolicy, container_internal::hash_default_hash<int64_t>,
+    : raw_hash_set<IntPolicy, hash_default_hash<int64_t>,
                    std::equal_to<int64_t>, Alloc<int64_t>> {
   ExplicitAllocIntTable() = default;
 };
@@ -1714,6 +1676,14 @@ TEST(Table, MoveAssign) {
   u = std::move(t);
   EXPECT_EQ(1, u.size());
   EXPECT_THAT(*u.find("a"), Pair("a", "b"));
+}
+
+TEST(Table, MoveSelfAssign) {
+  StringTable t;
+  t.emplace("a", "b");
+  EXPECT_EQ(1, t.size());
+  t = std::move(*&t);
+  // As long as we don't crash, it's fine.
 }
 
 TEST(Table, Equality) {
@@ -1894,11 +1864,9 @@ TEST(Table, HeterogeneousLookupOverloads) {
   EXPECT_FALSE((VerifyResultOf<CallPrefetch, NonTransparentTable>()));
   EXPECT_FALSE((VerifyResultOf<CallCount, NonTransparentTable>()));
 
-  using TransparentTable = raw_hash_set<
-      StringPolicy,
-      absl::container_internal::hash_default_hash<absl::string_view>,
-      absl::container_internal::hash_default_eq<absl::string_view>,
-      std::allocator<int>>;
+  using TransparentTable =
+      raw_hash_set<StringPolicy, hash_default_hash<absl::string_view>,
+                   hash_default_eq<absl::string_view>, std::allocator<int>>;
 
   EXPECT_TRUE((VerifyResultOf<CallFind, TransparentTable>()));
   EXPECT_TRUE((VerifyResultOf<CallErase, TransparentTable>()));
@@ -2118,16 +2086,6 @@ TEST(Table, UnstablePointers) {
   table.insert(1);
 
   EXPECT_NE(old_ptr, addr(0));
-}
-
-bool IsAssertEnabled() {
-  // Use an assert with side-effects to figure out if they are actually enabled.
-  bool assert_enabled = false;
-  assert([&]() {  // NOLINT
-    assert_enabled = true;
-    return true;
-  }());
-  return assert_enabled;
 }
 
 TEST(TableDeathTest, InvalidIteratorAsserts) {
@@ -2410,6 +2368,26 @@ TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
 #endif
 }
 
+TEST(Iterator, InvalidUseWithMoveCrashesWithSanitizers) {
+  if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
+  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
+
+  IntTable t1, t2;
+  t1.insert(1);
+  auto it = t1.begin();
+  // ptr will become invalidated on rehash.
+  const int64_t* ptr = &*it;
+  (void)ptr;
+
+  t2 = std::move(t1);
+  EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(it == t2.begin()),
+                            kInvalidIteratorDeathMessage);
+#ifdef ABSL_HAVE_ADDRESS_SANITIZER
+  EXPECT_DEATH_IF_SUPPORTED(std::cout << *ptr, "heap-use-after-free");
+#endif
+}
+
 TEST(Table, ReservedGrowthUpdatesWhenTableDoesntGrow) {
   IntTable t;
   for (int i = 0; i < 8; ++i) t.insert(i);
@@ -2509,6 +2487,78 @@ TEST(Iterator, InvalidComparisonDifferentTables) {
   EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.begin()),
                             "Invalid iterator comparison.*non-end");
 }
+
+template <typename Alloc>
+using RawHashSetAlloc = raw_hash_set<IntPolicy, hash_default_hash<int64_t>,
+                                     std::equal_to<int64_t>, Alloc>;
+
+TEST(Table, AllocatorPropagation) { TestAllocPropagation<RawHashSetAlloc>(); }
+
+struct ConstructCaller {
+  explicit ConstructCaller(int v) : val(v) {}
+  ConstructCaller(int v, absl::FunctionRef<void()> func) : val(v) { func(); }
+  template <typename H>
+  friend H AbslHashValue(H h, const ConstructCaller& d) {
+    return H::combine(std::move(h), d.val);
+  }
+  bool operator==(const ConstructCaller& c) const { return val == c.val; }
+
+  int val;
+};
+
+struct DestroyCaller {
+  explicit DestroyCaller(int v) : val(v) {}
+  DestroyCaller(int v, absl::FunctionRef<void()> func)
+      : val(v), destroy_func(func) {}
+  DestroyCaller(DestroyCaller&& that)
+      : val(that.val), destroy_func(std::move(that.destroy_func)) {
+    that.Deactivate();
+  }
+  ~DestroyCaller() {
+    if (destroy_func) (*destroy_func)();
+  }
+  void Deactivate() { destroy_func = absl::nullopt; }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const DestroyCaller& d) {
+    return H::combine(std::move(h), d.val);
+  }
+  bool operator==(const DestroyCaller& d) const { return val == d.val; }
+
+  int val;
+  absl::optional<absl::FunctionRef<void()>> destroy_func;
+};
+
+#if defined(ABSL_HAVE_ADDRESS_SANITIZER) || defined(ABSL_HAVE_MEMORY_SANITIZER)
+TEST(Table, ReentrantCallsFail) {
+  constexpr const char* kDeathMessage =
+      "use-after-poison|use-of-uninitialized-value";
+  {
+    ValueTable<ConstructCaller> t;
+    t.insert(ConstructCaller{0});
+    auto erase_begin = [&] { t.erase(t.begin()); };
+    EXPECT_DEATH_IF_SUPPORTED(t.emplace(1, erase_begin), kDeathMessage);
+  }
+  {
+    ValueTable<DestroyCaller> t;
+    t.insert(DestroyCaller{0});
+    auto find_0 = [&] { t.find(DestroyCaller{0}); };
+    t.insert(DestroyCaller{1, find_0});
+    for (int i = 10; i < 20; ++i) t.insert(DestroyCaller{i});
+    EXPECT_DEATH_IF_SUPPORTED(t.clear(), kDeathMessage);
+    for (auto& elem : t) elem.Deactivate();
+  }
+  {
+    ValueTable<DestroyCaller> t;
+    t.insert(DestroyCaller{0});
+    auto insert_1 = [&] { t.insert(DestroyCaller{1}); };
+    t.insert(DestroyCaller{1, insert_1});
+    for (int i = 10; i < 20; ++i) t.insert(DestroyCaller{i});
+    EXPECT_DEATH_IF_SUPPORTED(t.clear(), kDeathMessage);
+    for (auto& elem : t) elem.Deactivate();
+  }
+}
+#endif
 
 }  // namespace
 }  // namespace container_internal

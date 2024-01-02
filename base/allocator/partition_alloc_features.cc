@@ -4,10 +4,16 @@
 
 #include "base/allocator/partition_alloc_features.h"
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/miracle_parameter.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -87,24 +93,37 @@ BASE_FEATURE(kPartitionAllocPCScanRendererOnly,
 // Use a larger maximum thread cache cacheable bucket size.
 BASE_FEATURE(kPartitionAllocLargeThreadCacheSize,
              "PartitionAllocLargeThreadCacheSize",
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
-             // Not unconditionally enabled on 32 bit Android, since it is a
-             // more memory-constrained platform.
-             FEATURE_DISABLED_BY_DEFAULT
-#else
-             FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             FEATURE_ENABLED_BY_DEFAULT);
+
+MIRACLE_PARAMETER_FOR_INT(
+    GetPartitionAllocLargeThreadCacheSizeValue,
+    kPartitionAllocLargeThreadCacheSize,
+    "PartitionAllocLargeThreadCacheSizeValue",
+    ::partition_alloc::ThreadCacheLimits::kLargeSizeThreshold)
+
+MIRACLE_PARAMETER_FOR_INT(
+    GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid,
+    kPartitionAllocLargeThreadCacheSize,
+    "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid",
+    ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold)
 
 BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
              "PartitionAllocLargeEmptySlotSpanRing",
              FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
+             "PartitionAllocSchedulerLoopQuarantine",
+             FEATURE_DISABLED_BY_DEFAULT);
+// Scheduler Loop Quarantine's capacity in bytes.
+const base::FeatureParam<int> kPartitionAllocSchedulerLoopQuarantineCapacity{
+    &kPartitionAllocSchedulerLoopQuarantine,
+    "PartitionAllocSchedulerLoopQuarantineCapacity", 0};
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,
              "PartitionAllocBackupRefPtr",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_ASH) ||                                      \
+    BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||     \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) ||                  \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG)
              FEATURE_ENABLED_BY_DEFAULT
@@ -116,7 +135,7 @@ BASE_FEATURE(kPartitionAllocBackupRefPtr,
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtrForAsh);
 BASE_FEATURE(kPartitionAllocBackupRefPtrForAsh,
              "PartitionAllocBackupRefPtrForAsh",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
     kBackupRefPtrEnabledProcessesOptions[] = {
@@ -193,6 +212,11 @@ const base::FeatureParam<MemoryTaggingEnabledProcesses>
 BASE_FEATURE(kKillPartitionAllocMemoryTagging,
              "KillPartitionAllocMemoryTagging",
              FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
+BASE_FEATURE(kPartitionAllocPermissiveMte,
+             "PartitionAllocPermissiveMte",
+             FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableDereferenceCheckParam{
     &kPartitionAllocBackupRefPtr, "asan-enable-dereference-check", true};
@@ -275,6 +299,34 @@ BASE_FEATURE(kPartitionAllocDCScan,
              "PartitionAllocDCScan",
              FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to straighten free lists for larger slot spans in PurgeMemory() ->
+// ... -> PartitionPurgeSlotSpan().
+BASE_FEATURE(kPartitionAllocStraightenLargerSlotSpanFreeLists,
+             "PartitionAllocStraightenLargerSlotSpanFreeLists",
+             FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<
+    partition_alloc::StraightenLargerSlotSpanFreeListsMode>::Option
+    kPartitionAllocStraightenLargerSlotSpanFreeListsModeOption[] = {
+        {partition_alloc::StraightenLargerSlotSpanFreeListsMode::
+             kOnlyWhenUnprovisioning,
+         "only-when-unprovisioning"},
+        {partition_alloc::StraightenLargerSlotSpanFreeListsMode::kAlways,
+         "always"},
+};
+const base::FeatureParam<partition_alloc::StraightenLargerSlotSpanFreeListsMode>
+    kPartitionAllocStraightenLargerSlotSpanFreeListsMode = {
+        &kPartitionAllocStraightenLargerSlotSpanFreeLists,
+        "mode",
+        partition_alloc::StraightenLargerSlotSpanFreeListsMode::
+            kOnlyWhenUnprovisioning,
+        &kPartitionAllocStraightenLargerSlotSpanFreeListsModeOption,
+};
+
+// Whether to sort free lists for smaller slot spans in PurgeMemory().
+BASE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists,
+             "PartitionAllocSortSmallerSlotSpanFreeLists",
+             FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to sort the active slot spans in PurgeMemory().
 BASE_FEATURE(kPartitionAllocSortActiveSlotSpans,
              "PartitionAllocSortActiveSlotSpans",
@@ -287,7 +339,7 @@ BASE_FEATURE(kPageAllocatorRetryOnCommitFailure,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // A parameter to exclude or not exclude PartitionAllocSupport from
 // PartialLowModeOnMidRangeDevices. This is used to see how it affects
 // renderer performances, e.g. blink_perf.parser benchmark.
@@ -298,6 +350,90 @@ const FeatureParam<bool> kPartialLowEndModeExcludePartitionAllocSupport{
     &kPartialLowEndModeOnMidRangeDevices, "exclude-partition-alloc-support",
     false};
 #endif
+
+BASE_FEATURE(kEnableConfigurableThreadCacheMultiplier,
+             "EnableConfigurableThreadCacheMultiplier",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+MIRACLE_PARAMETER_FOR_DOUBLE(GetThreadCacheMultiplier,
+                             kEnableConfigurableThreadCacheMultiplier,
+                             "ThreadCacheMultiplier",
+                             2.)
+
+MIRACLE_PARAMETER_FOR_DOUBLE(GetThreadCacheMultiplierForAndroid,
+                             kEnableConfigurableThreadCacheMultiplier,
+                             "ThreadCacheMultiplierForAndroid",
+                             1.)
+
+constexpr partition_alloc::internal::base::TimeDelta ToPartitionAllocTimeDelta(
+    base::TimeDelta time_delta) {
+  return partition_alloc::internal::base::Microseconds(
+      time_delta.InMicroseconds());
+}
+
+constexpr base::TimeDelta FromPartitionAllocTimeDelta(
+    partition_alloc::internal::base::TimeDelta time_delta) {
+  return base::Microseconds(time_delta.InMicroseconds());
+}
+
+BASE_FEATURE(kEnableConfigurableThreadCachePurgeInterval,
+             "EnableConfigurableThreadCachePurgeInterval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+MIRACLE_PARAMETER_FOR_TIME_DELTA(
+    GetThreadCacheMinPurgeIntervalValue,
+    kEnableConfigurableThreadCachePurgeInterval,
+    "ThreadCacheMinPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kMinPurgeInterval))
+
+MIRACLE_PARAMETER_FOR_TIME_DELTA(
+    GetThreadCacheMaxPurgeIntervalValue,
+    kEnableConfigurableThreadCachePurgeInterval,
+    "ThreadCacheMaxPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kMaxPurgeInterval))
+
+MIRACLE_PARAMETER_FOR_TIME_DELTA(
+    GetThreadCacheDefaultPurgeIntervalValue,
+    kEnableConfigurableThreadCachePurgeInterval,
+    "ThreadCacheDefaultPurgeInterval",
+    FromPartitionAllocTimeDelta(partition_alloc::kDefaultPurgeInterval))
+
+const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMinPurgeInterval() {
+  return ToPartitionAllocTimeDelta(GetThreadCacheMinPurgeIntervalValue());
+}
+
+const partition_alloc::internal::base::TimeDelta
+GetThreadCacheMaxPurgeInterval() {
+  return ToPartitionAllocTimeDelta(GetThreadCacheMaxPurgeIntervalValue());
+}
+
+const partition_alloc::internal::base::TimeDelta
+GetThreadCacheDefaultPurgeInterval() {
+  return ToPartitionAllocTimeDelta(GetThreadCacheDefaultPurgeIntervalValue());
+}
+
+BASE_FEATURE(kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
+             "EnableConfigurableThreadCacheMinCachedMemoryForPurging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+MIRACLE_PARAMETER_FOR_INT(
+    GetThreadCacheMinCachedMemoryForPurgingBytes,
+    kEnableConfigurableThreadCacheMinCachedMemoryForPurging,
+    "ThreadCacheMinCachedMemoryForPurgingBytes",
+    partition_alloc::kMinCachedMemoryForPurgingBytes)
+
+// An apparent quarantine leak in the buffer partition unacceptably
+// bloats memory when MiraclePtr is enabled in the renderer process.
+// We believe we have found and patched the leak, but out of an
+// abundance of caution, we provide this toggle that allows us to
+// wholly disable MiraclePtr in the buffer partition, if necessary.
+//
+// TODO(crbug.com/1444624): this is unneeded once
+// MiraclePtr-for-Renderer launches.
+BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
+             "PartitionAllocDisableBRPInBufferPartition",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace base

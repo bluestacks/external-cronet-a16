@@ -32,6 +32,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -893,24 +894,24 @@ bool IsSchemefulSameSiteEnabled() {
   return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }
 
-absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
+absl::optional<
+    std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
+ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,
-    bool force_ignore_top_frame_party,
-    base::OnceCallback<void(FirstPartySetMetadata)> callback) {
-  if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
-      cookie_access_delegate) {
+    base::OnceCallback<void(FirstPartySetMetadata,
+                            FirstPartySetsCacheFilter::MatchInfo)> callback) {
+  if (cookie_access_delegate) {
     return cookie_access_delegate->ComputeFirstPartySetMetadataMaybeAsync(
         request_site,
-        force_ignore_top_frame_party
-            ? nullptr
-            : base::OptionalToPtr(
-                  isolation_info.network_isolation_key().GetTopFrameSite()),
+        base::OptionalToPtr(
+            isolation_info.network_isolation_key().GetTopFrameSite()),
         std::move(callback));
   }
 
-  return FirstPartySetMetadata();
+  return std::make_pair(FirstPartySetMetadata(),
+                        FirstPartySetsCacheFilter::MatchInfo());
 }
 
 CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod

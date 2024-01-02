@@ -16,6 +16,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <limits>
@@ -684,7 +685,11 @@ TEST_F(FormatConvertTest, Float) {
   }
 
   // Remove duplicates to speed up the logic below.
-  std::sort(floats.begin(), floats.end());
+  std::sort(floats.begin(), floats.end(), [](const float a, const float b) {
+    if (std::isnan(a)) return false;
+    if (std::isnan(b)) return true;
+    return a < b;
+  });
   floats.erase(std::unique(floats.begin(), floats.end()), floats.end());
 
   TestWithMultipleFormatsHelper(floats, {});
@@ -758,7 +763,11 @@ TEST_F(FormatConvertTest, Double) {
   }
 
   // Remove duplicates to speed up the logic below.
-  std::sort(doubles.begin(), doubles.end());
+  std::sort(doubles.begin(), doubles.end(), [](const double a, const double b) {
+    if (std::isnan(a)) return false;
+    if (std::isnan(b)) return true;
+    return a < b;
+  });
   doubles.erase(std::unique(doubles.begin(), doubles.end()), doubles.end());
 
   TestWithMultipleFormatsHelper(doubles, skip_verify);
@@ -1236,9 +1245,16 @@ TEST_F(FormatConvertTest, ExpectedFailures) {
 // Sanity check to make sure that we are testing what we think we're testing on
 // e.g. the x86_64+glibc platform.
 TEST_F(FormatConvertTest, GlibcHasCorrectTraits) {
-#if !defined(__GLIBC__) || !defined(__x86_64__)
-  return;
+#if defined(__GLIBC__) && defined(__x86_64__)
+  constexpr bool kIsSupportedGlibc = true;
+#else
+  constexpr bool kIsSupportedGlibc = false;
 #endif
+
+  if (!kIsSupportedGlibc) {
+    GTEST_SKIP() << "Test does not support this platform";
+  }
+
   const NativePrintfTraits &native_traits = VerifyNativeImplementation();
   // If one of the following tests break then it is either because the above PP
   // macro guards failed to exclude a new platform (likely) or because something

@@ -110,7 +110,7 @@ void PrintTo(const Input& data, ::std::ostream* os) {
 
 }  // namespace der
 
-der::Input SequenceValueFromString(const std::string* s) {
+der::Input SequenceValueFromString(std::string_view s) {
   der::Parser parser((der::Input(s)));
   der::Input data;
   if (!parser.ReadTag(der::kSequence, &data)) {
@@ -284,7 +284,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       if (value == "DEFAULT") {
         value = "211005120000Z";
       }
-      if (!der::ParseUTCTime(der::Input(&value), &test->time)) {
+      if (!der::ParseUTCTime(der::Input(value), &test->time)) {
         ADD_FAILURE() << "Failed parsing UTC time";
         return false;
       }
@@ -415,7 +415,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
 std::string ReadTestFileToString(const std::string& file_path_ascii) {
   // Compute the full path, relative to the src/ directory.
   base::FilePath src_root;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root);
   base::FilePath filepath = src_root.AppendASCII(file_path_ascii);
 
   // Read the full contents of the file.

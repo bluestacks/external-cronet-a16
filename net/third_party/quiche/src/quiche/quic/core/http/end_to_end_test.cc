@@ -1373,17 +1373,6 @@ TEST_P(EndToEndTest, MixGoodAndBadConnectionIdLengths) {
                                                 .length());
 }
 
-TEST_P(EndToEndTest, SimpleRequestResponseWithIetfDraftSupport) {
-  if (!version_.HasIetfQuicFrames()) {
-    ASSERT_TRUE(Initialize());
-    return;
-  }
-  QuicVersionInitializeSupportForIetfDraft();
-  ASSERT_TRUE(Initialize());
-
-  SendSynchronousFooRequestAndCheckResponse();
-}
-
 TEST_P(EndToEndTest, SimpleRequestResponseWithLargeReject) {
   chlo_multiplier_ = 1;
   ASSERT_TRUE(Initialize());
@@ -2856,9 +2845,15 @@ TEST_P(EndToEndTest, StreamCancelErrorTest) {
       client_connection->GetStats().packets_sent;
 
   if (version_.UsesHttp3()) {
-    // Make sure 2 packets were sent, one for QPACK instructions, another for
-    // RESET_STREAM and STOP_SENDING.
-    EXPECT_EQ(packets_sent_before + 2, packets_sent_now);
+    if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data)) {
+      // QPACK decoder instructions and RESET_STREAM and STOP_SENDING frames are
+      // sent in a single packet.
+      EXPECT_EQ(packets_sent_before + 1, packets_sent_now);
+    } else {
+      // Make sure 2 packets were sent, one for QPACK instructions, another for
+      // RESET_STREAM and STOP_SENDING.
+      EXPECT_EQ(packets_sent_before + 2, packets_sent_now);
+    }
   }
 
   // WaitForEvents waits 50ms and returns true if there are outstanding
@@ -3033,6 +3028,7 @@ TEST_P(EndToEndTest,
     return;
   }
   override_client_connection_id_length_ = kQuicDefaultConnectionIdLength;
+  SetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data, false);
   ASSERT_TRUE(Initialize());
   SendSynchronousFooRequestAndCheckResponse();
 
@@ -4780,8 +4776,8 @@ TEST_P(EndToEndTest, DISABLED_TestHugeResponseWithPacketLoss) {
 }
 
 TEST_P(EndToEndTest, ReleaseHeadersStreamBufferWhenIdle) {
-  // Tests that when client side has no active request and no waiting
-  // PUSH_PROMISE, its headers stream's sequencer buffer should be released.
+  // Tests that when client side has no active request,
+  // its headers stream's sequencer buffer should be released.
   ASSERT_TRUE(Initialize());
   client_->SendSynchronousRequest("/foo");
   if (version_.UsesHttp3()) {
@@ -5361,7 +5357,7 @@ TEST_P(EndToEndTest, ClientValidateNewNetwork) {
 }
 
 TEST_P(EndToEndTest, ClientMultiPortConnection) {
-  client_config_.SetClientConnectionOptions(QuicTagVector{kMPQC});
+  client_config_.SetClientConnectionOptions(QuicTagVector{kMPQC, kMPQM});
   ASSERT_TRUE(Initialize());
   if (!version_.HasIetfQuicFrames()) {
     return;
@@ -5407,7 +5403,7 @@ TEST_P(EndToEndTest, ClientMultiPortConnection) {
 }
 
 TEST_P(EndToEndTest, ClientMultiPortMigrationOnPathDegrading) {
-  client_config_.SetClientConnectionOptions(QuicTagVector{kMPQC});
+  client_config_.SetClientConnectionOptions(QuicTagVector{kMPQC, kMPQM});
   ASSERT_TRUE(Initialize());
   if (!version_.HasIetfQuicFrames()) {
     return;
@@ -7246,7 +7242,7 @@ TEST_P(EndToEndTest, ServerReportsEct0) {
   EXPECT_EQ(ecn->ce, 0);
   EXPECT_TRUE(client_connection->set_ecn_codepoint(ECN_ECT0));
   client_->SendSynchronousRequest("/foo");
-  if (!GetQuicRestartFlag(quic_receive_ecn2) ||
+  if (!GetQuicRestartFlag(quic_receive_ecn3) ||
       !VersionHasIetfQuicFrames(version_.transport_version)) {
     EXPECT_EQ(ecn->ect0, 0);
   } else {
@@ -7271,7 +7267,7 @@ TEST_P(EndToEndTest, ServerReportsEct1) {
   EXPECT_EQ(ecn->ce, 0);
   EXPECT_TRUE(client_connection->set_ecn_codepoint(ECN_ECT1));
   client_->SendSynchronousRequest("/foo");
-  if (!GetQuicRestartFlag(quic_receive_ecn2) ||
+  if (!GetQuicRestartFlag(quic_receive_ecn3) ||
       !VersionHasIetfQuicFrames(version_.transport_version)) {
     EXPECT_EQ(ecn->ect1, 0);
   } else {
@@ -7296,7 +7292,7 @@ TEST_P(EndToEndTest, ServerReportsCe) {
   EXPECT_EQ(ecn->ce, 0);
   EXPECT_TRUE(client_connection->set_ecn_codepoint(ECN_CE));
   client_->SendSynchronousRequest("/foo");
-  if (!GetQuicRestartFlag(quic_receive_ecn2) ||
+  if (!GetQuicRestartFlag(quic_receive_ecn3) ||
       !VersionHasIetfQuicFrames(version_.transport_version)) {
     EXPECT_EQ(ecn->ce, 0);
   } else {
@@ -7325,7 +7321,7 @@ TEST_P(EndToEndTest, ClientReportsEct1) {
   server_thread_->Pause();
   EXPECT_EQ(ecn->ect0, 0);
   EXPECT_EQ(ecn->ce, 0);
-  if (!GetQuicRestartFlag(quic_receive_ecn2) ||
+  if (!GetQuicRestartFlag(quic_receive_ecn3) ||
       !VersionHasIetfQuicFrames(version_.transport_version)) {
     EXPECT_EQ(ecn->ect1, 0);
   } else {

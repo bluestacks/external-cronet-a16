@@ -689,10 +689,6 @@ class NET_EXPORT SpdySession
   // possible.
   void ProcessPendingStreamRequests();
 
-  void TryCreatePushStream(spdy::SpdyStreamId stream_id,
-                           spdy::SpdyStreamId associated_stream_id,
-                           spdy::Http2HeaderBlock headers);
-
   // Close the stream pointed to by the given iterator. Note that that
   // stream may hold the last reference to the session.
   void CloseActiveStreamIterator(ActiveStreamMap::iterator it, int status);
@@ -1047,7 +1043,7 @@ class NET_EXPORT SpdySession
   PendingStreamRequestQueue pending_create_stream_queues_[NUM_PRIORITIES];
 
   // Map from stream id to all active streams.  Streams are active in the sense
-  // that they have a consumer (typically SpdyNetworkTransaction and regardless
+  // that they have a consumer (typically HttpNetworkTransaction and regardless
   // of whether or not there is currently any ongoing IO) or there are still
   // network events incoming even though the consumer has already gone away
   // (cancellation).

@@ -32,7 +32,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_progress.h"
 #include "net/cookies/canonical_cookie.h"
@@ -313,16 +313,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   }
   void set_force_ignore_site_for_cookies(bool attach) {
     force_ignore_site_for_cookies_ = attach;
-  }
-
-  // Indicates whether the top frame party will be considered same-party to the
-  // request URL (regardless of what it is), for the purpose of SameParty
-  // cookies.
-  bool force_ignore_top_frame_party_for_cookies() const {
-    return force_ignore_top_frame_party_for_cookies_;
-  }
-  void set_force_ignore_top_frame_party_for_cookies(bool force) {
-    force_ignore_top_frame_party_for_cookies_ = force;
   }
 
   // Indicates if the request should be treated as a main frame navigation for
@@ -749,7 +739,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Available when the request headers are sent, which is before the more
   // general response_info() is available.
-  const ProxyServer& proxy_server() const { return proxy_server_; }
+  const ProxyChain& proxy_chain() const { return proxy_chain_; }
 
   // Gets the connection attempts made in the process of servicing this
   // URLRequest. Only guaranteed to be valid if called after the request fails
@@ -971,7 +961,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   absl::optional<CookiePartitionKey> cookie_partition_key_ = absl::nullopt;
 
   bool force_ignore_site_for_cookies_ = false;
-  bool force_ignore_top_frame_party_for_cookies_ = false;
   bool force_main_frame_for_same_site_cookies_ = false;
   CookieSettingOverrides cookie_setting_overrides_;
 
@@ -1082,8 +1071,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // populated during Start(), and the rest are populated in OnResponseReceived.
   LoadTimingInfo load_timing_info_;
 
-  // The proxy server used for this request, if any.
-  ProxyServer proxy_server_;
+  // The proxy chain used for this request, if any.
+  ProxyChain proxy_chain_;
 
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt

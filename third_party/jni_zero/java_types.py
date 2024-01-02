@@ -61,7 +61,7 @@ class JavaClass:
   """Represents a reference type."""
   _fqn: str
   # This is only meaningful if make_prefix have been called on the original class.
-  _ofqn: str = None
+  _class_without_prefix: 'JavaClass' = None
 
   def __post_init__(self):
     assert '.' not in self._fqn, f'{self._fqn} should have / and $, but not .'
@@ -86,16 +86,8 @@ class JavaClass:
     return self._fqn.rsplit('/', 1)[0]
 
   @property
-  def original_package_with_slashes(self):
-    return self._ofqn.rsplit('/', 1)[0] if self._ofqn is not None else self.package_with_slashes
-
-  @property
   def package_with_dots(self):
     return self.package_with_slashes.replace('/', '.')
-
-  @property
-  def original_package_with_dots(self):
-    return self.original_package_with_slashes.replace('/', '.')
 
   @property
   def full_name_with_slashes(self):
@@ -104,6 +96,10 @@ class JavaClass:
   @property
   def full_name_with_dots(self):
     return self._fqn.replace('/', '.').replace('$', '.')
+
+  @property
+  def class_without_prefix(self):
+    return self._class_without_prefix if self._class_without_prefix else self
 
   def to_java(self, type_resolver=None):
     # Empty resolver used to shorted java.lang classes.
@@ -117,7 +113,7 @@ class JavaClass:
     if not prefix:
       return self
     prefix = prefix.replace('.', '/')
-    return JavaClass(f'{prefix}/{self._fqn}', self._fqn)
+    return JavaClass(f'{prefix}/{self._fqn}', self)
 
   def make_nested(self, name):
     return JavaClass(f'{self._fqn}${name}')
@@ -198,7 +194,7 @@ class JavaType:
     """Returns a valid C return value for the given java type."""
     if self.is_primitive():
       return _DEFAULT_VALUE_BY_PRIMITIVE_TYPE[self.primitive_name]
-    return 'NULL'
+    return 'nullptr'
 
   def to_proxy(self):
     """Converts to types used over JNI boundary."""

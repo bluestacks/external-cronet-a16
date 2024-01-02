@@ -4,9 +4,12 @@
 
 #include "components/metrics/structured/structured_metrics_service.h"
 
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "structured_metrics_service.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics::structured {
 
@@ -171,6 +174,9 @@ void StructuredMetricsService::InitializeUmaProto(
   if (product != uma_proto.product()) {
     uma_proto.set_product(product);
   }
+
+  SystemProfileProto* system_profile = uma_proto.mutable_system_profile();
+  metrics::MetricsLog::RecordCoreSystemProfile(client_, system_profile);
 }
 
 // static:
@@ -193,6 +199,30 @@ StructuredMetricsService::GetLogStoreLimits() {
       .min_queue_size_bytes = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
       .max_log_size_bytes = static_cast<size_t>(kMaxLogSizeBytes.Get()),
   };
+}
+
+void StructuredMetricsService::SetRecorderForTest(
+    std::unique_ptr<StructuredMetricsRecorder> recorder) {
+  recorder_ = std::move(recorder);
+}
+
+MetricsServiceClient* StructuredMetricsService::GetMetricsServiceClient()
+    const {
+  return client_;
+}
+
+void StructuredMetricsService::ManualUpload() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!recorder_->can_provide_metrics() ||
+      recorder_->events()->non_uma_events_size() == 0) {
+    return;
+  }
+
+  if (!reporting_service_->log_store()->has_unsent_logs()) {
+    BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  }
+  reporting_service_->Start();
 }
 
 }  // namespace metrics::structured

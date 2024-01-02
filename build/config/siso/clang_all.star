@@ -1,34 +1,35 @@
 # -*- bazel-starlark -*-
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Siso configuration for clang."""
 
 load("@builtin//struct.star", "module")
 
-__filegroups = {
-    "third_party/libc++/src/include:headers": {
-        "type": "glob",
-        "includes": ["*"],
-        # can't use "*.h", because c++ headers have no extension.
-    },
-    "third_party/libc++abi/src/include:headers": {
-        "type": "glob",
-        "includes": ["*.h"],
-    },
+def __filegroups(ctx):
+    return {
+        "third_party/libc++/src/include:headers": {
+            "type": "glob",
+            "includes": ["*"],
+            # can't use "*.h", because c++ headers have no extension.
+        },
+        "third_party/libc++abi/src/include:headers": {
+            "type": "glob",
+            "includes": ["*.h"],
+        },
 
-    # toolchain root
-    # :headers for compiling
-    "third_party/llvm-build/Release+Asserts:headers": {
-        "type": "glob",
-        "includes": [
-            "*.h",
-            "bin/clang",
-            "bin/clang++",
-            "bin/clang-cl.exe",
-        ],
-    },
-}
+        # toolchain root
+        # :headers for compiling
+        "third_party/llvm-build/Release+Asserts:headers": {
+            "type": "glob",
+            "includes": [
+                "*.h",
+                "bin/clang",
+                "bin/clang++",
+                "bin/clang-cl.exe",
+            ],
+        },
+    }
 
 __input_deps = {
     # need this because we use

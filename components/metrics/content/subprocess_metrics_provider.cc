@@ -104,6 +104,14 @@ void SubprocessMetricsProvider::RegisterSubprocessAllocator(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(allocator);
 
+  // Pass a custom RangesManager so that we do not register the BucketRanges
+  // with the global StatisticsRecorder when creating histogram objects using
+  // the allocator's underlying data. This avoids unnecessary contention on the
+  // global StatisticsRecorder lock.
+  // Note: Since |allocator| may be merged from different threads concurrently,
+  // for example on the UI thread and on a background thread, we must use
+  // ThreadSafeRangesManager.
+  allocator->SetRangesManager(new base::ThreadSafeRangesManager());
   // Insert the allocator into the internal map and verify that there was no
   // allocator with the same ID already.
   auto result = allocators_by_id_.emplace(
@@ -189,7 +197,11 @@ void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
   // This call can only be made on the browser's IO thread.
   content::BrowserChildProcessHost* host =
       content::BrowserChildProcessHost::FromID(data.id);
-  CHECK(host);
+  // |host| should not be null, but such cases have been observed in the wild so
+  // gracefully handle this scenario.
+  if (!host) {
+    return;
+  }
 
   std::unique_ptr<base::PersistentMemoryAllocator> allocator =
       host->TakeMetricsAllocator();

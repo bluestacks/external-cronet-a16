@@ -49,9 +49,9 @@ void QuicSpdyServerStreamBase::StopReading() {
   QuicSpdyStream::StopReading();
 }
 
-bool QuicSpdyServerStreamBase::ValidatedReceivedHeaders(
+bool QuicSpdyServerStreamBase::ValidateReceivedHeaders(
     const QuicHeaderList& header_list) {
-  if (!QuicSpdyStream::ValidatedReceivedHeaders(header_list)) {
+  if (!QuicSpdyStream::ValidateReceivedHeaders(header_list)) {
     return false;
   }
 
@@ -133,7 +133,7 @@ bool QuicSpdyServerStreamBase::ValidatedReceivedHeaders(
     return true;
   }
   set_invalid_request_details("Missing required pseudo headers.");
-  QUIC_LOG(ERROR) << invalid_request_details();
+  QUIC_DLOG(ERROR) << invalid_request_details();
   return false;
 }
 

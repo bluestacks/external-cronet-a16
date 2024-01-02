@@ -23,7 +23,10 @@ _MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
 
 
 class ParseError(Exception):
-  pass
+  suffix = ''
+
+  def __str__(self):
+    return super().__str__() + self.suffix
 
 
 @dataclasses.dataclass(order=True)
@@ -112,7 +115,7 @@ _PACKAGE_REGEX = re.compile('^package\s+(\S+?);', flags=re.MULTILINE)
 def _parse_package(contents):
   match = _PACKAGE_REGEX.search(contents)
   if not match:
-    raise ParserError('Unable to find "package" line')
+    raise ParseError('Unable to find "package" line')
   return match.group(1)
 
 
@@ -139,7 +142,7 @@ def _parse_java_classes(contents):
       nested_classes.append(outer_class.make_nested(class_name))
 
   if outer_class is None:
-    raise ParserError('No classes found.')
+    raise ParseError('No classes found.')
 
   return outer_class, nested_classes
 
@@ -217,7 +220,7 @@ def _parse_proxy_natives(type_resolver, contents):
   if not matches:
     return None
   if len(matches) > 1:
-    raise ParserError(
+    raise ParseError(
         'Multiple @NativeMethod interfaces in one class is not supported.')
 
   match = matches[0]
@@ -240,7 +243,7 @@ def _parse_proxy_natives(type_resolver, contents):
             signature=signature,
             native_class_name=annotations.get('NativeClassQualifiedName')))
   if not ret.methods:
-    raise ParserError('Found no methods within @NativeMethod interface.')
+    raise ParseError('Found no methods within @NativeMethod interface.')
   ret.methods.sort()
   return ret
 
@@ -313,8 +316,8 @@ def _parse_called_by_natives(type_resolver, contents):
   for i, line in enumerate(unmatched_lines):
     if '@CalledByNative' in line:
       context = '\n'.join(unmatched_lines[i:i + 5])
-      raise ParserError('Could not parse @CalledByNative method signature:\n' +
-                        context)
+      raise ParseError('Could not parse @CalledByNative method signature:\n' +
+                       context)
 
   ret.sort()
   return ret
@@ -343,7 +346,7 @@ def _parse_jni_namespace(contents):
   if not m:
     return ''
   if len(m) > 1:
-    raise ParserError('Found multiple @JNINamespace attributes.')
+    raise ParseError('Found multiple @JNINamespace annotations.')
   return m[0]
 
 
@@ -359,7 +362,7 @@ def _do_parse(filename, *, package_prefix):
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
   if outer_class.name != expected_name:
-    raise ParserError(
+    raise ParseError(
         f'Found class "{outer_class.name}" but expected "{expected_name}".')
 
   if package_prefix:
@@ -399,8 +402,8 @@ def _do_parse(filename, *, package_prefix):
 def parse_java_file(filename, *, package_prefix=None):
   try:
     return _do_parse(filename, package_prefix=package_prefix)
-  except ParserError as e:
-    e.msg = (e.msg or '') + f' (when parsing {filename})'
+  except ParseError as e:
+    e.suffix = f' (when parsing {filename})'
     raise
 
 
@@ -416,7 +419,7 @@ def parse_javap(filename, contents):
   contents = _remove_generics(contents)
   match = _JAVAP_CLASS_REGEX.search(contents)
   if not match:
-    raise ParserError('Could not find java class in javap output')
+    raise ParseError('Could not find java class in javap output')
   java_class = java_types.JavaClass(match.group(1).replace('.', '/'))
   type_resolver = java_types.TypeResolver(java_class)
 

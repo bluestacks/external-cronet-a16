@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.system.Os;
 import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
@@ -38,20 +39,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.multidex.ChromiumMultiDexInstaller;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.MainDex;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,21 +62,18 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A custom AndroidJUnitRunner that supports multidex installer and lists out test information.
- * Also customizes various TestRunner and Instrumentation behaviors, like when Activities get
- * finished, and adds a timeout to waitForIdleSync.
+ * A custom AndroidJUnitRunner that supports incremental install and custom test listing. Also
+ * customizes various TestRunner and Instrumentation behaviors, like when Activities get finished,
+ * and adds a timeout to waitForIdleSync.
  *
- * Please beware that is this not a class runner. It is declared in test apk AndroidManifest.xml
+ * <p>Please beware that is this not a class runner. It is declared in test apk AndroidManifest.xml
  * <instrumentation>
  */
-@MainDex
 public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static final String LIST_ALL_TESTS_FLAG =
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList";
@@ -83,6 +81,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestListPackage";
     private static final String IS_UNIT_TEST_FLAG =
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest";
+    private static final String EXTRA_CLANG_COVERAGE_DEVICE_FILE =
+            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
     /**
      * This flag is supported by AndroidJUnitRunner.
      *
@@ -119,26 +119,16 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
 
+    static {
+        CommandLineInitUtil.setFilenameOverrideForTesting(CommandLineFlags.getTestCmdLineFile());
+    }
+
     @Override
     public Application newApplication(ClassLoader cl, String className, Context context)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Context targetContext = super.getTargetContext();
         boolean hasUnderTestApk =
                 !getContext().getPackageName().equals(targetContext.getPackageName());
-        // When there is an under-test APK, BuildConfig belongs to it and does not indicate whether
-        // the test apk is multidex. In this case, just assume it is.
-        boolean isTestMultidex = hasUnderTestApk || BuildConfig.IS_MULTIDEX_ENABLED;
-        if (isTestMultidex) {
-            if (hasUnderTestApk) {
-                // Need hacks to have multidex work when there is an under-test apk :(.
-                ChromiumMultiDexInstaller.install(
-                        new BaseChromiumRunnerCommon.MultiDexContextWrapper(
-                                getContext(), targetContext));
-                BaseChromiumRunnerCommon.reorderDexPathElements(cl, getContext(), targetContext);
-            } else {
-                ChromiumMultiDexInstaller.install(getContext());
-            }
-        }
 
         // Wrap |context| here so that calls to getSharedPreferences() from within
         // attachBaseContext() will hit our InMemorySharedPreferencesContext.
@@ -208,6 +198,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             // androidx.test.
             System.setProperty("org.mockito.android.target",
                     InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
+            setClangCoverageEnvIfEnabled();
             super.onStart();
         }
     }
@@ -289,30 +280,25 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     private Request createListTestRequest(Bundle arguments) {
-        ArrayList<DexFile> dexFiles = new ArrayList<>();
-        try {
-            Class<?> bootstrapClass =
-                    Class.forName("org.chromium.incrementalinstall.BootstrapApplication");
-            DexFile[] incrementalInstallDexes =
-                    (DexFile[]) bootstrapClass.getDeclaredField("sIncrementalDexFiles").get(null);
-            dexFiles.addAll(Arrays.asList(incrementalInstallDexes));
-        } catch (Exception e) {
-            // Not an incremental apk.
-            if (BuildConfig.IS_MULTIDEX_ENABLED
-                    && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-                // Test listing fails for test classes that aren't in the main dex
-                // (crbug.com/903820).
-                addClassloaderDexFiles(dexFiles, getClass().getClassLoader());
-            }
-        }
-        RunnerArgs runnerArgs =
-                new RunnerArgs.Builder().fromManifest(this).fromBundle(this, arguments).build();
         TestRequestBuilder builder;
-        if (!dexFiles.isEmpty()) {
-            builder = new DexFileTestRequestBuilder(this, arguments, dexFiles);
+        if (BuildConfig.IS_INCREMENTAL_INSTALL) {
+            try {
+                Class<?> bootstrapClass =
+                        Class.forName("org.chromium.incrementalinstall.BootstrapApplication");
+                DexFile[] incrementalInstallDexes =
+                        (DexFile[])
+                                bootstrapClass.getDeclaredField("sIncrementalDexFiles").get(null);
+                builder =
+                        new DexFileTestRequestBuilder(
+                                this, arguments, Arrays.asList(incrementalInstallDexes));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         } else {
             builder = new TestRequestBuilder(this, arguments);
         }
+        RunnerArgs runnerArgs =
+                new RunnerArgs.Builder().fromManifest(this).fromBundle(this, arguments).build();
         builder.addFromRunnerArgs(runnerArgs);
         builder.addPathToScan(getContext().getPackageCodePath());
 
@@ -328,21 +314,19 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     /**
-     * Wraps TestRequestBuilder to make it work with incremental install and for multidex <= K.
+     * Wraps TestRequestBuilder to make it work with incremental install.
      *
-     * TestRequestBuilder does not know to look through the incremental install dex files, and has
-     * no api for telling it to do so. This class checks to see if the list of tests was given
-     * by the runner (mHasClassList), and if not overrides the auto-detection logic in build()
-     * to manually scan all .dex files.
-     *
-     * On <= K, classes not in the main dex file are missed, so we manually list them by grabbing
-     * the loaded DexFiles from the ClassLoader.
+     * <p>TestRequestBuilder does not know to look through the incremental install dex files, and
+     * has no api for telling it to do so. This class checks to see if the list of tests was given
+     * by the runner (mHasClassList), and if not overrides the auto-detection logic in build() to
+     * manually scan all .dex files.
      */
     private static class DexFileTestRequestBuilder extends TestRequestBuilder {
         final List<String> mExcludedPrefixes = new ArrayList<String>();
         final List<String> mIncludedPrefixes = new ArrayList<String>();
         final List<DexFile> mDexFiles;
         boolean mHasClassList;
+        private ClassLoader mClassLoader = DexFileTestRequestBuilder.class.getClassLoader();
 
         DexFileTestRequestBuilder(Instrumentation instr, Bundle bundle, List<DexFile> dexFiles) {
             super(instr, bundle);
@@ -377,6 +361,12 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         public TestRequestBuilder addTestMethod(String testClassName, String testMethodName) {
             mHasClassList = true;
             return super.addTestMethod(testClassName, testMethodName);
+        }
+
+        @Override
+        public TestRequestBuilder setClassLoader(ClassLoader loader) {
+            mClassLoader = loader;
+            return super.setClassLoader(loader);
         }
 
         @Override
@@ -423,7 +413,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                         // android-kitkat-arm-rel from 41s -> 23s.
                         continue;
                     }
-                    if (!className.contains("$") && checkIfTest(className)) {
+                    if (!className.contains("$") && checkIfTest(className, mClassLoader)) {
                         addTestClass(className);
                     }
                 }
@@ -436,30 +426,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         Field field = clazz.getDeclaredField(name);
         field.setAccessible(true);
         return field.get(instance);
-    }
-
-    private static void addClassloaderDexFiles(List<DexFile> dexFiles, ClassLoader cl) {
-        // The main apk appears in the classpath twice sometimes, so check for apk path rather
-        // than comparing DexFile instances (e.g. on kitkat without an apk-under-test).
-        Set<String> apkPaths = new HashSet<>();
-        try {
-            Object pathList = getField(cl.getClass().getSuperclass(), cl, "pathList");
-            Object[] dexElements =
-                    (Object[]) getField(pathList.getClass(), pathList, "dexElements");
-            for (Object dexElement : dexElements) {
-                DexFile dexFile = (DexFile) getField(dexElement.getClass(), dexElement, "dexFile");
-                // Prevent adding the main apk twice, and also skip any system libraries added due
-                // to <uses-library> manifest entries.
-                String apkPath = dexFile.getName();
-                if (!apkPaths.contains(apkPath) && !apkPath.startsWith("/system")) {
-                    dexFiles.add(dexFile);
-                    apkPaths.add(apkPath);
-                }
-            }
-        } catch (Exception e) {
-            // No way to recover and test listing will fail.
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -492,24 +458,20 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    private static boolean checkIfTest(String className) {
-        Class<?> loadedClass = tryLoadClass(className);
+    private static boolean checkIfTest(String className, ClassLoader classLoader) {
+        Class<?> loadedClass = tryLoadClass(className, classLoader);
         if (loadedClass != null && isTestClass(loadedClass)) {
             return true;
         }
         return false;
     }
 
-    private static Class<?> tryLoadClass(String className) {
+    private static Class<?> tryLoadClass(String className, ClassLoader classLoader) {
         try {
-            return Class.forName(
-                    className, false, BaseChromiumAndroidJUnitRunner.class.getClassLoader());
-        } catch (NoClassDefFoundError e) {
-            // Do nothing.
-        } catch (ClassNotFoundException e) {
-            // Do nothing.
+            return Class.forName(className, false, classLoader);
+        } catch (NoClassDefFoundError | ClassNotFoundException e) {
+            return null;
         }
-        return null;
     }
 
     // Copied from android.support.test.runner code.
@@ -589,6 +551,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
 
         try {
+            writeClangCoverageProfileIfEnabled();
             getTargetContext().getSystemService(JobScheduler.class).cancelAll();
             checkOrDeleteOnDiskSharedPreferences(true);
             UmaRecorderHolder.resetForTesting();
@@ -728,13 +691,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             if (file.getName().equals("lib")) {
                 continue;
             }
-            if (file.getName().equals("chromium_tests_root")) {
-                continue;
-            }
             if (file.getName().equals("incremental-install-files")) {
                 continue;
             }
-            // E.g. Legacy multidex files.
             if (file.getName().equals("code_cache")) {
                 continue;
             }
@@ -759,12 +718,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     }
 
     private static boolean isSharedPrefFileAllowed(File f) {
-        // Multidex support library prefs need to stay or else multidex extraction will occur
-        // needlessly.
-        if (f.getName().endsWith("multidex.version.xml")) {
-            return true;
-        }
-
         // WebView prefs need to stay because webview tests have no (good) way of hooking
         // SharedPreferences for instantiated WebViews.
         String[] allowlist = new String[] {
@@ -773,6 +726,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 "AwComponentUpdateServicePreferences.xml",
                 "ComponentsProviderServicePreferences.xml",
                 "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
+                "AwOriginVisitLoggerPrefs.xml",
         };
         for (String name : allowlist) {
             // SharedPreferences may also access a ".bak" backup file from a previous run. See
@@ -826,6 +780,31 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
             errorMsg += "Files:\n * " + TextUtils.join("\n * ", badFiles);
             throw new AssertionError(errorMsg);
+        }
+    }
+
+    /**
+     * Configure the required environment variable if Clang coverage argument exists.
+     */
+    private void setClangCoverageEnvIfEnabled() {
+        String clangProfileFile =
+                InstrumentationRegistry.getArguments().getString(EXTRA_CLANG_COVERAGE_DEVICE_FILE);
+        if (clangProfileFile != null) {
+            try {
+                Os.setenv("LLVM_PROFILE_FILE", clangProfileFile, /*override*/ true);
+            } catch (Exception e) {
+                Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
+            }
+        }
+    }
+
+    /**
+     * Invoke __llvm_profile_dump() to write raw clang coverage profile to device.
+     * Noop if the required build flag is not set.
+     */
+    private void writeClangCoverageProfileIfEnabled() {
+        if (BuildConfig.WRITE_CLANG_PROFILING_DATA && LibraryLoader.getInstance().isInitialized()) {
+            ClangProfiler.writeClangProfilingProfile();
         }
     }
 }

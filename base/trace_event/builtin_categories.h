@@ -32,6 +32,7 @@
   /* The rest of the list is in alphabetical order */                    \
   X("accessibility")                                                     \
   X("AccountFetcherService")                                             \
+  X("android.ui.jank")                                                   \
   X("android_webview")                                                   \
   X("android_webview.timeline")                                          \
   /* Actions on Google Hardware, used in Google-internal code. */        \
@@ -69,6 +70,7 @@
   X("compositor")                                                        \
   X("content")                                                           \
   X("content_capture")                                                   \
+  X("interactions")                                                      \
   X("delegated_ink_trails")                                              \
   X("device")                                                            \
   X("devtools")                                                          \
@@ -94,6 +96,7 @@
   X("gpu.angle")                                                         \
   X("gpu.angle.texture_metrics")                                         \
   X("gpu.capture")                                                       \
+  X("graphics.pipeline")                                                 \
   X("headless")                                                          \
   /* Traces for //components/history. */                                 \
   X("history")                                                           \
@@ -233,6 +236,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("gpu.debug"))                              \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.device"))                             \
+  X(TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.service"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("histogram_samples"))                      \
@@ -279,6 +283,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("v8.wasm.detailed"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("v8.wasm.turbofan"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"))                \
+  X(TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"))               \
   X(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"))                   \
@@ -296,6 +301,7 @@
 
 #define INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(X)                        \
   X("android_webview,toplevel")                                               \
+  X("android_webview.timeline,android.ui.jank")                               \
   X("base,toplevel")                                                          \
   X("benchmark,drm")                                                          \
   X("benchmark,latencyInfo,rail")                                             \
@@ -304,6 +310,7 @@
   X("benchmark,rail")                                                         \
   X("benchmark,uma")                                                          \
   X("benchmark,viz")                                                          \
+  X("benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"))     \
   X("blink,benchmark")                                                        \
   X("blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))  \
   X("blink,blink.resource")                                                   \
@@ -333,6 +340,7 @@
   X("gpu,benchmark")                                                          \
   X("gpu,benchmark,android_webview")                                          \
   X("gpu,benchmark,webview")                                                  \
+  X("gpu,login")                                                              \
   X("gpu,startup")                                                            \
   X("gpu,toplevel.flow")                                                      \
   X("gpu.angle,startup")                                                      \
@@ -349,6 +357,7 @@
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \
   X("Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))          \
+  X("loading,interactions")                                                   \
   X("loading,rail")                                                           \
   X("loading,rail,devtools.timeline")                                         \
   X("media,gpu")                                                              \
@@ -372,6 +381,7 @@
   X("v8,devtools.timeline")                                                   \
   X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
   X("viz,benchmark")                                                          \
+  X("viz,benchmark,graphics.pipeline")                                        \
   X("WebCore,benchmark,rail")                                                 \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug") "," TRACE_DISABLED_BY_DEFAULT(      \
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \

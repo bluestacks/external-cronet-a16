@@ -2623,4 +2623,13 @@ void TimeZoneTest::TestRawOffsetAndOffsetConsistency22041() {
                      zone->getRawOffset(), raw);
     }
 }
+
+void TimeZoneTest::TestGMTMinus24ICU22526() {
+    UErrorCode status = U_ZERO_ERROR;
+    LocalPointer<TimeZone> tz(TimeZone::createTimeZone("GMT-23:59"), status);
+    U_ASSERT(U_SUCCESS(status));
+    GregorianCalendar gc(tz.orphan(), status);
+    gc.setTime(123456789, status);
+    gc.get(UCAL_MONTH, status);
+}
 #endif /* #if !UCONFIG_NO_FORMATTING */

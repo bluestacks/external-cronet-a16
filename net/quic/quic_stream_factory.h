@@ -118,6 +118,7 @@ enum CreateSessionFailure {
   CREATION_ERROR_SETTING_RECEIVE_BUFFER,
   CREATION_ERROR_SETTING_SEND_BUFFER,
   CREATION_ERROR_SETTING_DO_NOT_FRAGMENT,
+  CREATION_ERROR_SETTING_RECEIVE_ECN,
   CREATION_ERROR_MAX
 };
 
@@ -625,7 +626,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // the broken alternative service map in HttpServerProperties.
   bool is_quic_known_to_work_on_current_network_ = false;
 
-  raw_ptr<NetLog> net_log_;
+  NetLogWithSource net_log_;
   raw_ptr<HostResolver> host_resolver_;
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   raw_ptr<HttpServerProperties> http_server_properties_;

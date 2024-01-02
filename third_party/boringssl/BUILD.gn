@@ -28,7 +28,10 @@ config("external_config") {
 config("component_config") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
   configs = [ ":internal_config" ]
-  defines = [ "BORINGSSL_IMPLEMENTATION" ]
+  defines = [
+    "BORINGSSL_IMPLEMENTATION",
+    "_BORINGSSL_LIBPKI_",
+  ]
 }
 
 # This config is used by anything that consumes internal headers. Tests consume
@@ -38,6 +41,7 @@ config("internal_config") {
   defines = [
     "BORINGSSL_ALLOW_CXX_RUNTIME",
     "BORINGSSL_NO_STATIC_INITIALIZER",
+    "_BORINGSSL_LIBPKI_",
     "OPENSSL_SMALL",
   ]
 }
@@ -47,7 +51,7 @@ config("no_asm_config") {
   defines = [ "OPENSSL_NO_ASM" ]
 }
 
-all_sources = crypto_sources + ssl_sources
+all_sources = crypto_sources + ssl_sources + pki_sources
 all_headers = crypto_headers + ssl_headers
 
 if (enable_rust_boringssl) {
@@ -78,17 +82,37 @@ if (enable_rust_boringssl) {
     ]
     visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
 
-    _bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
+    bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
+    inputs = bindgen_output
     rustenv =
         [ "BINDGEN_RS_FILE=" +
-          rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+          rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
   }
 
   # Rust bindings to boringssl
   cargo_crate("bssl_crypto") {
     crate_type = "rlib"
     crate_root = "src/rust/bssl-crypto/src/lib.rs"
-    sources = [ "src/rust/bssl-crypto/src/lib.rs" ]
+    sources = [
+      "src/rust/bssl-crypto/src/aead.rs",
+      "src/rust/bssl-crypto/src/aes.rs",
+      "src/rust/bssl-crypto/src/bn.rs",
+      "src/rust/bssl-crypto/src/cipher/aes_cbc.rs",
+      "src/rust/bssl-crypto/src/cipher/aes_ctr.rs",
+      "src/rust/bssl-crypto/src/cipher/mod.rs",
+      "src/rust/bssl-crypto/src/digest.rs",
+      "src/rust/bssl-crypto/src/ec.rs",
+      "src/rust/bssl-crypto/src/ecdh.rs",
+      "src/rust/bssl-crypto/src/ed25519.rs",
+      "src/rust/bssl-crypto/src/hkdf.rs",
+      "src/rust/bssl-crypto/src/hmac.rs",
+      "src/rust/bssl-crypto/src/lib.rs",
+      "src/rust/bssl-crypto/src/mem.rs",
+      "src/rust/bssl-crypto/src/pkey.rs",
+      "src/rust/bssl-crypto/src/rand.rs",
+      "src/rust/bssl-crypto/src/test_helpers.rs",
+      "src/rust/bssl-crypto/src/x25519.rs",
+    ]
     edition = "2021"
     deps = [ ":bssl_sys" ]
   }
@@ -216,6 +240,26 @@ if (build_with_chromium) {
     deps += [ "//base/test:test_support" ]
   }
 
+  test("boringssl_pki_tests") {
+    sources = pki_test_sources + test_support_sources
+    data = pki_test_data
+    deps = [
+      ":boringssl",
+      "//testing/gtest",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":internal_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
+
+    # Chromium infrastructure does not support GTest, only the //base wrapper.
+    sources -= [ "src/crypto/test/gtest_main.cc" ]
+    sources += [ "gtest_main_chromium.cc" ]
+    deps += [ "//base/test:test_support" ]
+  }
+
   config("fuzzer_config") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
     defines = [
@@ -251,39 +295,38 @@ if (build_with_chromium) {
     }
   }
 
+  # Do not run the fuzzers on windows until 1477042 is fixed, they
+  # make the fuzzer infrastructure exceed the windows command line
+  # length.
   foreach(fuzzer, fuzzers) {
-    # TODO(crbug.com/1322914): Enable the BoringSSL libpki build and associated
-    # fuzzers.
-    if (fuzzer != "parse_certificate_fuzzer") {
-      fuzzer_test("boringssl_${fuzzer}_fuzzer") {
-        sources = [
-          "src/fuzz/${fuzzer}.cc",
-          "src/ssl/test/fuzzer.h",
-          "src/ssl/test/fuzzer_tags.h",
-        ]
-        additional_configs = [ ":internal_config" ]
-        deps = [ ":boringssl_fuzzer" ]
-        seed_corpus = "src/fuzz/${fuzzer}_corpus"
+    fuzzer_test("boringssl_${fuzzer}_fuzzer") {
+      sources = [
+        "src/fuzz/${fuzzer}.cc",
+        "src/ssl/test/fuzzer.h",
+        "src/ssl/test/fuzzer_tags.h",
+      ]
+      additional_configs = [ ":internal_config" ]
+      deps = [ ":boringssl_fuzzer" ]
+      seed_corpus = "src/fuzz/${fuzzer}_corpus"
 
-        if ("cert" == fuzzer) {
-          libfuzzer_options = [ "max_len=3072" ]
-        } else if ("client" == fuzzer) {
-          libfuzzer_options = [ "max_len=20000" ]
-        } else if ("pkcs8" == fuzzer) {
-          libfuzzer_options = [ "max_len=2048" ]
-        } else if ("privkey" == fuzzer) {
-          libfuzzer_options = [ "max_len=2048" ]
-        } else if ("read_pem" == fuzzer) {
-          libfuzzer_options = [ "max_len=512" ]
-        } else if ("session" == fuzzer) {
-          libfuzzer_options = [ "max_len=8192" ]
-        } else if ("server" == fuzzer) {
-          libfuzzer_options = [ "max_len=4096" ]
-        } else if ("spki" == fuzzer) {
-          libfuzzer_options = [ "max_len=1024" ]
-        } else if ("ssl_ctx_api" == fuzzer) {
-          libfuzzer_options = [ "max_len=256" ]
-        }
+      if ("cert" == fuzzer) {
+        libfuzzer_options = [ "max_len=3072" ]
+      } else if ("client" == fuzzer) {
+        libfuzzer_options = [ "max_len=20000" ]
+      } else if ("pkcs8" == fuzzer) {
+        libfuzzer_options = [ "max_len=2048" ]
+      } else if ("privkey" == fuzzer) {
+        libfuzzer_options = [ "max_len=2048" ]
+      } else if ("read_pem" == fuzzer) {
+        libfuzzer_options = [ "max_len=512" ]
+      } else if ("session" == fuzzer) {
+        libfuzzer_options = [ "max_len=8192" ]
+      } else if ("server" == fuzzer) {
+        libfuzzer_options = [ "max_len=4096" ]
+      } else if ("spki" == fuzzer) {
+        libfuzzer_options = [ "max_len=1024" ]
+      } else if ("ssl_ctx_api" == fuzzer) {
+        libfuzzer_options = [ "max_len=256" ]
       }
     }
   }

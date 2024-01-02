@@ -21,7 +21,6 @@
 #include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -32,6 +31,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/openssl_util.h"
 #include "net/base/features.h"
@@ -82,8 +82,15 @@ const int kSSLClientSocketNoPendingResult = 1;
 // overlap with any value of the net::Error range, including net::OK).
 const int kCertVerifyPending = 1;
 
+BASE_FEATURE(kDefaultOpenSSLBufferSizeFeature,
+             "DefaultOpenSSLBufferSizeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Default size of the internal BoringSSL buffers.
-const int kDefaultOpenSSLBufferSize = 17 * 1024;
+MIRACLE_PARAMETER_FOR_INT(GetDefaultOpenSSLBufferSize,
+                          kDefaultOpenSSLBufferSizeFeature,
+                          "DefaultOpenSSLBufferSize",
+                          17 * 1024)
 
 base::Value::Dict NetLogPrivateKeyOperationParams(uint16_t algorithm,
                                                   SSLPrivateKey* key) {
@@ -772,9 +779,9 @@ int SSLClientSocketImpl::Init() {
       SSL_set_session(ssl_.get(), session.get());
   }
 
+  const int kBufferSize = GetDefaultOpenSSLBufferSize();
   transport_adapter_ = std::make_unique<SocketBIOAdapter>(
-      stream_socket_.get(), kDefaultOpenSSLBufferSize,
-      kDefaultOpenSSLBufferSize, this);
+      stream_socket_.get(), kBufferSize, kBufferSize, this);
   BIO* transport_bio = transport_adapter_->bio();
 
   BIO_up_ref(transport_bio);  // SSL_set0_rbio takes ownership.

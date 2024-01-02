@@ -597,7 +597,7 @@ void TraceLog::SetAddTraceEventOverrides(
 struct TraceLog::RegisteredAsyncObserver {
   explicit RegisteredAsyncObserver(WeakPtr<AsyncEnabledStateObserver> observer)
       : observer(observer),
-        task_runner(SingleThreadTaskRunner::GetCurrentDefault()) {}
+        task_runner(SequencedTaskRunner::GetCurrentDefault()) {}
   ~RegisteredAsyncObserver() = default;
 
   WeakPtr<AsyncEnabledStateObserver> observer;
@@ -971,6 +971,9 @@ void TraceLog::InitializePerfettoIfNeeded() {
   g_perfetto_initialized_by_tracelog = true;
   perfetto::TracingInitArgs init_args;
   init_args.backends = perfetto::BackendType::kInProcessBackend;
+  init_args.shmem_batch_commits_duration_ms = 1000;
+  init_args.shmem_size_hint_kb = 4 * 1024;
+  init_args.shmem_direct_patching_enabled = true;
   init_args.disallow_merging_with_system_tracks = true;
   perfetto::Tracing::Initialize(init_args);
   TrackEvent::Register();
@@ -1561,6 +1564,7 @@ bool TraceLog::ShouldAddAfterUpdatingState(
     const char* name,
     uint64_t id,
     PlatformThreadId thread_id,
+    const TimeTicks timestamp,
     TraceArguments* args) {
   if (!*category_group_enabled)
     return false;
@@ -1614,7 +1618,7 @@ bool TraceLog::ShouldAddAfterUpdatingState(
     // ETW export expects non-null event names.
     name = name ? name : "";
     TraceEventETWExport::AddEvent(phase, category_group_enabled, name, id,
-                                  args);
+                                  timestamp, args);
   }
 #endif  // BUILDFLAG(IS_WIN)
   return true;
@@ -1726,7 +1730,7 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
     unsigned int flags) NO_THREAD_SAFETY_ANALYSIS {
   TraceEventHandle handle = {0, 0, 0};
   if (!ShouldAddAfterUpdatingState(phase, category_group_enabled, name, id,
-                                   thread_id, args)) {
+                                   thread_id, timestamp, args)) {
     return handle;
   }
   DCHECK(!timestamp.is_null());

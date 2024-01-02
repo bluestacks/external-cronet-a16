@@ -56,7 +56,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
@@ -66,7 +65,6 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
-#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_client_promised_info_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_stream_peer.h"
@@ -186,7 +184,6 @@ class QuicChromiumClientSessionTest
         /*cert_verify_flags=*/0, config_,
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         base::TimeTicks::Now(), base::TimeTicks::Now(),
-        std::make_unique<quic::QuicClientPushPromiseIndex>(),
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
@@ -1092,7 +1089,7 @@ TEST_P(QuicChromiumClientSessionTest, PendingStreamOnRst) {
   CompleteCryptoHandshake();
 
   quic::QuicStreamFrame data(GetNthServerInitiatedUnidirectionalStreamId(0),
-                             false, 1, absl::string_view("SP"));
+                             false, 1, std::string_view("SP"));
   session_->OnStreamFrame(data);
   EXPECT_EQ(0u, session_->GetNumActiveStreams());
   quic::QuicRstStreamFrame rst(quic::kInvalidControlFrameId,
@@ -1119,7 +1116,7 @@ TEST_P(QuicChromiumClientSessionTest, ClosePendingStream) {
   CompleteCryptoHandshake();
 
   quic::QuicStreamId id = GetNthServerInitiatedUnidirectionalStreamId(0);
-  quic::QuicStreamFrame data(id, false, 1, absl::string_view("SP"));
+  quic::QuicStreamFrame data(id, false, 1, std::string_view("SP"));
   session_->OnStreamFrame(data);
   EXPECT_EQ(0u, session_->GetNumActiveStreams());
   session_->ResetStream(id, quic::QUIC_STREAM_NO_ERROR);
@@ -1498,22 +1495,23 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
 
   // Create reader and writer.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      std::move(new_socket), &clock_, session_.get(),
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-      CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+      CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
   IPEndPoint local_address;
-  new_socket->GetLocalAddress(&local_address);
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
-  new_socket->GetPeerAddress(&peer_address);
+  new_reader->socket()->GetPeerAddress(&peer_address);
   // Migrate session.
   EXPECT_TRUE(session_->MigrateToSocket(
       ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-      std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+      std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();
 
@@ -1586,22 +1584,23 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
 
     // Create reader and writer.
     auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-        new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+        std::move(new_socket), &clock_, session_.get(),
+        kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
         net_log_with_source_);
     new_reader->StartReading();
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-        CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+        CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
     IPEndPoint local_address;
-    new_socket->GetLocalAddress(&local_address);
+    new_reader->socket()->GetLocalAddress(&local_address);
     IPEndPoint peer_address;
-    new_socket->GetPeerAddress(&peer_address);
+    new_reader->socket()->GetPeerAddress(&peer_address);
     // Migrate session.
     EXPECT_TRUE(session_->MigrateToSocket(
         ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-        std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+        std::move(new_reader), std::move(new_writer)));
     // Spin message loop to complete migration.
     base::RunLoop().RunUntilIdle();
     alarm_factory_.FireAlarm(
@@ -1626,21 +1625,22 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
 
   // Create reader and writer.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      std::move(new_socket), &clock_, session_.get(),
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-      CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+      CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
   IPEndPoint local_address;
-  new_socket->GetLocalAddress(&local_address);
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
-  new_socket->GetPeerAddress(&peer_address);
+  new_reader->socket()->GetPeerAddress(&peer_address);
   EXPECT_FALSE(session_->MigrateToSocket(
       ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-      std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+      std::move(new_reader), std::move(new_writer)));
   EXPECT_TRUE(quic_data2.AllReadDataConsumed());
   EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
@@ -1692,22 +1692,23 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
 
   // Create reader and writer.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      std::move(new_socket), &clock_, session_.get(),
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-      CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+      CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
   IPEndPoint local_address;
-  new_socket->GetLocalAddress(&local_address);
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
-  new_socket->GetPeerAddress(&peer_address);
+  new_reader->socket()->GetPeerAddress(&peer_address);
   // Store old socket and migrate session.
   EXPECT_TRUE(session_->MigrateToSocket(
       ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-      std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+      std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(

@@ -11,6 +11,7 @@ import("//build/config/zip.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//chrome/version.gni")
+import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
@@ -82,7 +83,7 @@ _interface_api_level = read_file("interface_api_version.txt", "value")
 
 process_version("interface_api_version") {
   process_only = true
-  template_file = "api/src/android/net/http/ApiVersion.template"
+  template_file = "api/src/org/chromium/net/ApiVersion.template"
   sources = [
     "//chrome/VERSION",
     lastchange_file,
@@ -324,7 +325,6 @@ android_library("cronet_impl_common_base_java") {
     "java/src/org/chromium/net/impl/CronetLogger.java",
     "java/src/org/chromium/net/impl/CronetLoggerFactory.java",
     "java/src/org/chromium/net/impl/CronetManifest.java",
-    "java/src/org/chromium/net/impl/HeaderBlockImpl.java",
     "java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
     "java/src/org/chromium/net/impl/NoOpLogger.java",
     "java/src/org/chromium/net/impl/Preconditions.java",
@@ -458,6 +458,8 @@ android_library("cronet_impl_native_base_java") {
     "java/src/org/chromium/net/impl/CronetUrlRequest.java",
     "java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
+    "java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
+    "java/src/org/chromium/net/impl/NativeCronetProvider.java",
   ]
 
   # Adding deps here won't include those deps in the cronet_impl_native_java.jar.
@@ -519,6 +521,7 @@ java_group("cronet_impl_all_java") {
     ":cronet_impl_aosp_native_base_java",
     ":cronet_impl_common_base_java",
     ":cronet_impl_native_base_java",
+    ":cronet_impl_platform_base_java",
   ]
 }
 
@@ -662,6 +665,32 @@ java_prebuilt("package_impl_native_java") {
   jar_excluded_patterns = [ "androidx/*/R*" ]
 }
 
+android_java_prebuilt("package_impl_util_java") {
+  jar_path = "$_package_dir/cronet_impl_util_java.jar"
+  deps = [
+    ":package_api_java",
+    ":repackage_util",
+  ]
+}
+
+android_java_prebuilt("package_impl_platform_java") {
+  jar_path = "$_package_dir/cronet_impl_platform_java.jar"
+  deps = [
+    ":package_api_java",
+    ":package_impl_common_java",
+    ":repackage_platform",
+  ]
+}
+
+android_java_prebuilt("package_impl_fake_java") {
+  jar_path = "$_package_dir/cronet_impl_fake_java.jar"
+  deps = [
+    ":package_api_java",
+    ":package_impl_common_java",
+    ":repackage_fake",
+  ]
+}
+
 template("jar_src") {
   action_with_pydeps(target_name) {
     _rebased_src_search_dirs =
@@ -751,6 +780,24 @@ jar_src("jar_cronet_impl_common_java_source") {
   jar_path = "$_package_dir/cronet_impl_common_java-src.jar"
 }
 
+jar_src("jar_cronet_impl_platform_java_source") {
+  src_search_dirs = [ "java/src" ]
+  source_deps = [ ":cronet_impl_platform_base_java" ]
+  jar_path = "$_package_dir/cronet_impl_platform_java-src.jar"
+}
+
+jar_src("jar_cronet_impl_fake_java_source") {
+  src_search_dirs = [ "fake/java" ]
+  source_deps = [ ":cronet_impl_fake_base_java" ]
+  jar_path = "$_package_dir/cronet_impl_fake_java-src.jar"
+}
+
+jar_src("jar_cronet_impl_util_java_source") {
+  src_search_dirs = [ "java/src" ]
+  source_deps = [ ":cronet_impl_java_util_java" ]
+  jar_path = "$_package_dir/cronet_impl_util_java-src.jar"
+}
+
 # List of patterns of .class files to exclude from the jar.
 _jar_excluded_patterns = [
   # Excludes Android support libraries crbug.com/832770.
@@ -797,6 +844,21 @@ repackage_jars("repackage_api") {
   ]
 }
 
+repackage_jars("repackage_platform") {
+  output = "$_package_dir/cronet_impl_platform_java.jar"
+  deps = [ ":cronet_impl_platform_base_java" ]
+}
+
+repackage_jars("repackage_fake") {
+  output = "$_package_dir/cronet_impl_fake_java.jar"
+  deps = [ ":cronet_impl_fake_base_java" ]
+}
+
+repackage_jars("repackage_util") {
+  output = "$_package_dir/cronet_impl_util_java.jar"
+  deps = [ ":cronet_impl_java_util_java" ]
+}
+
 # See crbug.com/1005836 for more info on why repackage_native requires 2 extra
 # targets. These 3 targets exist to ensure the correct version of GEN_JNI
 # (a generated class containing native method definitions) is included.
@@ -836,6 +898,7 @@ repackage_jars("repackage_common") {
   output = "$_package_dir/cronet_impl_common_java.jar"
   deps = cronet_impl_common_java_deps_to_package + [
            ":cronet_impl_common_base_java",
+           ":cronet_impl_java_util_java",
          ]
 }
 
@@ -1240,6 +1303,7 @@ instrumentation_test_apk(
   deps = [
            ":cronet_api_java",
            ":cronet_impl_common_base_java",
+           ":cronet_impl_platform_base_java",
            ":cronet_smoketests_platform_only_apk_resources",
            "//base:base_java_test_support",
            "//third_party/android_sdk:android_test_base_java",
@@ -1274,6 +1338,7 @@ instrumentation_test_apk(
            ":cronet_api_java",
            ":cronet_combine_proguard_flags",
            ":cronet_impl_common_base_java",
+           ":cronet_impl_platform_base_java",
            ":cronet_test_apk_java",
            ":cronet_test_apk_resources",
            "//base:base_java",
@@ -1610,6 +1675,8 @@ copy("cronet_package_copy") {
     ":cronet_api_java",
     ":cronet_combine_proguard_flags",
     ":cronet_impl_common_base_java",
+    ":cronet_impl_fake_base_java",
+    ":cronet_impl_platform_base_java",
   ]
 }
 
@@ -1734,6 +1801,8 @@ action("api_static_checks") {
     "--impl_jar",
     rebase_path(_common_jar, root_build_dir),
     "--impl_jar",
+    rebase_path(_platform_jar, root_build_dir),
+    "--impl_jar",
     rebase_path(_native_jar, root_build_dir),
     "--stamp",
     rebase_path(outputs[0], root_build_dir),
@@ -1747,6 +1816,7 @@ action("api_static_checks") {
   inputs = [
     _api_jar,
     _common_jar,
+    _platform_jar,
     _native_jar,
     "//components/cronet/tools/update_api.py",
   ]
@@ -1799,11 +1869,15 @@ group("cronet_package_android") {
       ":generate_licenses",
       ":jar_cronet_api_source",
       ":jar_cronet_impl_common_java_source",
+      ":jar_cronet_impl_fake_java_source",
       ":jar_cronet_impl_native_java_source",
+      ":jar_cronet_impl_platform_java_source",
       ":jar_cronet_sample_source",
       ":repackage_api",
       ":repackage_common",
+      ":repackage_fake",
       ":repackage_native",
+      ":repackage_platform",
     ]
     if (current_cpu == "arm" && arm_version == 7) {
       deps += [ ":enforce_no_neon" ]

@@ -1563,6 +1563,9 @@ cc_genrule {
 // GN: //base:android_runtime_jni_headers
 cc_genrule {
     name: "cronet_aml_base_android_runtime_jni_headers",
+    tools: [
+        ":javap",
+    ],
     cmd: "$(location third_party/jni_zero/jni_zero.py) from-jar " +
          "--output-dir " +
          "$(genDir)/base/android_runtime_jni_headers " +
@@ -1571,7 +1574,7 @@ cc_genrule {
          "--jar-file " +
          "$(location :current_android_jar) " +
          "--javap " +
-         "$$(find $${OUT_DIR:-out}/.path -name javap) " +
+         "$(location :javap) " +
          "--output-name " +
          "Runtime_jni.h " +
          "--input-file " +
@@ -1605,6 +1608,9 @@ cc_genrule {
 // GN: //base:android_runtime_jni_headers__testing
 cc_genrule {
     name: "cronet_aml_base_android_runtime_jni_headers__testing",
+    tools: [
+        ":javap",
+    ],
     cmd: "$(location third_party/jni_zero/jni_zero.py) from-jar " +
          "--output-dir " +
          "$(genDir)/base/android_runtime_jni_headers " +
@@ -1613,7 +1619,7 @@ cc_genrule {
          "--jar-file " +
          "$(location :current_android_jar) " +
          "--javap " +
-         "$$(find $${OUT_DIR:-out}/.path -name javap) " +
+         "$(location :javap) " +
          "--output-name " +
          "Runtime_jni.h " +
          "--input-file " +
@@ -1647,6 +1653,9 @@ cc_genrule {
 // GN: //base:android_runtime_unchecked_jni_headers
 cc_genrule {
     name: "cronet_aml_base_android_runtime_unchecked_jni_headers",
+    tools: [
+        ":javap",
+    ],
     cmd: "$(location third_party/jni_zero/jni_zero.py) from-jar " +
          "--output-dir " +
          "$(genDir)/base/android_runtime_unchecked_jni_headers " +
@@ -1655,7 +1664,7 @@ cc_genrule {
          "--jar-file " +
          "$(location :current_android_jar) " +
          "--javap " +
-         "$$(find $${OUT_DIR:-out}/.path -name javap) " +
+         "$(location :javap) " +
          "--unchecked-exceptions " +
          "--output-name " +
          "Runnable_jni.h " +
@@ -1690,6 +1699,9 @@ cc_genrule {
 // GN: //base:android_runtime_unchecked_jni_headers__testing
 cc_genrule {
     name: "cronet_aml_base_android_runtime_unchecked_jni_headers__testing",
+    tools: [
+        ":javap",
+    ],
     cmd: "$(location third_party/jni_zero/jni_zero.py) from-jar " +
          "--output-dir " +
          "$(genDir)/base/android_runtime_unchecked_jni_headers " +
@@ -1698,7 +1710,7 @@ cc_genrule {
          "--jar-file " +
          "$(location :current_android_jar) " +
          "--javap " +
-         "$$(find $${OUT_DIR:-out}/.path -name javap) " +
+         "$(location :javap) " +
          "--unchecked-exceptions " +
          "--output-name " +
          "Runnable_jni.h " +

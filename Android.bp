@@ -5645,7 +5645,7 @@ cc_library_static {
 cc_genrule {
     name: "cronet_aml_base_build_date",
     cmd: "mkdir -p $(genDir)/base && $(location base/write_build_date_header.py) $(out) " +
-         "1704214932",
+         "1701865170",
     out: [
         "base/generated_build_date.h",
     ],
@@ -5661,7 +5661,7 @@ cc_genrule {
 cc_genrule {
     name: "cronet_aml_base_build_date__testing",
     cmd: "mkdir -p $(genDir)/base && $(location base/write_build_date_header.py) $(out) " +
-         "1704214932",
+         "1701865170",
     host_supported: true,
     out: [
         "base/generated_build_date.h",
@@ -9892,7 +9892,15 @@ cc_library_shared {
     },
 }
 
-// GN: //components/cronet/android:cronet__testing
+// TODO: remove stem for riscv64
+// This is essential as there can't be two different modules
+// with the same output. We usually got away with that because
+// the non-testing Cronet is part of the Tethering APEX and the
+// testing Cronet is not part of the Tethering APEX which made them
+// look like two different outputs from the build system perspective.
+// However, Cronet does not ship to Tethering APEX for RISCV64 which
+// raises the conflict. Once we start shipping Cronet for RISCV64,
+// this can be removed.
 cc_library_shared {
     name: "cronet_aml_components_cronet_android_cronet__testing",
     srcs: [
@@ -10115,6 +10123,9 @@ cc_library_shared {
                 "-fstack-protector",
                 "-mno-outline",
             ],
+        },
+        android_riscv64: {
+            stem: "libmainlinecronet_riscv64",
         },
         android_x86: {
             cflags: [

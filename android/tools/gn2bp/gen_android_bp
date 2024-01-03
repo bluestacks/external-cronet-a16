@@ -198,6 +198,18 @@ additional_args = {
         ('srcs', {
             'testing/android/native_test/java/src/org/chromium/native_test/SignalMaskInfo.java',
         }),
+    ],
+    'cronet_aml_components_cronet_android_cronet__testing': [
+        ('target',  ('android_riscv64', {'stem': "libmainlinecronet_riscv64"})),
+        ('comment', """TODO: remove stem for riscv64
+// This is essential as there can't be two different modules
+// with the same output. We usually got away with that because
+// the non-testing Cronet is part of the Tethering APEX and the
+// testing Cronet is not part of the Tethering APEX which made them
+// look like two different outputs from the build system perspective.
+// However, Cronet does not ship to Tethering APEX for RISCV64 which
+// raises the conflict. Once we start shipping Cronet for RISCV64,
+// this can be removed.""")
     ]
 }
 
@@ -454,6 +466,7 @@ class Module(object):
       self.export_generated_headers = set()
       self.ldflags = set()
       self.compile_multilib = None
+      self.stem = ""
       if name == 'host':
         self.compile_multilib = '64'
 
@@ -471,6 +484,7 @@ class Module(object):
       self._output_field(nested_out, 'generated_headers')
       self._output_field(nested_out, 'export_generated_headers')
       self._output_field(nested_out, 'ldflags')
+      self._output_field(nested_out, 'stem')
 
       if nested_out:
         # This is added here to make sure it doesn't add a `host` arch-specific module just for
@@ -520,6 +534,7 @@ class Module(object):
     self.target['android_x86_64'] = self.Target('android_x86_64')
     self.target['android_arm'] = self.Target('android_arm')
     self.target['android_arm64'] = self.Target('android_arm64')
+    self.target['android_riscv64'] = self.Target('android_riscv64')
     self.target['host'] = self.Target('host')
     self.target['glibc'] = self.Target('glibc')
     self.stl = None
@@ -1872,8 +1887,8 @@ def create_blueprint_for_targets(gn, targets, test_targets):
         setattr(module, key, add_val)
       elif isinstance(add_val, dict) and isinstance(curr, dict):
         curr.update(add_val)
-      elif isinstance(add_val, dict) and isinstance(curr, Module.Target):
-        curr.__dict__.update(add_val)
+      elif isinstance(add_val[1], dict) and isinstance(curr[add_val[0]], Module.Target):
+        curr[add_val[0]].__dict__.update(add_val[1])
       else:
         raise Exception('Unimplemented type %r of additional_args: %r' % (type(add_val), key))
 

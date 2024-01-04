@@ -60,6 +60,7 @@ DEFAULT_TESTS = [
   '//testing/android/native_test:native_test_java',
   '//net/android:net_test_support_provider_java',
   '//net/android:net_tests_java',
+  '//third_party/netty-tcnative:netty-tcnative-so',
 ]
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
@@ -209,7 +210,17 @@ additional_args = {
 // look like two different outputs from the build system perspective.
 // However, Cronet does not ship to Tethering APEX for RISCV64 which
 // raises the conflict. Once we start shipping Cronet for RISCV64,
-// this can be removed.""")
+// this can be removed."""),
+      ],
+    'cronet_aml_third_party_netty_tcnative_netty_tcnative_so__testing': [
+        ('cflags', {
+            "-Wno-error=pointer-bool-conversion"
+        })
+    ],
+    'cronet_aml_third_party_apache_portable_runtime_apr__testing': [
+        ('cflags', {
+            "-Wno-incompatible-pointer-types-discards-qualifiers",
+        })
     ]
 }
 

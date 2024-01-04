@@ -12388,6 +12388,7 @@ java_library {
         "cronet_aml_components_cronet_android_cronet_impl_all_java__testing",
         "cronet_aml_net_android_net_java_test_support__testing",
         "cronet_aml_third_party_jni_zero_jni_zero_java__testing",
+        "cronet_aml_third_party_netty4_netty_all_java__testing",
         "junit",
         "truth",
     ],
@@ -52555,6 +52556,21 @@ cc_library_static {
             compile_multilib: "64",
         },
     },
+}
+
+// GN: //third_party/netty4:netty_all_java__testing
+java_import {
+    name: "cronet_aml_third_party_netty4_netty_all_java__testing",
+    defaults: [
+        "cronet_aml_defaults",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+        "//packages/modules/Connectivity:__subpackages__",
+    ],
+    jars: [
+        "third_party/netty4/src/jar/all-in-one/netty-all-4.1.9.Final.jar",
+    ],
 }
 
 // GN: //third_party/netty-tcnative:netty-tcnative-so__testing

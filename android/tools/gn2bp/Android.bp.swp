@@ -52622,7 +52622,7 @@ cc_library_shared {
         "-Wl,--gc-sections",
         "-Wl,--icf=all",
     ],
-    stem: "libnetty-tcnative-so",
+    stem: "libnetty-tcnative",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

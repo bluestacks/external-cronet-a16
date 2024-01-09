@@ -67,6 +67,7 @@ java_library {
         "cronet_aml_components_cronet_android_cronet_jni_registration_java"
     ],
     sdk_version: "module_current",
+    jarjar_rules: "android/jarjar-rules.txt",
     min_sdk_version: "30",
     visibility: [
         "//packages/modules/Connectivity:__subpackages__",

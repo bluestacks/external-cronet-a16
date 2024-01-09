@@ -214,6 +214,10 @@ public class CronetTestRule implements TestRule {
 
         if (packageName.startsWith("org.chromium.net")) {
             for (CronetImplementation implementation : implementationsUnderTest) {
+                if (isRunningInAOSP() && implementation.equals(CronetImplementation.FALLBACK)) {
+                    // Skip executing tests for JavaCronetEngine.
+                    continue;
+                }
                 Log.i(TAG, "Running test against " + implementation + " implementation.");
                 setImplementationUnderTest(implementation);
                 evaluateWithFramework(base, testName, netLogEnabled);
@@ -221,6 +225,32 @@ public class CronetTestRule implements TestRule {
         } else {
             evaluateWithFramework(base, testName, netLogEnabled);
         }
+    }
+
+    /**
+     * This method only returns the value of the `is_running_in_aosp` flag which for Chromium can be
+     * found inside components/cronet/android/test/res/values/bools.xml for which it should be equal
+     * to false. However, on AOSP, we ship a different value which is equal to true.
+     *
+     * <p>This distinction between where the tests are being executed is crucial because we don't
+     * want to run JavaCronetEngine tests in AOSP.
+     *
+     * @return True if the tests are being executed in AOSP.
+     */
+    @SuppressWarnings("DiscouragedApi")
+    public boolean isRunningInAOSP() {
+        int resId =
+                ApplicationProvider.getApplicationContext()
+                        .getResources()
+                        .getIdentifier(
+                                "is_running_in_aosp",
+                                "bool",
+                                ApplicationProvider.getApplicationContext().getPackageName());
+        if (resId == 0) {
+            throw new IllegalStateException(
+                    "Could not find any value for `is_running_in_aosp` boolean entry.");
+        }
+        return ApplicationProvider.getApplicationContext().getResources().getBoolean(resId);
     }
 
     private void evaluateWithFramework(Statement statement, String testName, boolean netLogEnabled)

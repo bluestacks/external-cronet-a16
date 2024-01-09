@@ -5645,7 +5645,7 @@ cc_library_static {
 cc_genrule {
     name: "cronet_aml_base_build_date",
     cmd: "mkdir -p $(genDir)/base && $(location base/write_build_date_header.py) $(out) " +
-         "1701360610",
+         "1701865170",
     out: [
         "base/generated_build_date.h",
     ],
@@ -5661,7 +5661,7 @@ cc_genrule {
 cc_genrule {
     name: "cronet_aml_base_build_date__testing",
     cmd: "mkdir -p $(genDir)/base && $(location base/write_build_date_header.py) $(out) " +
-         "1701360610",
+         "1701865170",
     host_supported: true,
     out: [
         "base/generated_build_date.h",
@@ -22856,18 +22856,21 @@ cc_genrule {
     ],
     cmd: "mkdir -p $(genDir)/net/http && $(location cronet_aml_net_tools_transport_security_state_generator_transport_security_state_generator__testing) " +
          "$(location net/http/transport_security_state_static_unittest1.json) " +
+         "$(location net/http/transport_security_state_static_unittest1_pins.json) " +
          "$(location net/http/transport_security_state_static_unittest.pins) " +
          "$(location net/http/transport_security_state_static_unittest.template) " +
          "$(location net/http/transport_security_state_static_unittest1.h) " +
          "&& " +
          "$(location cronet_aml_net_tools_transport_security_state_generator_transport_security_state_generator__testing) " +
          "$(location net/http/transport_security_state_static_unittest2.json) " +
+         "$(location net/http/transport_security_state_static_unittest2_pins.json) " +
          "$(location net/http/transport_security_state_static_unittest.pins) " +
          "$(location net/http/transport_security_state_static_unittest.template) " +
          "$(location net/http/transport_security_state_static_unittest2.h) " +
          "&& " +
          "$(location cronet_aml_net_tools_transport_security_state_generator_transport_security_state_generator__testing) " +
          "$(location net/http/transport_security_state_static_unittest3.json) " +
+         "$(location net/http/transport_security_state_static_unittest3_pins.json) " +
          "$(location net/http/transport_security_state_static_unittest.pins) " +
          "$(location net/http/transport_security_state_static_unittest.template) " +
          "$(location net/http/transport_security_state_static_unittest3.h)",
@@ -22881,8 +22884,11 @@ cc_genrule {
         "net/http/transport_security_state_static_unittest.pins",
         "net/http/transport_security_state_static_unittest.template",
         "net/http/transport_security_state_static_unittest1.json",
+        "net/http/transport_security_state_static_unittest1_pins.json",
         "net/http/transport_security_state_static_unittest2.json",
+        "net/http/transport_security_state_static_unittest2_pins.json",
         "net/http/transport_security_state_static_unittest3.json",
+        "net/http/transport_security_state_static_unittest3_pins.json",
     ],
     apex_available: [
         "com.android.tethering",
@@ -28138,6 +28144,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags__testing",
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
         "cronet_aml_url_buildflags__testing",
         "cronet_aml_url_url_jni_headers__testing",
@@ -28173,6 +28180,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags__testing",
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
         "cronet_aml_url_buildflags__testing",
         "cronet_aml_url_url_jni_headers__testing",
@@ -28280,6 +28288,7 @@ cc_library_static {
     name: "cronet_aml_net_third_party_quiche_blind_sign_auth_proto__testing",
     srcs: [
         ":cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing",
+        ":cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
     ],
     shared_libs: [
         "libandroid",
@@ -28315,6 +28324,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
         "cronet_aml_build_config_compiler_compiler_buildflags__testing",
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     export_generated_headers: [
@@ -28346,6 +28356,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
         "cronet_aml_build_config_compiler_compiler_buildflags__testing",
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
@@ -28469,6 +28480,7 @@ cc_genrule {
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/proxy_layer.pb.cc",
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/public_metadata.pb.cc",
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.cc",
+        "external/cronet/third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.pb.cc",
     ],
     apex_available: [
         "com.android.tethering",
@@ -28503,6 +28515,7 @@ cc_genrule {
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/proxy_layer.pb.h",
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/public_metadata.pb.h",
         "external/cronet/net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h",
+        "external/cronet/third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.pb.h",
     ],
     export_include_dirs: [
         ".",
@@ -28565,6 +28578,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
         "cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers",
         "cronet_aml_url_buildflags__testing",
@@ -28612,6 +28626,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
         "cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers",
         "cronet_aml_url_buildflags__testing",
@@ -30972,6 +30987,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
         "cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers",
         "cronet_aml_url_buildflags__testing",
@@ -31019,6 +31035,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_blind_sign_auth_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen__testing_headers",
         "cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers",
+        "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing",
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
         "cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers",
         "cronet_aml_url_buildflags__testing",

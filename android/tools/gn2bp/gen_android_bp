@@ -765,7 +765,7 @@ def create_proto_modules(blueprint, gn, target):
     # add them to srcs.
     descriptor_module.srcs.update(
         gn_utils.label_to_path(src) for src in target.sources)
-    for dep in target.transitive_proto_deps:
+    for dep in target.proto_deps:
       current_target = gn.get_target(dep)
       descriptor_module.srcs.update(
           gn_utils.label_to_path(src) for src in current_target.sources)
@@ -825,6 +825,12 @@ def create_proto_modules(blueprint, gn, target):
     header_module.out.update('%s/%s' %
                              (tree_path, src.replace('.proto', '.%s.h' % sfx))
                              for src in header_module.srcs)
+  # This has proto files that will be used for reference resolution
+  # but not compiled into cpp files. These additional sources has no output.
+  proto_data_sources = sorted([gn_utils.label_to_path(proto_src)
+                               for proto_src in target.inputs if proto_src.endswith(".proto")])
+  source_module.srcs.update(proto_data_sources)
+  header_module.srcs.update(proto_data_sources)
   return source_module
 
 
@@ -1687,6 +1693,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
   if module.type == 'cc_library_static':
     module.export_generated_headers = module.generated_headers
 
+
+
   if module.name in ['cronet_aml_components_cronet_android_cronet',
                      'cronet_aml_components_cronet_android_cronet' + gn_utils.TESTING_SUFFIX]:
     if target.output_name is None:
@@ -1700,7 +1708,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
                           :target.get_target_name().find(gn_utils.TESTING_SUFFIX)]
 
   # dep_name is an unmangled GN target name (e.g. //foo:bar(toolchain)).
-  all_deps = [(dep_name, 'common') for dep_name in target.transitive_proto_deps]
+  all_deps = [(dep_name, 'common') for dep_name in target.proto_deps]
   for arch_name, arch in target.arch.items():
     all_deps += [(dep_name, arch_name) for dep_name in arch.deps]
 
@@ -1726,7 +1734,13 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
     # If this doesn't work for other target, hardcoding for specific target
     # might be better.
     if module.is_genrule() and dep_module.is_genrule():
-      module_target.genrule_headers.add(dep_module.name)
+      if module_target.gn_type != "proto_library":
+        # proto_library are treated differently because each proto action
+        # is split into two different targets, a cpp target and a header target.
+        # the cpp target is used as the entry point to the proto action, hence
+        # it should not be propagated as a genrule header because it generates
+        # cpp files only.
+        module_target.genrule_headers.add(dep_module.name)
       module_target.genrule_headers.update(dep_module.genrule_headers)
 
     # For filegroups, and genrule, recurse but don't apply the

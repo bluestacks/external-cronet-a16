@@ -3928,7 +3928,6 @@ java_library {
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
         "error_prone_annotations",
-        "guava",
         "jsr305",
     ],
     sdk_version: "current",
@@ -4094,7 +4093,6 @@ java_library {
         "androidx.annotation_annotation-experimental-nodeps",
         "androidx.annotation_annotation-nodeps",
         "error_prone_annotations",
-        "guava",
         "jsr305",
     ],
     sdk_version: "current",
@@ -4189,6 +4187,7 @@ java_library {
         "cronet_aml_base_base_java_url_utils_for_test__testing",
         "cronet_aml_build_android_build_java__testing",
         "cronet_aml_third_party_jni_zero_jni_zero_java__testing",
+        "guava",
         "hamcrest",
         "hamcrest-library",
         "junit",
@@ -4204,7 +4203,6 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "androidx.core_core-nodeps",
         "androidx.test.monitor",
-        "guava",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -5645,7 +5643,7 @@ cc_library_static {
 cc_genrule {
     name: "cronet_aml_base_build_date",
     cmd: "mkdir -p $(genDir)/base && $(location base/write_build_date_header.py) $(out) " +
-         "1701865170",
+         "1704300315",
     out: [
         "base/generated_build_date.h",
     ],
@@ -5661,7 +5659,7 @@ cc_genrule {
 cc_genrule {
     name: "cronet_aml_base_build_date__testing",
     cmd: "mkdir -p $(genDir)/base && $(location base/write_build_date_header.py) $(out) " +
-         "1701865170",
+         "1704300315",
     host_supported: true,
     out: [
         "base/generated_build_date.h",
@@ -11185,6 +11183,7 @@ java_library {
         "cronet_aml_net_android_net_java_test_support__testing",
         "cronet_aml_third_party_jni_zero_jni_zero_java__testing",
         "cronet_aml_url_url_java__testing",
+        "guava",
         "hamcrest",
         "hamcrest-library",
         "junit",
@@ -11200,7 +11199,6 @@ java_library {
     libs: [
         "android.test.base",
         "androidx.annotation_annotation-experimental-nodeps",
-        "guava",
     ],
     visibility: [
         "//external/cronet:__subpackages__",

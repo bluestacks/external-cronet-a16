@@ -25,7 +25,6 @@ import androidx.test.filters.SmallTest;
 import org.jni_zero.NativeMethods;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +42,9 @@ import org.chromium.net.apihelpers.UploadDataProviders;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.UrlResponseInfoImpl;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.FailurePhase;
+import org.chromium.net.test.ServerCertificate;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -1022,19 +1023,21 @@ public class CronetUrlRequestTest {
      */
     @Test
     @SmallTest
-    @Ignore ("b/267353182 "
-            + "Figure out why EmbeddedTestServer was used instead of MockUrlForSSLCertificateError"
-            + "since this is similar test to one above")
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK},
             reason = "crbug.com/1495320: Refactor error checking")
     public void testSSLCertificateError() throws Exception {
-        // EmbeddedTestServer sslServer = EmbeddedTestServer.createAndStartHTTPSServer(
-             //   mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_EXPIRED);
+        EmbeddedTestServer sslServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_EXPIRED);
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                /* sslServer.getURL("/") */ null, callback, callback.getExecutor());
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                sslServer.getURL("/"), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider =
                 new TestUploadDataProvider(
@@ -1054,7 +1057,7 @@ public class CronetUrlRequestTest {
         mTestRule.assertCronetInternalErrorCode((NetworkException) callback.mError, -201);
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
 
-        // sslServer.stopAndDestroyServer();
+        sslServer.stopAndDestroyServer();
     }
 
     /** Checks that the buffer is updated correctly, when starting at an offset. */

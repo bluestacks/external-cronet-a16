@@ -39,17 +39,10 @@ JAVA_FILES_TO_IGNORE = (
   "//components/cronet/android/api/src/org/chromium/net/apihelpers/StringCronetCallback.java",
   "//components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java",
   "//components/cronet/android/test/javatests/src/org/chromium/net/CronetEngineBuilderTest.java",
-  # The following tests are currently not included in the tests because they
-  # depends on H2 test server.
-  "//components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamTest.java",
-  "//components/cronet/android/test/javatests/src/org/chromium/net/MockCertVerifierTest.java",
-  "//components/cronet/android/test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
-  "//components/cronet/android/test/javatests/src/org/chromium/net/PkpTest.java",
   # Api helpers does not exist downstream, hence the tests shouldn't be collected.
   "//components/cronet/android/test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
-  # Netty does not exist currently in AOSP so those classes won't compile. We replace with stubs.
-  "//components/cronet/android/test/src/org/chromium/net/Http2TestHandler.java",
-  "//components/cronet/android/test/src/org/chromium/net/Http2TestServer.java"
+  # androidx-multidex is disabled on unbundled branches.
+  "//base/test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
 )
 RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"

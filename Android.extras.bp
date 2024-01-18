@@ -167,6 +167,7 @@ filegroup {
   name: "cronet_javatests_resources",
   srcs: [
     "net/data/ssl/certificates/**/*",
+    "components/cronet/testing/test_server/data/**/*",
   ],
   visibility: [
       "//packages/modules/Connectivity:__subpackages__",
@@ -175,10 +176,6 @@ filegroup {
 
 android_library {
     name: "cronet_java_tests",
-    asset_dirs: [
-        "components/cronet/testing/test_server/data/",
-        "net/data/ssl/certificates/",
-    ],
     manifest: "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
     srcs: [
         ":cronet_logger_tests_sources",

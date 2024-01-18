@@ -163,6 +163,16 @@ android_test_helper_app {
     ],
 }
 
+filegroup {
+  name: "cronet_javatests_resources",
+  srcs: [
+    "net/data/ssl/certificates/**/*",
+  ],
+  visibility: [
+      "//packages/modules/Connectivity:__subpackages__",
+  ],
+}
+
 android_library {
     name: "cronet_java_tests",
     asset_dirs: [

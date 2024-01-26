@@ -29,9 +29,11 @@ import android.view.Display;
 import android.view.View;
 import android.view.textclassifier.TextClassifier;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -49,8 +51,7 @@ import java.util.List;
 public class ApiCompatibilityUtils {
     private static final String TAG = "ApiCompatUtil";
 
-    private ApiCompatibilityUtils() {
-    }
+    private ApiCompatibilityUtils() {}
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private static class ApisQ {
@@ -69,7 +70,9 @@ public class ApiCompatibilityUtils {
                     (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
             for (Display display : displays) {
                 if (display.getState() == Display.STATE_ON
-                        && am.isActivityStartAllowedOnDisplay(activity, display.getDisplayId(),
+                        && am.isActivityStartAllowedOnDisplay(
+                                activity,
+                                display.getDisplayId(),
                                 new Intent(activity, activity.getClass()))) {
                     displayList.add(display.getDisplayId());
                 }
@@ -112,8 +115,9 @@ public class ApiCompatibilityUtils {
     private static class ApisNMR1 {
         static boolean isDemoUser() {
             UserManager userManager =
-                    (UserManager) ContextUtils.getApplicationContext().getSystemService(
-                            Context.USER_SERVICE);
+                    (UserManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.USER_SERVICE);
             return userManager.isDemoUser();
         }
     }
@@ -316,10 +320,17 @@ public class ApiCompatibilityUtils {
             float offsetRight =
                     (float) View.class.getMethod("getHandwritingBoundsOffsetRight").invoke(view);
             // this.setHandwritingBoundsOffsets(offsetLeft, offsetTop, offsetRight, 0);
-            Method setHandwritingBoundsOffsets = View.class.getMethod("setHandwritingBoundsOffsets",
-                    float.class, float.class, float.class, float.class);
+            Method setHandwritingBoundsOffsets =
+                    View.class.getMethod(
+                            "setHandwritingBoundsOffsets",
+                            float.class,
+                            float.class,
+                            float.class,
+                            float.class);
             setHandwritingBoundsOffsets.invoke(view, offsetLeft, offsetTop, offsetRight, 0);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException
+        } catch (IllegalAccessException
+                | InvocationTargetException
+                | NoSuchMethodException
                 | NullPointerException e) {
             // Do nothing.
         }
@@ -348,9 +359,7 @@ public class ApiCompatibilityUtils {
         return false;
     }
 
-    /**
-     * Retrieves an image for the given uri as a Bitmap.
-     */
+    /** Retrieves an image for the given uri as a Bitmap. */
     public static Bitmap getBitmapByUri(ContentResolver cr, Uri uri) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return ApisP.getBitmapByUri(cr, uri);

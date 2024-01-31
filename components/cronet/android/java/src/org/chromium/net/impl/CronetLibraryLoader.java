@@ -63,7 +63,13 @@ public class CronetLibraryLoader {
                 if (!sInitThread.isAlive()) {
                     sInitThread.start();
                 }
-                postToInitThread(CronetLibraryLoader::ensureInitializedOnInitThread);
+                postToInitThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                ensureInitializedOnInitThread();
+                            }
+                        });
             }
             if (!sLibraryLoaded) {
                 System.loadLibrary(LIBRARY_NAME);

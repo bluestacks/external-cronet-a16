@@ -655,7 +655,9 @@ class Module(object):
     output.append('')
 
   def add_android_shared_lib(self, lib):
-    if self.type == 'cc_binary_host':
+    if self.type.startswith('java'):
+      raise Exception('Adding Android shared lib for java_* targets is unsupported')
+    elif self.type == 'cc_binary_host':
       raise Exception('Adding Android shared lib for host tool is unsupported')
     elif self.host_supported:
       self.target['android'].shared_libs.add(lib)
@@ -1703,11 +1705,10 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
     # See build/soong/android/sdk_version.go for more information on different SDK versions.
     module.sdk_version = "current"
 
-  if module.is_compiled():
+  if module.is_compiled() and not module.type.startswith("java"):
     # Don't try to inject library/source dependencies into genrules or
     # filegroups because they are not compiled in the traditional sense.
-    if module.type != "java_library":
-      module.defaults = [defaults_module]
+    module.defaults = [defaults_module]
     for lib in target.libs:
       # Generally library names should be mangled as 'libXXX', unless they
       # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
@@ -1790,9 +1791,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
     if dep_module.type == 'cc_library_shared':
       module_target.shared_libs.add(dep_module.name)
     elif dep_module.type == 'cc_library_static':
-      if module.type in ['cc_library_shared', 'cc_binary'] and dep_module.type == 'cc_library_static':
+      if module.type in ['cc_library_shared', 'cc_binary']:
         module_target.whole_static_libs.add(dep_module.name)
-      else:
+      elif module.type == 'cc_library_static':
         module_target.generated_headers.update(dep_module.generated_headers)
         module_target.shared_libs.update(dep_module.shared_libs)
         module_target.header_libs.update(dep_module.header_libs)

@@ -966,6 +966,9 @@ cc_genrule {
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/chromecast_buildflags.h",
     ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
+    ],
     tool_files: [
         "build/write_buildflag_header.py",
     ],
@@ -990,6 +993,9 @@ cc_genrule {
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/chromecast_buildflags.h",
     ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
+    ],
     tool_files: [
         "build/write_buildflag_header.py",
     ],
@@ -1012,6 +1018,9 @@ cc_genrule {
          "/dev/stdin",
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/chromeos_buildflags.h",
+    ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
     ],
     tool_files: [
         "build/write_buildflag_header.py",
@@ -1036,6 +1045,9 @@ cc_genrule {
     host_supported: true,
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/chromeos_buildflags.h",
+    ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
     ],
     tool_files: [
         "build/write_buildflag_header.py",
@@ -1098,6 +1110,9 @@ cc_genrule {
          "fi;",
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h",
+    ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
     ],
     tool_files: [
         "build/write_buildflag_header.py",
@@ -1174,6 +1189,9 @@ cc_genrule {
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h",
     ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
+    ],
     tool_files: [
         "build/write_buildflag_header.py",
     ],
@@ -1235,6 +1253,10 @@ cc_genrule {
          "fi;",
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h",
+    ],
+    export_include_dirs: [
+        ".",
+        "base/allocator/partition_allocator/src/",
     ],
     tool_files: [
         "build/write_buildflag_header.py",
@@ -1310,6 +1332,10 @@ cc_genrule {
     host_supported: true,
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h",
+    ],
+    export_include_dirs: [
+        ".",
+        "base/allocator/partition_allocator/src/",
     ],
     tool_files: [
         "build/write_buildflag_header.py",
@@ -1543,6 +1569,9 @@ cc_genrule {
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/raw_ptr_buildflags.h",
     ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
+    ],
     tool_files: [
         "build/write_buildflag_header.py",
     ],
@@ -1566,6 +1595,9 @@ cc_genrule {
     host_supported: true,
     out: [
         "base/allocator/partition_allocator/src/partition_alloc/raw_ptr_buildflags.h",
+    ],
+    export_include_dirs: [
+        "base/allocator/partition_allocator/src/",
     ],
     tool_files: [
         "build/write_buildflag_header.py",

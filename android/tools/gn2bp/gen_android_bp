@@ -218,7 +218,64 @@ additional_args = {
         ('cflags', {
             "-Wno-incompatible-pointer-types-discards-qualifiers",
         })
-    ]
+    ],
+    # TODO(b/324872305): Remove when gn desc expands public_configs and update code to propagate the
+    # include_dir from the public_configs
+    # We had to add the export_include_dirs for each target because soong generates each header
+    # file in a specific directory named after the target.
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags__testing': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags__testing': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags__testing': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags': [
+      ('export_include_dirs', {
+        ".",
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags__testing': [
+      ('export_include_dirs', {
+        ".",
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags__testing': [
+      ('export_include_dirs', {
+        "base/allocator/partition_allocator/src/",
+      })
+    ],
+    # end export_include_dir.
 }
 
 def always_disable(module, arch):

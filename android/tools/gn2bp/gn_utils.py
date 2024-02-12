@@ -526,6 +526,7 @@ class GnParser(object):
         target.proto_deps.add(dep.name)
       elif dep.type == 'group':
         target.update(dep, arch)  # Bubble up groups's cflags/ldflags etc.
+        target.transitive_jni_java_sources.update(dep.transitive_jni_java_sources)
       elif dep.type in ['action', 'action_foreach', 'copy']:
         target.arch[arch].deps.add(dep.name)
         target.transitive_jni_java_sources.update(dep.transitive_jni_java_sources)

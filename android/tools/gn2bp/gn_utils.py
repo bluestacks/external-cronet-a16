@@ -205,6 +205,7 @@ class GnParser(object):
       # Path to the java jar path. This is used if the java library is
       # an import of a JAR like `android_java_prebuilt` targets in GN
       self.jar_path = ""
+      self.sdk_version = ""
 
     # Properties to forward access to common arch.
     # TODO: delete these after the transition has been completed.
@@ -463,6 +464,7 @@ class GnParser(object):
       # defined otherwise it is a path.
       if metadata.get("jar_path", [""])[0]:
         target.jar_path = label_to_path(metadata["jar_path"][0])
+      target.sdk_version = metadata.get('sdk_version', ['current'])[0]
       deps = metadata.get("all_deps", {})
       log.info('Found Java Target %s', target.name)
     elif target.script == "//build/android/gyp/aidl.py":

@@ -10717,7 +10717,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "androidx.core_core-nodeps",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10734,7 +10734,7 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10782,7 +10782,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10830,7 +10830,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10852,7 +10852,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation-nodeps",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10902,7 +10902,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -10956,7 +10956,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10984,7 +10984,7 @@ java_library {
         "androidx.annotation_annotation-nodeps",
         "jsr305",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -12259,7 +12259,7 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -12273,7 +12273,7 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -12315,7 +12315,7 @@ java_library {
         "android.test.base",
         "androidx.annotation_annotation-nodeps",
     ],
-    sdk_version: "current",
+    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -53303,6 +53303,11 @@ cc_library_static {
 // GN: //third_party/netty4:netty_all_java__testing
 java_import {
     name: "cronet_aml_third_party_netty4_netty_all_java__testing",
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

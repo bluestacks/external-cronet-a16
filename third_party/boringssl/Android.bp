@@ -64,6 +64,8 @@ cc_defaults {
         "-fvisibility=hidden",
         "-DBORINGSSL_SHARED_LIBRARY",
         "-DBORINGSSL_ANDROID_SYSTEM",
+        // Chromium uses extensive harderning mode, so setting the same for boringssl.
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
         "-DOPENSSL_SMALL",
         "-Werror",
         "-Wno-unused-parameter",

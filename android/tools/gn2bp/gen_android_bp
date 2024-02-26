@@ -300,6 +300,7 @@ def enable_boringssl(module, arch):
     shared_libs = module.target[arch].shared_libs
   shared_libs.add('//external/cronet/third_party/boringssl:libcrypto')
   shared_libs.add('//external/cronet/third_party/boringssl:libssl')
+  shared_libs.add('//external/cronet/third_party/boringssl:libpki')
 
 def add_androidx_experimental_java_deps(module, arch):
   module.libs.add("androidx.annotation_annotation-experimental-nodeps")

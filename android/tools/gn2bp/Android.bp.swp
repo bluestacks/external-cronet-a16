@@ -2313,6 +2313,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -9551,6 +9552,7 @@ cc_library_shared {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -10151,6 +10153,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -11821,6 +11824,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -14335,6 +14339,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -15195,6 +15200,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -15747,6 +15753,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -16092,6 +16099,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -16524,6 +16532,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -17137,6 +17146,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -18787,6 +18797,7 @@ cc_library_static {
     name: "cronet_aml_net_constants",
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -19198,6 +19209,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -19639,6 +19651,7 @@ cc_library_static {
     name: "cronet_aml_net_dns_dns_client",
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -20037,6 +20050,7 @@ cc_library_static {
     name: "cronet_aml_net_dns_host_resolver",
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -20435,6 +20449,7 @@ cc_library_static {
     name: "cronet_aml_net_dns_host_resolver_manager",
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -20833,6 +20848,7 @@ cc_library_static {
     name: "cronet_aml_net_dns_mdns_client",
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -21242,6 +21258,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -22576,6 +22593,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -23772,6 +23790,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -24655,6 +24674,7 @@ cc_library_static {
     name: "cronet_aml_net_net_deps",
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -25729,6 +25749,7 @@ cc_library_static {
     name: "cronet_aml_net_net_public_deps",
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -26749,6 +26770,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -28831,6 +28853,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -29837,6 +29860,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -32345,6 +32369,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -32673,6 +32698,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",
@@ -54670,6 +54696,7 @@ cc_library_static {
     ],
     shared_libs: [
         "//external/cronet/third_party/boringssl:libcrypto",
+        "//external/cronet/third_party/boringssl:libpki",
         "//external/cronet/third_party/boringssl:libssl",
         "libandroid",
         "liblog",

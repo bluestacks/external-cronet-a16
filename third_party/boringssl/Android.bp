@@ -56,6 +56,10 @@ cc_defaults {
         "external/cronet/third_party/libc++/src/include",
         "external/cronet/third_party/libc++abi/src/include",
     ],
+    static_libs: [
+        "cronet_aml_buildtools_third_party_libc___libc__",
+        "cronet_aml_buildtools_third_party_libc__abi_libc__abi"
+    ],
 }
 
 cc_defaults {
@@ -263,6 +267,19 @@ cc_library_shared {
         "libssl_sources",
     ],
     unique_host_soname: true,
+    shared_libs: ["libcrypto"],
+}
+
+cc_library_shared {
+    name: "libpki",
+    defaults: [
+        "boringssl_defaults",
+        "boringssl_flags",
+        "cronet_defaults",
+        "libpki_sources",
+    ],
+    unique_host_soname: true,
+    cflags: ["-D_BORINGSSL_LIBPKI_"],
     shared_libs: ["libcrypto"],
 }
 

@@ -1231,9 +1231,9 @@ cc_genrule {
 // GN: //base/allocator/partition_allocator/src/partition_alloc:debugging_buildflags__testing
 cc_genrule {
     name: "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags__testing",
-    cmd: "if [[ $$CC_OS != 'android' ]]; " +
+    cmd: "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug && echo '--flags PA_DCHECK_IS_ON=\"false\" PA_EXPENSIVE_DCHECKS_ARE_ON=\"false\" PA_DCHECK_IS_CONFIGURABLE=\"false\" PA_CAN_UNWIND_WITH_FRAME_POINTERS=\"true\"' | " +
+         "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug && echo '--flags PA_DCHECK_IS_ON=\"false\" PA_EXPENSIVE_DCHECKS_ARE_ON=\"false\" PA_DCHECK_IS_CONFIGURABLE=\"false\" PA_CAN_UNWIND_WITH_FRAME_POINTERS=\"false\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -1243,9 +1243,9 @@ cc_genrule {
          "--definitions " +
          "/dev/stdin; " +
          "fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug && echo '--flags PA_DCHECK_IS_ON=\"false\" PA_EXPENSIVE_DCHECKS_ARE_ON=\"false\" PA_DCHECK_IS_CONFIGURABLE=\"false\" PA_CAN_UNWIND_WITH_FRAME_POINTERS=\"false\"' | " +
+         "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug && echo '--flags PA_DCHECK_IS_ON=\"false\" PA_EXPENSIVE_DCHECKS_ARE_ON=\"false\" PA_DCHECK_IS_CONFIGURABLE=\"false\" PA_CAN_UNWIND_WITH_FRAME_POINTERS=\"true\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -1399,7 +1399,7 @@ cc_genrule {
 // GN: //base/allocator/partition_allocator/src/partition_alloc:partition_alloc_buildflags__testing
 cc_genrule {
     name: "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags__testing",
-    cmd: "if [[ $$CC_OS != 'android' ]]; " +
+    cmd: "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc && echo '--flags HAS_64_BIT_POINTERS=\"true\" USE_ALLOCATOR_SHIM=\"true\" USE_PARTITION_ALLOC=\"false\" USE_PARTITION_ALLOC_AS_MALLOC=\"false\" ENABLE_BACKUP_REF_PTR_SUPPORT=\"false\" ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=\"false\" ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=\"false\" ENABLE_DANGLING_RAW_PTR_CHECKS=\"false\" ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=\"false\" ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=\"false\" ENABLE_POINTER_SUBTRACTION_CHECK=\"false\" ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=\"true\" BACKUP_REF_PTR_POISON_OOB_PTR=\"false\" PUT_REF_COUNT_IN_PREVIOUS_SLOT=\"false\" USE_ASAN_BACKUP_REF_PTR=\"false\" USE_ASAN_UNOWNED_PTR=\"false\" USE_HOOKABLE_RAW_PTR=\"false\" ENABLE_GWP_ASAN_SUPPORT=\"false\" FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES=\"false\" FORCE_ENABLE_RAW_PTR_EXCLUSION=\"false\" RECORD_ALLOC_INFO=\"false\" USE_FREESLOT_BITMAP=\"false\" GLUE_CORE_POOLS=\"false\" ENABLE_POINTER_COMPRESSION=\"false\" ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=\"false\" USE_FREELIST_POOL_OFFSETS=\"false\" USE_STARSCAN=\"false\" PCSCAN_STACK_SUPPORTED=\"true\" ENABLE_PKEYS=\"false\" ENABLE_THREAD_ISOLATION=\"false\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
@@ -1411,7 +1411,7 @@ cc_genrule {
          "--definitions " +
          "/dev/stdin; " +
          "fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc && echo '--flags HAS_64_BIT_POINTERS=\"true\" USE_ALLOCATOR_SHIM=\"true\" USE_PARTITION_ALLOC=\"false\" USE_PARTITION_ALLOC_AS_MALLOC=\"false\" ENABLE_BACKUP_REF_PTR_SUPPORT=\"false\" ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=\"false\" ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=\"false\" ENABLE_DANGLING_RAW_PTR_CHECKS=\"false\" ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=\"false\" ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=\"false\" ENABLE_POINTER_SUBTRACTION_CHECK=\"false\" ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=\"true\" BACKUP_REF_PTR_POISON_OOB_PTR=\"false\" PUT_REF_COUNT_IN_PREVIOUS_SLOT=\"false\" USE_ASAN_BACKUP_REF_PTR=\"false\" USE_ASAN_UNOWNED_PTR=\"false\" USE_HOOKABLE_RAW_PTR=\"false\" ENABLE_GWP_ASAN_SUPPORT=\"false\" FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES=\"false\" FORCE_ENABLE_RAW_PTR_EXCLUSION=\"false\" RECORD_ALLOC_INFO=\"false\" USE_FREESLOT_BITMAP=\"false\" GLUE_CORE_POOLS=\"false\" ENABLE_POINTER_COMPRESSION=\"false\" ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=\"false\" USE_FREELIST_POOL_OFFSETS=\"false\" USE_STARSCAN=\"false\" PCSCAN_STACK_SUPPORTED=\"true\" ENABLE_PKEYS=\"false\" ENABLE_THREAD_ISOLATION=\"false\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
@@ -1847,9 +1847,9 @@ cc_genrule {
 // GN: //base:anchor_functions_buildflags__testing
 cc_genrule {
     name: "cronet_aml_base_anchor_functions_buildflags__testing",
-    cmd: "if [[ $$CC_OS != 'android' ]]; " +
+    cmd: "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base/android/library_loader && echo '--flags USE_LLD=\"true\" SUPPORTS_CODE_ORDERING=\"false\"' | " +
+         "mkdir -p $(genDir)/base/android/library_loader && echo '--flags USE_LLD=\"true\" SUPPORTS_CODE_ORDERING=\"true\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -1859,9 +1859,9 @@ cc_genrule {
          "--definitions " +
          "/dev/stdin; " +
          "fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base/android/library_loader && echo '--flags USE_LLD=\"true\" SUPPORTS_CODE_ORDERING=\"true\"' | " +
+         "mkdir -p $(genDir)/base/android/library_loader && echo '--flags USE_LLD=\"true\" SUPPORTS_CODE_ORDERING=\"false\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -6039,9 +6039,9 @@ cc_genrule {
 // GN: //base:debugging_buildflags__testing
 cc_genrule {
     name: "cronet_aml_base_debugging_buildflags__testing",
-    cmd: "if [[ $$CC_OS != 'android' ]]; " +
+    cmd: "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base/debug && echo '--flags DCHECK_IS_CONFIGURABLE=\"false\" ENABLE_PROFILING=\"false\" CAN_UNWIND_WITH_FRAME_POINTERS=\"true\" UNSAFE_DEVELOPER_BUILD=\"false\" CAN_UNWIND_WITH_CFI_TABLE=\"false\" EXCLUDE_UNWIND_TABLES=\"true\" ENABLE_GDBINIT_WARNING=\"false\" ENABLE_LLDBINIT_WARNING=\"false\" EXPENSIVE_DCHECKS_ARE_ON=\"false\" ENABLE_STACK_TRACE_LINE_NUMBERS=\"false\" ENABLE_COMMANDLINE_SEQUENCE_CHECKS=\"false\" ENABLE_ALLOCATION_STACK_TRACE_RECORDER=\"false\" ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING=\"false\"' | " +
+         "mkdir -p $(genDir)/base/debug && echo '--flags DCHECK_IS_CONFIGURABLE=\"false\" ENABLE_PROFILING=\"false\" CAN_UNWIND_WITH_FRAME_POINTERS=\"false\" UNSAFE_DEVELOPER_BUILD=\"false\" CAN_UNWIND_WITH_CFI_TABLE=\"false\" EXCLUDE_UNWIND_TABLES=\"true\" ENABLE_GDBINIT_WARNING=\"false\" ENABLE_LLDBINIT_WARNING=\"false\" EXPENSIVE_DCHECKS_ARE_ON=\"false\" ENABLE_STACK_TRACE_LINE_NUMBERS=\"false\" ENABLE_COMMANDLINE_SEQUENCE_CHECKS=\"false\" ENABLE_ALLOCATION_STACK_TRACE_RECORDER=\"false\" ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING=\"false\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -6051,9 +6051,9 @@ cc_genrule {
          "--definitions " +
          "/dev/stdin; " +
          "fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base/debug && echo '--flags DCHECK_IS_CONFIGURABLE=\"false\" ENABLE_PROFILING=\"false\" CAN_UNWIND_WITH_FRAME_POINTERS=\"false\" UNSAFE_DEVELOPER_BUILD=\"false\" CAN_UNWIND_WITH_CFI_TABLE=\"false\" EXCLUDE_UNWIND_TABLES=\"true\" ENABLE_GDBINIT_WARNING=\"false\" ENABLE_LLDBINIT_WARNING=\"false\" EXPENSIVE_DCHECKS_ARE_ON=\"false\" ENABLE_STACK_TRACE_LINE_NUMBERS=\"false\" ENABLE_COMMANDLINE_SEQUENCE_CHECKS=\"false\" ENABLE_ALLOCATION_STACK_TRACE_RECORDER=\"false\" ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING=\"false\"' | " +
+         "mkdir -p $(genDir)/base/debug && echo '--flags DCHECK_IS_CONFIGURABLE=\"false\" ENABLE_PROFILING=\"false\" CAN_UNWIND_WITH_FRAME_POINTERS=\"true\" UNSAFE_DEVELOPER_BUILD=\"false\" CAN_UNWIND_WITH_CFI_TABLE=\"false\" EXCLUDE_UNWIND_TABLES=\"true\" ENABLE_GDBINIT_WARNING=\"false\" ENABLE_LLDBINIT_WARNING=\"false\" EXPENSIVE_DCHECKS_ARE_ON=\"false\" ENABLE_STACK_TRACE_LINE_NUMBERS=\"false\" ENABLE_COMMANDLINE_SEQUENCE_CHECKS=\"false\" ENABLE_ALLOCATION_STACK_TRACE_RECORDER=\"false\" ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING=\"false\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -7242,7 +7242,7 @@ cc_genrule {
 // GN: //base:profiler_buildflags__testing
 cc_genrule {
     name: "cronet_aml_base_profiler_buildflags__testing",
-    cmd: "if [[ $$CC_OS != 'android' ]]; " +
+    cmd: "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/profiler && echo '--flags ENABLE_ARM_CFI_TABLE=\"false\" IOS_STACK_PROFILER_ENABLED=\"true\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
@@ -7254,7 +7254,7 @@ cc_genrule {
          "--definitions " +
          "/dev/stdin; " +
          "fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/profiler && echo '--flags ENABLE_ARM_CFI_TABLE=\"false\" IOS_STACK_PROFILER_ENABLED=\"true\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
@@ -8498,9 +8498,9 @@ cc_genrule {
 // GN: //base:tracing_buildflags__testing
 cc_genrule {
     name: "cronet_aml_base_tracing_buildflags__testing",
-    cmd: "if [[ $$CC_OS != 'android' ]]; " +
+    cmd: "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base && echo '--flags ENABLE_BASE_TRACING=\"false\" USE_PERFETTO_CLIENT_LIBRARY=\"true\" USE_PERFETTO_TRACE_PROCESSOR=\"true\" OPTIONAL_TRACE_EVENTS_ENABLED=\"true\"' | " +
+         "mkdir -p $(genDir)/base && echo '--flags ENABLE_BASE_TRACING=\"false\" USE_PERFETTO_CLIENT_LIBRARY=\"true\" USE_PERFETTO_TRACE_PROCESSOR=\"true\" OPTIONAL_TRACE_EVENTS_ENABLED=\"false\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -8510,9 +8510,9 @@ cc_genrule {
          "--definitions " +
          "/dev/stdin; " +
          "fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
-         "mkdir -p $(genDir)/base && echo '--flags ENABLE_BASE_TRACING=\"false\" USE_PERFETTO_CLIENT_LIBRARY=\"true\" USE_PERFETTO_TRACE_PROCESSOR=\"true\" OPTIONAL_TRACE_EVENTS_ENABLED=\"false\"' | " +
+         "mkdir -p $(genDir)/base && echo '--flags ENABLE_BASE_TRACING=\"false\" USE_PERFETTO_CLIENT_LIBRARY=\"true\" USE_PERFETTO_TRACE_PROCESSOR=\"true\" OPTIONAL_TRACE_EVENTS_ENABLED=\"true\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -8989,9 +8989,9 @@ cc_genrule {
 // GN: //build/config/compiler:compiler_buildflags__testing
 cc_genrule {
     name: "cronet_aml_build_config_compiler_compiler_buildflags__testing",
-    cmd: "if [[ $$CC_OS != 'android' ]]; " +
+    cmd: "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
-         "mkdir -p $(genDir)/build/config/compiler && echo '--flags CLANG_PGO=\"2\" SYMBOL_LEVEL=\"1\"' | " +
+         "mkdir -p $(genDir)/build/config/compiler && echo '--flags CLANG_PGO=\"0\" SYMBOL_LEVEL=\"1\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -9001,9 +9001,9 @@ cc_genrule {
          "--definitions " +
          "/dev/stdin; " +
          "fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
-         "mkdir -p $(genDir)/build/config/compiler && echo '--flags CLANG_PGO=\"0\" SYMBOL_LEVEL=\"1\"' | " +
+         "mkdir -p $(genDir)/build/config/compiler && echo '--flags CLANG_PGO=\"2\" SYMBOL_LEVEL=\"1\"' | " +
          "$(location build/write_buildflag_header.py) --output " +
          "$(out) " +
          "--rulename " +
@@ -12914,6 +12914,9 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
@@ -12928,6 +12931,9 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation-nodeps",
+    ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }

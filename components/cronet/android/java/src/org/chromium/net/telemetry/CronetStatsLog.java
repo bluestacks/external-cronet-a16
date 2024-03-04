@@ -9,8 +9,11 @@
 
 package org.chromium.net.telemetry;
 
+import android.os.Build;
 import android.util.StatsEvent;
 import android.util.StatsLog;
+
+import androidx.annotation.RequiresApi;
 
 /** Utility class for logging statistics events. */
 public final class CronetStatsLog {
@@ -564,6 +567,9 @@ public final class CronetStatsLog {
         StatsLog.write(builder.build());
     }
 
+    // **The @RequiresApi annotation below needs to be added back after regenerating this file.**
+    // TODO(b/313088483): Autogenerate the @RequiresApi annotation
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     public static void write(int code, long arg1, int arg2, int arg3, long[] arg4, long[] arg5) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);

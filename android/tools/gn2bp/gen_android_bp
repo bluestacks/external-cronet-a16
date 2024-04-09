@@ -32,7 +32,6 @@ import operator
 import os
 import re
 import sys
-import time
 import copy
 from pathlib import Path
 
@@ -1164,7 +1163,6 @@ class BaseActionSanitizer():
 class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
   def _sanitize_args(self):
     self._set_arg_at(0, '$(out)')
-    self._set_arg_at(1, str(int(time.time())))
     super()._sanitize_args()
 
 class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):

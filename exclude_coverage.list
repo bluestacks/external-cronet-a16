@@ -1,6 +1,0 @@
-# Temporary disable coverage profiling for functions below due to b/330508686.
-# TODO(b/332489473): Undo this once Mainline compiles in main.
-[clang]
-fun:base::time_internal::operator<=>=forbid
-fun:base::operator<=>=forbid
-

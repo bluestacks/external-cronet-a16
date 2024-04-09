@@ -1556,7 +1556,7 @@ def merge_cmd(modules, genrule_type):
     raise Exception(f'{genrule_type} can not have different cmd between archs')
 
   merged_cmd = []
-  for arch, module in sorted(modules.items()):
+  for arch, module in modules.items():
     merged_cmd.append(f'if [[ {get_cmd_condition(arch)} ]];')
     merged_cmd.append('then')
     merged_cmd.append(module.cmd + ';')

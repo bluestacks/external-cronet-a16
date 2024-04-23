@@ -4091,8 +4091,8 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-experimental-nodeps",
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "jsr305",
     ],
@@ -4258,8 +4258,8 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-experimental-nodeps",
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "jsr305",
     ],
@@ -4366,8 +4366,8 @@ java_library {
     libs: [
         "android.test.base",
         "android.test.mock",
-        "androidx.annotation_annotation-nodeps",
-        "androidx.core_core-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.core_core",
         "androidx.test.monitor",
     ],
     sdk_version: "current",
@@ -4391,7 +4391,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -7036,10 +7036,10 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-experimental-nodeps",
-        "androidx.annotation_annotation-nodeps",
-        "androidx.collection_collection-nodeps",
-        "androidx.core_core-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "androidx.collection_collection",
+        "androidx.core_core",
         "jsr305",
     ],
     sdk_version: "current",
@@ -10660,7 +10660,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -10702,8 +10702,8 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-experimental-nodeps",
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
     ],
     sdk_version: "current",
     visibility: [
@@ -10749,8 +10749,8 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-experimental-nodeps",
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11352,8 +11352,8 @@ java_library {
     min_sdk_version: "30",
     libs: [
         "android.test.base",
-        "androidx.annotation_annotation-nodeps",
-        "androidx.core_core-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.core_core",
     ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11418,7 +11418,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11466,7 +11466,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11488,7 +11488,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -11537,7 +11537,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
         "jsr305",
     ],
     sdk_version: "system_current",
@@ -11591,7 +11591,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
         "jsr305",
     ],
     sdk_version: "system_current",
@@ -11619,7 +11619,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
         "jsr305",
     ],
     sdk_version: "system_current",
@@ -11713,7 +11713,7 @@ java_library {
     min_sdk_version: "30",
     libs: [
         "android.test.base",
-        "androidx.annotation_annotation-experimental-nodeps",
+        "androidx.annotation_annotation-experimental",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -12915,7 +12915,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -12932,7 +12932,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -12974,7 +12974,7 @@ java_library {
     min_sdk_version: "30",
     libs: [
         "android.test.base",
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -13988,7 +13988,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -14016,7 +14016,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -14191,8 +14191,8 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
-        "androidx.core_core-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.core_core",
     ],
     sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
@@ -18887,7 +18887,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
         "jsr305",
     ],
     sdk_version: "current",
@@ -18934,7 +18934,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
         "jsr305",
     ],
     sdk_version: "current",
@@ -18970,7 +18970,7 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "androidx.annotation_annotation-nodeps",
+        "androidx.annotation_annotation",
         "androidx.test.monitor",
     ],
     sdk_version: "current",

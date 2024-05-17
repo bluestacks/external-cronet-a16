@@ -11,5 +11,39 @@
     {
       "name": "cronet_unittests_tester"
     }
+    // Runs both NetHttpTests and CtsNetHttpTestCases
+    // TODO(b/338358650): Add to presubmit after SLO checker is verified.
+    // {
+    //  "name": "NetHttpCoverageTests",
+    //  "options": [
+    //    {
+    //      "exclude-annotation": "com.android.testutils.SkipPresubmit"
+    //    },
+    //    {
+    //      // These sometimes take longer than 1 min which is the presubmit timeout
+    //      "exclude-annotation": "androidx.test.filters.LargeTest"
+    //    }
+    //  ]
+    // }
+  ],
+  "postsubmit": [
+    {
+        "name": "NetHttpCoverageTests"
+    }
   ]
+  // TODO(b/338358650): Add to presubmit after SLO checker is verified.
+  // "mainline-presubmit": [
+  //  {
+  //    "name": "NetHttpCoverageTests[CaptivePortalLoginGoogle.apk+NetworkStackGoogle.apk+com.google.android.resolv.apex+com.google.android.tethering.apex]",
+  //    "options": [
+  //      {
+  //        "exclude-annotation": "com.android.testutils.SkipPresubmit"
+  //      },
+  //      {
+  //        // These sometimes take longer than 1 min which is the presubmit timeout
+  //        "exclude-annotation": "androidx.test.filters.LargeTest"
+  //      }
+  //    ]
+  //  }
+  // ]
 }

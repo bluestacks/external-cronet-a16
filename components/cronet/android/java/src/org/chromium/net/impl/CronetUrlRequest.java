@@ -105,7 +105,6 @@ public final class CronetUrlRequest extends UrlRequestBase {
     private final int mTrafficStatsUid;
     private final VersionSafeCallbacks.RequestFinishedInfoListener mRequestFinishedListener;
     private final long mNetworkHandle;
-    private final int mCronetEngineId;
     private final CronetLogger mLogger;
 
     private CronetUploadDataStream mUploadDataStream;
@@ -180,7 +179,6 @@ public final class CronetUrlRequest extends UrlRequestBase {
 
         mAllowDirectExecutor = allowDirectExecutor;
         mRequestContext = requestContext;
-        mCronetEngineId = requestContext.getCronetEngineId();
         mLogger = requestContext.getCronetLogger();
         mInitialUrl = url;
         mUrlChain.add(url);
@@ -1161,7 +1159,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+                    mLogger.logCronetTrafficInfo(
+                            mRequestContext.getLogId(), buildCronetTrafficInfo());
                 } catch (RuntimeException e) {
                     // Handle any issue gracefully, we should never crash due failures while
                     // logging.

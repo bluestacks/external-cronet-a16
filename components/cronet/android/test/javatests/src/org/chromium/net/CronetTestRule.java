@@ -238,8 +238,9 @@ public class CronetTestRule implements TestRule {
 
     /**
      * This method only returns the value of the `is_running_in_aosp` flag which for Chromium can be
-     * found inside components/cronet/android/test/res/values/bools.xml for which it should be equal
-     * to false. However, on AOSP, we ship a different value which is equal to true.
+     * found inside components/cronet/android/test/res/values/cronet-test-rule-configuration.xml
+     * for which it should be equal to false. However, on AOSP, we ship a different value
+     * which is equal to true.
      *
      * <p>This distinction between where the tests are being executed is crucial because we don't
      * want to run JavaCronetEngine tests in AOSP.

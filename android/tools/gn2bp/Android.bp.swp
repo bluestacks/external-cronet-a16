@@ -8872,7 +8872,7 @@ java_genrule {
          "-f " +
          "$(location chrome/VERSION) " +
          "-e " +
-         "'CHANNEL=str.upper('default')' " +
+         "'CHANNEL=str.upper(\"default\")' " +
          "-o " +
          "$(out) " +
          "$(location base/version_info/android/java/VersionConstants.java.version)",

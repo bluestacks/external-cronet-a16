@@ -1347,7 +1347,7 @@ class VersionSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
   def _sanitize_eval(self, eval_arg):
-      return "'%s'" % eval_arg
+      return "'%s'" % eval_arg.replace("\'", "\\\"")
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()

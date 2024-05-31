@@ -5470,7 +5470,7 @@
       "visibility": [ "*" ]
    },
    "//base:build_date": {
-      "args": [ "gen/base/generated_build_date.h", "1707859473" ],
+      "args": [ "gen/base/generated_build_date.h", "1717172400" ],
       "deps": [  ],
       "metadata": {
 
@@ -5484,7 +5484,7 @@
       "visibility": [ "*" ]
    },
    "//base:build_date(//build/toolchain/linux:clang_x64)": {
-      "args": [ "clang_x64/gen/base/generated_build_date.h", "1707859473" ],
+      "args": [ "clang_x64/gen/base/generated_build_date.h", "1717172400" ],
       "deps": [  ],
       "metadata": {
 

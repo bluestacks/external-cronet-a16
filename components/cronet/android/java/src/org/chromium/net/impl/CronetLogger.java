@@ -4,14 +4,14 @@
 
 package org.chromium.net.impl;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-
 import java.time.Duration;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Base class for implementing a CronetLogger. */
 public abstract class CronetLogger {
+    // TODO(b/313418339): align the naming with the atom definition.
     public static enum CronetSource {
         // Safe default, don't use explicitly.
         CRONET_SOURCE_UNSPECIFIED,
@@ -27,6 +27,11 @@ public abstract class CronetLogger {
 
     /** Generates a new unique ID suitable for use as reference for cross-linking log events. */
     public abstract long generateId();
+
+    public abstract void logCronetEngineBuilderInitializedInfo(
+            CronetEngineBuilderInitializedInfo info);
+
+    public abstract void logCronetInitializedInfo(CronetInitializedInfo info);
 
     /**
      * Logs a cronetEngine creation action with the details of the creation.
@@ -51,6 +56,34 @@ public abstract class CronetLogger {
      */
     public abstract void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo);
 
+    // TODO(https://crbug.com/1521339): consider using AutoValue for this.
+    public static final class CronetEngineBuilderInitializedInfo {
+        public long cronetInitializationRef;
+
+        public static enum Author {
+            API,
+            IMPL
+        }
+
+        public Author author;
+        public int engineBuilderCreatedLatencyMillis = -1;
+        public CronetSource source = CronetSource.CRONET_SOURCE_UNSPECIFIED;
+        public Boolean creationSuccessful;
+        public CronetVersion apiVersion;
+        public CronetVersion implVersion;
+        public int uid;
+    }
+
+    public static final class CronetInitializedInfo {
+        public long cronetInitializationRef;
+        public int engineCreationLatencyMillis = -1;
+        public int engineAsyncLatencyMillis = -1;
+        public int httpFlagsLatencyMillis = -1;
+        public Boolean httpFlagsSuccessful;
+        public List<Long> httpFlagsNames;
+        public List<Long> httpFlagsValues;
+    }
+
     /** Aggregates the information about a CronetEngine configuration. */
     public static class CronetEngineBuilderInfo {
         private final boolean mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
@@ -63,19 +96,32 @@ public abstract class CronetLogger {
         private final String mExperimentalOptions;
         private final boolean mNetworkQualityEstimatorEnabled;
         private final int mThreadPriority;
+        private final long mCronetInitializationRef;
 
-        public CronetEngineBuilderInfo(CronetEngineBuilderImpl builder) {
+        public CronetEngineBuilderInfo(
+                boolean publicKeyPinningBypassForLocalTrustAnchorsEnabled,
+                String userAgent,
+                String storagePath,
+                boolean quicEnabled,
+                boolean http2Enabled,
+                boolean brotiEnabled,
+                int httpCacheMode,
+                String experimentalOptions,
+                boolean networkQualityEstimatorEnabled,
+                int threadPriority,
+                long cronetInitializationRef) {
             mPublicKeyPinningBypassForLocalTrustAnchorsEnabled =
-                    builder.publicKeyPinningBypassForLocalTrustAnchorsEnabled();
-            mUserAgent = builder.getUserAgent();
-            mStoragePath = builder.storagePath();
-            mQuicEnabled = builder.quicEnabled();
-            mHttp2Enabled = builder.http2Enabled();
-            mBrotiEnabled = builder.brotliEnabled();
-            mHttpCacheMode = builder.publicBuilderHttpCacheMode();
-            mExperimentalOptions = builder.experimentalOptions();
-            mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
-            mThreadPriority = builder.threadPriority(THREAD_PRIORITY_BACKGROUND);
+                    publicKeyPinningBypassForLocalTrustAnchorsEnabled;
+            mUserAgent = userAgent;
+            mStoragePath = storagePath;
+            mQuicEnabled = quicEnabled;
+            mHttp2Enabled = http2Enabled;
+            mBrotiEnabled = brotiEnabled;
+            mHttpCacheMode = httpCacheMode;
+            mExperimentalOptions = experimentalOptions;
+            mNetworkQualityEstimatorEnabled = networkQualityEstimatorEnabled;
+            mThreadPriority = threadPriority;
+            mCronetInitializationRef = cronetInitializationRef;
         }
 
         /** @return Whether public key pinning bypass for local trust anchors is enabled */
@@ -129,6 +175,10 @@ public abstract class CronetLogger {
         /** @return The thread priority of Cronet's internal thread */
         public int getThreadPriority() {
             return mThreadPriority;
+        }
+
+        public long getCronetInitializationRef() {
+            return mCronetInitializationRef;
         }
     }
 

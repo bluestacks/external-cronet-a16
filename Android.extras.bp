@@ -129,7 +129,6 @@ filegroup {
     name: "net_unittests_data",
     srcs: [
         "net/data/**/*",
-        "net/third_party/nist-pkits/**/*",
         "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*",
         "third_party/anonymous_tokens/src/anonymous_tokens/testdata/**/*",
     ],

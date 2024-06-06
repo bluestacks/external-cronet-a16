@@ -8,5 +8,5 @@ third_party {
     type: GIT
     value: "https://chromium.googlesource.com/chromium/src.git"
   }
-  version: "122.0.6261.43"
+  version: "123.0.6312.40"
 }

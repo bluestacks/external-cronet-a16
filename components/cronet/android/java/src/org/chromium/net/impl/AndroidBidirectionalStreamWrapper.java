@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 class AndroidBidirectionalStreamWrapper extends org.chromium.net.ExperimentalBidirectionalStream {
     private final android.net.http.BidirectionalStream mBackend;
 
-    AndroidBidirectionalStreamWrapper(android.net.http.BidirectionalStream backend) {
+    private AndroidBidirectionalStreamWrapper(android.net.http.BidirectionalStream backend) {
         this.mBackend = backend;
     }
 
@@ -93,5 +93,25 @@ class AndroidBidirectionalStreamWrapper extends org.chromium.net.ExperimentalBid
     @Override
     public String getHttpMethod() {
         return mBackend.getHttpMethod();
+    }
+
+    /**
+     * Creates an {@link AndroidBidirectionalStreamWrapper} that is stored on the callback.
+     *
+     * @param backend the http BidirectionalStream
+     * @param callback the stream's callback
+     * @return
+     */
+    static AndroidBidirectionalStreamWrapper withRecordingToCallback(
+            android.net.http.BidirectionalStream backend,
+            AndroidBidirectionalStreamCallbackWrapper callback) {
+        AndroidBidirectionalStreamWrapper wrappedStream =
+                new AndroidBidirectionalStreamWrapper(backend);
+        callback.recordWrappedStream(wrappedStream);
+        return wrappedStream;
+    }
+
+    android.net.http.BidirectionalStream getBackend() {
+        return mBackend;
     }
 }

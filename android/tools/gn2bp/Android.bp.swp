@@ -4206,7 +4206,6 @@ java_library {
 java_library {
     name: "cronet_aml_base_base_java_test_support__testing",
     srcs: [
-        "base/test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
         "base/test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
         "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
         "base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4TestRule.java",
@@ -4279,7 +4278,6 @@ java_library {
         "base/test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ],
     static_libs: [
-        "accessibility-test-framework",
         "androidx.test.espresso.contrib",
         "androidx.test.runner",
         "androidx.test.uiautomator_uiautomator",

@@ -347,7 +347,8 @@ def add_android_test_base_java_deps(module, arch):
   module.libs.add("android.test.base")
 
 def add_accessibility_test_framework_java_deps(module, arch):
-  module.static_libs.add("accessibility-test-framework")
+    # BaseActivityTestRule.java depends on this but BaseActivityTestRule.java is not used in aosp.
+    pass
 
 def add_espresso_java_deps(module, arch):
   module.static_libs.add("androidx.test.espresso.contrib")

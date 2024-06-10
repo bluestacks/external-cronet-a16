@@ -1259,6 +1259,13 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
                   for file in tool_files }
     # Filter bin/javap
     tool_files = {file for file in tool_files if not file.endswith('bin/javap') }
+
+    # TODO: Remove once https://chromium-review.googlesource.com/c/chromium/src/+/5370266 has made
+    #       its way to AOSP
+    # Files not specified in anywhere but jni_generator.py imports this file
+    tool_files.add('third_party/jni_zero/codegen/header_common.py')
+    tool_files.add('third_party/jni_zero/codegen/placeholder_java_type.py')
+
     return tool_files
 
   def get_tools(self):
@@ -1331,6 +1338,15 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
                 cmd]
 
     return self.get_pre_cmd() + NEWLINE.join(commands)
+
+  def get_tool_files(self):
+      tool_files = super().get_tool_files()
+      # TODO: Remove once https://chromium-review.googlesource.com/c/chromium/src/+/5370266 has made
+      #       its way to AOSP
+      # Files not specified in anywhere but jni_generator.py imports this file
+      tool_files.add('third_party/jni_zero/codegen/header_common.py')
+      tool_files.add('third_party/jni_zero/codegen/placeholder_java_type.py')
+      return tool_files
 
 class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
   def get_name(self):

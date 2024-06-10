@@ -1932,7 +1932,9 @@ cc_genrule {
     ],
     tool_files: [
         ":current_android_jar",
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -1982,7 +1984,9 @@ cc_genrule {
     ],
     tool_files: [
         ":current_android_jar",
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -4612,7 +4616,9 @@ cc_genrule {
         "base/base_jni/UnguessableToken_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -4912,7 +4918,9 @@ java_genrule {
         "base/base_jni/UnguessableToken_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -5207,7 +5215,9 @@ cc_genrule {
         "base/base_jni/UnguessableToken_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -5505,7 +5515,9 @@ java_genrule {
         "base/base_jni/UnguessableToken_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -5573,7 +5585,9 @@ cc_genrule {
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -5613,7 +5627,9 @@ cc_genrule {
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -7238,7 +7254,9 @@ cc_genrule {
         "base/process_launcher_jni/ChildProcessService_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -7278,7 +7296,9 @@ cc_genrule {
         "base/process_launcher_jni/ChildProcessService_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -7673,7 +7693,9 @@ cc_genrule {
         "base/test/base_unittests_jni_headers/JavaHandlerThreadHelpers_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -8332,7 +8354,9 @@ cc_genrule {
         "base/test/test_support_jni_headers/UrlUtils_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12092,7 +12116,9 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12158,7 +12184,9 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12219,7 +12247,9 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12283,7 +12313,9 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12387,7 +12419,9 @@ cc_genrule {
         "components/cronet/android/cronet_jni_registration_generated.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12493,7 +12527,9 @@ java_genrule {
         "components/cronet/android/cronet_jni_registration.srcjar",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12595,7 +12631,9 @@ cc_genrule {
         "components/cronet/android/cronet_jni_registration_generated.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -12724,7 +12762,9 @@ java_genrule {
         "components/cronet/android/cronet_jni_registration.srcjar",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -13410,7 +13450,9 @@ cc_genrule {
         "components/cronet/android/cronet_test_apk_jni/TestUploadDataStreamHandler_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -13480,7 +13522,9 @@ java_genrule {
         "components/cronet/android/cronet_test_apk_jni/TestUploadDataStreamHandler_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -13848,7 +13892,9 @@ cc_genrule {
         "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -13900,7 +13946,9 @@ java_genrule {
         "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -14028,7 +14076,9 @@ java_genrule {
         "components/cronet/android/cronet_tests_jni_registration.srcjar",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -17552,7 +17602,9 @@ cc_genrule {
         "components/prefs/android/jni_headers/PrefService_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -17592,7 +17644,9 @@ cc_genrule {
         "components/prefs/android/jni_headers/PrefService_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -19340,7 +19394,9 @@ cc_genrule {
         "net/android/net_test_support_jni/AndroidNetworkLibraryTestUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -19380,7 +19436,9 @@ java_genrule {
         "net/android/net_test_support_jni/AndroidNetworkLibraryTestUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -19452,7 +19510,9 @@ cc_genrule {
         "net/android/net_test_support_provider_jni/EmbeddedTestServerImpl_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -19498,7 +19558,9 @@ java_genrule {
         "net/android/net_test_support_provider_jni/EmbeddedTestServerImpl_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -19585,7 +19647,9 @@ cc_genrule {
         "net/android/net_tests_jni/AndroidProxyConfigServiceTestUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -19631,7 +19695,9 @@ java_genrule {
         "net/android/net_tests_jni/AndroidProxyConfigServiceTestUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -26513,7 +26579,9 @@ cc_genrule {
         "net/net_jni_headers/X509Util_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -26627,7 +26695,9 @@ java_genrule {
         "net/net_jni_headers/X509Util_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -26736,7 +26806,9 @@ cc_genrule {
         "net/net_jni_headers/X509Util_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -26848,7 +26920,9 @@ java_genrule {
         "net/net_jni_headers/X509Util_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -34742,7 +34816,9 @@ cc_genrule {
         "testing/android/native_test/native_main_runner_jni/MainRunner_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -34782,7 +34858,9 @@ java_genrule {
         "testing/android/native_test/native_main_runner_jni/MainRunner_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -34851,7 +34929,9 @@ cc_genrule {
         "testing/android/native_test/native_test_jni/NativeTest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -34891,7 +34971,9 @@ java_genrule {
         "testing/android/native_test/native_test_jni/NativeTest_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -58685,7 +58767,9 @@ cc_genrule {
         "url/url_jni_headers/IDNStringUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -58727,7 +58811,9 @@ java_genrule {
         "url/url_jni_headers/IDNStringUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -58764,7 +58850,9 @@ cc_genrule {
         "url/url_jni_headers/IDNStringUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",
@@ -58804,7 +58892,9 @@ java_genrule {
         "url/url_jni_headers/IDNStringUtil_jni.h",
     ],
     tool_files: [
+        "third_party/jni_zero/codegen/header_common.py",
         "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
         "third_party/jni_zero/codegen/proxy_impl_java.py",
         "third_party/jni_zero/common.py",
         "third_party/jni_zero/java_lang_classes.py",

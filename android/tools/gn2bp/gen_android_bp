@@ -1944,6 +1944,9 @@ def create_blueprint_for_targets(gn, targets, test_targets):
       '-Wno-unreachable-code-loop-increment', # needed for icui18n
       '-fPIC',
       '-Wno-c++11-narrowing',
+      # Needed for address_space_randomization.h on riscv
+      # Can be removed after 125.0.6375.0 is imported
+      '-Wno-invalid-constexpr',
       # b/330508686 disable coverage profiling for files or function in this list.
       '-fprofile-list=external/cronet/exclude_coverage.list',
   ]

@@ -18986,6 +18986,7 @@ cc_defaults {
         "-Wno-ambiguous-reversed-operator",
         "-Wno-c++11-narrowing",
         "-Wno-error=return-type",
+        "-Wno-invalid-constexpr",
         "-Wno-macro-redefined",
         "-Wno-missing-field-initializers",
         "-Wno-non-virtual-dtor",

@@ -6,29 +6,13 @@
 
 #ifdef QUIC_FLAG
 // A testonly reloadable flag that will always default to false.
-QUIC_FLAG(quic_reloadable_flag_http2_testonly_default_false, false)
-// A testonly reloadable flag that will always default to false.
 QUIC_FLAG(quic_reloadable_flag_quic_testonly_default_false, false)
-// A testonly reloadable flag that will always default to false.
-QUIC_FLAG(quic_reloadable_flag_spdy_testonly_default_false, false)
-// A testonly reloadable flag that will always default to true.
-QUIC_FLAG(quic_reloadable_flag_http2_testonly_default_true, false)
 // A testonly reloadable flag that will always default to true.
 QUIC_FLAG(quic_reloadable_flag_quic_testonly_default_true, true)
-// A testonly reloadable flag that will always default to true.
-QUIC_FLAG(quic_reloadable_flag_spdy_testonly_default_true, false)
-// A testonly restart flag that will always default to false.
-QUIC_FLAG(quic_restart_flag_http2_testonly_default_false, false)
 // A testonly restart flag that will always default to false.
 QUIC_FLAG(quic_restart_flag_quic_testonly_default_false, false)
-// A testonly restart flag that will always default to false.
-QUIC_FLAG(quic_restart_flag_spdy_testonly_default_false, false)
-// A testonly restart flag that will always default to true.
-QUIC_FLAG(quic_restart_flag_http2_testonly_default_true, false)
 // A testonly restart flag that will always default to true.
 QUIC_FLAG(quic_restart_flag_quic_testonly_default_true, true)
-// A testonly restart flag that will always default to true.
-QUIC_FLAG(quic_restart_flag_spdy_testonly_default_true, false)
 // If enabled and a BSUS connection is received, blocks server connections until SETTINGS frame is received.
 QUIC_FLAG(quic_reloadable_flag_quic_block_until_settings_received_copt, true)
 // If trrue, early return before write control frame in OnCanWrite() if the connection is already closed.
@@ -59,8 +43,6 @@ QUIC_FLAG(quic_reloadable_flag_quic_no_path_degrading_before_handshake_confirmed
 QUIC_FLAG(quic_reloadable_flag_quic_default_enable_5rto_blackhole_detection2, true)
 // If true, disable QUIC version Q046.
 QUIC_FLAG(quic_reloadable_flag_quic_disable_version_q046, true)
-// If true, disable QUIC version Q050.
-QUIC_FLAG(quic_reloadable_flag_quic_disable_version_q050, true)
 // If true, disable QUIC version h3 (RFCv1).
 QUIC_FLAG(quic_reloadable_flag_quic_disable_version_rfcv1, false)
 // If true, disable QUIC version h3-29.
@@ -75,8 +57,6 @@ QUIC_FLAG(quic_reloadable_flag_quic_discard_initial_packet_with_key_dropped, tru
 QUIC_FLAG(quic_reloadable_flag_quic_new_error_code_when_packets_buffered_too_long, true)
 // If true, enable server retransmittable on wire PING.
 QUIC_FLAG(quic_reloadable_flag_quic_enable_server_on_wire_ping, true)
-// If true, fix a QUIC BBR2 bytes counting issue caused by spurious losses.
-QUIC_FLAG(quic_reloadable_flag_quic_bbr2_fix_spurious_loss_bytes_counting, true)
 // If true, include stream information in idle timeout connection close detail.
 QUIC_FLAG(quic_reloadable_flag_quic_add_stream_info_to_idle_close_detail, true)
 // If true, reject or send error response code upon receiving invalid request or response headers.
@@ -92,7 +72,7 @@ QUIC_FLAG(quic_reloadable_flag_quic_disable_batch_write, false)
 // If true, set burst token to 2 in cwnd bootstrapping experiment.
 QUIC_FLAG(quic_reloadable_flag_quic_conservative_bursts, false)
 // If true, the HTTP/3 decoder will decode METADATA frames and not treat them as Unknown.
-QUIC_FLAG(quic_reloadable_flag_quic_enable_http3_metadata_decoding, false)
+QUIC_FLAG(quic_reloadable_flag_quic_enable_http3_metadata_decoding, true)
 // If true, use BBRv2 as the default congestion controller. Takes precedence over --quic_default_to_bbr.
 QUIC_FLAG(quic_reloadable_flag_quic_default_to_bbr_v2, false)
 // If true, use a LRU cache to record client addresses of packets received on server\'s original address.

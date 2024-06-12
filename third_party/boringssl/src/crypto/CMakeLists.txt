@@ -1,68 +1,93 @@
-add_subdirectory(fipsmodule)
+# TODO(crbug.com/boringssl/524): Avoid needing this transform by instead moving
+# this up a directory.
+list(TRANSFORM BCM_SOURCES_ASM PREPEND "../")
+list(TRANSFORM BCM_SOURCES_NASM PREPEND "../")
+list(TRANSFORM CRYPTO_SOURCES_ASM PREPEND "../")
+list(TRANSFORM CRYPTO_SOURCES_NASM PREPEND "../")
 
-if(FIPS_DELOCATE OR FIPS_SHARED)
-  SET_SOURCE_FILES_PROPERTIES(fipsmodule/bcm.o PROPERTIES EXTERNAL_OBJECT true)
-  SET_SOURCE_FILES_PROPERTIES(fipsmodule/bcm.o PROPERTIES GENERATED true)
-
-  set(
-    CRYPTO_FIPS_OBJECTS
-
-    fipsmodule/bcm.o
-  )
+if(OPENSSL_ASM)
+  list(APPEND CRYPTO_SOURCES_ASM_USED ${CRYPTO_SOURCES_ASM})
+  list(APPEND BCM_SOURCES_ASM_USED ${BCM_SOURCES_ASM})
+endif()
+if(OPENSSL_NASM)
+  list(APPEND CRYPTO_SOURCES_ASM_USED ${CRYPTO_SOURCES_NASM})
+  list(APPEND BCM_SOURCES_ASM_USED ${BCM_SOURCES_NASM})
 endif()
 
-set(
-  CRYPTO_SOURCES_ASM
-  curve25519/asm/x25519-asm-arm.S
-  hrss/asm/poly_rq_mul.S
-  poly1305/poly1305_arm_asm.S
-  ../third_party/fiat/asm/fiat_curve25519_adx_mul.S
-  ../third_party/fiat/asm/fiat_curve25519_adx_square.S
-  ../third_party/fiat/asm/fiat_p256_adx_mul.S
-  ../third_party/fiat/asm/fiat_p256_adx_sqr.S
-)
-perlasm(CRYPTO_SOURCES aarch64 chacha/chacha-armv8 chacha/asm/chacha-armv8.pl)
-perlasm(CRYPTO_SOURCES aarch64 cipher_extra/chacha20_poly1305_armv8 cipher_extra/asm/chacha20_poly1305_armv8.pl)
-perlasm(CRYPTO_SOURCES aarch64 test/trampoline-armv8 test/asm/trampoline-armv8.pl)
-perlasm(CRYPTO_SOURCES arm chacha/chacha-armv4 chacha/asm/chacha-armv4.pl)
-perlasm(CRYPTO_SOURCES arm test/trampoline-armv4 test/asm/trampoline-armv4.pl)
-perlasm(CRYPTO_SOURCES x86 chacha/chacha-x86 chacha/asm/chacha-x86.pl)
-perlasm(CRYPTO_SOURCES x86 test/trampoline-x86 test/asm/trampoline-x86.pl)
-perlasm(CRYPTO_SOURCES x86_64 chacha/chacha-x86_64 chacha/asm/chacha-x86_64.pl)
-perlasm(CRYPTO_SOURCES x86_64 cipher_extra/aes128gcmsiv-x86_64 cipher_extra/asm/aes128gcmsiv-x86_64.pl)
-perlasm(CRYPTO_SOURCES x86_64 cipher_extra/chacha20_poly1305_x86_64 cipher_extra/asm/chacha20_poly1305_x86_64.pl)
-perlasm(CRYPTO_SOURCES x86_64 test/trampoline-x86_64 test/asm/trampoline-x86_64.pl)
+if(FIPS_DELOCATE AND FIPS_SHARED)
+  message(FATAL_ERROR "Can't set both delocate and shared mode for FIPS build")
+endif()
 
-add_custom_command(
-  OUTPUT err_data.c
-  COMMAND ${GO_EXECUTABLE} run err_data_generate.go > ${CMAKE_CURRENT_BINARY_DIR}/err_data.c
-  DEPENDS
-  err/err_data_generate.go
-  err/asn1.errordata
-  err/bio.errordata
-  err/bn.errordata
-  err/cipher.errordata
-  err/conf.errordata
-  err/dh.errordata
-  err/digest.errordata
-  err/dsa.errordata
-  err/ecdh.errordata
-  err/ecdsa.errordata
-  err/ec.errordata
-  err/engine.errordata
-  err/evp.errordata
-  err/hkdf.errordata
-  err/obj.errordata
-  err/pem.errordata
-  err/pkcs7.errordata
-  err/pkcs8.errordata
-  err/rsa.errordata
-  err/ssl.errordata
-  err/trust_token.errordata
-  err/x509.errordata
-  err/x509v3.errordata
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/err
-)
+if(FIPS_DELOCATE)
+  add_library(bcm_c_generated_asm STATIC fipsmodule/bcm.c)
+  add_dependencies(bcm_c_generated_asm boringssl_prefix_symbols)
+  target_include_directories(bcm_c_generated_asm PRIVATE ${PROJECT_SOURCE_DIR}/include)
+  set_target_properties(bcm_c_generated_asm PROPERTIES COMPILE_OPTIONS "-S")
+  set_target_properties(bcm_c_generated_asm PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+  set(TARGET_FLAG "")
+  if(CMAKE_ASM_COMPILER_TARGET)
+    set(TARGET_FLAG "--target=${CMAKE_ASM_COMPILER_TARGET}")
+  endif()
+
+  go_executable(delocate boringssl.googlesource.com/boringssl/util/fipstools/delocate)
+  add_custom_command(
+    OUTPUT bcm-delocated.S
+    COMMAND
+    ${CMAKE_CURRENT_BINARY_DIR}/delocate
+    -a $<TARGET_FILE:bcm_c_generated_asm>
+    -o ${CMAKE_CURRENT_BINARY_DIR}/bcm-delocated.S
+    -cc ${CMAKE_ASM_COMPILER}
+    -cc-flags "${TARGET_FLAG} ${CMAKE_ASM_FLAGS}"
+    ${PROJECT_SOURCE_DIR}/include/openssl/arm_arch.h
+    ${PROJECT_SOURCE_DIR}/include/openssl/asm_base.h
+    ${PROJECT_SOURCE_DIR}/include/openssl/target.h
+    ${BCM_SOURCES_ASM_USED}
+    DEPENDS
+    bcm_c_generated_asm
+    delocate
+    ${BCM_SOURCES_ASM_USED}
+    ${PROJECT_SOURCE_DIR}/include/openssl/arm_arch.h
+    ${PROJECT_SOURCE_DIR}/include/openssl/asm_base.h
+    ${PROJECT_SOURCE_DIR}/include/openssl/target.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
+  add_library(bcm_hashunset STATIC bcm-delocated.S)
+  set_target_properties(bcm_hashunset PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(bcm_hashunset PROPERTIES LINKER_LANGUAGE C)
+
+  go_executable(inject_hash
+                boringssl.googlesource.com/boringssl/util/fipstools/inject_hash)
+  add_custom_command(
+    OUTPUT bcm.o
+    COMMAND ./inject_hash -o bcm.o -in-archive $<TARGET_FILE:bcm_hashunset>
+    DEPENDS bcm_hashunset inject_hash
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+  set(CRYPTO_FIPS_OBJECTS bcm.o)
+elseif(FIPS_SHARED)
+  if(NOT BUILD_SHARED_LIBS)
+    message(FATAL_ERROR "FIPS_SHARED set but not BUILD_SHARED_LIBS")
+  endif()
+
+  add_library(bcm_library STATIC fipsmodule/bcm.c ${BCM_SOURCES_ASM_USED})
+  add_dependencies(bcm_library boringssl_prefix_symbols)
+  target_include_directories(bcm_library PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+  add_custom_command(
+    OUTPUT bcm.o
+    COMMAND ${CMAKE_LINKER} -r -T ${CMAKE_CURRENT_SOURCE_DIR}/fipsmodule/fips_shared.lds -o bcm.o --whole-archive $<TARGET_FILE:bcm_library>
+    DEPENDS bcm_library fipsmodule/fips_shared.lds
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+  set(CRYPTO_FIPS_OBJECTS bcm.o)
+else()
+  add_library(fipsmodule OBJECT fipsmodule/bcm.c ${BCM_SOURCES_ASM_USED})
+  add_dependencies(fipsmodule boringssl_prefix_symbols)
+  target_include_directories(fipsmodule PRIVATE ${PROJECT_SOURCE_DIR}/include)
+  set(CRYPTO_FIPS_OBJECTS $<TARGET_OBJECTS:fipsmodule>)
+endif()
 
 add_library(
   crypto
@@ -153,11 +178,12 @@ add_library(
   ec_extra/ec_derive.c
   ec_extra/hash_to_curve.c
   err/err.c
-  err_data.c
   engine/engine.c
   evp/evp.c
   evp/evp_asn1.c
   evp/evp_ctx.c
+  evp/p_dh.c
+  evp/p_dh_asn1.c
   evp/p_dsa_asn1.c
   evp/p_ec.c
   evp/p_ec_asn1.c
@@ -173,6 +199,7 @@ add_library(
   evp/scrypt.c
   evp/sign.c
   ex_data.c
+  fipsmodule/fips_shared_support.c
   hpke/hpke.c
   hrss/hrss.c
   keccak/keccak.c
@@ -297,16 +324,13 @@ add_library(
   x509/x509name.c
   x509/x509rset.c
   x509/x509spki.c
+  # TOOD(crbug.com/boringssl/542): Pick up this and the rest of the source list
+  # from util/pregenerate.
+  ../gen/crypto/err_data.c
 
-  $<TARGET_OBJECTS:fipsmodule>
   ${CRYPTO_FIPS_OBJECTS}
+  ${CRYPTO_SOURCES_ASM_USED}
 )
-if(OPENSSL_ASM)
-  target_sources(crypto PRIVATE ${CRYPTO_SOURCES_ASM})
-endif()
-if(OPENSSL_NASM)
-  target_sources(crypto PRIVATE ${CRYPTO_SOURCES_NASM})
-endif()
 target_include_directories(crypto PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -331,13 +355,6 @@ if(FIPS_SHARED)
 endif()
 
 add_dependencies(crypto boringssl_prefix_symbols)
-
-if(FIPS_DELOCATE OR FIPS_SHARED)
-  add_dependencies(crypto bcm_o_target)
-endif()
-
-set_target_properties(crypto PROPERTIES LINKER_LANGUAGE C)
-
 if(WIN32)
   target_link_libraries(crypto ws2_32)
 endif()

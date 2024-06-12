@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import java_types
+import common
 
 
 def _implicit_array_class_param(native, type_resolver):
@@ -14,7 +15,7 @@ def _implicit_array_class_param(native, type_resolver):
   return ret
 
 
-def Generate(jni_obj, *, gen_jni_class, script_name):
+def Generate(jni_obj, *, gen_jni_class, script_name, per_file_natives=False):
   proxy_class = java_types.JavaClass(
       f'{jni_obj.java_class.full_name_with_slashes}Jni')
   visibility = 'public ' if jni_obj.proxy_visibility == 'public' else ''
@@ -33,6 +34,9 @@ package {jni_obj.java_class.class_without_prefix.package_with_dots};
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
+""")
+  if not per_file_natives:
+    sb.append(f"""\
 import {gen_jni_class.full_name_with_dots};
 """)
 
@@ -40,8 +44,9 @@ import {gen_jni_class.full_name_with_dots};
   for c in type_resolver.imports:
     sb.append(f'import {c.full_name_with_dots};\n')
 
+  if not per_file_natives:
+    sb.append('\n@CheckDiscard("crbug.com/993421")')
   sb.append(f"""
-@CheckDiscard("crbug.com/993421")
 {visibility}class {proxy_class.name} implements {interface_name} {{
   private static {interface_name} testInstance;
 
@@ -49,13 +54,17 @@ import {gen_jni_class.full_name_with_dots};
       new JniStaticTestMocker<{interface_name}>() {{
     @Override
     public void setInstanceForTesting({interface_name} instance) {{
-      if (!{gen_jni}.TESTING_ENABLED) {{
+""")
+  if not per_file_natives:
+    sb.append(f"""      if (!{gen_jni}.TESTING_ENABLED) {{
         throw new RuntimeException(
             "Tried to set a JNI mock when mocks aren't enabled!");
       }}
-      testInstance = instance;
-    }}
-  }};
+""")
+
+  sb.append("""      testInstance = instance;
+    }
+  };
 """)
 
   for native in jni_obj.proxy_natives:
@@ -68,6 +77,11 @@ import {gen_jni_class.full_name_with_dots};
     if not native.return_type.is_void():
       return_prefix = f'return ({return_type_str}) '
 
+    if per_file_natives:
+      method_fqn = f'native{common.capitalize(native.name)}'
+    else:
+      method_fqn = f'{gen_jni}.{native.proxy_name}'
+
     sb.append(f"""
   @Override
   public {return_type_str} {native.name}({sig_params}) {{
@@ -77,12 +91,21 @@ import {gen_jni_class.full_name_with_dots};
     assert {native.params[0].name} != 0;
 """)
     sb.append(f"""\
-    {return_prefix}{gen_jni}.{native.proxy_name}({call_params});
+    {return_prefix}{method_fqn}({call_params});
   }}
 """)
 
+    if per_file_natives:
+      proxy_sig_params = native.proxy_params.to_java_declaration()
+      proxy_return_type = native.proxy_return_type.to_java()
+      sb.append(
+          f'  private static native {proxy_return_type} {method_fqn}({proxy_sig_params});\n'
+      )
+
   sb.append(f"""
-  public static {interface_name} get() {{
+  public static {interface_name} get() {{""")
+  if not per_file_natives:
+    sb.append(f"""
     if ({gen_jni}.TESTING_ENABLED) {{
       if (testInstance != null) {{
         return testInstance;
@@ -92,7 +115,8 @@ import {gen_jni_class.full_name_with_dots};
             "No mock found for the native implementation of {interface_name}. "
             + "The current configuration requires implementations be mocked.");
       }}
-    }}
+    }}""")
+  sb.append(f"""
     NativeLibraryLoadedStatus.checkLoaded();
     return new {proxy_class.name}();
   }}

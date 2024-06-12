@@ -18,7 +18,7 @@ endif()
 include(sources.cmake)
 include(cmake/go.cmake)
 include(cmake/paths.cmake)
-include(cmake/perlasm.cmake)
+include(gen/sources.cmake)
 
 enable_language(C)
 enable_language(CXX)
@@ -42,8 +42,6 @@ function(install_if_enabled)
     install(${ARGV})
   endif()
 endfunction()
-
-find_package(Perl REQUIRED)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CMAKE_CROSSCOMPILING)
   find_package(PkgConfig QUIET)
@@ -141,7 +139,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CLANG)
   endif()
 
   if(CLANG)
-    set(C_CXX_FLAGS "${C_CXX_FLAGS} -Wnewline-eof -fcolor-diagnostics -Wframe-larger-than=25344")
+    set(C_CXX_FLAGS "${C_CXX_FLAGS} -Wnewline-eof -fcolor-diagnostics")
   else()
     # GCC (at least 4.8.4) has a bug where it'll find unreachable free() calls
     # and declare that the code is trying to free a stack pointer.
@@ -156,6 +154,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CLANG)
      (CMAKE_C_COMPILER_ID STREQUAL "AppleClang" AND
       CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "13.0.0"))
     set(C_CXX_FLAGS "${C_CXX_FLAGS} -Wstring-concatenation")
+  endif()
+
+  # Clang 12's -Wframe-larger-than reportedly does not work in clang-cl. See
+  # https://crbug.com/boringssl/709. Clang 13 includes the following fix, which
+  # may be related. Speculatively gate on Clang 13. That corresponds to
+  # AppleClang 13.1.6.
+  # https://github.com/llvm/llvm-project/commit/6aaf4fa2885600b0e31042071ad06f78218ab0f2
+  if((CMAKE_C_COMPILER_ID STREQUAL "Clang" AND
+      CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "13.0.0") OR
+     (CMAKE_C_COMPILER_ID STREQUAL "AppleClang" AND
+      CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "13.1.6"))
+    set(C_CXX_FLAGS "${C_CXX_FLAGS} -Wframe-larger-than=25344")
   endif()
 
   if(CLANG OR CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "7.0.0")
@@ -344,8 +354,6 @@ endif()
 
 if(CONSTANT_TIME_VALIDATION)
   add_definitions(-DBORINGSSL_CONSTANT_TIME_VALIDATION)
-  # Asserts will often test secret data.
-  add_definitions(-DNDEBUG)
 endif()
 
 if(MALLOC_FAILURE_TESTING)
@@ -504,14 +512,29 @@ add_custom_command(
 add_library(crypto_test_data OBJECT crypto_test_data.cc)
 
 add_subdirectory(crypto)
-add_subdirectory(ssl)
 add_subdirectory(ssl/test)
 add_subdirectory(util/fipstools)
 add_subdirectory(util/fipstools/acvp/modulewrapper)
-add_subdirectory(decrepit)
+
+add_library(ssl ${SSL_SOURCES})
+# Although libssl also provides headers that require an include directory, the
+# flag is already specified by libcrypto, so we omit target_include_directories
+# here.
+install_if_enabled(TARGETS ssl EXPORT OpenSSLTargets ${INSTALL_DESTINATION_DEFAULT})
+set_property(TARGET ssl PROPERTY EXPORT_NAME SSL)
+target_link_libraries(ssl crypto)
+
+add_library(decrepit ${DECREPIT_SOURCES})
+target_link_libraries(decrepit crypto ssl)
 
 add_library(test_support_lib STATIC ${TEST_SUPPORT_SOURCES})
-if (LIBUNWIND_FOUND)
+if(OPENSSL_ASM)
+  target_sources(test_support_lib PRIVATE ${TEST_SUPPORT_SOURCES_ASM})
+endif()
+if(OPENSSL_NASM)
+  target_sources(test_support_lib PRIVATE ${TEST_SUPPORT_SOURCES_NASM})
+endif()
+if(LIBUNWIND_FOUND)
   target_compile_options(test_support_lib PRIVATE ${LIBUNWIND_CFLAGS_OTHER})
   target_include_directories(test_support_lib PRIVATE ${LIBUNWIND_INCLUDE_DIRS})
   target_link_libraries(test_support_lib ${LIBUNWIND_LDFLAGS})
@@ -535,7 +558,6 @@ add_dependencies(all_tests crypto_test)
 add_executable(ssl_test ${SSL_TEST_SOURCES})
 target_link_libraries(ssl_test test_support_lib boringssl_gtest ssl crypto)
 add_dependencies(all_tests ssl_test)
-
 add_executable(decrepit_test ${DECREPIT_TEST_SOURCES})
 target_link_libraries(decrepit_test test_support_lib boringssl_gtest
                       decrepit crypto)
@@ -568,8 +590,8 @@ target_link_libraries(bssl ssl crypto)
 # existing tools, we, for now, copy the targets into the subdirectories. This
 # will be removed sometime in 2024.
 copy_post_build(crypto crypto_test urandom_test)
-copy_post_build(ssl ssl_test)
-copy_post_build(decrepit decrepit_test)
+copy_post_build(ssl ssl ssl_test)
+copy_post_build(decrepit decrepit decrepit_test)
 copy_post_build(tool bssl)
 
 if(FUZZ)
@@ -627,9 +649,14 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
 
 add_custom_target(
     run_tests
+    COMMAND ${CMAKE_COMMAND} -E echo "Running Go tests"
     COMMAND ${GO_EXECUTABLE} test ${GO_TESTS}
+    COMMAND ${CMAKE_COMMAND} -E echo
+    COMMAND ${CMAKE_COMMAND} -E echo "Running unit tests"
     COMMAND ${GO_EXECUTABLE} run util/all_tests.go -build-dir
             ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E echo
+    COMMAND ${CMAKE_COMMAND} -E echo "Running SSL tests"
     COMMAND cd ssl/test/runner &&
             ${GO_EXECUTABLE} test -shim-path $<TARGET_FILE:bssl_shim>
               ${HANDSHAKER_ARGS} ${RUNNER_ARGS}

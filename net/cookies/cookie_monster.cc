@@ -49,8 +49,10 @@
 #include <numeric>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -62,7 +64,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1669,6 +1670,17 @@ void CookieMonster::SetCanonicalCookie(
     SetCookiesCallback callback,
     std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+// TODO(crbug.com/1482799): Fix macos specific issue with CHECK_IS_TEST crashing
+// network service process.
+#if !BUILDFLAG(IS_MAC)
+  // Only tests should be adding new cookies with source type kUnknown. If this
+  // line causes a fatal track down the callsite and have it correctly set the
+  // source type to kOther (or kHTTP/kScript where applicable). See
+  // CookieSourceType in net/cookies/cookie_constants.h for more.
+  if (cc->SourceType() == CookieSourceType::kUnknown) {
+    CHECK_IS_TEST(base::NotFatalUntil::M126);
+  }
+#endif
 
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&
@@ -2481,7 +2493,7 @@ size_t CookieMonster::GarbageCollectLeastRecentlyAccessed(
 // non-problem).
 //
 // static
-std::string CookieMonster::GetKey(base::StringPiece domain) {
+std::string CookieMonster::GetKey(std::string_view domain) {
   std::string effective_domain(
       registry_controlled_domains::GetDomainAndRegistry(
           domain, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
@@ -2677,7 +2689,7 @@ void CookieMonster::DoCookieCallbackForURL(base::OnceClosure callback,
 
 void CookieMonster::DoCookieCallbackForHostOrDomain(
     base::OnceClosure callback,
-    base::StringPiece host_or_domain) {
+    std::string_view host_or_domain) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MarkCookieStoreAsInitialized();
   FetchAllCookiesIfNecessary();

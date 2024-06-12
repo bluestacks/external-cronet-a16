@@ -21,15 +21,13 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/dynamic_extent.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 #include "base/types/to_address.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
-
-// [views.constants]
-constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
 
 template <typename T,
           size_t Extent = dynamic_extent,
@@ -549,7 +547,9 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the `other` span has the same size as itself and
   // will terminate otherwise.
-  constexpr void copy_from(span<const T, N> other) {
+  constexpr void copy_from(span<const T, N> other)
+    requires(!std::is_const_v<T>)
+  {
     CHECK_EQ(size_bytes(), other.size_bytes());
     // Verify non-overlapping in developer builds.
     //
@@ -959,7 +959,9 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the `other` span has the same size as itself and
   // will terminate otherwise.
-  constexpr void copy_from(span<const T> other) {
+  constexpr void copy_from(span<const T> other)
+    requires(!std::is_const_v<T>)
+  {
     CHECK_EQ(size_bytes(), other.size_bytes());
     // Verify non-overlapping in developer builds.
     //

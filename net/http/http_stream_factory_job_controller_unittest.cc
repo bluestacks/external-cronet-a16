@@ -4769,7 +4769,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
       "h3-Q049=\":443\"; ma=2592000,"
       "h3-Q048=\":443\"; ma=2592000,"
       "h3-Q046=\":443\"; ma=2592000,",
-      quic::ParsedQuicVersion::Q050(), quic::AllSupportedVersions());
+      quic::ParsedQuicVersion::Q046(), quic::AllSupportedVersions());
 }
 
 TEST_P(HttpStreamFactoryJobControllerTest,
@@ -4788,8 +4788,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
       "h3-Q046=\":443\"; ma=2592000,"
       "h3-Q050=\":443\"; ma=2592000",
       quic::ParsedQuicVersion::Q046(),
-      quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050(),
-                                    quic::ParsedQuicVersion::Q046()});
+      quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q046()});
 }
 
 // Tests that if HttpNetworkSession has a non-empty QUIC host allowlist,
@@ -4992,6 +4991,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                  require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
                                         : version_,
                  ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
+                 /*http_user_agent_settings=*/nullptr,
                  SessionUsage::kDestination, PRIVACY_MODE_DISABLED,
                  DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
                  SecureDnsPolicy::kAllow, require_dns_https_alpn,

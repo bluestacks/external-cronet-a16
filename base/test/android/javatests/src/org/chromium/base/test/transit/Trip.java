@@ -57,6 +57,22 @@ public class Trip extends Transition {
         return destination;
     }
 
+    /**
+     * Version of #travelSync() with extra Transition conditions.
+     *
+     * @param transitionConditions a list of the extra Conditions to wait for in the Transition
+     */
+    public static <T extends TransitStation> T travelSync(
+            @Nullable TransitStation origin,
+            T destination,
+            List<Condition> transitionConditions,
+            Trigger trigger) {
+        Trip trip = new Trip(origin, destination, trigger);
+        trip.addTransitionConditions(transitionConditions);
+        trip.travelSyncInternal();
+        return destination;
+    }
+
     private void travelSyncInternal() {
         embark();
         if (mOrigin != null) {
@@ -112,10 +128,10 @@ public class Trip extends Transition {
 
         Elements originElements =
                 origin != null
-                        ? origin.getElementsIncludingFacilitiesWithPhase(Phase.ACTIVE)
+                        ? origin.getElementsIncludingFacilitiesWithPhase(Phase.TRANSITIONING_FROM)
                         : Elements.EMPTY;
         Elements destinationElements =
-                destination.getElementsIncludingFacilitiesWithPhase(Phase.NEW);
+                destination.getElementsIncludingFacilitiesWithPhase(Phase.TRANSITIONING_TO);
 
         // Create ENTER Conditions for Views that should appear and LogicalElements that should
         // be true.

@@ -279,6 +279,7 @@ component("base") {
     "containers/checked_iterators.h",
     "containers/circular_deque.h",
     "containers/contains.h",
+    "containers/dynamic_extent.h",
     "containers/enum_set.h",
     "containers/extend.h",
     "containers/fixed_flat_map.h",
@@ -297,6 +298,7 @@ component("base") {
     "containers/small_map.h",
     "containers/span.h",
     "containers/span_reader.h",
+    "containers/span_writer.h",
     "containers/stack.h",
     "containers/to_value_list.h",
     "containers/to_vector.h",
@@ -628,6 +630,7 @@ component("base") {
     "stl_util.h",
     "strings/abseil_string_number_conversions.cc",
     "strings/abseil_string_number_conversions.h",
+    "strings/cstring_view.h",
     "strings/escape.cc",
     "strings/escape.h",
     "strings/latin1_string_conversions.cc",
@@ -2153,7 +2156,6 @@ component("base") {
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
         "process/kill_mac.cc",
-        "process/launch_ios.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
         "process/port_provider_mac.h",
@@ -2164,7 +2166,13 @@ component("base") {
         "sync_socket_posix.cc",
         "synchronization/waitable_event_watcher_mac.cc",
       ]
-      libs += [ "bsm" ]
+
+      # We include launch_mac on simulator builds so unittests can fork.
+      if (target_environment == "simulator") {
+        sources += [ "process/launch_mac.cc" ]
+      } else {
+        sources += [ "process/launch_ios.cc" ]
+      }
     } else {
       sources += [
         "process/launch_ios.cc",
@@ -3228,6 +3236,7 @@ test("base_unittests") {
     "containers/small_map_unittest.cc",
     "containers/span_reader_unittest.cc",
     "containers/span_unittest.cc",
+    "containers/span_writer_unittest.cc",
     "containers/to_value_list_unittest.cc",
     "containers/to_vector_unittest.cc",
     "containers/unique_ptr_adapters_unittest.cc",
@@ -3389,6 +3398,7 @@ test("base_unittests") {
     "std_clamp_unittest.cc",
     "stl_util_unittest.cc",
     "strings/abseil_string_number_conversions_unittest.cc",
+    "strings/cstring_view_unittest.cc",
     "strings/escape_unittest.cc",
     "strings/levenshtein_distance_unittest.cc",
     "strings/no_trigraphs_unittest.cc",
@@ -3636,9 +3646,12 @@ test("base_unittests") {
   if (use_blink) {
     sources += [
       "allocator/partition_allocator/src/partition_alloc/tagging_unittest.cc",
-      "memory/shared_memory_switch_unittest.cc",
       "metrics/histogram_shared_memory_unittest.cc",
     ]
+
+    if (!is_ios) {
+      sources += [ "memory/shared_memory_switch_unittest.cc" ]
+    }
 
     data_deps += [ "//base/test:test_proto_descriptor" ]
     data += [ "$root_gen_dir/base/test/test_proto.descriptor" ]
@@ -3967,10 +3980,10 @@ test("base_unittests") {
 
     if (use_starscan) {
       sources += [
+        "allocator/partition_allocator/src/partition_alloc/stack/stack_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/pcscan_scheduling_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/pcscan_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/scan_loop_unittest.cc",
-        "allocator/partition_allocator/src/partition_alloc/starscan/stack/stack_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/state_bitmap_unittest.cc",
       ]
     }
@@ -4242,6 +4255,7 @@ if (enable_nocompile_tests) {
       "containers/checked_iterators_nocompile.nc",
       "containers/contains_nocompile.nc",
       "containers/enum_set_nocompile.nc",
+      "containers/fixed_flat_map_nocompile.nc",
       "containers/fixed_flat_set_nocompile.nc",
       "containers/heap_array_nocompile.nc",
       "containers/span_nocompile.nc",
@@ -4260,6 +4274,7 @@ if (enable_nocompile_tests) {
       "no_destructor_nocompile.nc",
       "observer_list_nocompile.nc",
       "sequence_checker_nocompile.nc",
+      "strings/cstring_view_nocompile.nc",
       "strings/string_piece_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
       "task/bind_post_task_nocompile.nc",
@@ -4290,6 +4305,7 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/CommandLine.java",
       "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
+      "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/Token.java",
       "android/java/src/org/chromium/base/TraceEvent.java",
       "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
@@ -4471,6 +4487,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/EventLog.java",
       "android/java/src/org/chromium/base/FeatureList.java",
       "android/java/src/org/chromium/base/FeatureMap.java",
+      "android/java/src/org/chromium/base/FeatureParam.java",
       "android/java/src/org/chromium/base/Features.java",
       "android/java/src/org/chromium/base/FieldTrialList.java",
       "android/java/src/org/chromium/base/FileUtils.java",
@@ -4488,7 +4505,9 @@ if (is_android) {
       "android/java/src/org/chromium/base/Log.java",
       "android/java/src/org/chromium/base/MathUtils.java",
       "android/java/src/org/chromium/base/MemoryPressureListener.java",
+      "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/ObserverList.java",
       "android/java/src/org/chromium/base/PackageManagerUtils.java",
       "android/java/src/org/chromium/base/PackageUtils.java",
@@ -4940,6 +4959,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/LifetimeAssertTest.java",
       "android/junit/src/org/chromium/base/LogTest.java",
       "android/junit/src/org/chromium/base/MathUtilsTest.java",
+      "android/junit/src/org/chromium/base/MutableBooleanParamWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/MutableFlagWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/PathUtilsTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",

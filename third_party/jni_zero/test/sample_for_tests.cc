@@ -45,6 +45,12 @@ ScopedJavaLocalRef<jstring> ToJniType<std::u16string>(
     const std::u16string& input) {
   return {};
 }
+template <>
+ScopedJavaLocalRef<jstring> ToJniType<const char*>(
+    JNIEnv* env,
+    const char * const& input) {
+  return {};
+}
 
 // Specialized conversions for std::optional<std::basic_string<T>> since jstring
 // is a nullable type but std::basic_string<T> is not.
@@ -86,7 +92,9 @@ void CPPClass::Destroy(JNIEnv* env, const JavaParamRef<jobject>& caller) {
   delete this;
 }
 
-jint CPPClass::Method(JNIEnv* env, const JavaParamRef<jobject>& caller) {
+jint CPPClass::Method(JNIEnv* env,
+                      const JavaParamRef<jobject>& caller,
+                      std::vector<std::string>& strArray) {
   return 0;
 }
 
@@ -121,8 +129,9 @@ ScopedJavaLocalRef<jstring> CPPClass::ReturnAString(
 // Static free functions declared and called directly from java.
 static jlong JNI_SampleForTests_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& caller,
-                                     const JavaParamRef<jstring>& param) {
-  return 0;
+                                     const JavaParamRef<jstring>& param,
+                                     jni_zero::ByteArrayView& bytes) {
+  return static_cast<jlong>(bytes.length());
 }
 
 static jdouble JNI_SampleForTests_GetDoubleFunction(
@@ -337,7 +346,7 @@ int main() {
   ScopedJavaLocalRef<jobject> my_created_object =
       jni_zero::tests::Java_SampleForTests_Constructor(env, 1, 2);
 
-  std::vector<std::string> string_vector = {"Test"};
+  std::vector<const char*> string_vector = {"Test"};
   std::string first_string =
       jni_zero::tests::Java_SampleForTests_getFirstString(
           env, my_created_object, string_vector);

@@ -1872,6 +1872,9 @@ config("default_warnings") {
       }
 
       cflags += [
+        # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
+        "-Wno-cast-function-type",
+
         # Ignore warnings about MSVC optimization pragmas.
         # TODO(thakis): Only for no_chromium_code? http://crbug.com/912662
         "-Wno-ignored-pragma-optimize",
@@ -2467,9 +2470,9 @@ config("no_optimize") {
   }
 }
 
-# Turns up the optimization level. On Windows, this implies whole program
-# optimization and link-time code generation which is very expensive and should
-# be used sparingly.
+# Turns up the optimization level. Used to explicitly enable -O2 instead of
+# -Os for select targets on platforms that use optimize_for_size. No-op
+# elsewhere.
 config("optimize_max") {
   if (is_nacl && is_nacl_irt) {
     # The NaCl IRT is a special case and always wants its own config.
@@ -2499,7 +2502,7 @@ config("optimize_max") {
 # This config can be used to override the default settings for per-component
 # and whole-program optimization, optimizing the particular target for speed
 # instead of code size. This config is exactly the same as "optimize_max"
-# except that we use -O3 instead of -O2 on non-win, non-IRT platforms.
+# except that we use -O3 instead of -O2 on non-IRT platforms.
 #
 # TODO(crbug.com/621335) - rework how all of these configs are related
 # so that we don't need this disclaimer.
@@ -2520,6 +2523,9 @@ config("optimize_speed") {
       # Favor speed over size, /O2 must be before the common flags.
       # /O2 implies /Ot, /Oi, and /GF.
       cflags = [ "/O2" ] + common_optimize_on_cflags
+      if (is_clang) {
+        cflags += [ "/clang:-O3" ]
+      }
     } else if (optimize_for_fuzzing) {
       cflags = [ "-O1" ] + common_optimize_on_cflags
     } else {

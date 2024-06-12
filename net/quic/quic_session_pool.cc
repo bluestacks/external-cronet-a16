@@ -28,7 +28,9 @@
 #include "base/values.h"
 #include "crypto/openssl_util.h"
 #include "net/base/address_list.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -68,6 +70,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
@@ -171,6 +174,7 @@ int QuicSessionRequest::Request(
     quic::ParsedQuicVersion quic_version,
     const ProxyChain& proxy_chain,
     const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+    const HttpUserAgentSettings* http_user_agent_settings,
     SessionUsage session_usage,
     PrivacyMode privacy_mode,
     RequestPriority priority,
@@ -200,10 +204,10 @@ int QuicSessionRequest::Request(
                      secure_dns_policy, require_dns_https_alpn);
   bool use_dns_aliases = session_usage == SessionUsage::kProxy ? false : true;
 
-  int rv = pool_->RequestSession(session_key_, std::move(destination),
-                                 quic_version, std::move(proxy_annotation_tag),
-                                 priority, use_dns_aliases, cert_verify_flags,
-                                 url, net_log, this);
+  int rv = pool_->RequestSession(
+      session_key_, std::move(destination), quic_version,
+      std::move(proxy_annotation_tag), http_user_agent_settings, priority,
+      use_dns_aliases, cert_verify_flags, url, net_log, this);
   if (rv == ERR_IO_PENDING) {
     net_log_ = net_log;
     callback_ = std::move(callback);
@@ -509,6 +513,7 @@ int QuicSessionPool::RequestSession(
     url::SchemeHostPort destination,
     quic::ParsedQuicVersion quic_version,
     const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+    const HttpUserAgentSettings* http_user_agent_settings,
     RequestPriority priority,
     bool use_dns_aliases,
     int cert_verify_flags,
@@ -570,6 +575,7 @@ int QuicSessionPool::RequestSession(
   // If a proxy is in use, then a traffic annotation is required.
   if (!session_key.proxy_chain().is_direct()) {
     DCHECK(proxy_annotation_tag);
+    DCHECK(http_user_agent_settings);
   }
 
   QuicSessionAliasKey key(destination, session_key);
@@ -1112,6 +1118,43 @@ const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
   }
 
   return it->second;
+}
+
+quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
+    const quic::ParsedQuicVersion& known_quic_version,
+    const ConnectionEndpointMetadata& metadata,
+    bool svcb_optional) const {
+  if (metadata.supported_protocol_alpns.empty()) {
+    // `metadata` doesn't contain QUIC ALPN. If we know the QUIC ALPN to use
+    // externally, i.e. via Alt-Svc, use it in SVCB-optional mode. Otherwise,
+    // the endpoint associated with `metadata` is not eligible for QUIC.
+    return svcb_optional ? known_quic_version
+                         : quic::ParsedQuicVersion::Unsupported();
+  }
+
+  // Otherwise, `metadata` came from an HTTPS/SVCB record. We can use
+  // QUIC if a suitable match is found in the record's ALPN list.
+  // Additionally, if this connection attempt came from Alt-Svc, the DNS
+  // result must be consistent with it. See
+  // https://datatracker.ietf.org/doc/html/rfc9460#name-interaction-with-alt-svc
+  if (known_quic_version.IsKnown()) {
+    std::string expected_alpn = quic::AlpnForVersion(known_quic_version);
+    if (base::Contains(metadata.supported_protocol_alpns,
+                       quic::AlpnForVersion(known_quic_version))) {
+      return known_quic_version;
+    }
+    return quic::ParsedQuicVersion::Unsupported();
+  }
+
+  for (const auto& alpn : metadata.supported_protocol_alpns) {
+    for (const auto& supported_version : supported_versions()) {
+      if (alpn == AlpnForVersion(supported_version)) {
+        return supported_version;
+      }
+    }
+  }
+
+  return quic::ParsedQuicVersion::Unsupported();
 }
 
 bool QuicSessionPool::HasMatchingIpSession(

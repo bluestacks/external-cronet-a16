@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -178,7 +178,7 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
     static const base::NoDestructor<std::set<std::string>> nullset_result;
     return *nullset_result;
   }
-  base::StringPiece GetAcceptChViaAlps() const override { return {}; }
+  std::string_view GetAcceptChViaAlps() const override { return {}; }
 
   std::unique_ptr<WebSocketStream> Upgrade() override { return nullptr; }
 
@@ -3500,7 +3500,6 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
 
   quic::ParsedQuicVersionVector versions = {
       quic::ParsedQuicVersion::Draft29(),
-      quic::ParsedQuicVersion::Q050(),
   };
   AlternativeServiceInfoVector alternatives =
       http_server_properties_.GetAlternativeServiceInfos(

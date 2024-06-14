@@ -4439,7 +4439,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/base_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/base_jni_placeholder.srcjar " +
+         "$(genDir)/base/base_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "ApkAssets_jni.h " +
@@ -4665,7 +4665,6 @@ cc_genrule {
         "base/base_jni/Token_jni.h",
         "base/base_jni/TraceEvent_jni.h",
         "base/base_jni/UnguessableToken_jni.h",
-        "base/base_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -4747,7 +4746,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/base/base_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/base_jni_placeholder.srcjar " +
+         "$(genDir)/base/base_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "ApkAssets_jni.h " +
@@ -4973,7 +4972,6 @@ java_genrule {
         "base/base_jni/Token_jni.h",
         "base/base_jni/TraceEvent_jni.h",
         "base/base_jni/UnguessableToken_jni.h",
-        "base/base_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -5052,7 +5050,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/base_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/base_jni_placeholder.srcjar " +
+         "$(genDir)/base/base_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "ApkAssets_jni.h " +
@@ -5276,7 +5274,6 @@ cc_genrule {
         "base/base_jni/Token_jni.h",
         "base/base_jni/TraceEvent_jni.h",
         "base/base_jni/UnguessableToken_jni.h",
-        "base/base_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -5358,7 +5355,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/base/base_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/base_jni_placeholder.srcjar " +
+         "$(genDir)/base/base_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "ApkAssets_jni.h " +
@@ -5582,7 +5579,6 @@ java_genrule {
         "base/base_jni/Token_jni.h",
         "base/base_jni/TraceEvent_jni.h",
         "base/base_jni/UnguessableToken_jni.h",
-        "base/base_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -5646,7 +5642,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/base_shared_preferences_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/base_shared_preferences_jni_placeholder.srcjar " +
+         "$(genDir)/base/base_shared_preferences_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "SharedPreferencesManager_jni.h " +
@@ -5657,7 +5653,6 @@ cc_genrule {
     out: [
         "base/base_shared_preferences_jni.srcjar",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
-        "base/base_shared_preferences_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -5696,7 +5691,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/base_shared_preferences_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/base_shared_preferences_jni_placeholder.srcjar " +
+         "$(genDir)/base/base_shared_preferences_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "SharedPreferencesManager_jni.h " +
@@ -5705,7 +5700,6 @@ cc_genrule {
     out: [
         "base/base_shared_preferences_jni.srcjar",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
-        "base/base_shared_preferences_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -7327,7 +7321,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/process_launcher_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/process_launcher_jni_placeholder.srcjar " +
+         "$(genDir)/base/process_launcher_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "ChildProcessService_jni.h " +
@@ -7338,7 +7332,6 @@ cc_genrule {
     out: [
         "base/process_launcher_jni.srcjar",
         "base/process_launcher_jni/ChildProcessService_jni.h",
-        "base/process_launcher_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -7377,7 +7370,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/process_launcher_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/process_launcher_jni_placeholder.srcjar " +
+         "$(genDir)/base/process_launcher_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "ChildProcessService_jni.h " +
@@ -7386,7 +7379,6 @@ cc_genrule {
     out: [
         "base/process_launcher_jni.srcjar",
         "base/process_launcher_jni/ChildProcessService_jni.h",
-        "base/process_launcher_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -7775,7 +7767,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/test/base_unittests_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/test/base_unittests_jni_headers_placeholder.srcjar " +
+         "$(genDir)/base/test/base_unittests_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "ContentUriTestUtils_jni.h " +
@@ -7789,7 +7781,6 @@ cc_genrule {
         "base/test/base_unittests_jni_headers.srcjar",
         "base/test/base_unittests_jni_headers/ContentUriTestUtils_jni.h",
         "base/test/base_unittests_jni_headers/JavaHandlerThreadHelpers_jni.h",
-        "base/test/base_unittests_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -8433,7 +8424,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/base/test/test_support_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/base/test/test_support_jni_headers_placeholder.srcjar " +
+         "$(genDir)/base/test/test_support_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "MainReturnCodeResult_jni.h " +
@@ -8457,7 +8448,6 @@ cc_genrule {
         "base/test/test_support_jni_headers/MultiprocessTestClientLauncher_jni.h",
         "base/test/test_support_jni_headers/ThreadPoolTestHelpers_jni.h",
         "base/test/test_support_jni_headers/UrlUtils_jni.h",
-        "base/test/test_support_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -12014,7 +12004,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
@@ -12045,7 +12035,6 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
-        "components/cronet/android/cronet_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -12088,7 +12077,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
@@ -12119,7 +12108,6 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
-        "components/cronet/android/cronet_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -12159,7 +12147,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
@@ -12188,7 +12176,6 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
-        "components/cronet/android/cronet_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -12231,7 +12218,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
@@ -12260,7 +12247,6 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
-        "components/cronet/android/cronet_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -13381,7 +13367,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_test_apk_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_test_apk_jni_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_test_apk_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetTestUtil_jni.h " +
@@ -13415,7 +13401,6 @@ cc_genrule {
         "components/cronet/android/cronet_test_apk_jni/NativeTestServer_jni.h",
         "components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h",
         "components/cronet/android/cronet_test_apk_jni/TestUploadDataStreamHandler_jni.h",
-        "components/cronet/android/cronet_test_apk_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -13459,7 +13444,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_test_apk_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_test_apk_jni_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_test_apk_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetTestUtil_jni.h " +
@@ -13493,7 +13478,6 @@ java_genrule {
         "components/cronet/android/cronet_test_apk_jni/NativeTestServer_jni.h",
         "components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h",
         "components/cronet/android/cronet_test_apk_jni/TestUploadDataStreamHandler_jni.h",
-        "components/cronet/android/cronet_test_apk_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -13845,7 +13829,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_tests_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_tests_jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_tests_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetUrlRequestContextTest_jni.h " +
@@ -13864,7 +13848,6 @@ cc_genrule {
         "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestContextTest_jni.h",
         "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestTest_jni.h",
         "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h",
-        "components/cronet/android/cronet_tests_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -13905,7 +13888,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/components/cronet/android/cronet_tests_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/cronet/android/cronet_tests_jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/cronet/android/cronet_tests_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "CronetUrlRequestContextTest_jni.h " +
@@ -13924,7 +13907,6 @@ java_genrule {
         "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestContextTest_jni.h",
         "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestTest_jni.h",
         "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h",
-        "components/cronet/android/cronet_tests_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -17573,7 +17555,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/components/prefs/android/jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/prefs/android/jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/prefs/android/jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "PrefService_jni.h " +
@@ -17584,7 +17566,6 @@ cc_genrule {
     out: [
         "components/prefs/android/jni_headers.srcjar",
         "components/prefs/android/jni_headers/PrefService_jni.h",
-        "components/prefs/android/jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -17623,7 +17604,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/components/prefs/android/jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/components/prefs/android/jni_headers_placeholder.srcjar " +
+         "$(genDir)/components/prefs/android/jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "PrefService_jni.h " +
@@ -17632,7 +17613,6 @@ cc_genrule {
     out: [
         "components/prefs/android/jni_headers.srcjar",
         "components/prefs/android/jni_headers/PrefService_jni.h",
-        "components/prefs/android/jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -19380,7 +19360,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/net/android/net_test_support_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/android/net_test_support_jni_placeholder.srcjar " +
+         "$(genDir)/net/android/net_test_support_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidNetworkLibraryTestUtil_jni.h " +
@@ -19389,7 +19369,6 @@ cc_genrule {
     out: [
         "net/android/net_test_support_jni.srcjar",
         "net/android/net_test_support_jni/AndroidNetworkLibraryTestUtil_jni.h",
-        "net/android/net_test_support_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -19428,7 +19407,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/net/android/net_test_support_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/android/net_test_support_jni_placeholder.srcjar " +
+         "$(genDir)/net/android/net_test_support_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidNetworkLibraryTestUtil_jni.h " +
@@ -19437,7 +19416,6 @@ java_genrule {
     out: [
         "net/android/net_test_support_jni.srcjar",
         "net/android/net_test_support_jni/AndroidNetworkLibraryTestUtil_jni.h",
-        "net/android/net_test_support_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -19503,7 +19481,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/net/android/net_test_support_provider_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/android/net_test_support_provider_jni_placeholder.srcjar " +
+         "$(genDir)/net/android/net_test_support_provider_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "DummySpnegoAuthenticator_jni.h " +
@@ -19517,7 +19495,6 @@ cc_genrule {
         "net/android/net_test_support_provider_jni.srcjar",
         "net/android/net_test_support_provider_jni/DummySpnegoAuthenticator_jni.h",
         "net/android/net_test_support_provider_jni/EmbeddedTestServerImpl_jni.h",
-        "net/android/net_test_support_provider_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -19557,7 +19534,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/net/android/net_test_support_provider_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/android/net_test_support_provider_jni_placeholder.srcjar " +
+         "$(genDir)/net/android/net_test_support_provider_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "DummySpnegoAuthenticator_jni.h " +
@@ -19571,7 +19548,6 @@ java_genrule {
         "net/android/net_test_support_provider_jni.srcjar",
         "net/android/net_test_support_provider_jni/DummySpnegoAuthenticator_jni.h",
         "net/android/net_test_support_provider_jni/EmbeddedTestServerImpl_jni.h",
-        "net/android/net_test_support_provider_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -19652,7 +19628,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/net/android/net_tests_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/android/net_tests_jni_placeholder.srcjar " +
+         "$(genDir)/net/android/net_tests_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidKeyStoreTestUtil_jni.h " +
@@ -19666,7 +19642,6 @@ cc_genrule {
         "net/android/net_tests_jni.srcjar",
         "net/android/net_tests_jni/AndroidKeyStoreTestUtil_jni.h",
         "net/android/net_tests_jni/AndroidProxyConfigServiceTestUtil_jni.h",
-        "net/android/net_tests_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -19706,7 +19681,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/net/android/net_tests_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/android/net_tests_jni_placeholder.srcjar " +
+         "$(genDir)/net/android/net_tests_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidKeyStoreTestUtil_jni.h " +
@@ -19720,7 +19695,6 @@ java_genrule {
         "net/android/net_tests_jni.srcjar",
         "net/android/net_tests_jni/AndroidKeyStoreTestUtil_jni.h",
         "net/android/net_tests_jni/AndroidProxyConfigServiceTestUtil_jni.h",
-        "net/android/net_tests_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -26552,7 +26526,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/net/net_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/net_jni_headers_placeholder.srcjar " +
+         "$(genDir)/net/net_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidCertVerifyResult_jni.h " +
@@ -26623,7 +26597,6 @@ cc_genrule {
         "net/net_jni_headers/NetworkChangeNotifier_jni.h",
         "net/net_jni_headers/ProxyChangeListener_jni.h",
         "net/net_jni_headers/X509Util_jni.h",
-        "net/net_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -26674,7 +26647,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/net/net_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/net_jni_headers_placeholder.srcjar " +
+         "$(genDir)/net/net_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidCertVerifyResult_jni.h " +
@@ -26745,7 +26718,6 @@ java_genrule {
         "net/net_jni_headers/NetworkChangeNotifier_jni.h",
         "net/net_jni_headers/ProxyChangeListener_jni.h",
         "net/net_jni_headers/X509Util_jni.h",
-        "net/net_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -26793,7 +26765,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/net/net_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/net_jni_headers_placeholder.srcjar " +
+         "$(genDir)/net/net_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidCertVerifyResult_jni.h " +
@@ -26862,7 +26834,6 @@ cc_genrule {
         "net/net_jni_headers/NetworkChangeNotifier_jni.h",
         "net/net_jni_headers/ProxyChangeListener_jni.h",
         "net/net_jni_headers/X509Util_jni.h",
-        "net/net_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -26913,7 +26884,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/net/net_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/net/net_jni_headers_placeholder.srcjar " +
+         "$(genDir)/net/net_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "AndroidCertVerifyResult_jni.h " +
@@ -26982,7 +26953,6 @@ java_genrule {
         "net/net_jni_headers/NetworkChangeNotifier_jni.h",
         "net/net_jni_headers/ProxyChangeListener_jni.h",
         "net/net_jni_headers/X509Util_jni.h",
-        "net/net_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -34869,7 +34839,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/testing/android/native_test/native_main_runner_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/testing/android/native_test/native_main_runner_jni_placeholder.srcjar " +
+         "$(genDir)/testing/android/native_test/native_main_runner_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "MainRunner_jni.h " +
@@ -34878,7 +34848,6 @@ cc_genrule {
     out: [
         "testing/android/native_test/native_main_runner_jni.srcjar",
         "testing/android/native_test/native_main_runner_jni/MainRunner_jni.h",
-        "testing/android/native_test/native_main_runner_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -34917,7 +34886,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/testing/android/native_test/native_main_runner_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/testing/android/native_test/native_main_runner_jni_placeholder.srcjar " +
+         "$(genDir)/testing/android/native_test/native_main_runner_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "MainRunner_jni.h " +
@@ -34926,7 +34895,6 @@ java_genrule {
     out: [
         "testing/android/native_test/native_main_runner_jni.srcjar",
         "testing/android/native_test/native_main_runner_jni/MainRunner_jni.h",
-        "testing/android/native_test/native_main_runner_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -34994,7 +34962,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/testing/android/native_test/native_test_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/testing/android/native_test/native_test_jni_placeholder.srcjar " +
+         "$(genDir)/testing/android/native_test/native_test_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "NativeTest_jni.h " +
@@ -35003,7 +34971,6 @@ cc_genrule {
     out: [
         "testing/android/native_test/native_test_jni.srcjar",
         "testing/android/native_test/native_test_jni/NativeTest_jni.h",
-        "testing/android/native_test/native_test_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -35042,7 +35009,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/testing/android/native_test/native_test_jni.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/testing/android/native_test/native_test_jni_placeholder.srcjar " +
+         "$(genDir)/testing/android/native_test/native_test_jni_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "NativeTest_jni.h " +
@@ -35051,7 +35018,6 @@ java_genrule {
     out: [
         "testing/android/native_test/native_test_jni.srcjar",
         "testing/android/native_test/native_test_jni/NativeTest_jni.h",
-        "testing/android/native_test/native_test_jni_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -58396,7 +58362,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/url/url_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/url/url_jni_headers_placeholder.srcjar " +
+         "$(genDir)/url/url_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "IDNStringUtil_jni.h " +
@@ -58407,7 +58373,6 @@ cc_genrule {
     out: [
         "url/url_jni_headers.srcjar",
         "url/url_jni_headers/IDNStringUtil_jni.h",
-        "url/url_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -58446,7 +58411,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/url/url_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/url/url_jni_headers_placeholder.srcjar " +
+         "$(genDir)/url/url_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "IDNStringUtil_jni.h " +
@@ -58457,7 +58422,6 @@ java_genrule {
     out: [
         "url/url_jni_headers.srcjar",
         "url/url_jni_headers/IDNStringUtil_jni.h",
-        "url/url_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -58493,7 +58457,7 @@ cc_genrule {
          "--srcjar-path " +
          "$(genDir)/url/url_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/url/url_jni_headers_placeholder.srcjar " +
+         "$(genDir)/url/url_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "IDNStringUtil_jni.h " +
@@ -58502,7 +58466,6 @@ cc_genrule {
     out: [
         "url/url_jni_headers.srcjar",
         "url/url_jni_headers/IDNStringUtil_jni.h",
-        "url/url_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",
@@ -58541,7 +58504,7 @@ java_genrule {
          "--srcjar-path " +
          "$(genDir)/url/url_jni_headers.srcjar " +
          "--placeholder-srcjar-path " +
-         "gen/url/url_jni_headers_placeholder.srcjar " +
+         "$(genDir)/url/url_jni_headers_placeholder.srcjar " +
          "--use-proxy-hash " +
          "--output-name " +
          "IDNStringUtil_jni.h " +
@@ -58550,7 +58513,6 @@ java_genrule {
     out: [
         "url/url_jni_headers.srcjar",
         "url/url_jni_headers/IDNStringUtil_jni.h",
-        "url/url_jni_headers_placeholder.srcjar",
     ],
     tool_files: [
         "third_party/jni_zero/codegen/called_by_native_header.py",

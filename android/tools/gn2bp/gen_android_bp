@@ -1238,6 +1238,7 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     self._update_value_arg('--srcjar-path', self._sanitize_filepath, False)
     self._update_value_arg('--output-dir', self._sanitize_filepath)
     self._update_value_arg('--extra-include', self._sanitize_filepath, False)
+    self._update_value_arg('--placeholder-srcjar-path', self._sanitize_filepath, False)
     self._update_list_arg('--input-file', self._sanitize_filepath)
     self._update_list_arg('--input-file', self._add_location_tag_to_filepath)
     if not self.is_test_target and not self._has_arg('--jar-file'):
@@ -1249,8 +1250,15 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
   def get_outputs(self):
-    # fix target.output directory to match #include statements.
-    return {re.sub('^jni_headers/', '', out) for out in super().get_outputs()}
+    outputs = set()
+    for out in super().get_outputs():
+      # placeholder.srcjar contains empty placeholder classes used to compile generated java files
+      # without any other deps. This is not used in aosp.
+      if out.endswith("_placeholder.srcjar"):
+        continue
+      # fix target.output directory to match #include statements.
+      outputs.add(re.sub('^jni_headers/', '', out))
+    return outputs
 
   def get_tool_files(self):
     tool_files = super().get_tool_files()
@@ -1311,12 +1319,21 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     self.target.inputs = [file for file in self.target.inputs if not file.startswith('//out/')]
 
   def get_outputs(self):
-    return {re.sub('^jni_headers/', '', out) for out in super().get_outputs()}
+    outputs = set()
+    for out in super().get_outputs():
+      # placeholder.srcjar contains empty placeholder classes used to compile generated java files
+       # without any other deps. This is not used in aosp.
+       if out.endswith("_placeholder.srcjar"):
+         continue
+       # fix target.output directory to match #include statements.
+       outputs.add(re.sub('^jni_headers/', '', out))
+    return outputs
 
   def _sanitize_args(self):
     self._update_value_arg('--depfile', self._sanitize_filepath)
     self._update_value_arg('--srcjar-path', self._sanitize_filepath)
     self._update_value_arg('--header-path', self._sanitize_filepath)
+    self._update_value_arg('--placeholder-srcjar-path', self._sanitize_filepath, False)
     self._delete_value_arg('--depfile', False)
     self._set_value_arg('--java-sources-file', '$(genDir)/java.sources')
     if not self.is_test_target:

@@ -17,8 +17,8 @@ QUIC_FLAG(quic_restart_flag_quic_testonly_default_true, true)
 QUIC_FLAG(quic_reloadable_flag_quic_block_until_settings_received_copt, true)
 // If trrue, early return before write control frame in OnCanWrite() if the connection is already closed.
 QUIC_FLAG(quic_reloadable_flag_quic_no_write_control_frame_upon_connection_close, true)
-// If true, HTTP/2 HEADERS frames will use two additional bytes of HPACK overhead per header in their SpdyFrameIR::size() estimate.
-QUIC_FLAG(quic_reloadable_flag_http2_add_hpack_overhead_bytes, true)
+// If true, HTTP/2 HEADERS frames will use two additional bytes of HPACK overhead per header in their SpdyHeadersIR::size() estimate. This flag is latched in SpdyHeadersIR to ensure a consistent size() value for a const SpdyHeadersIR regardless of flag state.
+QUIC_FLAG(quic_reloadable_flag_http2_add_hpack_overhead_bytes2, true)
 // If true, QUIC server will not respond to gQUIC probing packet(PING + PADDING) but treat it as a regular packet.
 QUIC_FLAG(quic_reloadable_flag_quic_ignore_gquic_probing, true)
 // If true, QUIC will default enable MTU discovery at server, with a target of 1450 bytes.
@@ -35,10 +35,10 @@ QUIC_FLAG(quic_reloadable_flag_quic_can_send_ack_frequency, true)
 QUIC_FLAG(quic_reloadable_flag_quic_allow_client_enabled_bbr_v2, true)
 // If true, allow quic to use new ALPS codepoint to negotiate during handshake for H3 if client sends new ALPS codepoint.
 QUIC_FLAG(quic_reloadable_flag_quic_gfe_allow_alps_new_codepoint, false)
-// If true, always bundle qpack decoder data with other frames opportunistically.
-QUIC_FLAG(quic_restart_flag_quic_opport_bundle_qpack_decoder_data3, false)
 // If true, an endpoint does not detect path degrading or blackholing until handshake gets confirmed.
 QUIC_FLAG(quic_reloadable_flag_quic_no_path_degrading_before_handshake_confirmed, true)
+// If true, bundle qpack decoder data with other frames opportunistically.
+QUIC_FLAG(quic_restart_flag_quic_opport_bundle_qpack_decoder_data4, false)
 // If true, default-enable 5RTO blachole detection.
 QUIC_FLAG(quic_reloadable_flag_quic_default_enable_5rto_blackhole_detection2, true)
 // If true, disable QUIC version Q046.
@@ -85,8 +85,6 @@ QUIC_FLAG(quic_reloadable_flag_quic_send_placeholder_ticket_when_encrypt_ticket_
 QUIC_FLAG(quic_reloadable_flag_quic_limit_new_streams_per_loop_2, false)
 // When true, allows sending of QUIC packets marked ECT(1). A different flag (TBD) will actually utilize this capability to send ECT(1).
 QUIC_FLAG(quic_restart_flag_quic_support_ect1, false)
-// When true, correctly stores the ECN mark on incoming packets when buffered while waiting for a crypto context.
-QUIC_FLAG(quic_reloadable_flag_quic_clone_ecn, true)
 // When true, defaults to BBR congestion control instead of Cubic.
 QUIC_FLAG(quic_reloadable_flag_quic_default_to_bbr, false)
 // When true, support RFC9369.

@@ -255,7 +255,6 @@ component("base") {
     "base64url.cc",
     "base64url.h",
     "base_switches.h",
-    "big_endian.cc",
     "big_endian.h",
     "bit_cast.h",
     "bits.h",
@@ -366,7 +365,6 @@ component("base") {
     "functional/function_ref.h",
     "functional/overloaded.h",
     "functional/unretained_traits.h",
-    "gtest_prod_util.cc",
     "gtest_prod_util.h",
     "hash/hash.cc",
     "hash/hash.h",
@@ -416,6 +414,8 @@ component("base") {
     "memory/platform_shared_memory_mapper.h",
     "memory/platform_shared_memory_region.cc",
     "memory/platform_shared_memory_region.h",
+    "memory/post_delayed_memory_reduction_task.cc",
+    "memory/post_delayed_memory_reduction_task.h",
     "memory/protected_memory.h",
     "memory/ptr_util.h",
     "memory/raw_ptr.h",
@@ -548,6 +548,8 @@ component("base") {
     "power_monitor/battery_level_provider.h",
     "power_monitor/battery_state_sampler.cc",
     "power_monitor/battery_state_sampler.h",
+    "power_monitor/cpu_frequency_utils.cc",
+    "power_monitor/cpu_frequency_utils.h",
     "power_monitor/power_monitor.cc",
     "power_monitor/power_monitor.h",
     "power_monitor/power_monitor_device_source.cc",
@@ -1035,7 +1037,11 @@ component("base") {
   }
 
   if (is_chromeos) {
-    sources += [ "threading/platform_thread_cros.cc" ]
+    sources += [
+      "process/process_priority_delegate.h",
+      "threading/cross_process_platform_thread_delegate.h",
+      "threading/platform_thread_cros.cc",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -1069,11 +1075,11 @@ component("base") {
     "//base/allocator:buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
-    "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build:ios_buildflags",
     "//build/config/compiler:compiler_buildflags",
+    "//third_party/abseil-cpp:absl",
     "//third_party/modp_b64",
   ]
 
@@ -1083,7 +1089,7 @@ component("base") {
   defines += [ "IS_RAW_PTR_IMPL" ]
 
   if (build_rust_json_reader) {
-    deps += [ "//third_party/rust/serde_json_lenient/v0_1/wrapper" ]
+    deps += [ "//third_party/rust/serde_json_lenient/v0_2/wrapper" ]
   }
 
   # native_unwinder_android is intended for use solely via a dynamic feature
@@ -2057,6 +2063,8 @@ component("base") {
       "mac/launch_services_spi.h",
       "mac/launchd.cc",
       "mac/launchd.h",
+      "mac/login_util.cc",
+      "mac/login_util.h",
       "mac/mac_util.h",
       "mac/mac_util.mm",
       "mac/mach_port_rendezvous.cc",
@@ -2155,11 +2163,12 @@ component("base") {
         "ios/sim_header_shims.h",
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
-        "process/kill_mac.cc",
+        "process/kill_ios.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
         "process/port_provider_mac.h",
         "process/process_handle_mac.cc",
+        "process/process_ios.cc",
         "process/process_iterator_mac.cc",
         "process/process_mac.cc",
         "process/process_posix.cc",
@@ -2169,7 +2178,10 @@ component("base") {
 
       # We include launch_mac on simulator builds so unittests can fork.
       if (target_environment == "simulator") {
-        sources += [ "process/launch_mac.cc" ]
+        sources += [
+          "process/kill_mac.cc",
+          "process/launch_mac.cc",
+        ]
       } else {
         sources += [ "process/launch_ios.cc" ]
       }
@@ -2335,7 +2347,7 @@ component("base") {
 
   # On ARC++-enabled ChromeOS system, we need TimeTicks::FromUptimeMillis to
   # interpret time values sent from Android container.
-  if (is_android || is_chromeos_ash) {
+  if (is_android || is_chromeos) {
     sources += [ "time/time_android.cc" ]
   }
 
@@ -2780,7 +2792,6 @@ component("i18n") {
     "//third_party/icu",
   ]
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
   ]
@@ -3012,6 +3023,7 @@ if (is_apple) {
     testonly = true
     sources = [
       "//tools/metrics/histograms/enums.xml",
+      "//tools/metrics/histograms/test_data/histograms.xml",
       "test/data/file_util/binary_file.bin",
       "test/data/file_util/binary_file_diff.bin",
       "test/data/file_util/binary_file_same.bin",
@@ -3205,7 +3217,6 @@ test("base_unittests") {
     "barrier_closure_unittest.cc",
     "base64_unittest.cc",
     "base64url_unittest.cc",
-    "big_endian_unittest.cc",
     "bit_cast_unittest.cc",
     "bits_unittest.cc",
     "build_time_unittest.cc",
@@ -3496,6 +3507,7 @@ test("base_unittests") {
     "test/memory/dangling_ptr_instrumentation.h",
     "test/metrics/histogram_enum_reader_unittest.cc",
     "test/metrics/histogram_tester_unittest.cc",
+    "test/metrics/histogram_variants_reader_unittest.cc",
     "test/metrics/user_action_tester_unittest.cc",
     "test/mock_callback_unittest.cc",
     "test/rectify_callback_unittest.cc",
@@ -3612,6 +3624,7 @@ test("base_unittests") {
     "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//third_party/icu",
     "//third_party/modp_b64",
   ]
@@ -3641,6 +3654,7 @@ test("base_unittests") {
   data = [
     "test/data/",
     "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/test_data/histograms.xml",
   ]
 
   if (use_blink) {
@@ -3743,7 +3757,7 @@ test("base_unittests") {
   }
 
   if (enable_base_tracing) {
-    sources += [ "test/test_trace_processor_unittest.cc" ]
+    sources += [ "test/test_trace_processor_example_unittest.cc" ]
   }
 
   if (is_posix) {
@@ -4267,6 +4281,7 @@ if (enable_nocompile_tests) {
       "functional/function_ref_nocompile.nc",
       "functional/overloaded_nocompile.nc",
       "logging_nocompile.nc",
+      "memory/protected_memory_nocompile.nc",
       "memory/ref_counted_nocompile.nc",
       "memory/weak_ptr_nocompile.nc",
       "metrics/field_trial_params_nocompile.nc",
@@ -4507,6 +4522,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/MemoryPressureListener.java",
       "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/ObserverList.java",
       "android/java/src/org/chromium/base/PackageManagerUtils.java",
@@ -4646,7 +4662,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/shared_preferences/KeyPrefix.java",
       "android/java/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistries.java",
-      "android/java/src/org/chromium/base/shared_preferences/NoOpPreferenceKeyChecker.java",
       "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyChecker.java",
       "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyRegistry.java",
       "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java",
@@ -4961,6 +4976,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/MathUtilsTest.java",
       "android/junit/src/org/chromium/base/MutableBooleanParamWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/MutableFlagWithSafeDefaultUnitTest.java",
+      "android/junit/src/org/chromium/base/MutableIntParamWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/PathUtilsTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",
       "android/junit/src/org/chromium/base/PostNativeFlagUnitTest.java",

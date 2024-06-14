@@ -39,6 +39,12 @@ declare_args() {
   # chain of stores leading from allocation site to use site.
   msan_track_origins = 2
 
+  # Enables "param-retval" mode, which finds more uses of uninitialized data and
+  # reduces code size. Behind a flag as there are a number of previously
+  # undetected violations that still need to be fixed.
+  # TODO(crbug.com/1369167): Default this to true and remove.
+  msan_eager_checks = false
+
   # Use dynamic libraries instrumented by one of the sanitizers instead of the
   # standard system libraries. Set this flag to build the libraries from source.
   use_locally_built_instrumented_libraries = false
@@ -110,6 +116,14 @@ declare_args() {
 
   # When true, sanitizer warnings will cause test case failures.
   fail_on_san_warnings = false
+
+  # When true, only builds fuzzer targets that require high end machines to run.
+  # Otherwise, builds all the targets.
+  # TODO(paulsemel): once we have everything implemented on the recipe side, we
+  # can change the behaviour for the false case, and only build the non high-end
+  # jobs, so that they do not appear in the zip. As for now, this behaviour
+  # ensures nothing breaks.
+  high_end_fuzzer_targets = false
 }
 
 declare_args() {

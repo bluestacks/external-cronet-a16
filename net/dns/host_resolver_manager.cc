@@ -88,6 +88,7 @@
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_manager_job.h"
 #include "net/dns/host_resolver_manager_request_impl.h"
+#include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_nat64_task.h"
@@ -255,7 +256,7 @@ base::Value::Dict NetLogResults(const HostCache::Entry& results) {
 std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
                                         DnsQueryTypeSet query_types) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
-  DCHECK(!query_types.Empty());
+  DCHECK(!query_types.empty());
 
   const AddressFamily want_family =
       HostResolver::DnsQueryTypeSetToAddressFamily(query_types);
@@ -533,6 +534,27 @@ HostResolverManager::CreateMdnsListener(const HostPortPair& host,
     listener->set_initialization_error(rv);
   }
   return listener;
+}
+
+std::unique_ptr<HostResolver::ServiceEndpointRequest>
+HostResolverManager::CreateServiceEndpointRequest(
+    url::SchemeHostPort scheme_host_port,
+    NetworkAnonymizationKey network_anonymization_key,
+    NetLogWithSource net_log,
+    ResolveHostParameters parameters,
+    ResolveContext* resolve_context) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!invalidation_in_progress_);
+  DCHECK_EQ(resolve_context->GetTargetNetwork(), target_network_);
+  if (resolve_context) {
+    DCHECK(registered_contexts_.HasObserver(resolve_context));
+  }
+
+  return std::make_unique<ServiceEndpointRequestImpl>(
+      std::move(scheme_host_port), std::move(network_anonymization_key),
+      std::move(net_log), std::move(parameters),
+      resolve_context ? resolve_context->GetWeakPtr() : nullptr,
+      weak_ptr_factory_.GetWeakPtr(), tick_clock_);
 }
 
 void HostResolverManager::SetInsecureDnsClientEnabled(
@@ -891,6 +913,24 @@ HostResolverManager::Job* HostResolverManager::AddJobWithoutRequest(
   auto& job = iterator->second;
   job->OnAddedToJobMap(iterator);
   return job.get();
+}
+
+void HostResolverManager::CreateAndStartJobForServiceEndpointRequest(
+    JobKey key,
+    std::deque<TaskType> tasks,
+    ServiceEndpointRequestImpl* request) {
+  CHECK(!tasks.empty());
+
+  auto jobit = jobs_.find(key);
+  if (jobit == jobs_.end()) {
+    Job* job = AddJobWithoutRequest(key, request->parameters().cache_usage,
+                                    request->host_cache(), std::move(tasks),
+                                    request->priority(), request->net_log());
+    job->AddServiceEndpointRequest(request);
+    job->RunNextTask();
+  } else {
+    jobit->second->AddServiceEndpointRequest(request);
+  }
 }
 
 HostCache::Entry HostResolverManager::ResolveAsIP(DnsQueryTypeSet query_types,

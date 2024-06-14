@@ -24,6 +24,7 @@
 #include "base/functional/callback.h"
 #include "base/immediate_crash.h"
 #include "base/location.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -760,12 +761,11 @@ void UnretainedDanglingRawPtrDetectedCrash(uintptr_t id) {
       "unretained_dangling_ptr_guide.md\n";
   debug::TaskTrace task_trace;
   debug::StackTrace stack_trace;
-  LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
+  LOG(FATAL) << "Detected dangling raw_ptr in unretained with id="
              << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
              << task_trace << '\n'
              << "Stack trace:\n"
              << stack_trace << unretained_dangling_ptr_footer;
-  ImmediateCrash();
 }
 
 void InstallUnretainedDanglingRawPtrChecks() {
@@ -1440,8 +1440,9 @@ void PartitionAllocSupport::OnBackgrounded() {
   // in the meantime, the worst case is a few more system calls.
   //
   // TODO(lizeb): Remove once/if the behavior of idle tasks changes.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce([]() {
+  base::PostDelayedMemoryReductionTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
+      base::BindOnce([]() {
         ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
       }),
       base::Seconds(10));

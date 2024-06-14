@@ -61,7 +61,7 @@ struct NetErrorDetails;
 
 namespace {
 
-const char kConnectionErrorStatusLine[] = "HTTP/1.1 503 Connection Error";
+constexpr char kConnectionErrorStatusLine[] = "HTTP/1.1 503 Connection Error";
 
 }  // namespace
 
@@ -313,6 +313,7 @@ void WebSocketBasicHandshakeStream::Close(bool not_reusable) {
   StreamSocket* socket = state_.connection()->socket();
   if (socket)
     socket->Disconnect();
+  parser()->OnConnectionClose();
   state_.connection()->Reset();
 }
 
@@ -357,15 +358,6 @@ void WebSocketBasicHandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {
       !state_.connection()->socket()->GetSSLInfo(ssl_info)) {
     ssl_info->Reset();
   }
-}
-
-void WebSocketBasicHandshakeStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  if (!state_.connection()->socket()) {
-    cert_request_info->Reset();
-    return;
-  }
-  parser()->GetSSLCertRequestInfo(cert_request_info);
 }
 
 int WebSocketBasicHandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {

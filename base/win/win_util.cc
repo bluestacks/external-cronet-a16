@@ -4,13 +4,17 @@
 
 #include "base/win/win_util.h"
 
+#include <objbase.h>
+
+#include <initguid.h>
+#include <shobjidl.h>
+#include <tchar.h>
+
 #include <aclapi.h>
 #include <cfgmgr32.h>
-#include <initguid.h>
 #include <inspectable.h>
 #include <lm.h>
 #include <mdmregistration.h>
-#include <objbase.h>
 #include <powrprof.h>
 #include <propkey.h>
 #include <psapi.h>
@@ -18,12 +22,10 @@
 #include <sddl.h>
 #include <setupapi.h>
 #include <shellscalingapi.h>
-#include <shobjidl.h>  // Must be before propkey.
 #include <signal.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <strsafe.h>
-#include <tchar.h>  // Must be before tpcshrd.h or for any use of _T macro
 #include <tpcshrd.h>
 #include <uiviewsettingsinterop.h>
 #include <windows.ui.viewmanagement.h>
@@ -749,6 +751,28 @@ std::wstring GetWindowObjectName(HANDLE handle) {
   }
 
   return object_name;
+}
+
+bool GetPointerDevice(HANDLE device, POINTER_DEVICE_INFO& result) {
+  return ::GetPointerDevice(device, &result);
+}
+
+std::optional<std::vector<POINTER_DEVICE_INFO>> GetPointerDevices() {
+  uint32_t device_count;
+  if (!::GetPointerDevices(&device_count, nullptr)) {
+    return std::nullopt;
+  }
+
+  std::vector<POINTER_DEVICE_INFO> pointer_devices(device_count);
+  if (!::GetPointerDevices(&device_count, pointer_devices.data())) {
+    return std::nullopt;
+  }
+  return pointer_devices;
+}
+
+bool RegisterPointerDeviceNotifications(HWND hwnd,
+                                        bool notify_proximity_changes) {
+  return ::RegisterPointerDeviceNotifications(hwnd, notify_proximity_changes);
 }
 
 bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {

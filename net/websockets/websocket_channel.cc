@@ -77,7 +77,7 @@ constexpr size_t kMaximumCloseReasonLength = 125 - kWebSocketCloseCodeLength;
 // explicitly by Javascript but the renderer uses it to indicate we should send
 // a Close frame with no payload.
 bool IsStrictlyValidCloseStatusCode(int code) {
-  static const int kInvalidRanges[] = {
+  static constexpr int kInvalidRanges[] = {
       // [BAD, OK)
       0,    1000,   // 1000 is the first valid code
       1006, 1007,   // 1006 MUST NOT be set.
@@ -961,8 +961,7 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     size = payload_length;
     auto [code_span, body_span] =
         body->span().split_at<kWebSocketCloseCodeLength>();
-    base::as_writable_bytes(code_span).copy_from(
-        base::numerics::U16ToBigEndian(code));
+    base::as_writable_bytes(code_span).copy_from(base::U16ToBigEndian(code));
     static_assert(sizeof(code) == kWebSocketCloseCodeLength,
                   "they should both be two");
     body_span.copy_from(reason);
@@ -995,7 +994,7 @@ bool WebSocketChannel::ParseClose(base::span<const char> payload,
 
   const char* data = payload.data();
   uint16_t unchecked_code =
-      base::numerics::U16FromBigEndian(base::as_byte_span(payload).first<2>());
+      base::U16FromBigEndian(base::as_byte_span(payload).first<2>());
   static_assert(sizeof(unchecked_code) == kWebSocketCloseCodeLength,
                 "they should both be two bytes");
 

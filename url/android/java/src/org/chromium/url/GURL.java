@@ -22,6 +22,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 import org.chromium.url.mojom.Url;
 import org.chromium.url.mojom.UrlConstants;
 
@@ -146,8 +147,9 @@ public class GURL {
     }
 
     @CalledByNative
-    private long toNativeGURL() {
-        return getNatives().createNative(mSpec, mIsValid, mParsed.toNativeParsed());
+    private void toNativeGURL(long nativeGurl, long nativeParsed) {
+        mParsed.initNative(nativeParsed);
+        GURLJni.get().initNative(mSpec, mIsValid, nativeGurl, nativeParsed);
     }
 
     /** See native GURL::is_valid(). */
@@ -239,12 +241,12 @@ public class GURL {
     }
 
     protected void getOriginInternal(GURL target) {
-        getNatives().getOrigin(mSpec, mIsValid, mParsed.toNativeParsed(), target);
+        getNatives().getOrigin(this, target);
     }
 
     /** See native GURL::DomainIs(). */
     public boolean domainIs(String domain) {
-        return getNatives().domainIs(mSpec, mIsValid, mParsed.toNativeParsed(), domain);
+        return getNatives().domainIs(this, domain);
     }
 
     /**
@@ -265,15 +267,7 @@ public class GURL {
             String username, boolean clearUsername, String password, boolean clearPassword) {
         GURL result = new GURL();
         getNatives()
-                .replaceComponents(
-                        mSpec,
-                        mIsValid,
-                        mParsed.toNativeParsed(),
-                        username,
-                        clearUsername,
-                        password,
-                        clearPassword,
-                        result);
+                .replaceComponents(this, username, clearUsername, password, clearPassword, result);
         return result;
     }
 
@@ -308,11 +302,27 @@ public class GURL {
     }
 
     /**
+     * Prefer using {#link getSpec} instead. This method override exists only for pretty-printing a
+     * GURL object during Java junit tests, such as when {#code Assert.assertEquals(gurl1, gurl2)}
+     * throws an error.
+     */
+    @Override
+    public String toString() {
+        if (BuildConfig.ENABLE_ASSERTS) {
+            // We prefix the spec with "GURL" in case this object is being compared to a non-GURL
+            // object (such as a String). In such a case, the objects will not be equal but we want
+            // the pretty-printed output to give a hint that this is because the types don't match.
+            return "GURL(" + getSpec() + ")";
+        }
+        return super.toString();
+    }
+
+    /**
      * Deserialize a GURL serialized with {@link GURL#serialize()}. This will re-parse in case of
      * version mismatch, which may trigger undesired native loading. {@see
      * deserializeLatestVersionOnly} if you want to fail in case of version mismatch.
      *
-     * This function should *never* be used on a String coming from an untrusted source.
+     * <p>This function should *never* be used on a String coming from an untrusted source.
      *
      * @return The deserialized GURL (or null if the input is empty).
      */
@@ -404,30 +414,24 @@ public class GURL {
         /**
          * Reconstructs the native GURL for this Java GURL and initializes |target| with its Origin.
          */
-        void getOrigin(
-                @JniType("std::string") String spec,
-                boolean isValid,
-                long nativeParsed,
-                GURL target);
+        void getOrigin(@JniType("GURL") GURL self, GURL target);
 
         /** Reconstructs the native GURL for this Java GURL, and calls GURL.DomainIs. */
-        boolean domainIs(
+        boolean domainIs(@JniType("GURL") GURL self, @JniType("std::string") String domain);
+
+        /** Reconstructs the native GURL for this Java GURL, assigning it to nativeGurl. */
+        void initNative(
                 @JniType("std::string") String spec,
                 boolean isValid,
-                long nativeParsed,
-                @JniType("std::string") String domain);
-
-        /** Reconstructs the native GURL for this Java GURL, returning its native pointer. */
-        long createNative(@JniType("std::string") String spec, boolean isValid, long nativeParsed);
+                long nativeGurl,
+                long nativeParsed);
 
         /**
          * Reconstructs the native GURL for this Java GURL and initializes |result| with the result
          * of ReplaceComponents.
          */
         void replaceComponents(
-                @JniType("std::string") String spec,
-                boolean isValid,
-                long nativeParsed,
+                @JniType("GURL") GURL self,
                 String username,
                 boolean clearUsername,
                 String password,

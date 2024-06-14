@@ -21,6 +21,8 @@ public abstract class CronetLogger {
         CRONET_SOURCE_FALLBACK,
         // The library is loaded through the bootclasspath.
         CRONET_SOURCE_PLATFORM,
+        // The application is using the fake implementation.
+        CRONET_SOURCE_FAKE,
     }
 
     /** Generates a new unique ID suitable for use as reference for cross-linking log events. */
@@ -54,7 +56,7 @@ public abstract class CronetLogger {
      */
     public abstract void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo);
 
-    // TODO(https://crbug.com/1521339): consider using AutoValue for this.
+    // TODO(crbug.com/41494309): consider using AutoValue for this.
     public static final class CronetEngineBuilderInitializedInfo {
         public long cronetInitializationRef;
 

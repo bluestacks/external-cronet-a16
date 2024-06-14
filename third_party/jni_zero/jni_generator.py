@@ -29,6 +29,7 @@ sys.path.insert(1, _BUILD_ANDROID_GYP)
 from codegen import called_by_native_header
 from codegen import convert_type
 from codegen import header_common
+from codegen import natives_header
 from codegen import placeholder_gen_jni_java
 from codegen import placeholder_java_type
 from codegen import proxy_impl_java
@@ -63,6 +64,7 @@ class NativeMethod:
     # lowercase. But we still want the CPP declaration to use upper camel
     # case for the method name.
     self.cpp_name = common.capitalize(self.name)
+    self.cpp_impl_name = f'JNI_{java_class.name}_{self.cpp_name}'
     self.is_test_only = NameIsTestOnly(self.name)
 
     if self.is_proxy:
@@ -105,6 +107,13 @@ class NativeMethod:
   def proxy_params(self):
     return self.proxy_signature.param_list
 
+  @property
+  def param_types(self):
+    return self.signature.param_types
+
+  @property
+  def proxy_param_types(self):
+    return self.proxy_signature.param_types
 
 class CalledByNative:
   """Describes a Java method that is called from C++"""
@@ -136,94 +145,8 @@ class CalledByNative:
     return self.signature.param_list
 
 
-def JavaTypeToCForDeclaration(java_type):
-  """Wrap the C datatype in a JavaParamRef if required."""
-  c_type = java_type.to_cpp()
-  if java_type.is_primitive():
-    return c_type
-  return f'const jni_zero::JavaParamRef<{c_type}>&'
-
-
-def JavaTypeToCForCalledByNativeParam(java_type):
-  """Returns a C datatype to be when calling from native."""
-  c_type = java_type.to_cpp()
-  if converted_type := java_type.converted_type():
-    if java_type.is_primitive():
-      return converted_type
-    return f'{converted_type} const&'
-  if java_type.is_primitive():
-    if c_type == 'jint':
-      return 'JniIntWrapper'
-    return c_type
-  return f'const jni_zero::JavaRef<{c_type}>&'
-
-
-def _GetJNIFirstParam(native, for_declaration):
-  c_type = 'jclass' if native.static else 'jobject'
-
-  if for_declaration:
-    c_type = f'const jni_zero::JavaParamRef<{c_type}>&'
-  return [c_type + ' jcaller']
-
-
-def _GetParamsInDeclaration(native):
-  """Returns the params for the forward declaration.
-
-  Args:
-    native: the native dictionary describing the method.
-
-  Returns:
-    A string containing the params.
-  """
-  ret = []
-  for p in native.params:
-    converted_type = p.java_type.converted_type()
-    if converted_type:
-      if not p.java_type.is_primitive():
-        converted_type = f'{converted_type}&'
-      ret.append(f'{converted_type} {p.name}')
-    else:
-      ret.append(JavaTypeToCForDeclaration(p.java_type) + ' ' + p.name)
-  if not native.static:
-    ret = _GetJNIFirstParam(native, True) + ret
-  return ret
-
-
-def GetParamsInStub(native):
-  """Returns the params for the stub declaration.
-
-  Args:
-    native: the native dictionary describing the method.
-
-  Returns:
-    A string containing the params.
-  """
-  params = [p.java_type.to_cpp() + ' ' + p.name for p in native.proxy_params]
-  params = _GetJNIFirstParam(native, False) + params
-  return ',\n    '.join(params)
-
-
 def NameIsTestOnly(name):
   return name.endswith(('ForTest', 'ForTests', 'ForTesting'))
-
-
-def GetRegistrationFunctionName(fully_qualified_class):
-  """Returns the register name with a given class."""
-  return 'RegisterNative_' + common.escape_class_name(fully_qualified_class)
-
-
-def _GetEnvCall(called_by_native):
-  """Maps the types available via env->Call__Method."""
-  if called_by_native.is_constructor:
-    return 'NewObject'
-  if called_by_native.return_type.is_primitive():
-    name = called_by_native.return_type.primitive_name
-    call = common.capitalize(called_by_native.return_type.primitive_name)
-  else:
-    call = 'Object'
-  if called_by_native.static:
-    call = 'Static' + call
-  return 'Call' + call + 'Method'
 
 
 def _MangleMethodName(type_resolver, name, param_types):
@@ -258,11 +181,6 @@ def _AssignMethodIdFunctionNames(type_resolver, called_by_natives):
           called_by_native.signature.param_types)
 
     called_by_native.method_id_function_name = method_id_function_name
-
-
-# Removes empty lines that are indented (i.e. start with 2x spaces).
-def RemoveIndentedEmptyLines(string):
-  return re.sub('^(?: {2})+$\n', '', string, flags=re.MULTILINE)
 
 
 class JniObject:
@@ -329,6 +247,21 @@ class JniObject:
   @property
   def non_proxy_natives(self):
     return [n for n in self.natives if not n.is_proxy]
+
+  def GetClassesToBeImported(self):
+    classes = set()
+    for p in self.proxy_natives:
+      for t in list(p.param_types) + [p.return_type]:
+        class_obj = t.java_class
+        if class_obj is None:
+          # Primitive types will be None.
+          continue
+        if class_obj.full_name_with_slashes.startswith('java/lang/'):
+          # java.lang** are never imported.
+          continue
+        classes.add(class_obj)
+
+    return sorted(classes)
 
   def RemoveTestOnlyNatives(self):
     self.natives = [n for n in self.natives if not n.is_test_only]
@@ -420,11 +353,12 @@ class InlHeaderFileGenerator:
 ${PREAMBLE}\
 ${CLASS_ACCESSORS}\
 ${CONVERSION_FUNCTION_DECLARATIONS}\
+${OPEN_NAMESPACE}\
 ${CONSTANTS_ENUMS}\
-
-// Method stubs.
-$METHOD_STUBS
-${EPILOGUE}
+${NATIVES}\
+${CALLED_BY_NATIVES}\
+${CLOSE_NAMESPACE}\
+${EPILOGUE}\
 """)
     java_classes = _CollectReferencedClasses(self.jni_obj)
     preamble, epilogue = header_common.header_preamble(
@@ -441,34 +375,24 @@ ${EPILOGUE}
         java_to_cpp_types, cpp_to_java_types)
     constants_enums = called_by_native_header.constants_enums(
         self.java_class, self.constant_fields)
+
+    called_by_natives_code = called_by_native_header.methods(
+        self.called_by_natives)
+    natives_code = natives_header.methods(self.jni_obj)
+
     values = {
         'PREAMBLE': preamble,
         'EPILOGUE': epilogue,
         'CLASS_ACCESSORS': class_accessors,
         'CONVERSION_FUNCTION_DECLARATIONS': conversion_declarations,
         'CONSTANTS_ENUMS': constants_enums,
-        'METHOD_STUBS': self.GetMethodStubsString(),
+        'CALLED_BY_NATIVES': called_by_natives_code,
+        'NATIVES': natives_code,
+        'OPEN_NAMESPACE': self.GetOpenNamespaceString(),
+        'CLOSE_NAMESPACE': self.GetCloseNamespaceString(),
     }
-    open_namespace = self.GetOpenNamespaceString()
-    if open_namespace:
-      close_namespace = self.GetCloseNamespaceString()
-      values['METHOD_STUBS'] = '\n'.join(
-          [open_namespace, values['METHOD_STUBS'], close_namespace])
 
-      constants_enums = values['CONSTANTS_ENUMS']
-      if constants_enums:
-        values['CONSTANTS_ENUMS'] = '\n'.join(
-            [open_namespace, constants_enums, close_namespace])
-
-    return WrapOutput(template.substitute(values))
-
-  def GetMethodStubsString(self):
-    """Returns the code corresponding to method stubs."""
-    ret = []
-    for native in self.natives:
-      ret += [self.GetNativeStub(native)]
-    ret.append(called_by_native_header.method_stubs(self.called_by_natives))
-    return '\n'.join(ret)
+    return template.substitute(values)
 
   def GetOpenNamespaceString(self):
     if self.namespace:
@@ -486,119 +410,6 @@ ${EPILOGUE}
       all_namespaces.reverse()
       return '\n' + '\n'.join(all_namespaces)
     return ''
-
-  def GetConvertedVarName(self, name):
-    return name + '_converted'
-
-  def GetImplementationMethodName(self, native):
-    return 'JNI_%s_%s' % (self.java_class.name, native.cpp_name)
-
-  def GetNativeStub(self, native):
-    if native.first_param_cpp_type:
-      params = native.proxy_params[1:]
-    else:
-      params = native.proxy_params
-    if native.needs_implicit_array_element_class_param:
-      params = params[:-1]
-
-    params_in_call = ['env']
-    if not native.static:
-      # Add jcaller param.
-      params_in_call.append(
-          header_common.java_param_ref_expression('jobject', 'jcaller'))
-    conversion_calls = []
-    for p in params:
-      if p.java_type.converted_type():
-        name_in_call = self.GetConvertedVarName(p.name)
-        params_in_call.append(name_in_call)
-        conversion_calls.append(
-            convert_type.from_jni_assignment(name_in_call, p.name, p.java_type))
-      elif p.java_type.is_primitive():
-        params_in_call.append(p.name)
-      else:
-        c_type = p.java_type.to_cpp()
-        params_in_call.append(
-            header_common.java_param_ref_expression(c_type, p.name))
-
-    params_in_declaration = _GetParamsInDeclaration(native)
-    params_in_call = ', '.join(params_in_call)
-
-    return_type = native.return_type.to_cpp()
-    return_declaration = return_type
-    post_call = ''
-    post_return_statement = ''
-    return_phrase = 'return'
-    if native.return_type.converted_type():
-      return_phrase = 'auto ret ='
-      clazz_param = None
-      if native.needs_implicit_array_element_class_param:
-        clazz_param = native.proxy_params[-1]
-      convert_call = convert_type.to_jni_expression('ret',
-                                                    native.return_type,
-                                                    clazz_param=clazz_param)
-      if not native.return_type.is_primitive():
-        convert_call = f'{convert_call}.Release()'
-      post_return_statement = f'return {convert_call};'
-      return_declaration = native.return_type.converted_type()
-    elif not native.return_type.is_primitive():
-      post_call = '.Release()'
-      return_declaration = ('jni_zero::ScopedJavaLocalRef<' + return_type + '>')
-
-    values = {
-        'RETURN': return_type,
-        'RETURN_DECLARATION': return_declaration,
-        'NAME': native.cpp_name,
-        'IMPL_METHOD_NAME': self.GetImplementationMethodName(native),
-        'PARAMS': ',\n    '.join(params_in_declaration),
-        'PARAMS_IN_STUB': GetParamsInStub(native),
-        'PARAMS_IN_CALL': params_in_call,
-        'POST_CALL': post_call,
-        'CONVERSION_CALLS': '\n  '.join(conversion_calls),
-        'STUB_NAME': self.jni_obj.GetStubName(native),
-        'POST_RETURN_STATEMENT': post_return_statement,
-        'MAYBE_RETURN_PHRASE': return_phrase,
-    }
-
-    if native.first_param_cpp_type:
-      optional_error_return = native.return_type.to_cpp_default_value()
-      if optional_error_return:
-        optional_error_return = ', ' + optional_error_return
-      values.update({
-          'OPTIONAL_ERROR_RETURN': optional_error_return,
-          'PARAM0_NAME': native.params[0].name,
-          'P0_TYPE': native.first_param_cpp_type,
-      })
-      template = Template("""\
-JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
-    JNIEnv* env,
-    ${PARAMS_IN_STUB}) {
-  ${P0_TYPE}* native = reinterpret_cast<${P0_TYPE}*>(${PARAM0_NAME});
-  CHECK_NATIVE_PTR(env, jcaller, native, "${NAME}"${OPTIONAL_ERROR_RETURN});
-  ${CONVERSION_CALLS}
-  ${MAYBE_RETURN_PHRASE} native->${NAME}(${PARAMS_IN_CALL})${POST_CALL};
-  ${POST_RETURN_STATEMENT}
-}
-""")
-    else:
-      if values['PARAMS']:
-        values['PARAMS'] = ', ' + values['PARAMS']
-      template = Template("""\
-static ${RETURN_DECLARATION} ${IMPL_METHOD_NAME}(JNIEnv* env${PARAMS});
-
-JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
-    JNIEnv* env,
-    ${PARAMS_IN_STUB}) {
-  ${CONVERSION_CALLS}
-  ${MAYBE_RETURN_PHRASE} ${IMPL_METHOD_NAME}(${PARAMS_IN_CALL})${POST_CALL};
-  ${POST_RETURN_STATEMENT}
-}
-""")
-
-    return RemoveIndentedEmptyLines(template.substitute(values))
-
-  def GetTraceEventForNameTemplate(self, name_template, values):
-    name = Template(name_template).substitute(values)
-    return '  TRACE_EVENT0("jni", "%s");\n' % name
 
 
 def WrapOutput(output):
@@ -710,6 +521,7 @@ def _CreateSrcJar(srcjar_path,
 
 
 def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
+  already_added = set()
   with common.atomic_output(srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       for jni_obj in jni_objs:
@@ -724,23 +536,36 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
             proxy_interface=jni_obj.proxy_interface,
             proxy_natives=jni_obj.proxy_natives)
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
-        placeholders = collections.defaultdict(list)
-        for java_class in jni_obj.type_resolver.imports:
-          # java.** are not separate deps and can be assumed to be available in
-          # any compile and thus we do not need to create placeholders for them.
+        already_added.add(zip_path)
+        # In rare circumstances, another file in our generate_jni list will
+        # import the FooJni from another class within the same generate_jni
+        # target. We want to make sure we don't make placeholders for these, but
+        # we do want placeholders for all BarJni classes that aren't a part of
+        # this generate_jni.
+        fake_zip_path = main_class.class_without_prefix.full_name_with_slashes + 'Jni.java'
+        already_added.add(fake_zip_path)
+
+      placeholders = collections.defaultdict(list)
+      # Doing this in 2 phases to ensure that the Jni classes (the ones that
+      # can have @NativeMethods) all get added first, so we don't accidentally
+      # write a stubbed version of the class if it's imported by another class.
+      for jni_obj in jni_objs:
+        for java_class in jni_obj.GetClassesToBeImported():
           if java_class.full_name_with_slashes.startswith('java/'):
             continue
           # TODO(mheikal): handle more than 1 nesting layer.
           if java_class.is_nested():
             placeholders[java_class.get_outer_class()].append(java_class)
-          else:
+          elif java_class not in placeholders:
             placeholders[java_class] = []
-        for java_class, nested_classes in placeholders.items():
-          zip_path = java_class.class_without_prefix.full_name_with_slashes + '.java'
+      for java_class, nested_classes in placeholders.items():
+        zip_path = java_class.class_without_prefix.full_name_with_slashes + '.java'
+        if zip_path not in already_added:
           content = placeholder_java_type.Generate(java_class,
                                                    nested_classes,
                                                    script_name=script_name)
           common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+          already_added.add(zip_path)
 
 
 def _WriteHeaders(jni_objs, output_names, output_dir):

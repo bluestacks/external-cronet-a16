@@ -8,9 +8,17 @@
 #include <jni.h>
 #include <map>
 #include <string>
+#include <vector>
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace jni_zero::tests {
+
+enum class MyEnum {
+  kFirstOption = 0,
+  kSecondOption = 1,
+  kMaxValue = kSecondOption
+};
+
 // This file is used to:
 // - document the best practices and guidelines on JNI usage.
 // - ensure sample_for_tests_jni.h compiles and the functions declared in it
@@ -39,7 +47,9 @@ class CPPClass {
                           const jni_zero::JavaParamRef<jobject>& caller);
   };
 
-  void Destroy(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& caller);
+  void Destroy(JNIEnv* env,
+               const jni_zero::JavaParamRef<jobject>& caller,
+               std::vector<uint8_t>& bytes);
 
   jint Method(JNIEnv* env,
               const jni_zero::JavaParamRef<jobject>& caller,

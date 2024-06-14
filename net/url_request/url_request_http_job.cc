@@ -105,7 +105,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "net/device_bound_sessions/bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
 #include "net/device_bound_sessions/device_bound_session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
@@ -991,8 +991,8 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
         request_->cookie_partition_key(),
-        /*block_truncated=*/true, &returned_status,
-        net::CookieSourceType::kHTTP);
+        /*block_truncated=*/true, net::CookieSourceType::kHTTP,
+        &returned_status);
 
     std::optional<CanonicalCookie> cookie_to_return = std::nullopt;
     if (returned_status.IsInclude()) {
@@ -1067,9 +1067,9 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(request_->url(),
-                                                          GetResponseHeaders());
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
+          request_->url(), GetResponseHeaders());
   if (auto* service = request_->context()->device_bound_session_service()) {
     for (const auto& param : params) {
       service->RegisterBoundSession(param);

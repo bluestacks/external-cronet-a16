@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -875,6 +876,17 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   }
 
   if (result < 0) {
+    if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+      // TODO(https://crbug.com/332234173): Assuming this isn't hit, remove the
+      // SchemeIsCryptographic() check.
+      DUMP_WILL_BE_CHECK(request_->url.SchemeIsCryptographic());
+      if (request_->url.SchemeIsCryptographic()) {
+        response_->cert_request_info =
+            base::MakeRefCounted<SSLCertRequestInfo>();
+        stream_socket_->GetSSLCertRequestInfo(
+            response_->cert_request_info.get());
+      }
+    }
     io_state_ = STATE_DONE;
     return result;
   }
@@ -916,6 +928,13 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   } else {
     CalculateResponseBodySize();
 
+    // Record the response start time if this response is not informational
+    // (non-1xx).
+    if (response_->headers->response_code() / 100 != 1) {
+      DCHECK(non_informational_response_start_time_.is_null());
+      non_informational_response_start_time_ = current_response_start_time_;
+    }
+
     // If the body is zero length, the caller may not call ReadResponseBody,
     // which is where any extra data is copied to read_buf_, so we move the
     // data here.
@@ -951,13 +970,6 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
         io_state_ = STATE_DONE;
       }
       return OK;
-    }
-
-    // Record the response start time if this response is not informational
-    // (non-1xx).
-    if (response_->headers->response_code() / 100 != 1) {
-      DCHECK(non_informational_response_start_time_.is_null());
-      non_informational_response_start_time_ = current_response_start_time_;
     }
 
     // Only set keep-alive based on final set of headers.
@@ -1179,13 +1191,6 @@ void HttpStreamParser::OnConnectionClose() {
   // This is to ensure `stream_socket_` doesn't get dangling on connection
   // close.
   stream_socket_ = nullptr;
-}
-
-void HttpStreamParser::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  cert_request_info->Reset();
-  if (request_->url.SchemeIsCryptographic())
-    stream_socket_->GetSSLCertRequestInfo(cert_request_info);
 }
 
 int HttpStreamParser::EncodeChunk(std::string_view payload,

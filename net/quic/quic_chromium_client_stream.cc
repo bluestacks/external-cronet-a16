@@ -288,6 +288,15 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
     return net_error_;
   }
 
+  base::UmaHistogramBoolean(kHttp3DatagramDroppedHistogram,
+                            !stream_->SupportsH3Datagram());
+  if (!stream_->SupportsH3Datagram()) {
+    DLOG(WARNING)
+        << "Dropping datagram because the session has either not received "
+           "settings frame with H3_DATAGRAM yet or received settings that "
+           "indicate datagrams are not supported (i.e., H3_DATAGRAM=0).";
+    return OK;
+  }
   // Set Context ID to zero as per RFC 9298
   // (https://datatracker.ietf.org/doc/html/rfc9298#name-http-datagram-payload-forma)
   // and copy packet data.
@@ -299,8 +308,8 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   // Attempt to send the HTTP payload as a datagram over the stream.
   quic::MessageStatus message_status = stream_->SendHttp3Datagram(http_payload);
 
-  // If the attempt was successful or blocked (e.g., due to buffer constraints),
-  // proceed to handle the I/O completion with an OK status.
+  // If the attempt was successful or blocked (e.g., due to buffer
+  // constraints), proceed to handle the I/O completion with an OK status.
   if (message_status == quic::MessageStatus::MESSAGE_STATUS_SUCCESS ||
       message_status == quic::MessageStatus::MESSAGE_STATUS_BLOCKED) {
     return HandleIOComplete(OK);
@@ -309,9 +318,10 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   // unexpected condition (encryption not established or message too large),
   // reset the stream and close the connection.
   else {
+    // These two errors should not be possible here.
     DCHECK(message_status !=
-               quic::MessageStatus::MESSAGE_STATUS_ENCRYPTION_NOT_ESTABLISHED ||
-           message_status != quic::MessageStatus::MESSAGE_STATUS_TOO_LARGE);
+           quic::MessageStatus::MESSAGE_STATUS_ENCRYPTION_NOT_ESTABLISHED);
+    DCHECK(message_status != quic::MessageStatus::MESSAGE_STATUS_TOO_LARGE);
     DLOG(ERROR) << "Failed to send Http3 Datagram on " << stream_->id();
     stream_->Reset(quic::QUIC_STREAM_CANCELLED);
     return ERR_CONNECTION_CLOSED;
@@ -381,6 +391,23 @@ quic::QuicRstStreamErrorCode QuicChromiumClientStream::Handle::stream_error()
   return stream_->stream_error();
 }
 
+uint64_t QuicChromiumClientStream::Handle::connection_wire_error() const {
+  if (!stream_) {
+    return connection_wire_error_;
+  }
+  // TODO(crbug.com/40715622): Don't access session. Instead, modify
+  // quic::QuicStream::OnConnectionClosed() to take the wire error code.
+  CHECK(stream_->session());
+  return stream_->session()->wire_error();
+}
+
+uint64_t QuicChromiumClientStream::Handle::ietf_application_error() const {
+  if (!stream_) {
+    return ietf_application_error_;
+  }
+  return stream_->ietf_application_error();
+}
+
 bool QuicChromiumClientStream::Handle::fin_sent() const {
   if (!stream_)
     return fin_sent_;
@@ -447,6 +474,11 @@ void QuicChromiumClientStream::Handle::SaveState() {
   id_ = stream_->id();
   connection_error_ = stream_->connection_error();
   stream_error_ = stream_->stream_error();
+  // TODO(crbug.com/40715622): Don't access stream_->session(). Instead, update
+  // quic::QuicStream::OnConnectionClosed() to take the wire error code.
+  CHECK(stream_->session());
+  connection_wire_error_ = stream_->session()->wire_error();
+  ietf_application_error_ = stream_->ietf_application_error();
   is_done_reading_ = stream_->IsDoneReading();
   is_first_stream_ = stream_->IsFirstStream();
   stream_bytes_read_ = stream_->stream_bytes_read();
@@ -492,6 +524,14 @@ void QuicChromiumClientStream::Handle::SetRequestIdempotency(
 
 Idempotency QuicChromiumClientStream::Handle::GetRequestIdempotency() const {
   return idempotency_;
+}
+
+quic::QuicPacketLength
+QuicChromiumClientStream::Handle::GetGuaranteedLargestMessagePayload() const {
+  if (!stream_) {
+    return 0;
+  }
+  return stream_->GetGuaranteedLargestMessagePayload();
 }
 
 QuicChromiumClientStream::QuicChromiumClientStream(
@@ -697,6 +737,10 @@ void QuicChromiumClientStream::OnError(int error) {
   }
 }
 
+bool QuicChromiumClientStream::SupportsH3Datagram() const {
+  return session_->SupportsH3Datagram();
+}
+
 int QuicChromiumClientStream::Read(IOBuffer* buf, int buf_len) {
   DCHECK_GT(buf_len, 0);
   DCHECK(buf->data());
@@ -812,8 +856,9 @@ int QuicChromiumClientStream::DeliverInitialHeaders(
 bool QuicChromiumClientStream::DeliverTrailingHeaders(
     spdy::Http2HeaderBlock* headers,
     int* frame_len) {
-  if (received_trailers().empty())
+  if (trailing_headers_frame_len_ == 0) {
     return false;
+  }
 
   net_log_.AddEvent(
       NetLogEventType::QUIC_CHROMIUM_CLIENT_STREAM_READ_RESPONSE_TRAILERS,
@@ -844,6 +889,14 @@ void QuicChromiumClientStream::NotifyHandleOfDataAvailable() {
 
 void QuicChromiumClientStream::DisableConnectionMigrationToCellularNetwork() {
   can_migrate_to_cellular_network_ = false;
+}
+
+quic::QuicPacketLength
+QuicChromiumClientStream::GetGuaranteedLargestMessagePayload() const {
+  if (!session()) {
+    return 0;
+  }
+  return session()->GetGuaranteedLargestMessagePayload();
 }
 
 bool QuicChromiumClientStream::IsFirstStream() {

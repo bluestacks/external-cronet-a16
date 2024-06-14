@@ -46,7 +46,7 @@ EventsProto MakeTestingProto(const std::vector<uint64_t>& ids,
 void AssertEqualsTestingProto(const EventsProto& proto,
                               const std::vector<uint64_t>& ids) {
   ASSERT_EQ(proto.uma_events().size(), static_cast<int>(ids.size()));
-  ASSERT_TRUE(proto.non_uma_events().empty());
+  ASSERT_TRUE(proto.events().empty());
 
   for (size_t i = 0; i < ids.size(); ++i) {
     const auto& event = proto.uma_events(i);
@@ -282,7 +282,7 @@ TEST_F(ExternalMetricsTest, DroppedEventsWhenDisabled) {
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
 
-// TODO(crbug.com/1500822): Failing consistently on MSAN.
+// TODO(crbug.com/40941078): Failing consistently on MSAN.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_ProducedAndDroppedEventMetricCollected \
   DISABLED_ProducedAndDroppedEventMetricCollected

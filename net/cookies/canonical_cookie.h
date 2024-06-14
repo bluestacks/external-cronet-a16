@@ -56,8 +56,12 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // the resulting CanonicalCookies should not be relied on to be canonical
   // unless the caller has done appropriate validation and canonicalization
   // themselves.
-  // NOTE: Prefer using CreateSanitizedCookie() over directly using this
-  // constructor.
+  //
+  // NOTE: Prefer using Create, CreateSanitizedCookie, or FromStorage (depending
+  // on the use case) over directly using this constructor.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   CanonicalCookie(base::PassKey<CanonicalCookie>,
                   std::string name,
                   std::string value,
@@ -72,21 +76,21 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                   CookieSameSite same_site,
                   CookiePriority priority,
                   std::optional<CookiePartitionKey> partition_key,
-                  CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
-                  int source_port = url::PORT_UNSPECIFIED,
-                  CookieSourceType source_type = CookieSourceType::kUnknown);
+                  CookieSourceScheme scheme_secure,
+                  int source_port,
+                  CookieSourceType source_type);
 
-  // Creates a new |CanonicalCookie| from the |cookie_line| and the
-  // |creation_time|.  Canonicalizes inputs.  May return nullptr if
-  // an attribute value is invalid.  |url| must be valid.  |creation_time| may
-  // not be null. Sets optional |status| to the relevant CookieInclusionStatus
-  // if provided.  |server_time| indicates what the server sending us the Cookie
+  // Creates a new `CanonicalCookie` from the `cookie_line` and the
+  // `creation_time`.  Canonicalizes inputs.  May return nullptr if
+  // an attribute value is invalid.  `url` must be valid.  `creation_time` may
+  // not be null. Sets optional `status` to the relevant CookieInclusionStatus
+  // if provided.  `server_time` indicates what the server sending us the Cookie
   // thought the current time was when the cookie was produced.  This is used to
   // adjust for clock skew between server and host.
   //
   // SameSite and HttpOnly related parameters are not checked here,
   // so creation of CanonicalCookies with e.g. SameSite=Strict from a cross-site
-  // context is allowed. Create() also does not check whether |url| has a secure
+  // context is allowed. Create() also does not check whether `url` has a secure
   // scheme if attempting to create a Secure cookie. The Secure, SameSite, and
   // HttpOnly related parameters should be checked when setting the cookie in
   // the CookieStore.
@@ -104,22 +108,28 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // characters should cause the cookie to fail to be created if present
   // (instead of truncating `cookie_line` at the first occurrence).
   //
-  // If a cookie is returned, |cookie->IsCanonical()| will be true.
+  // If a cookie is returned, `cookie->IsCanonical()` will be true.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
       const std::string& cookie_line,
       const base::Time& creation_time,
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,
-      bool block_truncated = true,
-      CookieInclusionStatus* status = nullptr,
-      CookieSourceType source_type = CookieSourceType::kUnknown);
+      bool block_truncated,
+      CookieSourceType source_type,
+      CookieInclusionStatus* status);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the
   // context of the passed URL.  Returns a null unique pointer if the inputs
   // cannot be sanitized.  If `status` is provided it will have any relevant
   // CookieInclusionStatus rejection reasons set. If a cookie is created,
   // `cookie->IsCanonical()` will be true.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> CreateSanitizedCookie(
       const GURL& url,
       const std::string& name,
@@ -134,7 +144,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       CookieSameSite same_site,
       CookiePriority priority,
       std::optional<CookiePartitionKey> partition_key,
-      CookieInclusionStatus* status = nullptr);
+      CookieInclusionStatus* status);
 
   // FromStorage is a factory method which is meant for creating a new
   // CanonicalCookie using properties of a previously existing cookie
@@ -143,6 +153,9 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // already in the store.
   // Returns nullptr if the resulting cookie is not canonical,
   // i.e. cc->IsCanonical() returns false.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> FromStorage(
       std::string name,
       std::string value,
@@ -159,10 +172,11 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       std::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
       int source_port,
-      CookieSourceType source_type = CookieSourceType::kUnknown);
+      CookieSourceType source_type);
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
-  // for tests. This factory should NOT be used in production.
+  // for tests. Use this only if you want to bypass parameter validation to
+  // create a cookie that otherwise shouldn't be possible to store.
   static std::unique_ptr<CanonicalCookie> CreateUnsafeCookieForTesting(
       const std::string& name,
       const std::string& value,
@@ -180,6 +194,17 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
       int source_port = url::PORT_UNSPECIFIED,
       CookieSourceType source_type = CookieSourceType::kUnknown);
+
+  // Like Create but with some more friendly defaults for use in tests.
+  static std::unique_ptr<CanonicalCookie> CreateForTesting(
+      const GURL& url,
+      const std::string& cookie_line,
+      const base::Time& creation_time,
+      std::optional<base::Time> server_time = std::nullopt,
+      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
+      bool block_truncated = true,
+      CookieSourceType source_type = CookieSourceType::kUnknown,
+      CookieInclusionStatus* status = nullptr);
 
   bool operator<(const CanonicalCookie& other) const {
     // Use the cookie properties that uniquely identify a cookie to determine

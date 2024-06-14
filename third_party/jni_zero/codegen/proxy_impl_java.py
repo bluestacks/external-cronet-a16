@@ -41,6 +41,7 @@ package {jni_obj.java_class.class_without_prefix.package_with_dots};
     import_classes.add(gen_jni_class.full_name_with_dots)
 
   for c in type_resolver.imports:
+    c = c.class_without_prefix
     if c.is_nested:
       # We will refer to all nested classes by OuterClass.InnerClass. We do this
       # to reduce risk of naming collisions.

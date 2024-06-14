@@ -8,7 +8,7 @@
 
 #if defined(QUICHE_FLAG)
 
-QUICHE_FLAG(bool, quiche_reloadable_flag_http2_add_hpack_overhead_bytes, false, "If true, HTTP/2 HEADERS frames will use two additional bytes of HPACK overhead per header in their SpdyFrameIR::size() estimate.")
+QUICHE_FLAG(bool, quiche_reloadable_flag_http2_add_hpack_overhead_bytes2, false, "If true, HTTP/2 HEADERS frames will use two additional bytes of HPACK overhead per header in their SpdyHeadersIR::size() estimate. This flag is latched in SpdyHeadersIR to ensure a consistent size() value for a const SpdyHeadersIR regardless of flag state.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_act_upon_invalid_header, true, "If true, reject or send error response code upon receiving invalid request or response headers.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_add_stream_info_to_idle_close_detail, false, "If true, include stream information in idle timeout connection close detail.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_allow_client_enabled_bbr_v2, true, "If true, allow client to enable BBRv2 on server via connection option 'B2ON'.")
@@ -17,7 +17,6 @@ QUICHE_FLAG(bool, quiche_reloadable_flag_quic_bbr2_probe_two_rounds, true, "When
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_bbr2_simplify_inflight_hi, true, "When true, the BBHI copt causes QUIC BBRv2 to use a simpler algorithm for raising inflight_hi in PROBE_UP.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_block_until_settings_received_copt, true, "If enabled and a BSUS connection is received, blocks server connections until SETTINGS frame is received.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_can_send_ack_frequency, true, "If true, ack frequency frame can be sent from server to client.")
-QUICHE_FLAG(bool, quiche_reloadable_flag_quic_clone_ecn, true, "When true, correctly stores the ECN mark on incoming packets when buffered while waiting for a crypto context.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_conservative_bursts, false, "If true, set burst token to 2 in cwnd bootstrapping experiment.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_conservative_cwnd_and_pacing_gains, false, "If true, uses conservative cwnd gain and pacing gain when cwnd gets bootstrapped.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_default_enable_5rto_blackhole_detection2, true, "If true, default-enable 5RTO blachole detection.")
@@ -49,7 +48,7 @@ QUICHE_FLAG(bool, quiche_reloadable_flag_quic_test_peer_addr_change_after_normal
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_testonly_default_false, false, "A testonly reloadable flag that will always default to false.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_testonly_default_true, true, "A testonly reloadable flag that will always default to true.")
 QUICHE_FLAG(bool, quiche_reloadable_flag_quic_use_received_client_addresses_cache, true, "If true, use a LRU cache to record client addresses of packets received on server's original address.")
-QUICHE_FLAG(bool, quiche_restart_flag_quic_opport_bundle_qpack_decoder_data3, false, "If true, always bundle qpack decoder data with other frames opportunistically.")
+QUICHE_FLAG(bool, quiche_restart_flag_quic_opport_bundle_qpack_decoder_data4, false, "If true, bundle qpack decoder data with other frames opportunistically.")
 QUICHE_FLAG(bool, quiche_restart_flag_quic_support_ect1, false, "When true, allows sending of QUIC packets marked ECT(1). A different flag (TBD) will actually utilize this capability to send ECT(1).")
 QUICHE_FLAG(bool, quiche_restart_flag_quic_support_release_time_for_gso, false, "If true, QuicGsoBatchWriter will support release time if it is available and the process has the permission to do so.")
 QUICHE_FLAG(bool, quiche_restart_flag_quic_testonly_default_false, false, "A testonly restart flag that will always default to false.")

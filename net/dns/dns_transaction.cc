@@ -814,7 +814,7 @@ class DnsTCPAttempt : public DnsAttempt {
     if (static_cast<int>(query_size) != query_->io_buffer()->size())
       return ERR_FAILED;
     base::as_writable_bytes(length_buffer_->span())
-        .copy_from(base::numerics::U16ToBigEndian(query_size));
+        .copy_from(base::U16ToBigEndian(query_size));
     buffer_ = base::MakeRefCounted<DrainableIOBuffer>(length_buffer_,
                                                       length_buffer_->size());
     next_state_ = STATE_SEND_LENGTH;
@@ -879,7 +879,7 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
 
-    response_length_ = base::numerics::U16FromBigEndian(
+    response_length_ = base::U16FromBigEndian(
         base::as_bytes(length_buffer_->span().first<2u>()));
     // Check if advertised response is too short. (Optimization only.)
     if (response_length_ < query_->io_buffer()->size())
@@ -1097,7 +1097,14 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                      base::TimeTicks query_start_time,
                      int rv) {
     bool success = false;
-    if (rv == OK && probe_stats && session_ && context_) {
+    while (probe_stats && session_ && context_) {
+      if (rv != OK) {
+        // The DoH probe queries don't go through the standard DnsAttempt path,
+        // so the ServerStats have not been updated yet.
+        context_->RecordServerFailure(doh_server_index, /*is_doh_server=*/true,
+                                      rv, session_.get());
+        break;
+      }
       // Check that the response parses properly before considering it a
       // success.
       DCHECK_LT(attempt_number, probe_stats->probe_attempts.size());
@@ -1116,8 +1123,6 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
           for (const auto& result : results.value()) {
             if (result->type() == HostResolverInternalResult::Type::kData &&
                 !result->AsData().endpoints().empty()) {
-              // The DoH probe queries don't go through the standard DnsAttempt
-              // path, so the ServerStats have not been updated yet.
               context_->RecordServerSuccess(
                   doh_server_index, /*is_doh_server=*/true, session_.get());
               context_->RecordRtt(doh_server_index, /*is_doh_server=*/true,
@@ -1135,6 +1140,12 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
           }
         }
       }
+      if (!success) {
+        context_->RecordServerFailure(
+            doh_server_index, /*is_doh_server=*/true,
+            /*rv=*/ERR_DNS_SECURE_PROBE_RECORD_INVALID, session_.get());
+      }
+      break;
     }
 
     base::UmaHistogramLongTimes(
@@ -1164,8 +1175,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 // ResolveContext::NextClassicFallbackPeriod(). The first server to attempt on
 // each query is given by ResolveContext::NextFirstServerIndex, and the order is
 // round-robin afterwards. Each server is attempted DnsConfig::attempts times.
-class DnsTransactionImpl : public DnsTransaction,
-                           public base::SupportsWeakPtr<DnsTransactionImpl> {
+class DnsTransactionImpl final : public DnsTransaction {
  public:
   DnsTransactionImpl(DnsSession* session,
                      std::string hostname,
@@ -1236,8 +1246,8 @@ class DnsTransactionImpl : public DnsTransaction,
       // they may interfere with this posted result.
       ClearAttempts(result.attempt);
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DnsTransactionImpl::DoCallback, AsWeakPtr(), result));
+          FROM_HERE, base::BindOnce(&DnsTransactionImpl::DoCallback,
+                                    weak_ptr_factory_.GetWeakPtr(), result));
     }
   }
 
@@ -1773,6 +1783,8 @@ class DnsTransactionImpl : public DnsTransaction,
   RequestPriority request_priority_ = DEFAULT_PRIORITY;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<DnsTransactionImpl> weak_ptr_factory_{this};
 };
 
 // ----------------------------------------------------------------------------

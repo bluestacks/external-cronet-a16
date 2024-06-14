@@ -12,7 +12,7 @@
 #include <span>
 #include <type_traits>
 
-namespace base::numerics::internal {
+namespace base::internal {
 
 // The correct type to perform math operations on given values of type `T`. This
 // may be a larger type than `T` to avoid promotion to `int` which involves sign
@@ -113,6 +113,12 @@ inline constexpr T FromLittleEndian(std::span<const uint8_t, sizeof(T)> bytes) {
   return val;
 }
 
+template <class T>
+  requires(std::is_signed_v<T> && std::is_integral_v<T>)
+inline constexpr T FromLittleEndian(std::span<const uint8_t, sizeof(T)> bytes) {
+  return static_cast<T>(FromLittleEndian<std::make_unsigned_t<T>>(bytes));
+}
+
 // Converts to a byte array from an integer.
 template <class T>
   requires(std::is_unsigned_v<T> && std::is_integral_v<T>)
@@ -137,6 +143,11 @@ inline constexpr std::array<uint8_t, sizeof(T)> ToLittleEndian(T val) {
   return bytes;
 }
 
-}  // namespace base::numerics::internal
+template <class T>
+  requires(std::is_signed_v<T> && std::is_integral_v<T>)
+inline constexpr std::array<uint8_t, sizeof(T)> ToLittleEndian(T val) {
+  return ToLittleEndian(static_cast<std::make_unsigned_t<T>>(val));
+}
+}  // namespace base::internal
 
 #endif  //  BASE_NUMERICS_BASIC_OPS_IMPL_H_

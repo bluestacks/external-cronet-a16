@@ -33,6 +33,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
+#include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/next_proto.h"
@@ -165,7 +166,7 @@ MockRead CreateMockRead(const spdy::SpdySerializedFrame& resp,
 // Combines the given vector of spdy::SpdySerializedFrame into a single frame.
 spdy::SpdySerializedFrame CombineFrames(
     std::vector<const spdy::SpdySerializedFrame*> frames) {
-  int total_size = 0;
+  size_t total_size = 0;
   for (const auto* frame : frames) {
     total_size += frame->size();
   }
@@ -175,8 +176,7 @@ spdy::SpdySerializedFrame CombineFrames(
     memcpy(ptr, frame->data(), frame->size());
     ptr += frame->size();
   }
-  return spdy::SpdySerializedFrame(data.release(), total_size,
-                                   /* owns_buffer = */ true);
+  return spdy::SpdySerializedFrame(std::move(data), total_size);
 }
 
 namespace {
@@ -348,6 +348,7 @@ SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
 HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
     SpdySessionDependencies* session_deps) {
   HttpNetworkSessionParams params;
+  params.host_mapping_rules = session_deps->host_mapping_rules;
   params.enable_spdy_ping_based_connection_checking = session_deps->enable_ping;
   params.enable_user_alternate_protocol_ports =
       session_deps->enable_user_alternate_protocol_ports;
@@ -395,6 +396,8 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
   context.http_server_properties = session_deps->http_server_properties.get();
   context.quic_context = session_deps->quic_context.get();
   context.net_log = session_deps->net_log;
+  context.quic_crypto_client_stream_factory =
+      session_deps->quic_crypto_client_stream_factory.get();
 #if BUILDFLAG(ENABLE_REPORTING)
   context.reporting_service = session_deps->reporting_service.get();
   context.network_error_logging_service =

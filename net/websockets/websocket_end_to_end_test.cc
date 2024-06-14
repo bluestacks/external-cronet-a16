@@ -93,7 +93,7 @@ using test_server::BasicHttpResponse;
 using test_server::HttpRequest;
 using test_server::HttpResponse;
 
-static const char kEchoServer[] = "echo-with-no-extension";
+static constexpr char kEchoServer[] = "echo-with-no-extension";
 
 // Simplify changing URL schemes.
 GURL ReplaceUrlScheme(const GURL& in_url, std::string_view scheme) {
@@ -292,6 +292,9 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
     resolved_proxy_info_.url = url;
     resolved_proxy_info_.proxy_info = *result;
   }
+
+  void OnSuccessfulRequestAfterFailures(
+      const ProxyRetryInfoMap& proxy_retry_info) override {}
 
   void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 

@@ -24,7 +24,6 @@ import json
 
 
 PREFIX = None
-EMBED_TEST_DATA = True
 
 
 def PathOf(x):
@@ -80,12 +79,12 @@ class Android(object):
       non_bcm_asm = self.FilterBcmAsm(files['crypto_asm'], False)
       bcm_asm = self.FilterBcmAsm(files['crypto_asm'], True)
 
-      self.PrintDefaults(blueprint, 'libcrypto_sources', non_bcm_c_files, non_bcm_asm)
-      self.PrintDefaults(blueprint, 'libcrypto_bcm_sources', bcm_c_files, bcm_asm)
+      self.PrintDefaults(blueprint, 'libcrypto_sources', non_bcm_c_files, asm_files=non_bcm_asm)
+      self.PrintDefaults(blueprint, 'libcrypto_bcm_sources', bcm_c_files, asm_files=bcm_asm)
       self.PrintDefaults(blueprint, 'libssl_sources', files['ssl'])
       self.PrintDefaults(blueprint, 'bssl_sources', files['tool'])
       self.PrintDefaults(blueprint, 'boringssl_test_support_sources', files['test_support'])
-      self.PrintDefaults(blueprint, 'boringssl_crypto_test_sources', files['crypto_test'])
+      self.PrintDefaults(blueprint, 'boringssl_crypto_test_sources', files['crypto_test'], data=files['crypto_test_data'])
       self.PrintDefaults(blueprint, 'boringssl_ssl_test_sources', files['ssl_test'])
       self.PrintDefaults(blueprint, 'libpki_sources', files['pki'])
 
@@ -97,7 +96,7 @@ class Android(object):
       self.PrintVariableSection(makefile, 'crypto_sources_asm',
                                 files['crypto_asm'])
 
-  def PrintDefaults(self, blueprint, name, files, asm_files=[]):
+  def PrintDefaults(self, blueprint, name, files, asm_files=[], data=[]):
     """Print a cc_defaults section from a list of C files and optionally assembly outputs"""
     if asm_files:
       blueprint.write('\n')
@@ -113,6 +112,11 @@ class Android(object):
     for f in sorted(files):
       blueprint.write('        "%s",\n' % f)
     blueprint.write('    ],\n')
+    if data:
+      blueprint.write('    data: [\n')
+      for f in sorted(data):
+        blueprint.write('        "%s",\n' % f)
+      blueprint.write('    ],\n')
 
     if asm_files:
       blueprint.write('    target: {\n')
@@ -529,11 +533,6 @@ class JSON(object):
     with open('sources.json', 'w+') as f:
       json.dump(files, f, sort_keys=True, indent=2)
 
-def OnlyFIPSFragments(path, dent, is_dir):
-  return is_dir or (path.startswith(
-      os.path.join('src', 'crypto', 'fipsmodule', '')) and
-      NoTests(path, dent, is_dir))
-
 def NoTestsNorFIPSFragments(path, dent, is_dir):
   return (NoTests(path, dent, is_dir) and
       (is_dir or not OnlyFIPSFragments(path, dent, is_dir)))
@@ -558,18 +557,6 @@ def NoTestRunnerFiles(path, dent, is_dir):
   # NOTE(martinkr): This prevents .h/.cc files in src/ssl/test/runner, which
   # are in their own subpackage, from being included in boringssl/BUILD files.
   return not is_dir or dent != 'runner'
-
-
-def SSLHeaderFiles(path, dent, is_dir):
-  return dent in ['ssl.h', 'tls1.h', 'ssl23.h', 'ssl3.h', 'dtls1.h', 'srtp.h']
-
-
-def CryptoHeaderFiles(path, dent, is_dir):
-  if SSLHeaderFiles(path, dent, is_dir):
-    return False
-  if is_dir and dent == 'pki':
-    return False
-  return True
 
 
 def FindCFiles(directory, filter_func):
@@ -628,130 +615,57 @@ def FindHeaderFiles(directory, filter_func):
   return hfiles
 
 
-def ExtractVariablesFromCMakeFile(cmakefile):
-  """Parses the contents of the CMakeLists.txt file passed as an argument and
-  returns a dictionary of exported source lists."""
-  variables = {}
-  in_set_command = False
-  set_command = []
-  with open(cmakefile) as f:
-    for line in f:
-      if '#' in line:
-        line = line[:line.index('#')]
-      line = line.strip()
-
-      if not in_set_command:
-        if line.startswith('set('):
-          in_set_command = True
-          set_command = []
-      elif line == ')':
-        in_set_command = False
-        if not set_command:
-          raise ValueError('Empty set command')
-        variables[set_command[0]] = set_command[1:]
-      else:
-        set_command.extend([c for c in line.split(' ') if c])
-
-  if in_set_command:
-    raise ValueError('Unfinished set command')
-  return variables
-
-
 def PrefixWithSrc(files):
   return ['src/' + x for x in files]
 
 
 def main(platforms):
-  # TODO(crbug.com/boringssl/542): Move everything to util/pregenerate and the
-  # new JSON file.
-  cmake = ExtractVariablesFromCMakeFile(os.path.join('src', 'sources.cmake'))
   with open(os.path.join('src', 'gen', 'sources.json')) as f:
     sources = json.load(f)
 
-  crypto_c_files = (FindCFiles(os.path.join('src', 'crypto'), NoTestsNorFIPSFragments) +
-                    FindCFiles(os.path.join('src', 'third_party', 'fiat'), NoTestsNorFIPSFragments))
-  fips_fragments = FindCFiles(os.path.join('src', 'crypto', 'fipsmodule'), OnlyFIPSFragments)
-  tool_h_files = FindHeaderFiles(os.path.join('src', 'tool'), AllFiles)
   bssl_sys_files = FindRustFiles(os.path.join('src', 'rust', 'bssl-sys', 'src'))
   bssl_crypto_files = FindRustFiles(os.path.join('src', 'rust', 'bssl-crypto', 'src'))
 
-  # BCM shared library C files
-  bcm_crypto_c_files = [
-      os.path.join('src', 'crypto', 'fipsmodule', 'bcm.c')
-  ]
-
-  crypto_c_files += PrefixWithSrc(sources['crypto']['srcs'])
-  crypto_c_files.sort()
-
-  test_support_h_files = (
-      FindHeaderFiles(os.path.join('src', 'crypto', 'test'), AllFiles) +
-      FindHeaderFiles(os.path.join('src', 'ssl', 'test'), NoTestRunnerFiles))
-
-  crypto_test_files = []
-  if EMBED_TEST_DATA:
-    # Generate crypto_test_data.cc
-    with open('crypto_test_data.cc', 'w+') as out:
-      subprocess.check_call(
-          ['go', 'run', 'util/embed_test_data.go'] + cmake['CRYPTO_TEST_DATA'],
-          cwd='src',
-          stdout=out)
-    crypto_test_files.append('crypto_test_data.cc')
-
-  crypto_test_files += PrefixWithSrc(cmake['CRYPTO_TEST_SOURCES'])
-  crypto_test_files.sort()
-
   fuzz_c_files = FindCFiles(os.path.join('src', 'fuzz'), NoTests)
-
-  ssl_h_files = FindHeaderFiles(os.path.join('src', 'include', 'openssl'),
-                                SSLHeaderFiles)
-
-  pki_internal_h_files = FindHeaderFiles(os.path.join('src', 'pki'), AllFiles)
-
-  crypto_h_files = FindHeaderFiles(os.path.join('src', 'include', 'openssl'),
-                                   CryptoHeaderFiles)
-  pki_h_files = FindHeaderFiles(
-      os.path.join('src', 'include', 'openssl', 'pki'), AllFiles)
-
-  ssl_internal_h_files = FindHeaderFiles(os.path.join('src', 'ssl'), NoTests)
-  crypto_internal_h_files = (
-      FindHeaderFiles(os.path.join('src', 'crypto'), NoTests) +
-      FindHeaderFiles(os.path.join('src', 'third_party', 'fiat'), NoTests))
 
   # TODO(crbug.com/boringssl/542): generate_build_files.py historically reported
   # all the assembly files as part of libcrypto. Merge them for now, but we
   # should split them out later.
+  crypto = sorted(sources['bcm']['srcs'] + sources['crypto']['srcs'])
   crypto_asm = sorted(sources['bcm']['asm'] + sources['crypto']['asm'] +
                       sources['test_support']['asm'])
   crypto_nasm = sorted(sources['bcm']['nasm'] + sources['crypto']['nasm'] +
                        sources['test_support']['nasm'])
 
   files = {
-      'bcm_crypto': bcm_crypto_c_files,
-      'crypto': crypto_c_files,
+      'bcm_crypto': PrefixWithSrc(sources['bcm']['srcs']),
+      'crypto': PrefixWithSrc(crypto),
       'crypto_asm': PrefixWithSrc(crypto_asm),
       'crypto_nasm': PrefixWithSrc(crypto_nasm),
-      'crypto_headers': crypto_h_files,
-      'crypto_internal_headers': crypto_internal_h_files,
-      'crypto_test': crypto_test_files,
-      'crypto_test_data': sorted(PrefixWithSrc(cmake['CRYPTO_TEST_DATA'])),
-      'fips_fragments': fips_fragments,
+      'crypto_headers': PrefixWithSrc(sources['crypto']['hdrs']),
+      'crypto_internal_headers':
+          PrefixWithSrc(sources['crypto']['internal_hdrs']),
+      'crypto_test': PrefixWithSrc(sources['crypto_test']['srcs']),
+      'crypto_test_data': PrefixWithSrc(sources['crypto_test']['data']),
+      'fips_fragments': PrefixWithSrc(sources['bcm']['internal_hdrs']),
       'fuzz': fuzz_c_files,
-      'pki': PrefixWithSrc(cmake['PKI_SOURCES']),
-      'pki_headers': pki_h_files,
-      'pki_internal_headers': sorted(list(pki_internal_h_files)),
-      'pki_test': PrefixWithSrc(cmake['PKI_TEST_SOURCES']),
-      'pki_test_data': PrefixWithSrc(cmake['PKI_TEST_DATA']),
+      'pki': PrefixWithSrc(sources['pki']['srcs']),
+      'pki_headers': PrefixWithSrc(sources['pki']['hdrs']),
+      'pki_internal_headers': PrefixWithSrc(sources['pki']['internal_hdrs']),
+      'pki_test': PrefixWithSrc(sources['pki_test']['srcs']),
+      'pki_test_data': PrefixWithSrc(sources['pki_test']['data']),
       'rust_bssl_crypto': bssl_crypto_files,
       'rust_bssl_sys': bssl_sys_files,
-      'ssl': PrefixWithSrc(cmake['SSL_SOURCES']),
-      'ssl_headers': ssl_h_files,
-      'ssl_internal_headers': ssl_internal_h_files,
-      'ssl_test': PrefixWithSrc(cmake['SSL_TEST_SOURCES']),
-      'tool': PrefixWithSrc(cmake['BSSL_SOURCES']),
-      'tool_headers': tool_h_files,
-      'test_support': PrefixWithSrc(cmake['TEST_SUPPORT_SOURCES']),
-      'test_support_headers': test_support_h_files,
-      'urandom_test': PrefixWithSrc(cmake['URANDOM_TEST_SOURCES']),
+      'ssl': PrefixWithSrc(sources['ssl']['srcs']),
+      'ssl_headers': PrefixWithSrc(sources['ssl']['hdrs']),
+      'ssl_internal_headers': PrefixWithSrc(sources['ssl']['internal_hdrs']),
+      'ssl_test': PrefixWithSrc(sources['ssl_test']['srcs']),
+      'tool': PrefixWithSrc(sources['bssl']['srcs']),
+      'tool_headers': PrefixWithSrc(sources['bssl']['internal_hdrs']),
+      'test_support': PrefixWithSrc(sources['test_support']['srcs']),
+      'test_support_headers':
+          PrefixWithSrc(sources['test_support']['internal_hdrs']),
+      'urandom_test': PrefixWithSrc(sources['urandom_test']['srcs']),
   }
 
   for platform in platforms:
@@ -776,13 +690,8 @@ if __name__ == '__main__':
       '|'.join(sorted(ALL_PLATFORMS.keys())))
   parser.add_option('--prefix', dest='prefix',
       help='For Bazel, prepend argument to all source files')
-  parser.add_option(
-      '--embed_test_data', type='choice', dest='embed_test_data',
-      action='store', default="true", choices=["true", "false"],
-      help='For Bazel or GN, don\'t embed data files in crypto_test_data.cc')
   options, args = parser.parse_args(sys.argv[1:])
   PREFIX = options.prefix
-  EMBED_TEST_DATA = (options.embed_test_data == "true")
 
   if not args:
     parser.print_help()

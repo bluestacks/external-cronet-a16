@@ -36,7 +36,6 @@ class HttpStream;
 class HttpStreamParser;
 class IOBuffer;
 class IPEndPoint;
-class SSLCertRequestInfo;
 class SSLInfo;
 class WebSocketEndpointLockManager;
 class WebSocketStreamRequestAPI;
@@ -89,7 +88,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
       AlternativeService* alternative_service) const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
   int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void Drain(HttpNetworkSession* session) override;
   void SetPriority(RequestPriority priority) override;
@@ -141,8 +139,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   // Owned by another object.
   // |connect_delegate| will live during the lifetime of this object.
-  const raw_ptr<WebSocketStream::ConnectDelegate, DanglingUntriaged>
-      connect_delegate_;
+  const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
   // This is stored in SendRequest() for use by ReadResponseHeaders().
   raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
@@ -170,7 +167,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   // to avoid including extension-related header files here.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
-  const raw_ptr<WebSocketStreamRequestAPI, DanglingUntriaged> stream_request_;
+  const raw_ptr<WebSocketStreamRequestAPI> stream_request_;
 
   const raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
 

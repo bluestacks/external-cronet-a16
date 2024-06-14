@@ -47,6 +47,7 @@
 #include "net/quic/quic_connectivity_monitor.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
+#include "net/quic/quic_proxy_datagram_client_socket.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
@@ -78,7 +79,6 @@ namespace net {
 class CertVerifier;
 class ClientSocketFactory;
 class HostResolver;
-struct HostResolverEndpointResult;
 class HttpServerProperties;
 class NetLog;
 class NetworkAnonymizationKey;
@@ -343,7 +343,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // should be false in the case of a proxy.
   // When the `proxy_chain` in the session key is not direct,
   // `proxy_annotation_tag` must be set.
-  int RequestSession(
+  // This method is virtual to facilitate mocking for tests.
+  virtual int RequestSession(
       const QuicSessionKey& session_key,
       url::SchemeHostPort destination,
       quic::ParsedQuicVersion quic_version,
@@ -367,7 +368,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   void OnBlackholeAfterHandshakeConfirmed(QuicChromiumClientSession* session);
 
   // Cancels a pending request.
-  void CancelRequest(QuicSessionRequest* request);
+  // This method is virtual to facilitate mocking for tests.
+  virtual void CancelRequest(QuicSessionRequest* request);
 
   // Sets priority of a request.
   void SetRequestPriority(QuicSessionRequest* request,
@@ -398,6 +400,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Helper method that configures a DatagramClientSocket once
   // DatagramClientSocket::ConnectAsync completes. Posts a task to run
   // `callback` with a net_error code.
+  // This method is virtual to facilitate mocking for tests.
   virtual void FinishConnectAndConfigureSocket(CompletionOnceCallback callback,
                                                DatagramClientSocket* socket,
                                                const SocketTag& socket_tag,
@@ -492,8 +495,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
  private:
   class Job;
   class DirectJob;
+  class ProxyJob;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
+  class SessionAttempt;
   friend class MockQuicSessionPool;
   friend class test::QuicSessionPoolPeer;
 
@@ -513,6 +518,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       std::map<NetworkAnonymizationKey,
                std::unique_ptr<QuicCryptoClientConfigOwner>>;
 
+  // Records whether an active session already exists for a given IP address
+  // during connection.
+  static void LogConnectionIpPooling(bool pooled);
+
   bool HasMatchingIpSession(const QuicSessionAliasKey& key,
                             const std::vector<IPEndPoint>& ip_endpoints,
                             const std::set<std::string>& aliases,
@@ -524,7 +533,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                         quic::ParsedQuicVersion quic_version,
                         int cert_verify_flags,
                         bool require_confirmation,
-                        const HostResolverEndpointResult& endpoint_result,
+                        IPEndPoint peer_address,
+                        ConnectionEndpointMetadata metadata,
                         base::TimeTicks dns_resolution_start_time,
                         base::TimeTicks dns_resolution_end_time,
                         const NetLogWithSource& net_log,
@@ -535,20 +545,35 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                          quic::ParsedQuicVersion quic_version,
                          int cert_verify_flags,
                          bool require_confirmation,
-                         const HostResolverEndpointResult& endpoint_result,
+                         IPEndPoint peer_address,
+                         ConnectionEndpointMetadata metadata,
                          base::TimeTicks dns_resolution_start_time,
                          base::TimeTicks dns_resolution_end_time,
                          const NetLogWithSource& net_log,
                          raw_ptr<QuicChromiumClientSession>* session,
                          handles::NetworkHandle* network);
+  int CreateSessionOnProxyStream(
+      CompletionOnceCallback callback,
+      const QuicSessionAliasKey& key,
+      quic::ParsedQuicVersion quic_version,
+      int cert_verify_flags,
+      bool require_confirmation,
+      IPEndPoint local_address,
+      IPEndPoint proxy_peer_address,
+      std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
+      std::string user_agent,
+      const NetLogWithSource& net_log,
+      raw_ptr<QuicChromiumClientSession>* session);
   void FinishCreateSession(CompletionOnceCallback callback,
                            const QuicSessionAliasKey& key,
                            quic::ParsedQuicVersion quic_version,
                            int cert_verify_flags,
                            bool require_confirmation,
-                           const HostResolverEndpointResult& endpoint_result,
+                           IPEndPoint peer_address,
+                           ConnectionEndpointMetadata metadata,
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
+                           quic::QuicPacketLength max_packet_length,
                            const NetLogWithSource& net_log,
                            raw_ptr<QuicChromiumClientSession>* session,
                            handles::NetworkHandle* network,
@@ -558,9 +583,11 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                            quic::ParsedQuicVersion quic_version,
                            int cert_verify_flags,
                            bool require_confirmation,
-                           const HostResolverEndpointResult& endpoint_result,
+                           IPEndPoint peer_address,
+                           ConnectionEndpointMetadata metadata,
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
+                           quic::QuicPacketLength max_packet_length,
                            const NetLogWithSource& net_log,
                            raw_ptr<QuicChromiumClientSession>* session,
                            handles::NetworkHandle* network,

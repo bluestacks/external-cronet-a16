@@ -57,11 +57,6 @@ const TransportSecurityStateSource* const kDefaultHSTSSource = nullptr;
 
 const TransportSecurityStateSource* g_hsts_source = kDefaultHSTSSource;
 
-// Override for CheckCTRequirements() for unit tests. Possible values:
-//   false: Use the default implementation (e.g. production)
-//   true: Unless a delegate says otherwise, require CT.
-bool g_ct_required_for_testing = false;
-
 TransportSecurityState::HashedHost HashHost(
     base::span<const uint8_t> canonicalized_host) {
   return crypto::SHA256Hash(canonicalized_host);
@@ -234,11 +229,6 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
 
 }  // namespace
 
-// static
-BASE_FEATURE(kCertificateTransparencyEnforcement,
-             "CertificateTransparencyEnforcement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 void SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source) {
   g_hsts_source = source ? source : kDefaultHSTSSource;
@@ -320,18 +310,16 @@ TransportSecurityState::CheckCTRequirements(
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 
-  // If CT is emergency disabled, either through a component updater set flag or
-  // through the feature flag, we don't require CT for any host.
-  if (ct_emergency_disable_ ||
-      !base::FeatureList::IsEnabled(kCertificateTransparencyEnforcement)) {
+  // If CT is emergency disabled, we don't require CT for any host.
+  if (ct_emergency_disable_) {
     return CT_NOT_REQUIRED;
   }
 
   // CT is not required if the certificate does not chain to a publicly
-  // trusted root certificate. Testing can override this, as certain tests
-  // rely on using a non-publicly-trusted root.
-  if (!is_issued_by_known_root && !g_ct_required_for_testing)
+  // trusted root certificate.
+  if (!is_issued_by_known_root) {
     return CT_NOT_REQUIRED;
+  }
 
   // A connection is considered compliant if it has sufficient SCTs or if the
   // build is outdated. Other statuses are not considered compliant; this
@@ -342,9 +330,7 @@ TransportSecurityState::CheckCTRequirements(
            ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
        policy_compliance == ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY);
 
-  CTRequirementLevel ct_required = g_ct_required_for_testing
-                                       ? CTRequirementLevel::REQUIRED
-                                       : CTRequirementLevel::NOT_REQUIRED;
+  CTRequirementLevel ct_required = CTRequirementLevel::NOT_REQUIRED;
   if (require_ct_delegate_) {
     // Allow the delegate to override the CT requirement state.
     ct_required = require_ct_delegate_->IsCTRequiredForHost(
@@ -588,11 +574,6 @@ void TransportSecurityState::AddHPKP(const std::string& host,
                                      const HashValueVector& hashes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AddHPKPInternal(host, base::Time::Now(), expiry, include_subdomains, hashes);
-}
-
-// static
-void TransportSecurityState::SetRequireCTForTesting(bool required) {
-  g_ct_required_for_testing = required;
 }
 
 size_t TransportSecurityState::num_sts_entries() const {

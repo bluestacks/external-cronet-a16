@@ -22,6 +22,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/chunked_upload_data_stream.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
@@ -433,8 +434,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         "CONNECTION_UNKNOWN", dns_start, dns_end,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
-        NetLog::Get());
+        /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
+        NetLogWithSource::Make(NetLogSourceType::NONE));
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.

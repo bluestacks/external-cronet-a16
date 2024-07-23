@@ -4065,6 +4065,9 @@ java_library {
         "cronet_aml_build_android_build_java",
         "cronet_aml_third_party_jni_zero_jni_zero_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -4075,7 +4078,6 @@ java_library {
         "error_prone_annotations",
         "jsr305",
     ],
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -8974,11 +8976,13 @@ java_library {
         "build/android/java/src/org/chromium/build/annotations/MockedInTests.java",
         "build/android/java/src/org/chromium/build/annotations/UsedByReflection.java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -10116,11 +10120,13 @@ java_library {
     static_libs: [
         "libprotobuf-java-lite",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -11033,6 +11039,9 @@ java_library {
     static_libs: [
         "cronet_aml_components_cronet_android_cronet_shared_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -11041,7 +11050,6 @@ java_library {
         "androidx.annotation_annotation",
         "androidx.annotation_annotation-experimental",
     ],
-    sdk_version: "system_current",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -11723,6 +11731,9 @@ java_library {
         "cronet_aml_components_cronet_android_cronet_shared_java",
         "cronet_aml_net_android_net_thread_stats_uid_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -11730,7 +11741,6 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
     ],
-    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -11835,6 +11845,9 @@ java_library {
         "cronet_aml_url_url_java",
         "libprotobuf-java-lite",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -11843,7 +11856,6 @@ java_library {
         "androidx.annotation_annotation",
         "jsr305",
     ],
-    sdk_version: "system_current",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -12780,11 +12792,13 @@ java_library {
     srcs: [
         ":cronet_aml_components_cronet_android_cronet_jni_registration__java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -12826,6 +12840,9 @@ java_library {
     static_libs: [
         "cronet_aml_components_cronet_android_cronet_stats_log_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -12833,7 +12850,6 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
     ],
-    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -13325,6 +13341,9 @@ java_library {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/telemetry/CronetStatsLog.java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -13332,7 +13351,6 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
     ],
-    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -14449,6 +14467,9 @@ java_library {
     static_libs: [
         "cronet_aml_components_cronet_android_cronet_api_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -14456,7 +14477,6 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
     ],
-    sdk_version: "system_current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -14497,11 +14517,13 @@ java_library {
     static_libs: [
         "libprotobuf-java-lite",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -14940,11 +14962,13 @@ java_library {
     static_libs: [
         "libprotobuf-java-lite",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -19227,6 +19251,9 @@ java_library {
         "cronet_aml_net_android_net_thread_stats_uid_java",
         "cronet_aml_third_party_jni_zero_jni_zero_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -19235,7 +19262,6 @@ java_library {
         "androidx.annotation_annotation",
         "jsr305",
     ],
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -19721,11 +19747,13 @@ java_library {
     srcs: [
         "net/android/java/src/org/chromium/net/ThreadStatsUid.java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -55064,11 +55092,13 @@ java_library {
     static_libs: [
         "cronet_aml_build_android_build_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 
@@ -58321,11 +58351,13 @@ java_library {
     static_libs: [
         "cronet_aml_third_party_jni_zero_jni_zero_java",
     ],
+    defaults: [
+        "cronet_aml_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     jarjar_rules: "android/tools/remove-gen-jni-jarjar-rules.txt",
 }
 

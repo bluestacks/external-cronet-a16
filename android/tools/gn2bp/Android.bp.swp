@@ -120,7 +120,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -234,7 +234,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -427,7 +427,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -569,7 +569,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -736,7 +736,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -844,7 +844,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -1522,7 +1522,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -1616,7 +1616,7 @@ cc_library_static {
         "cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -2575,7 +2575,7 @@ cc_library_static {
         "libgtest_prod_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -3123,7 +3123,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DBASE_IMPLEMENTATION",
@@ -5738,7 +5738,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -5823,7 +5823,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -6016,7 +6016,7 @@ cc_library_static {
         "cronet_aml_base_check_version_internal_action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -6096,7 +6096,7 @@ cc_library_static {
         "cronet_aml_base_check_version_internal_action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -6654,7 +6654,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -7021,7 +7021,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -7107,7 +7107,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DBASE_IMPLEMENTATION",
@@ -7882,7 +7882,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -8054,7 +8054,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -8293,7 +8293,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -8485,7 +8485,7 @@ cc_library_static {
         "base/third_party/double_conversion/double-conversion/strtod.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -8569,7 +8569,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -8883,7 +8883,7 @@ genrule {
         "BuildConfig.srcjar",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
 }
 
@@ -8902,7 +8902,7 @@ genrule {
         "BuildConfig.srcjar",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
 }
 
@@ -9446,7 +9446,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -9610,7 +9610,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -9742,7 +9742,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -9888,7 +9888,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -10005,6 +10005,52 @@ cc_library_static {
                 "-D_LARGEFILE_SOURCE",
                 "-O2",
                 "-msse3",
+            ],
+            compile_multilib: "64",
+        },
+    },
+}
+
+// GN: //gn:default_deps
+cc_defaults {
+    name: "cronet_aml_cc_defaults",
+    cflags: [
+        "-DBORINGSSL_SHARED_LIBRARY",
+        "-DGOOGLE_PROTOBUF_NO_RTTI",
+        "-Wno-ambiguous-reversed-operator",
+        "-Wno-c++11-narrowing",
+        "-Wno-error=return-type",
+        "-Wno-invalid-constexpr",
+        "-Wno-macro-redefined",
+        "-Wno-missing-field-initializers",
+        "-Wno-non-virtual-dtor",
+        "-Wno-null-pointer-subtraction",
+        "-Wno-sign-compare",
+        "-Wno-sign-promo",
+        "-Wno-unreachable-code-loop-increment",
+        "-Wno-unused-parameter",
+        "-fPIC",
+        "-fprofile-list=external/cronet/exclude_coverage.list",
+    ],
+    stl: "none",
+    cpp_std: "c++17",
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "29",
+    c_std: "gnu11",
+    target: {
+        android: {
+            shared_libs: [
+                "libmediandk",
+            ],
+            header_libs: [
+                "jni_headers",
+            ],
+        },
+        host: {
+            cflags: [
+                "-UANDROID",
             ],
             compile_multilib: "64",
         },
@@ -10170,7 +10216,7 @@ cc_library_static {
         "cronet_aml_components_cronet_android_base_feature_overrides_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -10261,7 +10307,7 @@ cc_library_static {
         "cronet_aml_components_cronet_android_base_feature_overrides_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -10559,7 +10605,7 @@ cc_library_shared {
         "cronet_aml_url_url",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -10809,7 +10855,7 @@ cc_library_shared {
         "cronet_aml_url_url__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -11142,7 +11188,7 @@ cc_library_static {
         "cronet_aml_components_cronet_android_base_feature_overrides_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -11315,7 +11361,7 @@ cc_library_static {
         "cronet_aml_components_cronet_android_base_feature_overrides_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -11493,7 +11539,7 @@ cc_library_static {
         "cronet_aml_components_cronet_android_base_feature_overrides_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -12956,7 +13002,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -13177,7 +13223,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -13687,7 +13733,7 @@ cc_library_shared {
         "cronet_aml_components_cronet_android_cronet_tests_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -14261,7 +14307,7 @@ cc_library_shared {
         "cronet_aml_url_url__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -14684,7 +14730,7 @@ genrule {
         "LoadState.srcjar",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
 }
 
@@ -14703,7 +14749,7 @@ genrule {
         "LoadState.srcjar",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
 }
 
@@ -14994,7 +15040,7 @@ cc_library_static {
         "cronet_aml_components_cronet_android_request_context_config_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -15085,7 +15131,7 @@ cc_library_static {
         "cronet_aml_components_cronet_android_request_context_config_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -15499,7 +15545,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -15712,7 +15758,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -15930,7 +15976,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -16060,7 +16106,7 @@ cc_library_static {
         "cronet_aml_components_cronet_cronet_version_header_action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -16139,7 +16185,7 @@ cc_library_static {
         "cronet_aml_components_cronet_cronet_version_header_action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -16350,7 +16396,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -16515,7 +16561,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -16714,7 +16760,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -16928,7 +16974,7 @@ cc_library_static {
         "cronet_aml_third_party_metrics_proto_metrics_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -17102,7 +17148,7 @@ cc_library_static {
         "cronet_aml_third_party_metrics_proto_metrics_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -17285,7 +17331,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -17451,7 +17497,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -17748,7 +17794,7 @@ cc_library_static {
         "cronet_aml_components_prefs_android_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -17936,7 +17982,7 @@ cc_library_static {
         "cronet_aml_components_prefs_android_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -18113,7 +18159,7 @@ cc_library_static {
         "cronet_aml_components_prefs_android_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -18384,7 +18430,7 @@ cc_library_static {
         "cronet_aml_crypto_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -18570,7 +18616,7 @@ cc_library_static {
         "cronet_aml_crypto_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCRYPTO_IMPLEMENTATION",
@@ -18865,7 +18911,7 @@ cc_library_static {
         "cronet_aml_crypto_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -18949,52 +18995,6 @@ cc_library_static {
                 "-D_FORTIFY_SOURCE=2",
                 "-msse3",
             ],
-        },
-    },
-}
-
-// GN: //gn:default_deps
-cc_defaults {
-    name: "cronet_aml_defaults",
-    cflags: [
-        "-DBORINGSSL_SHARED_LIBRARY",
-        "-DGOOGLE_PROTOBUF_NO_RTTI",
-        "-Wno-ambiguous-reversed-operator",
-        "-Wno-c++11-narrowing",
-        "-Wno-error=return-type",
-        "-Wno-invalid-constexpr",
-        "-Wno-macro-redefined",
-        "-Wno-missing-field-initializers",
-        "-Wno-non-virtual-dtor",
-        "-Wno-null-pointer-subtraction",
-        "-Wno-sign-compare",
-        "-Wno-sign-promo",
-        "-Wno-unreachable-code-loop-increment",
-        "-Wno-unused-parameter",
-        "-fPIC",
-        "-fprofile-list=external/cronet/exclude_coverage.list",
-    ],
-    stl: "none",
-    cpp_std: "c++17",
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "29",
-    c_std: "gnu11",
-    target: {
-        android: {
-            shared_libs: [
-                "libmediandk",
-            ],
-            header_libs: [
-                "jni_headers",
-            ],
-        },
-        host: {
-            cflags: [
-                "-UANDROID",
-            ],
-            compile_multilib: "64",
         },
     },
 }
@@ -19117,7 +19117,7 @@ genrule {
         "NetError.srcjar",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
 }
 
@@ -19136,7 +19136,7 @@ genrule {
         "NetError.srcjar",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
 }
 
@@ -20151,7 +20151,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -20313,7 +20313,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -20606,7 +20606,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -20853,7 +20853,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -21063,7 +21063,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -21262,7 +21262,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -21472,7 +21472,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -21671,7 +21671,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -21881,7 +21881,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -22080,7 +22080,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -22290,7 +22290,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -22489,7 +22489,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -22711,7 +22711,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -22922,7 +22922,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -23126,7 +23126,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -23343,7 +23343,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -23606,7 +23606,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -23875,7 +23875,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -24108,7 +24108,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -24310,7 +24310,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -24500,7 +24500,7 @@ cc_library_static {
         "cronet_aml_net_isolation_info_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -24591,7 +24591,7 @@ cc_library_static {
         "cronet_aml_net_isolation_info_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -25323,7 +25323,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -26005,7 +26005,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -26221,7 +26221,7 @@ cc_library_static {
         "cronet_aml_url_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -26403,7 +26403,7 @@ cc_library_static {
         "cronet_aml_url_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -26990,7 +26990,7 @@ cc_library_static {
         "cronet_aml_net_net_nqe_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -27082,7 +27082,7 @@ cc_library_static {
         "cronet_aml_net_net_nqe_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -27342,7 +27342,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -27530,7 +27530,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -28162,7 +28162,7 @@ cc_library_shared {
         "cronet_aml_url_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -28379,7 +28379,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -28544,7 +28544,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -28735,7 +28735,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -28948,7 +28948,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -29179,7 +29179,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -29378,7 +29378,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -29671,7 +29671,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -29883,7 +29883,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -30064,7 +30064,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -30345,7 +30345,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -30538,7 +30538,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -30712,7 +30712,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_net_quic_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -30921,7 +30921,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -31013,7 +31013,7 @@ cc_library_static {
         "cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -31569,7 +31569,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -32052,7 +32052,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -32355,7 +32355,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -32852,7 +32852,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -33091,7 +33091,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -33265,7 +33265,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -33562,7 +33562,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -33752,7 +33752,7 @@ cc_binary {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -33885,7 +33885,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -34011,7 +34011,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -34186,7 +34186,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -34351,7 +34351,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -34529,7 +34529,7 @@ cc_library_static {
         "cronet_aml_build_robolectric_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -34695,7 +34695,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -35124,7 +35124,7 @@ cc_library_static {
         "cronet_aml_testing_android_native_test_native_test_jni__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -35302,7 +35302,7 @@ cc_library_static {
         "cronet_aml_testing_android_native_test_native_test_jni__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -35504,7 +35504,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -35678,7 +35678,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -35787,7 +35787,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -35868,7 +35868,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -35989,7 +35989,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/base/internal/unscaledcycleclock.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36062,7 +36062,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36168,7 +36168,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/base/log_severity.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36237,7 +36237,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36343,7 +36343,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/base/internal/low_level_alloc.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36412,7 +36412,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36518,7 +36518,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/base/internal/raw_logging.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36587,7 +36587,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36693,7 +36693,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/base/internal/spinlock_wait.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36762,7 +36762,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36868,7 +36868,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/base/internal/strerror.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -36937,7 +36937,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37043,7 +37043,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/base/internal/throw_delegate.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37112,7 +37112,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37219,7 +37219,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/container/internal/hashtablez_sampler_force_weak_definition.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37289,7 +37289,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37395,7 +37395,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/container/internal/raw_hash_set.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37464,7 +37464,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37570,7 +37570,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/crc/internal/cpu_detect.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37639,7 +37639,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37748,7 +37748,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/crc/internal/crc_non_temporal_memcpy.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37820,7 +37820,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37926,7 +37926,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/crc/internal/crc_cord_state.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -37995,7 +37995,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38102,7 +38102,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/crc/internal/crc_x86_arm_combined.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38172,7 +38172,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38280,7 +38280,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/debugging/internal/vdso_support.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38351,7 +38351,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38457,7 +38457,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/debugging/internal/demangle.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38526,7 +38526,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38632,7 +38632,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/debugging/internal/examine_stack.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38701,7 +38701,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38807,7 +38807,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/debugging/failure_signal_handler.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38876,7 +38876,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -38982,7 +38982,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/debugging/stacktrace.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39051,7 +39051,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39157,7 +39157,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/debugging/symbolize.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39226,7 +39226,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39332,7 +39332,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/commandlineflag.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39400,7 +39400,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/internal/commandlineflag.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39468,7 +39468,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/usage_config.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39537,7 +39537,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/internal/flag.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39606,7 +39606,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/marshalling.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39674,7 +39674,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/parse.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39743,7 +39743,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/internal/private_handle_accessor.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39811,7 +39811,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/internal/program_name.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39879,7 +39879,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/reflection.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -39948,7 +39948,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/usage.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40016,7 +40016,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/flags/internal/usage.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40091,7 +40091,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_FLAGS_STRIP_NAMES=0",
@@ -40169,7 +40169,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/hash/internal/city.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40238,7 +40238,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40344,7 +40344,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/hash/internal/hash.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40413,7 +40413,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40519,7 +40519,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/hash/internal/low_level_hash.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40588,7 +40588,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40697,7 +40697,7 @@ cc_library_static {
         "liblog",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40766,7 +40766,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40877,7 +40877,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/globals.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -40946,7 +40946,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41052,7 +41052,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/initialize.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41123,7 +41123,7 @@ cc_library_static {
         "liblog",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41192,7 +41192,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41303,7 +41303,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/internal/conditions.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41372,7 +41372,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41478,7 +41478,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/internal/fnmatch.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41547,7 +41547,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41653,7 +41653,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/internal/log_format.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41722,7 +41722,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41828,7 +41828,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/internal/globals.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -41897,7 +41897,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42006,7 +42006,7 @@ cc_library_static {
         "liblog",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42075,7 +42075,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42189,7 +42189,7 @@ cc_library_static {
         "liblog",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42258,7 +42258,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42369,7 +42369,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/internal/nullguard.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42438,7 +42438,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42544,7 +42544,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/internal/proto.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42613,7 +42613,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42719,7 +42719,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/internal/vlog_config.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42788,7 +42788,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42894,7 +42894,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/log_entry.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -42963,7 +42963,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43069,7 +43069,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/log/log_sink.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43138,7 +43138,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43244,7 +43244,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/numeric/int128.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43313,7 +43313,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43419,7 +43419,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/profiling/internal/exponential_biased.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43488,7 +43488,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43597,7 +43597,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43666,7 +43666,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/random/gaussian_distribution.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43736,7 +43736,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43845,7 +43845,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -43917,7 +43917,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44029,7 +44029,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44104,7 +44104,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44216,7 +44216,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44291,7 +44291,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44403,7 +44403,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44478,7 +44478,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44587,7 +44587,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44659,7 +44659,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44771,7 +44771,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44846,7 +44846,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -44958,7 +44958,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45033,7 +45033,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45145,7 +45145,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45220,7 +45220,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45326,7 +45326,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/random/internal/seed_material.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45395,7 +45395,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45504,7 +45504,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45576,7 +45576,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45682,7 +45682,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/random/seed_gen_exception.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45751,7 +45751,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45863,7 +45863,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -45938,7 +45938,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46046,7 +46046,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/status/status_payload_printer.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46117,7 +46117,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46223,7 +46223,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/status/statusor.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46292,7 +46292,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46400,7 +46400,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/cord_buffer.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46471,7 +46471,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46582,7 +46582,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/internal/cord_rep_crc.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46656,7 +46656,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46762,7 +46762,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/internal/cordz_functions.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46831,7 +46831,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -46937,7 +46937,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/internal/cordz_handle.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47006,7 +47006,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47112,7 +47112,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/internal/cordz_info.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47181,7 +47181,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47289,7 +47289,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/internal/utf8.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47360,7 +47360,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47471,7 +47471,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/internal/str_format/parser.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47545,7 +47545,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47651,7 +47651,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/string_view.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47720,7 +47720,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47839,7 +47839,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/strings/substitute.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -47921,7 +47921,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48027,7 +48027,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/synchronization/internal/graphcycles.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48096,7 +48096,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48202,7 +48202,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/synchronization/internal/kernel_timeout.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48271,7 +48271,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48388,7 +48388,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/synchronization/notification.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48468,7 +48468,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48574,7 +48574,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/time/internal/cctz/src/civil_time_detail.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48643,7 +48643,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48757,7 +48757,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/time/internal/cctz/src/zone_info_source.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48834,7 +48834,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -48944,7 +48944,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/time/time.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -49017,7 +49017,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -49123,7 +49123,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/types/bad_optional_access.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -49192,7 +49192,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -49298,7 +49298,7 @@ cc_library_static {
         "third_party/abseil-cpp/absl/types/bad_variant_access.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -49367,7 +49367,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
@@ -49483,7 +49483,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -49617,7 +49617,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -49714,7 +49714,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -49810,7 +49810,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -49906,7 +49906,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50066,7 +50066,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50251,7 +50251,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50369,7 +50369,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50454,7 +50454,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50539,7 +50539,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50630,7 +50630,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50727,7 +50727,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50823,7 +50823,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -50920,7 +50920,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51017,7 +51017,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51114,7 +51114,7 @@ cc_library_static {
         "cronet_aml_third_party_anonymous_tokens_anonymous_tokens_cc_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51205,7 +51205,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51293,7 +51293,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51379,7 +51379,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51534,7 +51534,7 @@ cc_library_static {
         "third_party/apache-portable-runtime/src/user/unix/userinfo.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51604,7 +51604,7 @@ cc_library_static {
         "third_party/ashmem/ashmem-dev.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -51680,7 +51680,7 @@ cc_library_static {
         "third_party/ashmem/ashmem-dev.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52062,7 +52062,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DBORINGSSL_ALLOW_CXX_RUNTIME",
@@ -52297,7 +52297,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -52414,7 +52414,7 @@ cc_library_static {
         "third_party/brotli/common/transform.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52496,7 +52496,7 @@ cc_library_static {
         "third_party/brotli/common/transform.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52576,7 +52576,7 @@ cc_library_static {
         "third_party/brotli/dec/state.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52646,7 +52646,7 @@ cc_library_static {
         "third_party/brotli/dec/state.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52716,7 +52716,7 @@ cc_library_static {
         "third_party/ced/src/util/languages/languages.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52788,7 +52788,7 @@ cc_library_static {
         "third_party/cpu_features/src/src/string_view.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52893,7 +52893,7 @@ cc_library_static {
         "third_party/cpu_features/src/src/string_view.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -52995,7 +52995,7 @@ cc_library_static {
         "third_party/cpu_features/src/ndk_compat/cpu-features.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -53075,7 +53075,7 @@ cc_library_static {
         "third_party/cpu_features/src/ndk_compat/cpu-features.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -53173,7 +53173,7 @@ cc_library_static {
         "third_party/google_benchmark/src/src/timers.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -53318,7 +53318,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_FLAGS_STRIP_NAMES=0",
@@ -53502,7 +53502,7 @@ cc_library_static {
         "cronet_aml_build_ios_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DABSL_FLAGS_STRIP_NAMES=0",
@@ -53840,7 +53840,7 @@ cc_library_static {
         "third_party/icu/source/i18n/ztrans.cpp",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -54165,7 +54165,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -54486,7 +54486,7 @@ cc_library_static {
         "third_party/icu/source/stubdata/stubdata.cpp",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -54771,7 +54771,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -54896,7 +54896,7 @@ cc_library_static {
         "liblog",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -54976,7 +54976,7 @@ cc_library_static {
         "liblog",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -55113,7 +55113,7 @@ cc_library_static {
         "third_party/libevent/strlcpy.c",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -55190,7 +55190,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -55343,7 +55343,7 @@ cc_library_static {
         "libz",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -55425,7 +55425,7 @@ cc_library_static {
         "libz",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -55515,7 +55515,7 @@ cc_library_static {
         "libz",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -55612,7 +55612,7 @@ cc_library_static {
         "cronet_aml_third_party_metrics_proto_metrics_proto_gen_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -55703,7 +55703,7 @@ cc_library_static {
         "cronet_aml_third_party_metrics_proto_metrics_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -56082,7 +56082,7 @@ cc_library_static {
         "third_party/modp_b64/modp_b64.cc",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -56159,7 +56159,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -56300,7 +56300,7 @@ cc_library_shared {
         "cronet_aml_third_party_boringssl_boringssl_asm__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -56441,7 +56441,7 @@ cc_library_static {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -56555,7 +56555,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -56702,7 +56702,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -56847,7 +56847,7 @@ cc_library_static {
     ],
     host_supported: true,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -56974,7 +56974,7 @@ cc_binary {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57046,7 +57046,7 @@ cc_binary {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57137,7 +57137,7 @@ cc_library_static {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57228,7 +57228,7 @@ cc_library_static {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57341,7 +57341,7 @@ cc_library_static {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57454,7 +57454,7 @@ cc_library_static {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57519,7 +57519,7 @@ cc_library_static {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57584,7 +57584,7 @@ cc_library_static {
     host_supported: true,
     device_supported: false,
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-19-init-8091-gab037c4f-22\"",
@@ -57652,7 +57652,7 @@ cc_library_static {
         "cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -57805,7 +57805,7 @@ cc_library_static {
         "cronet_aml_build_chromeos_buildflags__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -58028,7 +58028,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
@@ -58222,7 +58222,7 @@ cc_library_static {
         "cronet_aml_url_url_jni_headers__action__testing",
     ],
     defaults: [
-        "cronet_aml_defaults",
+        "cronet_aml_cc_defaults",
     ],
     cflags: [
         "-DANDROID",

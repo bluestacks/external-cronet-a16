@@ -85,7 +85,7 @@ local_include_dirs_denylist = [
 
 # Name of the module which settings such as compiler flags for all other
 # modules.
-defaults_module = module_prefix + 'defaults'
+cc_defaults_module = module_prefix + 'cc_defaults'
 
 # Location of the project in the Android source tree.
 tree_path = 'external/cronet'
@@ -1806,7 +1806,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, is_descendant_of_j
   if module.is_compiled() and not module.type.startswith("java"):
     # Don't try to inject library/source dependencies into genrules or
     # filegroups because they are not compiled in the traditional sense.
-    module.defaults = [defaults_module]
+    module.defaults = [cc_defaults_module]
     for lib in target.libs:
       # Generally library names should be mangled as 'libXXX', unless they
       # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
@@ -1940,55 +1940,58 @@ def turn_off_allocator_shim_for_musl(module):
     # of glibc but for android.
     module.target['glibc'].srcs.add(allocation_shim)
 
+def create_cc_defaults_module():
+    defaults = Module('cc_defaults', cc_defaults_module, '//gn:default_deps')
+    defaults.cflags = [
+        '-DGOOGLE_PROTOBUF_NO_RTTI',
+        '-DBORINGSSL_SHARED_LIBRARY',
+        '-Wno-error=return-type',
+        '-Wno-non-virtual-dtor',
+        '-Wno-macro-redefined',
+        '-Wno-missing-field-initializers',
+        '-Wno-sign-compare',
+        '-Wno-sign-promo',
+        '-Wno-unused-parameter',
+        '-Wno-null-pointer-subtraction', # Needed to libevent
+        '-Wno-ambiguous-reversed-operator', # needed for icui18n
+        '-Wno-unreachable-code-loop-increment', # needed for icui18n
+        '-fPIC',
+        '-Wno-c++11-narrowing',
+        # Needed for address_space_randomization.h on riscv
+        # Can be removed after 125.0.6375.0 is imported
+        '-Wno-invalid-constexpr',
+        # b/330508686 disable coverage profiling for files or function in this list.
+        '-fprofile-list=external/cronet/exclude_coverage.list',
+    ]
+    defaults.c_std = 'gnu11'
+    # Chromium builds do not add a dependency for headers found inside the
+    # sysroot, so they are added globally via defaults.
+    defaults.target['android'].header_libs = [
+        'jni_headers',
+    ]
+    defaults.target['android'].shared_libs = [
+        'libmediandk'
+    ]
+    defaults.target['host'].cflags = [
+        # -DANDROID is added by default but target.defines contain -DANDROID if
+        # it's required.  So adding -UANDROID to cancel default -DANDROID if it's
+        # not specified.
+        # Note: -DANDROID is not consistently applied across the chromium code
+        # base, so it is removed unconditionally for host targets.
+        '-UANDROID',
+    ]
+    defaults.stl = 'none'
+    defaults.cpp_std = 'c++17'
+    defaults.min_sdk_version = 29
+    defaults.apex_available.add(tethering_apex)
+    return defaults
+
 def create_blueprint_for_targets(gn, targets, test_targets):
   """Generate a blueprint for a list of GN targets."""
   blueprint = Blueprint()
 
   # Default settings used by all modules.
-  defaults = Module('cc_defaults', defaults_module, '//gn:default_deps')
-  defaults.cflags = [
-      '-DGOOGLE_PROTOBUF_NO_RTTI',
-      '-DBORINGSSL_SHARED_LIBRARY',
-      '-Wno-error=return-type',
-      '-Wno-non-virtual-dtor',
-      '-Wno-macro-redefined',
-      '-Wno-missing-field-initializers',
-      '-Wno-sign-compare',
-      '-Wno-sign-promo',
-      '-Wno-unused-parameter',
-      '-Wno-null-pointer-subtraction', # Needed to libevent
-      '-Wno-ambiguous-reversed-operator', # needed for icui18n
-      '-Wno-unreachable-code-loop-increment', # needed for icui18n
-      '-fPIC',
-      '-Wno-c++11-narrowing',
-      # Needed for address_space_randomization.h on riscv
-      # Can be removed after 125.0.6375.0 is imported
-      '-Wno-invalid-constexpr',
-      # b/330508686 disable coverage profiling for files or function in this list.
-      '-fprofile-list=external/cronet/exclude_coverage.list',
-  ]
-  defaults.c_std = 'gnu11'
-  # Chromium builds do not add a dependency for headers found inside the
-  # sysroot, so they are added globally via defaults.
-  defaults.target['android'].header_libs = [
-      'jni_headers',
-  ]
-  defaults.target['android'].shared_libs = [
-      'libmediandk'
-  ]
-  defaults.target['host'].cflags = [
-      # -DANDROID is added by default but target.defines contain -DANDROID if
-      # it's required.  So adding -UANDROID to cancel default -DANDROID if it's
-      # not specified.
-      # Note: -DANDROID is not consistently applied across the chromium code
-      # base, so it is removed unconditionally for host targets.
-      '-UANDROID',
-  ]
-  defaults.stl = 'none'
-  defaults.cpp_std = 'c++17'
-  defaults.min_sdk_version = 29
-  defaults.apex_available.add(tethering_apex)
-  blueprint.add_module(defaults)
+  blueprint.add_module(create_cc_defaults_module())
 
   for target in targets:
     module = create_modules_from_target(blueprint, gn, target, is_descendant_of_java=False, is_test_target=False)

@@ -411,6 +411,14 @@ _builtin_deps = {
         always_disable,
     '//net/data/ssl/chrome_root_store:gen_root_store_inc':
         always_disable,
+    '//third_party/zstd:headers':
+        always_disable,
+    '//testing/buildbot/filters:base_unittests_filters':
+        always_disable,
+    '//testing/buildbot/filters:net_unittests_filters':
+        always_disable,
+    '//third_party/boringssl/src/third_party/fiat:fiat_license':
+        always_disable,
     '//net/tools/root_store_tool:root_store_tool':
         always_disable,
     '//third_party/zlib:zlib':
@@ -798,14 +806,16 @@ class Blueprint(object):
         """
     self.modules[module.name] = module
 
-  def to_string(self, output):
+  def to_string(self):
+    ret = []
     for m in sorted(self.modules.values(), key=lambda m: m.name):
       if m.type != "cc_library_static" or m.has_input_files():
         # Don't print cc_library_static with empty srcs. These attributes are already
         # propagated up the tree. Printing them messes the presubmits because
         # every module is compiled while those targets are not reachable in
         # a normal compilation path.
-        m.to_string(output)
+        m.to_string(ret)
+    return ret
 
 
 def label_to_module_name(label):
@@ -2243,14 +2253,9 @@ def main():
 """ % (tool_name)
 
   for (path, blueprint) in final_blueprints.items():
-    final_result = []
-    blueprint.to_string(final_result)
-    if final_result:
-      # If the length is smaller than or equal to 1 then that means the blueprint
-      # is empty so we don't need to write it.
-      android_bp_file = Path(os.path.join(args.repo_root, path, "Android.bp"))
-      android_bp_file.write_text("\n".join(
-          [header] + BLUEPRINTS_EXTRAS.get(path, []) + final_result))
+    android_bp_file = Path(os.path.join(args.repo_root, path, "Android.bp"))
+    android_bp_file.write_text("\n".join(
+        [header] + BLUEPRINTS_EXTRAS.get(path, []) + blueprint.to_string()))
 
   return 0
 

@@ -33,9 +33,16 @@ import os
 import re
 import sys
 import copy
+
+from typing import Dict, List
 from pathlib import Path
 
 import gn_utils
+PARENT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir))
+
+sys.path.insert(0, os.path.join(PARENT_ROOT, "license"))
+import license_utils
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -678,6 +685,8 @@ class Module(object):
     self.build_file_path = None
     self.include_build_directory = None
     self.allow_rebasing = False
+    self.license_kinds = set()
+    self.license_text = set()
 
   def to_string(self, output):
     if self.comment:
@@ -735,6 +744,8 @@ class Module(object):
     self._output_field(output, 'jarjar_rules')
     self._output_field(output, 'jars')
     self._output_field(output, 'include_build_directory')
+    self._output_field(output, 'license_text')
+    self._output_field(output, "license_kinds")
     if self.rtti:
       self._output_field(output, 'rtti')
 
@@ -796,6 +807,8 @@ class Blueprint(object):
 
   def __init__(self):
     self.modules = {}
+    self._package_module = None
+    self._license_module = None
 
   def add_module(self, module):
     """Adds a new module to the blueprint, replacing any existing module
@@ -806,8 +819,21 @@ class Blueprint(object):
         """
     self.modules[module.name] = module
 
+  def set_package_module(self, module):
+    self._package_module = module
+
+  def set_license_module(self, module):
+    self._license_module = module
+
+  def get_license_module(self):
+    return self._license_module
+
   def to_string(self):
     ret = []
+    if self._package_module:
+      self._package_module.to_string(ret)
+    if self._license_module:
+      self._license_module.to_string(ret)
     for m in sorted(self.modules.values(), key=lambda m: m.name):
       if m.type != "cc_library_static" or m.has_input_files():
         # Don't print cc_library_static with empty srcs. These attributes are already
@@ -2074,13 +2100,6 @@ def create_blueprint_for_targets(gn, targets, test_targets):
 
   return blueprint
 
-def create_package_module(blueprint):
-  package = Module("package", "", "PACKAGE")
-  package.comment = "The actual license can be found in Android.extras.bp"
-  package.default_applicable_licenses.add(CRONET_LICENSE_NAME)
-  package.default_visibility.append(package_default_visibility)
-  blueprint.add_module(package)
-
 def _rebase_files(filepaths, parent_prefix):
   """
   Rebase a list of filepaths according to the provided path. This assumes
@@ -2138,6 +2157,98 @@ def _rebase_module(module: Module) -> Module | None:
 
   return module_copy
 
+def _path_to_name(path: str) -> str:
+  return "external_cronet_%s_license" % (path.replace("/", "_").lower())
+
+def _maybe_create_license_module(path: str) -> Module | None:
+  """
+  Creates a module license if a README.chromium exists in the path provided
+  otherwise just returns None.
+
+  :param path: Path to check for README.chromium
+  :return: Module or None.
+  """
+  readme_chromium_file = Path(os.path.join(path, "README.chromium"))
+  if (not readme_chromium_file.exists() or
+      license_utils.is_ignored_readme_chromium(str(readme_chromium_file))):
+    return None
+
+  license_module = Module("license", _path_to_name(path), "License-Artificial")
+  license_module.visibility = {":__subpackages__"}
+  # Assume that a LICENSE file always exist as we run the
+  # create_android_metadata_license.py script each time we run GN2BP.
+  license_module.license_text = {"LICENSE"}
+  metadata = license_utils.parse_chromium_readme_file(
+      str(readme_chromium_file))
+  for license in metadata.get_licenses():
+      license_module.license_kinds.add(license_utils.get_license_bp_name(license))
+  return license_module
+
+
+def _get_longest_matching_blueprint(current_blueprint_path: str,
+    all_blueprints: Dict[str, Blueprint]) -> Blueprint | None:
+  longest_path_matching = None
+  for (blueprint_path, search_blueprint) in all_blueprints.items():
+    if (search_blueprint.get_license_module()
+        and current_blueprint_path.startswith(blueprint_path)
+        and (longest_path_matching is None or len(blueprint_path) > len(
+            longest_path_matching))):
+      longest_path_matching = blueprint_path
+
+  if longest_path_matching:
+    return all_blueprints[longest_path_matching]
+  return None
+
+def finalize_package_modules(blueprints: Dict[str, Blueprint]):
+  """
+  Adds a package module to every blueprint passed in |blueprints|. A package
+  module is just a reference to a license module, the approach here is that
+  the package module will point to the nearest ancestor's license module, the
+  nearest ancestor could be in the same Android.bp.
+
+  :param blueprints: Dictionary of (path, blueprint) to be populated with
+  """
+
+  for (current_path, blueprint) in blueprints.items():
+    if current_path == "":
+      # Don't add a package module for the top-level Android.bp, this is handled
+      # manually in Android.extras.bp.
+      continue
+
+    package_module = Module("package", None, "Package-Artificial")
+    if blueprint.get_license_module():
+      package_module.default_applicable_licenses.add(
+          blueprint.get_license_module().name)
+    else:  # Search for closest ancestor with a license module
+      ancestor_blueprint = _get_longest_matching_blueprint(current_path,
+                                                           blueprints)
+      if ancestor_blueprint:
+        # We found an ancestor, make a reference to its license module
+        package_module.default_applicable_licenses.add(
+          ancestor_blueprint.get_license_module().name)
+      else:
+        # No ancestor with a license found, this is most likely a non-third
+        # license, just point at Chromium's license in Android.extras.bp.
+        package_module.default_applicable_licenses.add(
+          "external_cronet_license")
+
+    blueprint.set_package_module(package_module)
+
+def create_license_modules(blueprint_paths: List[str]) -> Dict[str, Module]:
+  """
+  Creates license module (if possible) for each blueprint passed, a license
+  module will be created if a README.chromium exists in the same directory as
+  the blueprint.
+
+  :param blueprints: List of paths for all possible blueprints.
+  :return: Dictionary of (path, license_module).
+  """
+  license_modules = {}
+  for path in blueprint_paths:
+    license_module = _maybe_create_license_module(path)
+    if license_module:
+      license_modules[path] = license_module
+  return license_modules
 
 def _break_down_blueprint(top_level_blueprint: Blueprint):
   """
@@ -2233,8 +2344,14 @@ def main():
   project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
   tool_name = os.path.relpath(os.path.abspath(__file__), project_root)
 
-  create_package_module(top_level_blueprint)
   final_blueprints = _break_down_blueprint(top_level_blueprint)
+  license_modules = create_license_modules(final_blueprints)
+  for (path, module) in license_modules.items():
+    final_blueprints[path].set_license_module(module)
+
+  finalize_package_modules(final_blueprints)
+
+
   header = """// Copyright (C) 2022 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

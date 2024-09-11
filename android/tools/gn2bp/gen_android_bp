@@ -357,7 +357,7 @@ def add_espresso_java_deps(module, arch):
   module.static_libs.add("androidx.test.espresso.contrib")
 
 def add_android_test_mock_java_deps(module, arch):
-  module.libs.add("android.test.mock")
+  module.libs.add("android.test.mock.stubs")
 
 def add_androidx_multidex_java_deps(module, arch):
   # Androidx-multidex is disabled on unbundled branches.

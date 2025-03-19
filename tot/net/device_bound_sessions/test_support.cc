@@ -4,11 +4,28 @@
 
 #include "net/device_bound_sessions/test_support.h"
 
+#include <vector>
+
+#include "base/base64url.h"
+#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/values.h"
+#include "crypto/signature_verifier.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
+#include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
+#include "third_party/boringssl/src/include/openssl/ecdsa.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace net::device_bound_sessions {
 
@@ -24,6 +41,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
         "Sec-Session-Registration",
         "(RS256 "
         "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
+    response->set_content_type("text/html");
     return response;
   } else if (request.relative_url == "/dbsc_register_session") {
     response->AddCustomHeader("Set-Cookie", "auth_cookie=abcdef0123;");
@@ -43,8 +61,100 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     EXPECT_TRUE(json.has_value());
     response->set_content(*json);
     return response;
+  } else if (request.relative_url == "/resource_triggered_dbsc_registration") {
+    response->set_content_type("text/html");
+    response->set_content(base::StringPrintf(
+        R"*(<html><body onload="fetch('%s')"></body></html>)*",
+        base_url.Resolve("/dbsc_required").spec()));
+    return response;
   }
   return nullptr;
+}
+
+std::optional<std::vector<uint8_t>> Es256JwkToSpki(
+    const base::Value::Dict& jwk) {
+  const std::string* x = jwk.FindString("x");
+  const std::string* y = jwk.FindString("y");
+  if (!x || !y) {
+    return std::nullopt;
+  }
+
+  std::optional<std::vector<uint8_t>> x_bytes =
+      base::Base64UrlDecode(*x, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
+  std::optional<std::vector<uint8_t>> y_bytes =
+      base::Base64UrlDecode(*y, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
+  if (!x_bytes || !y_bytes) {
+    return std::nullopt;
+  }
+
+  bssl::UniquePtr<EC_KEY> ec_key(
+      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
+  if (!ec_key) {
+    return std::nullopt;
+  }
+
+  bssl::UniquePtr<BIGNUM> x_bn(
+      BN_bin2bn(x_bytes->data(), x_bytes->size(), nullptr));
+  bssl::UniquePtr<BIGNUM> y_bn(
+      BN_bin2bn(y_bytes->data(), y_bytes->size(), nullptr));
+  if (!x_bn || !y_bn) {
+    return std::nullopt;
+  }
+
+  if (!EC_KEY_set_public_key_affine_coordinates(ec_key.get(), x_bn.get(),
+                                                y_bn.get())) {
+    return std::nullopt;
+  }
+
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
+  if (!pkey || !EVP_PKEY_set1_EC_KEY(pkey.get(), ec_key.get())) {
+    return std::nullopt;
+  }
+
+  bssl::ScopedCBB cbb;
+  if (!CBB_init(cbb.get(), 0) ||
+      !EVP_marshal_public_key(cbb.get(), pkey.get())) {
+    return std::nullopt;
+  }
+
+  uint8_t* data;
+  size_t len;
+  if (!CBB_finish(cbb.get(), &data, &len)) {
+    return std::nullopt;
+  }
+
+  bssl::UniquePtr<uint8_t> delete_der(data);
+  // SAFETY: `CBB_finish` uses a C-style API.
+  auto spki_span = UNSAFE_BUFFERS(base::span<const uint8_t>(data, len));
+  return base::ToVector(spki_span);
+}
+
+std::optional<std::vector<uint8_t>> RawSigToDerSig(
+    base::span<const uint8_t> raw_sig) {
+  base::span<const uint8_t> r_bytes = raw_sig.first(32u);
+  base::span<const uint8_t> s_bytes = raw_sig.subspan(32u);
+
+  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(ECDSA_SIG_new());
+  if (!ecdsa_sig) {
+    return std::nullopt;
+  }
+
+  BN_bin2bn(r_bytes.data(), r_bytes.size(), ecdsa_sig->r);
+  BN_bin2bn(s_bytes.data(), s_bytes.size(), ecdsa_sig->s);
+  if (!ecdsa_sig->r || !ecdsa_sig->s) {
+    return std::nullopt;
+  }
+
+  uint8_t* der;
+  size_t der_len;
+  if (!ECDSA_SIG_to_bytes(&der, &der_len, ecdsa_sig.get())) {
+    return std::nullopt;
+  }
+
+  bssl::UniquePtr<uint8_t> delete_der(der);
+  // SAFETY: `ECDSA_SIG_to_bytes` uses a C-style API.
+  auto der_span = UNSAFE_BUFFERS(base::span<const uint8_t>(der, der_len));
+  return base::ToVector(der_span);
 }
 
 }  // namespace
@@ -100,5 +210,122 @@ EmbeddedTestServer::HandleRequestCallback GetTestRequestHandler(
     const GURL& base_url) {
   return base::BindRepeating(&RequestHandler, base_url);
 }
+
+bool VerifyEs256Jwt(std::string_view jwt) {
+  // Parse JWT.
+  std::vector<std::string> jwt_sections =
+      base::SplitString(jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (jwt_sections.size() != 3u) {
+    return false;
+  }
+
+  const std::string& header64 = jwt_sections[0];
+  const std::string& payload64 = jwt_sections[1];
+  const std::string& signature64 = jwt_sections[2];
+
+  std::string payload, signature;
+  if (!base::Base64UrlDecode(
+          payload64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &payload) ||
+      !base::Base64UrlDecode(signature64,
+                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                             &signature)) {
+    return false;
+  }
+
+  // Extract the JWK.
+  const std::optional<base::Value::Dict> payload_json =
+      base::JSONReader::ReadDict(payload);
+  if (!payload_json) {
+    return false;
+  }
+
+  const base::Value::Dict* jwk = payload_json->FindDict("key");
+  if (!jwk) {
+    return false;
+  }
+
+  // `crypto::SignatureVerifier` expects the public key in the
+  // SubjectPublicKeyInfo format and the signature in the DER format, so convert
+  // accordingly.
+  std::optional<std::vector<uint8_t>> spki = Es256JwkToSpki(*jwk);
+  if (!spki) {
+    return false;
+  }
+
+  std::optional<std::vector<uint8_t>> der_sig =
+      RawSigToDerSig(base::as_byte_span((signature)));
+  if (!der_sig) {
+    return false;
+  }
+
+  crypto::SignatureVerifier verifier;
+  verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256, der_sig.value(),
+                      spki.value());
+  verifier.VerifyUpdate(
+      base::as_byte_span(base::StrCat({header64, ".", payload64})));
+  return verifier.VerifyFinal();
+}
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+// static
+ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
+    std::string_view session_id,
+    std::string_view refresh_url_string,
+    std::string_view origin_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](const std::string& session_id, const std::string& refresh_url_string,
+         const std::string& origin_string) {
+        std::vector<SessionParams::Credential> cookie_credentials;
+        cookie_credentials.push_back(
+            SessionParams::Credential{"test_cookie", "secure"});
+        SessionParams::Scope scope;
+        scope.include_site = true;
+        scope.origin = origin_string;
+        return base::expected<SessionParams, SessionError>(SessionParams(
+            session_id, GURL(refresh_url_string), refresh_url_string,
+            std::move(scope), std::move(cookie_credentials),
+            unexportable_keys::UnexportableKeyId()));
+      },
+      std::string(session_id), std::string(refresh_url_string),
+      std::string(origin_string)));
+}
+
+// static
+ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithFailure(
+    SessionError::ErrorType error_type,
+    std::string_view refresh_url_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](SessionError::ErrorType error_type, const GURL& refresh_url) {
+        return base::expected<SessionParams, SessionError>(base::unexpected(
+            SessionError{error_type, net::SchemefulSite(refresh_url),
+                         /*session_id=*/std::nullopt}));
+      },
+      error_type, GURL(refresh_url_string)));
+}
+
+// static
+ScopedTestRegistrationFetcher
+ScopedTestRegistrationFetcher::CreateWithTermination(
+    std::string_view session_id,
+    std::string_view refresh_url_string) {
+  return ScopedTestRegistrationFetcher(base::BindRepeating(
+      [](const std::string& session_id, const std::string& refresh_url_string) {
+        return base::expected<SessionParams, SessionError>(
+            base::unexpected(SessionError{
+                SessionError::ErrorType::kServerRequestedTermination,
+                net::SchemefulSite(GURL(refresh_url_string)), session_id}));
+      },
+      std::string(session_id), std::string(refresh_url_string)));
+}
+
+ScopedTestRegistrationFetcher::ScopedTestRegistrationFetcher(
+    RegistrationFetcher::FetcherType fetcher)
+    : fetcher_(fetcher) {
+  RegistrationFetcher::SetFetcherForTesting(&fetcher_);
+}
+ScopedTestRegistrationFetcher::~ScopedTestRegistrationFetcher() {
+  RegistrationFetcher::SetFetcherForTesting(nullptr);
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 }  // namespace net::device_bound_sessions

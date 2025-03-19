@@ -95,7 +95,7 @@ TlsServerHandshaker::DefaultProofSourceHandle::SelectCertificate(
     const QuicSocketAddress& client_address,
     const QuicConnectionId& /*original_connection_id*/,
     absl::string_view /*ssl_capabilities*/, const std::string& hostname,
-    absl::string_view /*client_hello*/, const std::string& /*alpn*/,
+    const SSL_CLIENT_HELLO& /*client_hello*/, const std::string& /*alpn*/,
     std::optional<std::string> /*alps*/,
     const std::vector<uint8_t>& /*quic_transport_params*/,
     const std::optional<std::vector<uint8_t>>& /*early_data_context*/,
@@ -787,9 +787,7 @@ int TlsServerHandshaker::SessionTicketSeal(uint8_t* out, size_t* out_len,
   QUICHE_DCHECK(proof_source_->GetTicketCrypter());
   std::vector<uint8_t> ticket =
       proof_source_->GetTicketCrypter()->Encrypt(in, ticket_encryption_key_);
-  if (GetQuicReloadableFlag(
-          quic_send_placeholder_ticket_when_encrypt_ticket_fails) &&
-      ticket.empty()) {
+  if (ticket.empty()) {
     QUIC_CODE_COUNT(quic_tls_server_handshaker_send_placeholder_ticket);
     const absl::string_view kTicketFailurePlaceholder = "TICKET FAILURE";
     const absl::string_view kTicketWithSizeLimit =
@@ -951,6 +949,13 @@ ssl_select_cert_result_t TlsServerHandshaker::EarlySelectCertCallback(
 
     if (use_alps_new_codepoint == 0) {
       QUIC_CODE_COUNT(quic_gfe_alps_use_old_codepoint);
+
+      // Record whether the client sets the old alps codepoint extension.
+      if (SSL_early_callback_ctx_extension_get(
+              client_hello, TLSEXT_TYPE_application_settings_old,
+              &unused_extension_bytes, &unused_extension_len)) {
+        QUIC_CODE_COUNT(quic_gfe_alps_old_codepoint_received);
+      }
     }
   }
 
@@ -974,8 +979,6 @@ ssl_select_cert_result_t TlsServerHandshaker::EarlySelectCertCallback(
     } else {
       QUIC_CODE_COUNT(quic_tls_server_hostname_same);
     }
-  } else {
-    QUIC_LOG(INFO) << "No hostname indicated in SNI";
   }
 
   std::string error_details;
@@ -1024,10 +1027,7 @@ ssl_select_cert_result_t TlsServerHandshaker::EarlySelectCertCallback(
       session()->connection()->self_address().Normalized(),
       session()->connection()->peer_address().Normalized(),
       session()->connection()->GetOriginalDestinationConnectionId(),
-      ssl_capabilities_view, crypto_negotiated_params_->sni,
-      absl::string_view(
-          reinterpret_cast<const char*>(client_hello->client_hello),
-          client_hello->client_hello_len),
+      ssl_capabilities_view, crypto_negotiated_params_->sni, *client_hello,
       AlpnForVersion(session()->version()), std::move(alps_result.alps_buffer),
       set_transport_params_result.quic_transport_params,
       set_transport_params_result.early_data_context,
@@ -1122,6 +1122,8 @@ void TlsServerHandshaker::OnSelectCertificateDone(
                 std::move(hints_config->configure_ssl));
             !status.ok()) {
           QUIC_CODE_COUNT(quic_tls_server_set_handshake_hints_failed);
+          QUIC_TRACESTRING(
+              absl::StrCat("ConfigureSSL failed: ", status.ToString()));
           QUIC_DVLOG(1) << "SSL_set_handshake_hints failed: " << status;
         }
         select_cert_status_ = QUIC_SUCCESS;

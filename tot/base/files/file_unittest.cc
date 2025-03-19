@@ -384,7 +384,7 @@ TEST(FileTest, Append) {
 
   // Test passing the file around.
   file = std::move(file2);
-  EXPECT_FALSE(file2.IsValid());
+  EXPECT_FALSE(file2.IsValid());  // NOLINT(bugprone-use-after-move)
   ASSERT_TRUE(file.IsValid());
 
   char append_data_to_write[] = "78";
@@ -639,12 +639,12 @@ TEST(FileTest, WriteAtCurrentPositionSpans) {
 
   std::string data("test");
   size_t first_chunk_size = data.size() / 2;
-  std::optional<size_t> result =
-      file.WriteAtCurrentPos(as_byte_span(data).first(first_chunk_size));
+  const auto [first, second] = as_byte_span(data).split_at(first_chunk_size);
+  std::optional<size_t> result = file.WriteAtCurrentPos(first);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(first_chunk_size, result.value());
 
-  result = file.WriteAtCurrentPos(as_byte_span(data).subspan(first_chunk_size));
+  result = file.WriteAtCurrentPos(second);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(first_chunk_size, result.value());
 

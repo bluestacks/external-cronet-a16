@@ -1,3 +1,17 @@
+# Copyright 2014 The BoringSSL Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 cmake_minimum_required(VERSION 3.16)
 
 # Defer enabling C and CXX languages.
@@ -97,7 +111,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
   set(EMSCRIPTEN 1)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -188,6 +202,8 @@ elseif(MSVC)
       "C4244" # 'function' : conversion from 'int' to 'uint8_t',
               # possible loss of data
       "C4267" # conversion from 'size_t' to 'int', possible loss of data
+      "C4702" # unreachable code; MSVC's warning is too aggressive. See
+              # https://crbug.com/385161043
       "C4706" # assignment within conditional expression
       )
   string(REPLACE "C" " -wd" MSVC_DISABLED_WARNINGS_STR
@@ -533,7 +549,7 @@ if(FIPS_DELOCATE)
     set(TARGET_FLAG "--target=${CMAKE_ASM_COMPILER_TARGET}")
   endif()
 
-  go_executable(delocate boringssl.googlesource.com/boringssl/util/fipstools/delocate)
+  go_executable(delocate boringssl.googlesource.com/boringssl.git/util/fipstools/delocate)
   add_custom_command(
     OUTPUT bcm-delocated.S
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/delocate
@@ -555,7 +571,7 @@ if(FIPS_DELOCATE)
   set_target_properties(bcm_hashunset PROPERTIES LINKER_LANGUAGE C)
 
   go_executable(inject_hash
-                boringssl.googlesource.com/boringssl/util/fipstools/inject_hash)
+                boringssl.googlesource.com/boringssl.git/util/fipstools/inject_hash)
   add_custom_command(
     OUTPUT bcm.o
     COMMAND ./inject_hash -o bcm.o -in-archive $<TARGET_FILE:bcm_hashunset>
@@ -689,13 +705,9 @@ add_executable(pki_test ${PKI_TEST_SOURCES})
 target_link_libraries(pki_test test_support_lib boringssl_gtest pki crypto)
 add_dependencies(all_tests pki_test)
 
-# The PKI library requires C++17, but we haven't required this everywhere yet.
-# TODO(crbug.com/42290600): Remove the C++17 bits.
 set_target_properties(
   pki pki_test
   PROPERTIES
-  CXX_STANDARD 17
-  CXX_STANDARD_REQUIRED YES
   COMPILE_FLAGS "${PKI_CXX_FLAGS}")
 
 add_executable(bssl ${BSSL_SOURCES})
@@ -718,10 +730,6 @@ if(FUZZ)
     set_target_properties(
       Fuzzer PROPERTIES
       COMPILE_FLAGS "-Wno-shadow -Wno-format-nonliteral -Wno-missing-prototypes -fsanitize-coverage=0"
-      # libFuzzer requires C++17, but we haven't required this everywhere yet.
-      # TODO(crbug.com/42290600): Remove this.
-      CXX_STANDARD 17
-      CXX_STANDARD_REQUIRED TRUE
     )
   endif()
 
@@ -745,9 +753,9 @@ if(FIPS)
   add_custom_target(
     acvp_tests
     COMMAND ${GO_EXECUTABLE} build -o ${CMAKE_CURRENT_BINARY_DIR}/acvptool
-            boringssl.googlesource.com/boringssl/util/fipstools/acvp/acvptool
+            boringssl.googlesource.com/boringssl.git/util/fipstools/acvp/acvptool
     COMMAND ${GO_EXECUTABLE} build -o ${CMAKE_CURRENT_BINARY_DIR}/testmodulewrapper
-            boringssl.googlesource.com/boringssl/util/fipstools/acvp/acvptool/testmodulewrapper
+            boringssl.googlesource.com/boringssl.git/util/fipstools/acvp/acvptool/testmodulewrapper
     COMMAND cd util/fipstools/acvp/acvptool/test &&
             ${GO_EXECUTABLE} run check_expected.go
             -tool ${CMAKE_CURRENT_BINARY_DIR}/acvptool

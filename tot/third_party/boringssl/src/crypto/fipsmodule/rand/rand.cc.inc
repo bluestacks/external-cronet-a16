@@ -1,16 +1,16 @@
-/* Copyright (c) 2014, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright 2014 The BoringSSL Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include <assert.h>
 #include <limits.h>
@@ -53,6 +53,7 @@ static const unsigned kReseedInterval = 4096;
 // continuous random number generator test in FIPS 140-2, section 4.9.2.
 #define CRNGT_BLOCK_SIZE 16
 
+namespace {
 // rand_thread_state contains the per-thread state for the RNG.
 struct rand_thread_state {
   CTR_DRBG_STATE drbg;
@@ -79,6 +80,7 @@ struct rand_thread_state {
   CRYPTO_MUTEX clear_drbg_lock;
 #endif
 };
+}  // namespace
 
 #if defined(BORINGSSL_FIPS)
 // thread_states_list is the head of a linked-list of all |rand_thread_state|
@@ -169,12 +171,12 @@ static int rdrand(uint8_t *buf, size_t len) { return 0; }
 
 bcm_status BCM_rand_bytes_hwrng(uint8_t *buf, const size_t len) {
   if (!have_rdrand()) {
-    return bcm_status_failure;
+    return bcm_status::failure;
   }
   if (rdrand(buf, len)) {
-    return bcm_status_not_approved;
+    return bcm_status::not_approved;
   }
-  return bcm_status_failure;
+  return bcm_status::failure;
 }
 
 #if defined(BORINGSSL_FIPS)
@@ -213,7 +215,7 @@ bcm_infallible BCM_rand_load_entropy(const uint8_t *entropy, size_t entropy_len,
   buffer->bytes_valid += entropy_len;
   buffer->want_additional_input |= want_additional_input && (entropy_len != 0);
   CRYPTO_MUTEX_unlock_write(entropy_buffer_lock_bss_get());
-  return bcm_infallible_not_approved;
+  return bcm_infallible::not_approved;
 }
 
 // get_seed_entropy fills |out_entropy_len| bytes of |out_entropy| from the
@@ -330,7 +332,7 @@ static void rand_get_seed(struct rand_thread_state *state,
 bcm_infallible BCM_rand_bytes_with_additional_data(
     uint8_t *out, size_t out_len, const uint8_t user_additional_data[32]) {
   if (out_len == 0) {
-    return bcm_infallible_approved;
+    return bcm_infallible::approved;
   }
 
   const uint64_t fork_generation = CRYPTO_get_fork_generation();
@@ -471,11 +473,11 @@ bcm_infallible BCM_rand_bytes_with_additional_data(
 #if defined(BORINGSSL_FIPS)
   CRYPTO_MUTEX_unlock_read(&state->clear_drbg_lock);
 #endif
-  return bcm_infallible_approved;
+  return bcm_infallible::approved;
 }
 
 bcm_infallible BCM_rand_bytes(uint8_t *out, size_t out_len) {
   static const uint8_t kZeroAdditionalData[32] = {0};
   BCM_rand_bytes_with_additional_data(out, out_len, kZeroAdditionalData);
-  return bcm_infallible_approved;
+  return bcm_infallible::approved;
 }

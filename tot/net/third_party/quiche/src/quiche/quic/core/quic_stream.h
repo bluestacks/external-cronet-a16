@@ -181,9 +181,21 @@ class QUICHE_EXPORT QuicStream : public QuicStreamSequencer::StreamInterface {
   // interface.
   void Reset(QuicRstStreamErrorCode error);
 
-  // Reset() sends both RESET_STREAM and STOP_SENDING; the two methods below
-  // allow to send only one of those.
+  // Record the current offset as the reliable size to be delivered if a partial
+  // reset is called. Returns false if a RST_STREAM or RESET_STREAM_AT has
+  // already been sent, the stream is receive-only, or the connection does not
+  // support RESET_STREAM_AT.
+  bool SetReliableSize();
+
+  // Send a RESET_STREAM_AT with a reliable size that had earlier been set by
+  // SetReliableSize(). Does not send STOP_SENDING and does not close the read
+  // side. Will trigger QUIC_BUG if reliable_size_ is zero.
+  void PartialResetWriteSide(QuicResetStreamError error);
+  // TODO(rch): Delete this function once Envoy has migrated to
+  // PartialResetWriteSide.
   void ResetWriteSide(QuicResetStreamError error);
+  // Reset() sends both RESET_STREAM and STOP_SENDING; this allows the caller to
+  // send only STOP_SENDING.
   void SendStopSending(QuicResetStreamError error);
 
   // Called by the subclass or the sequencer to close the entire connection from
@@ -347,7 +359,8 @@ class QUICHE_EXPORT QuicStream : public QuicStreamSequencer::StreamInterface {
                                   QuicByteCount data_length, bool fin_acked,
                                   QuicTime::Delta ack_delay_time,
                                   QuicTime receive_timestamp,
-                                  QuicByteCount* newly_acked_length);
+                                  QuicByteCount* newly_acked_length,
+                                  bool is_retransmission);
 
   // Called when data [offset, offset + data_length) was retransmitted.
   // |fin_retransmitted| indicates whether fin was retransmitted.
@@ -412,6 +425,9 @@ class QUICHE_EXPORT QuicStream : public QuicStreamSequencer::StreamInterface {
   // indicating it can start processing data.
   void OnStreamCreatedFromPendingStream();
 
+  // Called by the sessionwhen a closed stream is about to be destroyed.
+  virtual void OnSoonToBeDestroyed();
+
   void DisableConnectionFlowControlForThisStream() {
     stream_contributes_to_connection_flow_control_ = false;
   }
@@ -467,6 +483,8 @@ class QUICHE_EXPORT QuicStream : public QuicStreamSequencer::StreamInterface {
 
   // Send RESET_STREAM if it hasn't been sent yet.
   void MaybeSendRstStream(QuicResetStreamError error);
+  // Send RESET_STREAM_AT if neither it nor RESET_STREAM has been sent yet.
+  void MaybeSendResetStreamAt(QuicResetStreamError error);
 
   // Convenience wrappers for two methods above.
   void MaybeSendRstStream(QuicRstStreamErrorCode error) {
@@ -489,7 +507,8 @@ class QUICHE_EXPORT QuicStream : public QuicStreamSequencer::StreamInterface {
                               QuicByteCount data_length,
                               QuicByteCount newly_acked_length,
                               QuicTime receive_timestamp,
-                              QuicTime::Delta ack_delay_time);
+                              QuicTime::Delta ack_delay_time,
+                              bool is_retransmission);
 
   void set_rst_received(bool rst_received) { rst_received_ = rst_received; }
   void set_stream_error(QuicResetStreamError error) { stream_error_ = error; }
@@ -593,10 +612,11 @@ class QUICHE_EXPORT QuicStream : public QuicStreamSequencer::StreamInterface {
   // StreamFrame with the FIN set.
   bool fin_received_;
 
-  // True if an RST_STREAM has been sent to the session.
-  // In combination with fin_sent_, used to ensure that a FIN and/or a
-  // RST_STREAM is always sent to terminate the stream.
+  // True if an RST_STREAM or RESET_STREAM_AT has been sent to the session.
+  // In combination with fin_sent_, used to ensure that a FIN, RST_STREAM, or
+  // RESET_STREAM_AT is always sent to terminate the stream.
   bool rst_sent_;
+  bool rst_stream_at_sent_;
 
   // True if this stream has received a RST_STREAM frame.
   bool rst_received_;
@@ -657,6 +677,10 @@ class QUICHE_EXPORT QuicStream : public QuicStreamSequencer::StreamInterface {
 
   const bool notify_ack_listener_earlier_ =
       GetQuicReloadableFlag(quic_notify_ack_listener_earlier);
+
+  // If the stream is reset, outgoing data up to reliable_size_will be
+  // delivered (and acknowledged) before the write side of the stream is closed.
+  QuicStreamOffset reliable_size_;
 };
 
 }  // namespace quic

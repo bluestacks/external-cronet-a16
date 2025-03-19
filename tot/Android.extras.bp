@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This is manually maintained and automatically included into the Android.bp by the gn2bp script.
-
 license {
     name: "tot_cronet_license",
     license_kinds: [
@@ -44,7 +42,6 @@ license {
 }
 
 java_library {
-    // Don't change the name of the module.
     name: "tot_cronet_api_java",
     static_libs: [
         "tot_cronet_components_cronet_android_cronet_api_java",
@@ -61,11 +58,10 @@ java_library {
 }
 
 java_library {
-    // Don't change the name of the module.
     name: "tot_cronet_java",
     static_libs: [
         "tot_cronet_components_cronet_android_cronet_impl_native_java",
-        "tot_cronet_components_cronet_android_cronet_jni_registration_java",
+        "tot_cronet_components_cronet_android_cronet_build_config_and_jni_registration_java",
     ],
     sdk_version: "module_current",
     min_sdk_version: "30",
@@ -79,11 +75,10 @@ java_library {
 }
 
 java_library {
-    // Don't change the name of the module.
     name: "tot_cronet_java__testing",
     static_libs: [
         "tot_cronet_components_cronet_android_cronet_impl_native_java__testing",
-        "tot_cronet_components_cronet_android_cronet_jni_registration_java__testing",
+        "tot_cronet_components_cronet_android_cronet_build_config_and_jni_registration_java__testing",
         "tot_cronet_components_cronet_android_cronet_tests_jni_registration_java__testing",
     ],
     sdk_version: "module_current",
@@ -169,12 +164,12 @@ java_defaults {
     ],
 }
 
-// the current rust_bindgen modules does not have a `include_dirs` attribute which means
-// that the CC header generated from the rust_bindgen will not be allowed to reference
-// other headers through relative path from repository root like how Chromium does, so
-// in order to circumvent this issue, this module exists in order to allow
-// rust_bindgen module access to include header files  using the relative path
-// from the repository root.
+// rust_bindgen modules do not have an `include_dirs` attribute. Due to that,
+// C++ headers generated from rust_bindgen can't reference other headers
+// through paths relative to the repository root. This is what Chromium does
+// so, to circumvent this issue, create this module that adds the root of the
+// repository to `include_dirs`. This will be added to all modules depending
+// on a rust_bindgen module.
 cc_library_headers {
     name: "tot_cronet_repository_root_include_dirs_anchor",
     host_supported: true,

@@ -79,7 +79,7 @@ enable_cronet_tot_java_defaults {
         enable_cronet_tot: {
             static_libs: [
                 "tot_cronet_components_cronet_android_cronet_impl_native_java",
-                "tot_cronet_components_cronet_android_cronet_jni_registration_java",
+                "tot_cronet_components_cronet_android_cronet_build_config_and_jni_registration_java",
             ],
             conditions_default: {
                 static_libs: [
@@ -97,7 +97,7 @@ enable_cronet_tot_java_defaults {
         enable_cronet_tot: {
             static_libs: [
                 "tot_cronet_components_cronet_android_cronet_impl_native_java__testing",
-                "tot_cronet_components_cronet_android_cronet_jni_registration_java__testing",
+                "tot_cronet_components_cronet_android_cronet_build_config_and_jni_registration_java__testing",
                 "tot_cronet_components_cronet_android_cronet_tests_jni_registration_java__testing",
             ],
             conditions_default: {

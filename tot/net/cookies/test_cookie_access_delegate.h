@@ -37,8 +37,8 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   // CookieAccessDelegate implementation:
   CookieAccessSemantics GetAccessSemantics(
       const CanonicalCookie& cookie) const override;
-  CookieLegacyScope GetAccessForLegacyCookieScope(
-      const CanonicalCookie& cookie) const override;
+  CookieScopeSemantics GetScopeSemantics(
+      const std::string_view domain) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
@@ -63,6 +63,12 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   // leading dot will be discarded.
   void SetExpectationForCookieDomain(const std::string& cookie_domain,
                                      CookieAccessSemantics access_semantics);
+
+  // Sets the expected return value for Cookie Scoped Semantics for any cookie
+  // whose Domain matches `cookie_domain`. Pass the value of `cookie.Domain()`
+  // and any leading dot will be discarded.
+  void SetExpectationForCookieScope(const std::string_view& cookie_domain,
+                                    CookieScopeSemantics scoped_semantics);
 
   // Sets the expected return value for ShouldAlwaysAttachSameSiteCookies.
   // Can set schemes that always attach SameSite cookies, or schemes that always
@@ -99,7 +105,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
                                  base::OnceCallback<void(T)> callback) const;
 
   std::map<std::string, CookieAccessSemantics> expectations_;
-  std::map<std::string, CookieLegacyScope> expectations_legacy_;
+  std::map<SchemefulSite, CookieScopeSemantics> expectations_scoped_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
   base::flat_map<SchemefulSite, FirstPartySetEntry> first_party_sets_;
   FirstPartySetsCacheFilter first_party_sets_cache_filter_;

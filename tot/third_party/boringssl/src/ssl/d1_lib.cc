@@ -1,58 +1,16 @@
-/*
- * DTLS implementation written by Nagendra Modadugu
- * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
- */
-/* ====================================================================
- * Copyright (c) 1999-2005 The OpenSSL Project.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. All advertising materials mentioning features or use of this
- *    software must display the following acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
- *
- * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
- *    endorse or promote products derived from this software without
- *    prior written permission. For written permission, please contact
- *    openssl-core@OpenSSL.org.
- *
- * 5. Products derived from this software may not be called "OpenSSL"
- *    nor may "OpenSSL" appear in their names without prior written
- *    permission of the OpenSSL Project.
- *
- * 6. Redistributions of any form whatsoever must retain the following
- *    acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
- *
- * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ====================================================================
- *
- * This product includes cryptographic software written by Eric Young
- * (eay@cryptsoft.com).  This product includes software written by Tim
- * Hudson (tjh@cryptsoft.com). */
+// Copyright 2005-2016 The OpenSSL Project Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include <openssl/ssl.h>
 
@@ -70,18 +28,15 @@
 
 BSSL_NAMESPACE_BEGIN
 
-// DTLS1_MTU_TIMEOUTS is the maximum number of timeouts to expire
-// before starting to decrease the MTU.
-#define DTLS1_MTU_TIMEOUTS 2
-
-// DTLS1_MAX_TIMEOUTS is the maximum number of timeouts to expire
-// before failing the DTLS handshake.
-#define DTLS1_MAX_TIMEOUTS 12
-
 DTLS1_STATE::DTLS1_STATE()
     : has_change_cipher_spec(false),
       outgoing_messages_complete(false),
-      flight_has_reply(false) {}
+      flight_has_reply(false),
+      handshake_write_overflow(false),
+      handshake_read_overflow(false),
+      sending_flight(false),
+      sending_ack(false),
+      queued_key_update(QueuedKeyUpdate::kNone) {}
 
 DTLS1_STATE::~DTLS1_STATE() {}
 
@@ -185,50 +140,10 @@ uint64_t DTLSTimer::MicrosecondsRemaining(OPENSSL_timeval now) const {
   return sec + usec;
 }
 
-void dtls1_start_timer(SSL *ssl) {
-  // If timer is not set, initialize duration.
-  if (!ssl->d1->retransmit_timer.IsSet()) {
-    ssl->d1->timeout_duration_ms = ssl->initial_timeout_duration_ms;
-  }
-
-  OPENSSL_timeval now = ssl_ctx_get_current_time(ssl->ctx.get());
-  ssl->d1->retransmit_timer.StartMicroseconds(
-      now, uint64_t{ssl->d1->timeout_duration_ms} * 1000);
-}
-
-static void dtls1_double_timeout(SSL *ssl) {
-  ssl->d1->timeout_duration_ms *= 2;
-  if (ssl->d1->timeout_duration_ms > 60000) {
-    ssl->d1->timeout_duration_ms = 60000;
-  }
-}
-
 void dtls1_stop_timer(SSL *ssl) {
   ssl->d1->num_timeouts = 0;
   ssl->d1->retransmit_timer.Stop();
   ssl->d1->timeout_duration_ms = ssl->initial_timeout_duration_ms;
-}
-
-bool dtls1_check_timeout_num(SSL *ssl) {
-  ssl->d1->num_timeouts++;
-
-  // Reduce MTU after 2 unsuccessful retransmissions
-  if (ssl->d1->num_timeouts > DTLS1_MTU_TIMEOUTS &&
-      !(SSL_get_options(ssl) & SSL_OP_NO_QUERY_MTU)) {
-    long mtu =
-        BIO_ctrl(ssl->wbio.get(), BIO_CTRL_DGRAM_GET_FALLBACK_MTU, 0, nullptr);
-    if (mtu >= 0 && mtu <= (1 << 30) && (unsigned)mtu >= dtls1_min_mtu()) {
-      ssl->d1->mtu = (unsigned)mtu;
-    }
-  }
-
-  if (ssl->d1->num_timeouts > DTLS1_MAX_TIMEOUTS) {
-    // fail the connection, enough alerts have been sent
-    OPENSSL_PUT_ERROR(SSL, SSL_R_READ_TIMEOUT_EXPIRED);
-    return false;
-  }
-
-  return true;
 }
 
 BSSL_NAMESPACE_END
@@ -285,25 +200,30 @@ int DTLSv1_handle_timeout(SSL *ssl) {
   bool any_timer_expired = false;
   if (ssl->d1->ack_timer.IsExpired(now)) {
     any_timer_expired = true;
-    int ret = dtls1_send_ack(ssl);
-    if (ret <= 0) {
-      return ret;
-    }
+    ssl->d1->sending_ack = true;
+    ssl->d1->ack_timer.Stop();
   }
 
   if (ssl->d1->retransmit_timer.IsExpired(now)) {
     any_timer_expired = true;
-    if (!dtls1_check_timeout_num(ssl)) {
-      return -1;
-    }
+    ssl->d1->sending_flight = true;
+    ssl->d1->retransmit_timer.Stop();
 
-    dtls1_double_timeout(ssl);
-    dtls1_start_timer(ssl);
-    int ret = dtls1_retransmit_outgoing_messages(ssl);
-    if (ret <= 0) {
-      return ret;
+    ssl->d1->num_timeouts++;
+    // Reduce MTU after 2 unsuccessful retransmissions.
+    if (ssl->d1->num_timeouts > DTLS1_MTU_TIMEOUTS &&
+        !(SSL_get_options(ssl) & SSL_OP_NO_QUERY_MTU)) {
+      long mtu = BIO_ctrl(ssl->wbio.get(), BIO_CTRL_DGRAM_GET_FALLBACK_MTU, 0,
+                          nullptr);
+      if (mtu >= 0 && mtu <= (1 << 30) && (unsigned)mtu >= dtls1_min_mtu()) {
+        ssl->d1->mtu = (unsigned)mtu;
+      }
     }
   }
 
-  return any_timer_expired ? 1 : 0;
+  if (!any_timer_expired) {
+    return 0;
+  }
+
+  return dtls1_flush(ssl);
 }

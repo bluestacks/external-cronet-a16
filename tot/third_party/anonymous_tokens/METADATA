@@ -3,10 +3,10 @@
 name: "Anonymous Tokens"
 third_party {
   license_type: NOTICE
-  version: "6ea6ec78f9e4998d0a7a5677b2aec08f0ac858f8"
+  version: "2e328dd4eace9648adcc943cac6a1792b5dcdec5"
   identifier {
     value: "https://github.com/google/anonymous-tokens"
     type: "Git"
-    version: "6ea6ec78f9e4998d0a7a5677b2aec08f0ac858f8"
+    version: "2e328dd4eace9648adcc943cac6a1792b5dcdec5"
   }
 }

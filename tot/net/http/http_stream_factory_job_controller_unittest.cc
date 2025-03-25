@@ -404,7 +404,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
                              AlternativeService alternative_service) {
     url::SchemeHostPort server(request_info.url);
     base::Time expiration = base::Time::Now() + base::Days(1);
-    if (alternative_service.protocol == kProtoQUIC) {
+    if (alternative_service.protocol == NextProto::kProtoQUIC) {
       session_->http_server_properties()->SetQuicAlternativeService(
           server, NetworkAnonymizationKey(), alternative_service, expiration,
           quic_context_.params()->supported_versions);
@@ -2283,7 +2283,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, CancelJobsBeforeBinding) {
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -2315,7 +2316,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(), alternative_service, expiration,
@@ -2348,7 +2350,8 @@ void HttpStreamFactoryJobControllerTestBase::
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(), alternative_service, expiration,
@@ -2424,7 +2427,8 @@ void HttpStreamFactoryJobControllerTestBase::
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(), alternative_service, expiration,
@@ -2505,7 +2509,8 @@ void HttpStreamFactoryJobControllerTestBase::TestOnStreamFailedForBothJobs(
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -2586,7 +2591,8 @@ void HttpStreamFactoryJobControllerTestBase::
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -2679,7 +2685,8 @@ void HttpStreamFactoryJobControllerTestBase::TestAltJobSucceedsMainJobDestroyed(
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
   request_ =
       job_controller_->Start(&request_delegate_, nullptr, net_log_with_source_,
@@ -2737,7 +2744,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
   request_ =
       job_controller_->Start(&request_delegate_, nullptr, net_log_with_source_,
@@ -2778,8 +2786,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoHTTP2, alternative_host,
-                                         alternative_port);
+  AlternativeService alternative_service(NextProto::kProtoHTTP2,
+                                         alternative_host, alternative_port);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -2798,6 +2806,55 @@ TEST_P(HttpStreamFactoryJobControllerTest,
           .host_port_pair();
   EXPECT_EQ(origin_host, alternative_host_port_pair.host());
   EXPECT_EQ(origin_port, alternative_host_port_pair.port());
+}
+
+// Regression test for crbug.com/395919017.
+// Test that a Job calls HttpServerProperties::SetSupportsSpdy() for an IPv6
+// host appropriately.
+TEST_P(HttpStreamFactoryJobControllerTest, SupportsSpdyIPv6Destination) {
+  // Make sure there is only one socket connect.
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  tcp_data_ = std::make_unique<SequencedSocketData>(reads, writes);
+  // connect needs to be async, so the H2 session isn't created immediately.
+  tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://[2001:db8::1]");
+  Initialize(request_info);
+
+  // Start a request.
+  std::unique_ptr<HttpStreamRequest> stream_request = job_controller_->Start(
+      &request_delegate_, nullptr /* websocket_handshake_create_helper */,
+      NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _));
+
+  // Wait for an H2 session creation.
+  FastForwardUntilNoTasksRemain();
+
+  stream_request.reset();
+
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+
+  // Check that the SpdySession was created.
+  base::WeakPtr<SpdySession> spdy_session =
+      session_->spdy_session_pool()->FindAvailableSession(
+          SpdySessionKey(HostPortPair::FromURL(request_info.url),
+                         request_info.privacy_mode, ProxyChain::Direct(),
+                         SessionUsage::kDestination, request_info.socket_tag,
+                         request_info.network_anonymization_key,
+                         request_info.secure_dns_policy,
+                         /*disable_cert_verification_network_fetches=*/false),
+          /*enable_ip_based_pooling=*/false, /*is_websocket=*/false,
+          NetLogWithSource());
+  EXPECT_TRUE(spdy_session);
+
+  EXPECT_TRUE(session_->http_server_properties()->GetSupportsSpdy(
+      url::SchemeHostPort(request_info.url),
+      request_info.network_anonymization_key));
 }
 
 void HttpStreamFactoryJobControllerTestBase::
@@ -2821,7 +2878,8 @@ void HttpStreamFactoryJobControllerTestBase::
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -2895,7 +2953,8 @@ void HttpStreamFactoryJobControllerTestBase::
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // |main_job| fails but should not report status to Request.
@@ -2991,7 +3050,8 @@ void HttpStreamFactoryJobControllerTestBase::
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // |main_job| fails but should not report status to Request.
@@ -3100,7 +3160,8 @@ void HttpStreamFactoryJobControllerTestBase::
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3205,7 +3266,8 @@ void HttpStreamFactoryJobControllerTestBase::
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3298,7 +3360,8 @@ void HttpStreamFactoryJobControllerTestBase::
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3391,7 +3454,8 @@ void HttpStreamFactoryJobControllerTestBase::
   if (alternate_host.empty()) {
     alternate_host = server.host();
   }
-  AlternativeService alternative_service(kProtoQUIC, alternate_host, 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, alternate_host,
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3500,7 +3564,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetLoadStateAfterMainJobFailed) {
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3551,7 +3616,8 @@ void HttpStreamFactoryJobControllerTestBase::TestResumeMainJobWhenAltJobStalls(
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3589,7 +3655,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, InvalidPortForQuic) {
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 101);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         101);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3634,7 +3701,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
       NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // This prevents handshake from immediately succeeding.
@@ -3711,7 +3779,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
       NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -3788,7 +3857,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
       NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // This prevents handshake from immediately succeeding.
@@ -3851,7 +3921,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
       NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // This prevents handshake from immediately succeeding.
@@ -3907,7 +3978,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   job_controller_->Preconnect(1);
@@ -4082,7 +4154,8 @@ void HttpStreamFactoryJobControllerTestBase::
       NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // This prevents handshake from immediately succeeding.
@@ -4138,7 +4211,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
   // connect needs to be async, so the H2 session isn't created immediately.
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -4226,7 +4299,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
   // This is used for the non-preconnect requests.
   SSLSocketDataProvider ssl_data1(ASYNC, OK);
-  ssl_data1.next_proto = kProtoHTTP2;
+  ssl_data1.next_proto = NextProto::kProtoHTTP2;
   // "wildcard.pem" supports "*.example.org".
   ssl_data1.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
@@ -4368,7 +4441,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequests) {
       std::make_unique<SequencedSocketData>(reads, base::span<MockWrite>());
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -4538,7 +4611,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequestsFirstRequestHang) {
     socket_data.back().set_connect_data(MockConnect(ASYNC, OK));
     session_deps_.socket_factory->AddSocketDataProvider(&socket_data.back());
     ssl_socket_data.emplace_back(ASYNC, OK);
-    ssl_socket_data.back().next_proto = kProtoHTTP2;
+    ssl_socket_data.back().next_proto = NextProto::kProtoHTTP2;
     session_deps_.socket_factory->AddSSLSocketDataProvider(
         &ssl_socket_data.back());
   }
@@ -4601,7 +4674,7 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   SequencedSocketData first_socket(reads, base::span<MockWrite>());
   first_socket.set_connect_data(MockConnect(ASYNC, OK));
   SSLSocketDataProvider first_ssl_data(ASYNC, OK);
-  first_ssl_data.next_proto = kProtoHTTP2;
+  first_ssl_data.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSocketDataProvider(&first_socket);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&first_ssl_data);
   std::list<SequencedSocketData> socket_data;
@@ -4612,7 +4685,7 @@ TEST_F(JobControllerLimitMultipleH2Requests,
     socket_data.back().set_connect_data(MockConnect(ASYNC, OK));
     session_deps_.socket_factory->AddSocketDataProvider(&socket_data.back());
     ssl_socket_data.emplace_back(ASYNC, OK);
-    ssl_socket_data.back().next_proto = kProtoHTTP2;
+    ssl_socket_data.back().next_proto = NextProto::kProtoHTTP2;
     session_deps_.socket_factory->AddSSLSocketDataProvider(
         &ssl_socket_data.back());
   }
@@ -4674,7 +4747,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultiplePreconnects) {
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -4721,7 +4794,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, H1NegotiatedForFirstRequest) {
   second_socket.set_connect_data(MockConnect(ASYNC, OK));
   session_deps_.socket_factory->AddSocketDataProvider(&second_socket);
   SSLSocketDataProvider second_ssl_data(ASYNC, OK);
-  second_ssl_data.next_proto = kProtoHTTP2;
+  second_ssl_data.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&second_ssl_data);
 
   HttpRequestInfo request_info;
@@ -4783,7 +4856,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, QuicJobNotThrottled) {
 
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
 
   HttpRequestInfo request_info;
@@ -4796,7 +4869,8 @@ TEST_F(JobControllerLimitMultipleH2Requests, QuicJobNotThrottled) {
 
   url::SchemeHostPort server(request_info.url);
   // Sets server supports QUIC.
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // Sets server support HTTP/2.
@@ -4872,7 +4946,8 @@ TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -4977,7 +5052,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
 
   Initialize(request_info);
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   base::Time expiration = base::Time::Now() + base::Days(1);
 
   // Set alternative service with no advertised version.
@@ -5064,7 +5140,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
       job_controller_, request_info, &request_delegate_,
       HttpStreamRequest::HTTP_STREAM);
   // Verify that JobController returns no valid alternative service.
-  EXPECT_EQ(kProtoUnknown, alt_svc_info.alternative_service().protocol);
+  EXPECT_EQ(NextProto::kProtoUnknown,
+            alt_svc_info.alternative_service().protocol);
   EXPECT_EQ(0u, alt_svc_info.advertised_versions().size());
 }
 
@@ -5158,8 +5235,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
       quic_context_.params()->supported_versions;
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(),
-      AlternativeService(kProtoQUIC, "www.example.com", 443), expiration,
-      supported_versions);
+      AlternativeService(NextProto::kProtoQUIC, "www.example.com", 443),
+      expiration, supported_versions);
 
   // Simulate proxy resolution succeeding, after which
   // GetAlternativeServiceInfoFor can be called.
@@ -5182,19 +5259,20 @@ TEST_P(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
       [](const quic::ParsedQuicVersion& a, const quic::ParsedQuicVersion& b) {
         return a.transport_version < b.transport_version;
       });
-  EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
+  EXPECT_EQ(NextProto::kProtoQUIC, alt_svc_info.alternative_service().protocol);
   EXPECT_EQ(supported_versions, advertised_versions);
 
   session_->http_server_properties()->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(),
-      AlternativeService(kProtoQUIC, "www.example.org", 443), expiration,
-      supported_versions);
+      AlternativeService(NextProto::kProtoQUIC, "www.example.org", 443),
+      expiration, supported_versions);
 
   alt_svc_info = JobControllerPeer::GetAlternativeServiceInfoFor(
       job_controller_, request_info, &request_delegate_,
       HttpStreamRequest::HTTP_STREAM);
 
-  EXPECT_EQ(kProtoUnknown, alt_svc_info.alternative_service().protocol);
+  EXPECT_EQ(NextProto::kProtoUnknown,
+            alt_svc_info.alternative_service().protocol);
   EXPECT_EQ(0u, alt_svc_info.advertised_versions().size());
 }
 
@@ -5369,7 +5447,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
 
   bool IsAlternativeServiceBroken(GURL& url) {
     return session_->http_server_properties()->IsAlternativeServiceBroken(
-        AlternativeService(kProtoQUIC, HostPortPair::FromURL(url)),
+        AlternativeService(NextProto::kProtoQUIC, HostPortPair::FromURL(url)),
         NetworkAnonymizationKey());
   }
 
@@ -5917,7 +5995,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   quic_session_pool->set_has_quic_ever_worked_on_current_network(true);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "alt.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -5975,7 +6054,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
                             /*require_dns_https_alpn=*/false);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "alt.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -6104,7 +6184,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   Initialize(HttpRequestInfo());
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "www.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -6151,7 +6232,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   Initialize(HttpRequestInfo());
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "alt.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -6202,7 +6284,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   Initialize(HttpRequestInfo());
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "alt.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -6257,7 +6340,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   Initialize(HttpRequestInfo());
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "alt.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -6497,7 +6581,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   // Register Alt-Svc info.
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   // Create an active session of require_dns_https_alpn = true.
@@ -6584,7 +6669,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   CreateJobController(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, kAlternateHost, 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, kAlternateHost,
+                                         443);
   SetAlternativeService(request_info, alternative_service);
 
   job_controller_->Preconnect(/*num_streams=*/1);
@@ -6649,7 +6735,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   // Register the same destination alternative service.
   HttpRequestInfo request_info = CreateTestHttpRequestInfo();
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "www.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -6702,7 +6789,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   // Register a different destination alternative service.
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "alt.example.org", 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -6796,7 +6884,7 @@ TEST_F(HttpStreamFactoryJobControllerPoolTest, Preconnect) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("127.0.0.1").endpoint())
-      .set_start_result(OK);
+      .CompleteStartSynchronously(OK);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));

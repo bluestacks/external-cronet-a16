@@ -19,6 +19,13 @@ NET_EXPORT extern const base::TimeDelta kLaxAllowUnsafeMaxAge;
 // The short version of the above time threshold, to be used for tests.
 NET_EXPORT extern const base::TimeDelta kShortLaxAllowUnsafeMaxAge;
 
+// We collect multiple histograms when getting and setting cookies. The cost
+// of reporting adds up, contributing to latency of operations. But we don't
+// need the absolute numbers, we just need to see trends, so we can down
+// sample. Cookies are written and obtained a lot, so we can use a very low
+// probability.
+static constexpr double kHistogramSampleProbability = 0.001;
+
 enum CookiePriority {
   COOKIE_PRIORITY_LOW     = 0,
   COOKIE_PRIORITY_MEDIUM  = 1,
@@ -118,18 +125,18 @@ enum class CookieAccessSemantics {
   LEGACY,
 };
 
-// When the Scope is LEGACY, Origin-Bound Cookies behavior are disabled. When
-// the Scpope is UNKNOWN, the behavior may or may not depend on
-// base::Features::PortBoundCookies and base::Features::SchemeBoundCookies.
-enum class CookieLegacyScope {
+// When the scope is LEGACY, Origin-Bound Cookies behavior is disabled.
+// LINT.IfChange(CookieScopeSemantics)
+enum class CookieScopeSemantics {
   // Has not been checked yet or there is no way to check.
   UNKNOWN = -1,
   // Has been checked and the cookie should *not* be subject to legacy scope
   // rules
   NONLEGACY = 0,
   // Has been checked and the cookie should be subject to legacy scope rules
-  LEGACY,
+  LEGACY = 1,
 };
+// LINT.ThenChange(/services/network/public/mojom/cookie_manager.mojom:CookieScopeSemanticsMojom)
 
 // What scheme was used in the setting of a cookie.
 // Do not renumber.

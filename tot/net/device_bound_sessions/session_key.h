@@ -11,6 +11,7 @@
 namespace net::device_bound_sessions {
 
 // Unique identifier for a `Session`.
+// LINT.IfChange
 struct NET_EXPORT SessionKey {
   using Id = base::StrongAlias<class IdTag, std::string>;
 
@@ -30,7 +31,21 @@ struct NET_EXPORT SessionKey {
   bool operator==(const SessionKey& other) const;
   bool operator<(const SessionKey& other) const;
 };
+// LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom)
 
 }  // namespace net::device_bound_sessions
+
+namespace std {
+
+// Implement hashing of session id, so it can be used as key in STL containers.
+template <>
+struct hash<net::device_bound_sessions::SessionKey::Id> {
+  std::size_t operator()(
+      const net::device_bound_sessions::SessionKey::Id& session_id) const {
+    return std::hash<std::string>()(session_id.value());
+  }
+};
+
+}  // namespace std
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_SESSION_KEY_H_

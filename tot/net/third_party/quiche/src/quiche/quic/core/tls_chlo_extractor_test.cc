@@ -284,6 +284,21 @@ TEST_P(TlsChloExtractorTest, TlsExtensionInfo_CertCompressionAlgos) {
   }
 }
 
+TEST_P(TlsChloExtractorTest, TlsExtensionInfo_QuicTransportParameters) {
+  Initialize();
+  EXPECT_EQ(packets_.size(), 1u);
+  IngestPackets();
+  ValidateChloDetails();
+
+  // RFC QUIC has transport parameters, drafts doesn't.
+  if (version_ == ParsedQuicVersion::RFCv1() ||
+      version_ == ParsedQuicVersion::RFCv2()) {
+    EXPECT_FALSE(tls_chlo_extractor_->transport_params().empty());
+  } else {
+    EXPECT_TRUE(tls_chlo_extractor_->transport_params().empty());
+  }
+}
+
 TEST_P(TlsChloExtractorTest, MultiPacket) {
   IncreaseSizeOfChlo();
   Initialize();

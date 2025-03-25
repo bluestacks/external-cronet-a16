@@ -44,15 +44,13 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -65,15 +63,13 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -86,15 +82,13 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -107,15 +101,13 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -128,15 +120,13 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -176,15 +166,13 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -196,15 +184,13 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -216,15 +202,13 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -236,15 +220,13 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -256,15 +238,13 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -277,15 +257,13 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -329,15 +307,13 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Copt-level=3",
@@ -374,15 +350,13 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
+                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
-                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Copt-level=3",

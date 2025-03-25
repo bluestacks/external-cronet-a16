@@ -383,6 +383,29 @@ message SiteInstanceGroup {
   repeated DebugAnnotation debug_annotations = 99;
 }
 
+// Describes the CrossOriginIsolated state of a page. See the definition of
+// WebExposedIsolationInfo for more information.
+message WebExposedIsolationInfo {
+  optional bool is_isolated = 1;
+  optional string origin = 2;
+  optional bool is_isolated_application = 3;
+}
+
+// Contains the URL and some additional information necessary to pick a
+// SiteInstance and process during a navigation. See the definition of UrlInfo
+// for more information about individual fields.
+message UrlInfo {
+  optional string url = 1;
+  optional string origin = 2;
+  optional bool is_sandboxed = 3;
+  optional bool is_pdf = 4;
+  optional bool is_coop_isolation_requested = 5;
+  optional int32 origin_isolation_request = 6;
+  optional bool is_prefetch_with_cross_site_contamination = 7;
+  optional WebExposedIsolationInfo web_exposed_isolation_info = 8;
+  optional string storage_partition_config = 9;
+}
+
 // Next ID: 7
 message RenderViewHost {
   // The RenderViewHostMapId for the RenderViewHost.
@@ -677,6 +700,8 @@ message BackForwardCacheCanStoreDocumentResult {
     WEBVIEW_MESSAGE_LISTENER_INJECTED = 62;
     WEBVIEW_SAFE_BROWSING_ALLOWLIST_CHANGED = 63;
     WEBVIEW_DOCUMENT_START_JAVASCRIPT_CHANGED = 64;
+    CACHE_CONTROL_NO_STORE_DEVICE_BOUND_SESSION_TERMINATED = 65;
+    CACHE_LIMIT_PRUNED = 66;
   }
 
   optional BackForwardCacheNotRestoredReason
@@ -772,6 +797,7 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_CLIPBOARD = 85;
     TASK_TYPE_MACHINE_LEARNING = 86;
     TASK_TYPE_MAIN_THREAD_TASK_QUEUE_V8_BEST_EFFORT = 87;
+    TASK_TYPE_INTERNAL_AUTOFILL = 88;
   }
 
   enum FrameType {
@@ -834,6 +860,14 @@ message EventLatency {
   // The interval that this frame was produced for according to the
   // BeginFrameArgs.
   optional double vsync_interval_ms = 6;
+  // viz::BeginFrameArgs.trace_id of the frame (before surface aggregation) in
+  // which the input was first presented. See also
+  // ChromeGraphicsPipeline.surface_frame_trace_id.
+  optional int64 surface_frame_trace_id = 7;
+  // gfx::PresentationFeedback.display_trace_id of the frame (after surface
+  // aggregation) in which the input was first presented. See also
+  // ChromeGraphicsPipeline.display_trace_id.
+  optional int64 display_trace_id = 8;
 }
 
 message ProcessSingleton {
@@ -973,8 +1007,8 @@ message SequenceManagerTask {
     WORKER_UNPAUSABLE_TQ = 50;
     WORKER_WEB_SCHEDULING_TQ = 51;
 
-    UI_USER_BLOCKING_DEFERRABLE_TQ = 52;
-    IO_USER_BLOCKING_DEFERRABLE_TQ = 53;
+    UI_USER_BLOCKING_DEFERRABLE_TQ = 52 [deprecated = true];
+    IO_USER_BLOCKING_DEFERRABLE_TQ = 53 [deprecated = true];
 
     UI_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 54;
     IO_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ = 55;
@@ -1249,6 +1283,13 @@ message ScrollDeltas {
   // The array of predicted deltas of inputs which were shown together in one
   // GPU frame.
   repeated float segregated_predicted_deltas_in_gpu_frame_y = 14;
+
+  // Data for overscrolls.
+  // Whether any of the scroll delta was unused.
+  optional bool did_overscroll_root = 15;
+  // The amount of the scroll delta that was not used for scrolling.
+  optional float unused_delta_x = 16;
+  optional float unused_delta_y = 17;
 }
 
 // Debug information for system layer of audio rendering on Windows.
@@ -1390,6 +1431,7 @@ message LocalSurfaceId {
 }
 
 message ChromeGraphicsPipeline {
+  // Next id: 26
   enum StepName {
     STEP_UNKNOWN = 0;
     STEP_DID_NOT_PRODUCE_FRAME = 1;
@@ -1422,16 +1464,11 @@ message ChromeGraphicsPipeline {
     // "augmented_surface.set_frame_trace_id" to pass that value. As a result,
     // any of the Wayland clients that use EXO will be able to have a nice trace
     // connection and see their buffer submissions' flows.
-    //
-    // Speaking about the example, Lacros combines both STEP_BACKEND* and
-    // STEP_EXO* so that developers are able to trace the frame submission from
-    // Lacros (cc/viz/gpu) to Ozone/Wayland backend, then to EXO and to Ash
-    // (viz/gpu).
 
     // Frame submission stages when Exo (Wayland server implementation in Ash
-    // browser process) is involved. Wayland clients (such as Lacros or ARC++)
-    // submit visual contents via Wayland surface commits, with which Exo
-    // constructs compositor frames and forwards to Ash Viz.
+    // browser process) is involved. Wayland clients (such as ARC++) submit
+    // visual contents via Wayland surface commits, with which Exo constructs
+    // compositor frames and forwards to Ash Viz.
     STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME = 15;
     STEP_EXO_SUBMIT_COMPOSITOR_FRAME = 16;
     STEP_EXO_DISCARD_COMPOSITOR_FRAME = 17;
@@ -1442,6 +1479,18 @@ message ChromeGraphicsPipeline {
     STEP_BACKEND_SEND_BUFFER_SWAP = 18;
     STEP_BACKEND_SEND_BUFFER_POST_SUBMIT = 19;
     STEP_BACKEND_FINISH_BUFFER_SWAP = 20;
+
+    // Send viz.mojom.CompositorFrameSinkClient::OnBeginFrame Mojo message from
+    // Viz to a renderer's compositor.
+    STEP_SEND_ON_BEGIN_FRAME_MOJO_MESSAGE = 23;
+
+    // Send viz.mojom.BeginFrameObserver::OnStandaloneBeginFrame Mojo message
+    // from Viz to the browser main thread (for flings).
+    STEP_SEND_ON_STANDALONE_BEGIN_FRAME_MOJO_MESSAGE = 24;
+
+    // Send viz.mojom.CompositorFrameSink::SubmitCompositorFrame Mojo message
+    // from a renderer's compositor to Viz.
+    STEP_SEND_SUBMIT_COMPOSITOR_FRAME_MOJO_MESSAGE = 25;
   }
   enum FrameSkippedReason {
     SKIPPED_REASON_UNKNOWN = 0;
@@ -1493,6 +1542,10 @@ message ChromeGraphicsPipeline {
   // List of LatencyInfo.trace_ids associated with this frame, which
   // should allow us to match input to frame production.
   repeated int64 latency_ids = 9;
+
+  // Optional frame data containing of possible latch and present
+  // frame deadlines. Only set on Android devices.
+  optional AndroidChoreographerFrameCallbackData possible_deadlines = 11;
 };
 
 message LibunwindstackUnwinder {
@@ -1592,7 +1645,7 @@ message WebContentInteraction {
     INTERACTION_UNSPECIFIED = 0;
     INTERACTION_KEYBOARD = 1;
     INTERACTION_CLICK_TAP = 2;
-    INTERACTION_DRAG = 3;
+    INTERACTION_DRAG = 3 [deprecated = true];
   }
 
   optional Type type = 1;
@@ -1923,6 +1976,8 @@ message AnimationFrameTimingInfo {
   optional int64 blocking_duration_ms = 1;
   optional int64 duration_ms = 2;
   optional int64 num_scripts = 3;
+  // Id for the BeginFrame, which triggered this animation frame.
+  optional BeginFrameId begin_frame_id = 4;
 }
 
 message AnimationFrameScriptTimingInfo {
@@ -2035,7 +2090,7 @@ message CurrentTask {
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
-  // NEXT ID: 15
+  // NEXT ID: 16
   // All step are optional but the enum is ordered (not by number) below in the
   // order we expect them to appear if they are emitted in trace in a blocking
   // fashion.
@@ -2043,6 +2098,10 @@ message ChromeLatencyInfo2 {
     STEP_UNSPECIFIED = 0;
     // Emitted on the browser main thread.
     STEP_SEND_INPUT_EVENT_UI = 3;
+    // The browser main thread sends a
+    // blink.mojom.WidgetInputHandler::DispatchEvent Mojo message to the
+    // renderer's compositor.
+    STEP_SEND_DISPATCH_EVENT_MOJO_MESSAGE = 15;
     // Happens on the renderer's compositor.
     STEP_HANDLE_INPUT_EVENT_IMPL = 5;
     STEP_RESAMPLE_SCROLL_EVENTS = 14;
@@ -2280,7 +2339,7 @@ message AndroidChoreographerFrameCallbackData {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1072
+  // Next ID: 1075
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2433,5 +2492,11 @@ message ChromeTrackEvent {
         android_choreographer_frame_callback_data = 1070;
 
     optional CurrentTask current_task = 1071;
+
+    optional WebExposedIsolationInfo web_exposed_isolation_info = 1072;
+
+    optional UrlInfo url_info = 1073;
+
+    optional BeginFrameId begin_frame_id = 1074;
   }
 }

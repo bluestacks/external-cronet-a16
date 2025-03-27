@@ -70,7 +70,6 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
 
     private static final String CLEAR_CLANG_COVERAGE_FILES =
             "find /data/misc/trace -name '*.profraw' -delete";
-    private static final Duration TESTS_TIMEOUT = Duration.ofMinutes(30);
     private static final String GTEST_FLAG_PRINT_TIME = "--gtest_print_time";
     private static final String GTEST_FLAG_FILTER = "--gtest_filter";
     private static final String GTEST_FLAG_LIST_TESTS = "--gtest_list_tests";
@@ -85,6 +84,13 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
             "The set of annotations to exclude tests from running. A test must have "
                 + "none of the annotations in this list to run.")
     private Set<String> excludeFilters = new LinkedHashSet<>();
+
+    @Option(
+            name = "timeout",
+            description = "Sets the timeout for the test instrumentation in millis.",
+            isTimeVal = true)
+    private long mTimeoutMs = 10 * 60 * 1000; // 10 minutes.
+
     private boolean collectTestsOnly = false;
     private ITestDevice device = null;
 
@@ -221,14 +227,17 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
     @NonNull
     private String createRunAllTestsCommand(@NonNull String resultFilePath)
             throws DeviceNotAvailableException {
-        InstrumentationCommandBuilder builder = new InstrumentationCommandBuilder(TEST_RUNNER)
-                .addArgument(NATIVE_TEST_ACTIVITY_KEY, NATIVE_UNIT_TEST_ACTIVITY_KEY)
-                .addArgument(RUN_IN_SUBTHREAD_KEY, "1")
-                .addArgument(EXTRA_SHARD_NANO_TIMEOUT_KEY, String.valueOf(TESTS_TIMEOUT.toNanos()))
-                .addArgument(LIBRARY_TO_LOAD_ACTIVITY_KEY, libraryToLoad)
-                .addArgument(STDOUT_FILE_KEY, resultFilePath)
-                .addArgument(COMMAND_LINE_FLAGS_KEY,
-                        String.format("'%s'", getAllGTestFlags()));
+        InstrumentationCommandBuilder builder =
+                new InstrumentationCommandBuilder(TEST_RUNNER)
+                        .addArgument(NATIVE_TEST_ACTIVITY_KEY, NATIVE_UNIT_TEST_ACTIVITY_KEY)
+                        .addArgument(RUN_IN_SUBTHREAD_KEY, "1")
+                        .addArgument(
+                                EXTRA_SHARD_NANO_TIMEOUT_KEY,
+                                String.valueOf(Duration.ofMillis(mTimeoutMs).toNanos()))
+                        .addArgument(LIBRARY_TO_LOAD_ACTIVITY_KEY, libraryToLoad)
+                        .addArgument(STDOUT_FILE_KEY, resultFilePath)
+                        .addArgument(
+                                COMMAND_LINE_FLAGS_KEY, String.format("'%s'", getAllGTestFlags()));
         if (isCoverageEnabled) {
             builder.addArgument(DUMP_COVERAGE_KEY, "true");
         }
@@ -275,7 +284,7 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
                     getDevice()
                             .executeShellV2Command(
                                     cmd,
-                                    /* timeout= */ TESTS_TIMEOUT.toMillis(),
+                                    /* timeout= */ mTimeoutMs,
                                     /* timeUnit= */ TimeUnit.MILLISECONDS,
                                     // Don't retry as the parent runner will already
                                     // handle that.

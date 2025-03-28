@@ -277,263 +277,6 @@ rust_ffi_static {
     },
 }
 
-// GN: //base:logging_rust_log_integration_bindgen__testing
-rust_ffi_static {
-    name: "libbase_clogging_urust_ulog_uintegration_ubindgen__28d64ef8b615a427",
-    srcs: [
-        ":libtot_cronet_base_logging_rust_log_integration_bindgen_generator__testing",
-        "build/rust/bindings.rs",
-    ],
-    host_supported: true,
-    host_cross_supported: false,
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    crate_name: "base_clogging_urust_ulog_uintegration_ubindgen",
-    crate_root: "build/rust/bindings.rs",
-    rustlibs: [
-        "libchromium__c6c34dd5a98579f2",
-    ],
-    target: {
-        android_arm: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_arm64: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=3",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_riscv64: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_x86: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_x86_64: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=3",
-                "-Cdebuginfo=1",
-            ],
-        },
-        host: {
-            compile_multilib: "64",
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=no",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=3",
-                "-Cdebuginfo=1",
-            ],
-            rustlibs: [
-                "libproc_macro2__d957ddb2eb267eaf",
-                "libquote__62704bfea487e463",
-                "libsyn__11104b519a39d1d2",
-                "libunicode_ident__df6840ce9d3a78ba",
-            ],
-        },
-    },
-}
-
-// GN: //base:logging_rust_log_integration_bindgen
-rust_ffi_static {
-    name: "libbase_clogging_urust_ulog_uintegration_ubindgen__89890e5f0e59f767",
-    srcs: [
-        ":libtot_cronet_base_logging_rust_log_integration_bindgen_generator",
-        "build/rust/bindings.rs",
-    ],
-    host_cross_supported: false,
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    crate_name: "base_clogging_urust_ulog_uintegration_ubindgen",
-    crate_root: "build/rust/bindings.rs",
-    rustlibs: [
-        "libchromium__ada7dbc4acbf8156",
-    ],
-    target: {
-        android_arm: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_arm64: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=3",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_riscv64: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_x86: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-            ],
-        },
-        android_x86_64: {
-            edition: "2021",
-            cfgs: [
-                "cpp",
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
-            ],
-            flags: [
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=3",
-                "-Cdebuginfo=1",
-            ],
-        },
-        host: {
-            compile_multilib: "64",
-        },
-    },
-}
-
 // GN: //build/rust/tests/bindgen_static_fns_test:c_lib_bindgen__testing
 rust_ffi_static {
     name: "libbuild_srust_stests_sbindgen_ustatic_ufns_utest_cc_ulib_ubindgen__90901de938630a06",
@@ -887,7 +630,7 @@ cc_genrule {
     cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -901,7 +644,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=true IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=true IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -915,7 +658,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -929,7 +672,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -943,7 +686,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -979,7 +722,7 @@ cc_genrule {
     cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -993,7 +736,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=true IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=true IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -1007,7 +750,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -1021,7 +764,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=false HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=false USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -1035,7 +778,7 @@ cc_genrule {
          "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=false DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=false ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=true IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -1049,7 +792,7 @@ cc_genrule {
          "if [[ $$CC_OS != 'android' ]]; " +
          "then " +
          "mkdir -p $(genDir)/base/allocator/partition_allocator/src/partition_alloc &&  " +
-         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=true ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=false IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
+         "echo '--flags ASSERT_CPP_20=true BACKUP_REF_PTR_EXTRA_OOB_CHECKS=false BACKUP_REF_PTR_POISON_OOB_PTR=false CAN_UNWIND_WITH_FRAME_POINTERS=true DCHECKS_ARE_ON=false DCHECK_IS_CONFIGURABLE=false ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=false ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=false ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=false ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=false ENABLE_BACKUP_REF_PTR_SUPPORT=false ENABLE_DANGLING_RAW_PTR_CHECKS=false ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=false ENABLE_GWP_ASAN_SUPPORT=false ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=false ENABLE_PKEYS=false ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=true ENABLE_POINTER_COMPRESSION=false ENABLE_POINTER_SUBTRACTION_CHECK=false ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=true ENABLE_THREAD_ISOLATION=false EXPENSIVE_DCHECKS_ARE_ON=false FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=false FORCE_ENABLE_RAW_PTR_EXCLUSION=false FORWARD_THROUGH_MALLOC=false HAS_64_BIT_POINTERS=true HAS_MEMORY_TAGGING=false IS_ANDROID=false IS_CASTOS=false IS_CAST_ANDROID=false IS_CHROMEOS=false IS_DEBUG=false IS_HWASAN=false RAW_PTR_ZERO_ON_CONSTRUCT=true RAW_PTR_ZERO_ON_DESTRUCT=false RAW_PTR_ZERO_ON_MOVE=true REALLOC_GROWTH_FACTOR_MITIGATION=false RECORD_ALLOC_INFO=false SMALLER_PARTITION_COOKIE=false STACK_SCAN_SUPPORTED=true USE_ALLOCATOR_SHIM=false USE_ASAN_BACKUP_REF_PTR=false USE_FREELIST_DISPATCHER=true USE_FREESLOT_BITMAP=false USE_FULL_MTE=false USE_LARGE_EMPTY_SLOT_SPAN_RING=true USE_PARTITION_ALLOC=false USE_PARTITION_ALLOC_AS_MALLOC=false USE_PARTITION_COOKIE=false USE_RAW_PTR_ASAN_UNOWNED_IMPL=false USE_RAW_PTR_BACKUP_REF_IMPL=false USE_RAW_PTR_HOOKABLE_IMPL=false' | " +
          "$(location base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -3541,7 +3284,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1742822436",
+         "1743162571",
     host_cross_supported: false,
     out: [
         "base/generated_build_date.h",
@@ -3563,7 +3306,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1742822436",
+         "1743162571",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -4288,7 +4031,7 @@ java_genrule {
 cc_genrule {
     name: "tot_cronet_base_cfi_buildflags",
     cmd: "mkdir -p $(genDir)/base &&  " +
-         "echo '--flags '\"'\"'CFI_CAST_CHECK=false && false'\"'\"' '\"'\"'CFI_DIAG=false && false'\"'\"' '\"'\"'CFI_ICALL_CHECK=false && false'\"'\"' '\"'\"'CFI_ENFORCEMENT_TRAP=false && !false'\"'\"' '\"'\"'CFI_ENFORCEMENT_DIAGNOSTIC=false && false && !false'\"'\"'' | " +
+         "echo '--flags CFI_CAST_CHECK=false CFI_DIAG=false CFI_ICALL_CHECK=false CFI_ENFORCEMENT_TRAP=false CFI_ENFORCEMENT_DIAGNOSTIC=false' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -4317,7 +4060,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_base_cfi_buildflags__testing",
     cmd: "mkdir -p $(genDir)/base &&  " +
-         "echo '--flags '\"'\"'CFI_CAST_CHECK=false && false'\"'\"' '\"'\"'CFI_DIAG=false && false'\"'\"' '\"'\"'CFI_ICALL_CHECK=false && false'\"'\"' '\"'\"'CFI_ENFORCEMENT_TRAP=false && !false'\"'\"' '\"'\"'CFI_ENFORCEMENT_DIAGNOSTIC=false && false && !false'\"'\"'' | " +
+         "echo '--flags CFI_CAST_CHECK=false CFI_DIAG=false CFI_ICALL_CHECK=false CFI_ENFORCEMENT_TRAP=false CFI_ENFORCEMENT_DIAGNOSTIC=false' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -8231,7 +7974,9 @@ java_genrule {
 // GN: //base:synchronization_buildflags
 cc_genrule {
     name: "tot_cronet_base_synchronization_buildflags",
-    cmd: "mkdir -p $(genDir)/base/synchronization &&  " +
+    cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
          "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=false' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
@@ -8241,7 +7986,64 @@ cc_genrule {
          "--gen-dir " +
          ". " +
          "--definitions " +
-         "/dev/stdin",
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=true' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=false' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=false' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=true' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi;",
     host_cross_supported: false,
     out: [
         "base/synchronization/synchronization_buildflags.h",
@@ -8260,7 +8062,9 @@ cc_genrule {
 // GN: //base:synchronization_buildflags__testing
 cc_genrule {
     name: "tot_cronet_base_synchronization_buildflags__testing",
-    cmd: "mkdir -p $(genDir)/base/synchronization &&  " +
+    cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
          "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=false' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
@@ -8270,7 +8074,78 @@ cc_genrule {
          "--gen-dir " +
          ". " +
          "--definitions " +
-         "/dev/stdin",
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=true' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=false' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=false' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=true' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/base/synchronization &&  " +
+         "echo '--flags ENABLE_MUTEX_PRIORITY_INHERITANCE=false' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//base:synchronization_buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin " +
+         ";fi;",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -9551,11 +9426,13 @@ cc_library_static {
         "base/test/bind.cc",
         "base/test/copy_only_int.cc",
         "base/test/gtest_links.cc",
+        "base/test/gtest_sub_test_results.cc",
         "base/test/gtest_tags.cc",
         "base/test/gtest_util.cc",
         "base/test/gtest_xml_unittest_result_printer.cc",
         "base/test/gtest_xml_util.cc",
         "base/test/icu_test_util.cc",
+        "base/test/insecure_random_generator.cc",
         "base/test/launcher/test_launcher.cc",
         "base/test/launcher/test_launcher_test_utils.cc",
         "base/test/launcher/test_launcher_tracer.cc",
@@ -9695,7 +9572,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -10675,7 +10552,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_build_branding_buildflags",
     cmd: "mkdir -p $(genDir)/build &&  " +
-         "echo '--flags CHROMIUM_BRANDING=1 GOOGLE_CHROME_BRANDING=0 CHROME_FOR_TESTING=0 GOOGLE_CHROME_FOR_TESTING_BRANDING=0' | " +
+         "echo '--flags CHROMIUM_BRANDING=true GOOGLE_CHROME_BRANDING=false CHROME_FOR_TESTING=false GOOGLE_CHROME_FOR_TESTING_BRANDING=false' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -10704,7 +10581,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_build_branding_buildflags__testing",
     cmd: "mkdir -p $(genDir)/build &&  " +
-         "echo '--flags CHROMIUM_BRANDING=1 GOOGLE_CHROME_BRANDING=0 CHROME_FOR_TESTING=0 GOOGLE_CHROME_FOR_TESTING_BRANDING=0' | " +
+         "echo '--flags CHROMIUM_BRANDING=true GOOGLE_CHROME_BRANDING=false CHROME_FOR_TESTING=false GOOGLE_CHROME_FOR_TESTING_BRANDING=false' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -10853,7 +10730,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_build_config_compiler_compiler_buildflags",
     cmd: "mkdir -p $(genDir)/build/config/compiler &&  " +
-         "echo '--flags CLANG_PGO=0 SYMBOL_LEVEL=1' | " +
+         "echo '--flags CLANG_PGO_PROFILING=false CLANG_PGO_OPTIMIZED=false HAS_SYMBOLS=true' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -10882,7 +10759,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_build_config_compiler_compiler_buildflags__testing",
     cmd: "mkdir -p $(genDir)/build/config/compiler &&  " +
-         "echo '--flags CLANG_PGO=0 SYMBOL_LEVEL=1' | " +
+         "echo '--flags CLANG_PGO_PROFILING=false CLANG_PGO_OPTIMIZED=false HAS_SYMBOLS=true' | " +
          "$(location build/write_buildflag_header.py) " +
          "--output " +
          "'$(out)' " +
@@ -11038,7 +10915,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DCXX_RS_EXPORT=",
@@ -11121,7 +10998,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DCXX_RS_EXPORT=",
@@ -11346,7 +11223,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXXABI_SILENT_TERMINATE",
@@ -11503,7 +11380,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXXABI_SILENT_TERMINATE",
@@ -11647,6 +11524,7 @@ cc_defaults {
         "-Wno-missing-field-initializers",
         "-Wno-non-virtual-dtor",
         "-Wno-null-pointer-subtraction",
+        "-Wno-nullability-completeness",
         "-Wno-sign-compare",
         "-Wno-sign-promo",
         "-Wno-unreachable-code-loop-increment",
@@ -11938,6 +11816,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/components/cronet/android/proto " +
          "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
          "external/cronet/tot/components/cronet/android/proto/base_feature_overrides.proto",
+    host_cross_supported: false,
     out: [
         "components/cronet/android/proto/base_feature_overrides.pb.h",
     ],
@@ -11948,6 +11827,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -11965,6 +11847,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/components/cronet/android/proto " +
          "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
          "external/cronet/tot/components/cronet/android/proto/base_feature_overrides.proto",
+    host_cross_supported: false,
     out: [
         "components/cronet/android/proto/base_feature_overrides.pb.h",
     ],
@@ -11975,6 +11858,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -13951,7 +13837,6 @@ cc_library_shared {
     ],
     whole_static_libs: [
         "libbase_clogging_ulog_useverity_ubindgen__4a607e49e19da3e5",
-        "libbase_clogging_urust_ulog_uintegration_ubindgen__28d64ef8b615a427",
         "libbase_crust_ulogger__646bebece24fc263",
         "libbase_stest_ctest_urust_ulogger_uconsumer__c71463e67618dfbc",
         "libchromium__c6c34dd5a98579f2",
@@ -14152,7 +14037,7 @@ cc_library_shared {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -15096,6 +14981,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/components/cronet/android/proto " +
          "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
          "external/cronet/tot/components/cronet/android/proto/request_context_config.proto",
+    host_cross_supported: false,
     out: [
         "components/cronet/android/proto/request_context_config.pb.h",
     ],
@@ -15106,6 +14992,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -15123,6 +15012,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/components/cronet/android/proto " +
          "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
          "external/cronet/tot/components/cronet/android/proto/request_context_config.proto",
+    host_cross_supported: false,
     out: [
         "components/cronet/android/proto/request_context_config.pb.h",
     ],
@@ -15133,6 +15023,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -17695,6 +17588,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/net/base " +
          "--cpp_out=lite=true:$(genDir)/net/base/ " +
          "external/cronet/tot/net/base/isolation_info.proto",
+    host_cross_supported: false,
     out: [
         "net/base/isolation_info.pb.h",
     ],
@@ -17705,6 +17599,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -17722,6 +17619,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/net/base " +
          "--cpp_out=lite=true:$(genDir)/net/base/ " +
          "external/cronet/tot/net/base/isolation_info.proto",
+    host_cross_supported: false,
     out: [
         "net/base/isolation_info.pb.h",
     ],
@@ -17732,6 +17630,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -18333,6 +18234,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/net/nqe/proto " +
          "--cpp_out=lite=true:$(genDir)/net/nqe/proto/ " +
          "external/cronet/tot/net/nqe/proto/network_id_proto.proto",
+    host_cross_supported: false,
     out: [
         "net/nqe/proto/network_id_proto.pb.h",
     ],
@@ -18343,6 +18245,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -18360,6 +18265,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/net/nqe/proto " +
          "--cpp_out=lite=true:$(genDir)/net/nqe/proto/ " +
          "external/cronet/tot/net/nqe/proto/network_id_proto.proto",
+    host_cross_supported: false,
     out: [
         "net/nqe/proto/network_id_proto.pb.h",
     ],
@@ -18370,6 +18276,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -18457,6 +18366,7 @@ cc_genrule {
          "external/cronet/tot/net/third_party/quiche/src/quiche/blind_sign_auth/proto/proxy_layer.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/blind_sign_auth/proto/public_metadata.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.proto",
+    host_cross_supported: false,
     out: [
         "net/third_party/quiche/src/quiche/blind_sign_auth/proto/any.pb.h",
         "net/third_party/quiche/src/quiche/blind_sign_auth/proto/attestation.pb.h",
@@ -18475,6 +18385,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -18560,6 +18473,7 @@ cc_genrule {
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/core/proto/cached_network_parameters.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/core/proto/crypto_server_config.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/core/proto/source_address_token.proto",
+    host_cross_supported: false,
     out: [
         "net/third_party/quiche/src/quiche/quic/core/proto/cached_network_parameters.pb.h",
         "net/third_party/quiche/src/quiche/quic/core/proto/crypto_server_config.pb.h",
@@ -18572,6 +18486,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -18593,6 +18510,7 @@ cc_genrule {
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/core/proto/cached_network_parameters.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/core/proto/crypto_server_config.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/core/proto/source_address_token.proto",
+    host_cross_supported: false,
     out: [
         "net/third_party/quiche/src/quiche/quic/core/proto/cached_network_parameters.pb.h",
         "net/third_party/quiche/src/quiche/quic/core/proto/crypto_server_config.pb.h",
@@ -18605,6 +18523,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -18674,6 +18595,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/net/third_party/quiche/src/quiche/quic/test_tools " +
          "--cpp_out=lite=true:$(genDir)/net/third_party/quiche/src/quiche/quic/test_tools/ " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/test_tools/send_algorithm_test_result.proto",
+    host_cross_supported: false,
     out: [
         "net/third_party/quiche/src/quiche/quic/test_tools/send_algorithm_test_result.pb.h",
     ],
@@ -18685,6 +18607,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -18702,6 +18627,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/net/third_party/quiche/src/quiche/quic/test_tools " +
          "--cpp_out=lite=true:$(genDir)/net/third_party/quiche/src/quiche/quic/test_tools/ " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/quic/test_tools/send_algorithm_test_result.proto",
+    host_cross_supported: false,
     out: [
         "net/third_party/quiche/src/quiche/quic/test_tools/send_algorithm_test_result.pb.h",
     ],
@@ -18713,6 +18639,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -19163,7 +19092,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGTEST_API_=",
@@ -19312,6 +19241,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/third_party/anonymous_tokens/src " +
          "--cpp_out=lite=true:$(genDir)/third_party/anonymous_tokens/src/ " +
          "external/cronet/tot/third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.proto",
+    host_cross_supported: false,
     out: [
         "third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.pb.h",
     ],
@@ -19322,6 +19252,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -19441,6 +19374,7 @@ cc_library_static {
         "third_party/boringssl/src/crypto/ex_data.cc",
         "third_party/boringssl/src/crypto/fipsmodule/bcm.cc",
         "third_party/boringssl/src/crypto/fipsmodule/fips_shared_support.cc",
+        "third_party/boringssl/src/crypto/fuzzer_mode.cc",
         "third_party/boringssl/src/crypto/hpke/hpke.cc",
         "third_party/boringssl/src/crypto/hrss/hrss.cc",
         "third_party/boringssl/src/crypto/kyber/kyber.cc",
@@ -19650,7 +19584,7 @@ cc_library_static {
     ],
     cflags: [
         "-DBORINGSSL_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -19757,10 +19691,10 @@ cc_library_static {
         "third_party/boringssl/src/crypto/curve25519/asm/x25519-asm-arm.S",
         "third_party/boringssl/src/crypto/hrss/asm/poly_rq_mul.S",
         "third_party/boringssl/src/crypto/poly1305/poly1305_arm_asm.S",
-        "third_party/boringssl/src/gen/bcm/aes-gcm-avx10-x86_64-apple.S",
-        "third_party/boringssl/src/gen/bcm/aes-gcm-avx10-x86_64-linux.S",
         "third_party/boringssl/src/gen/bcm/aes-gcm-avx2-x86_64-apple.S",
         "third_party/boringssl/src/gen/bcm/aes-gcm-avx2-x86_64-linux.S",
+        "third_party/boringssl/src/gen/bcm/aes-gcm-avx512-x86_64-apple.S",
+        "third_party/boringssl/src/gen/bcm/aes-gcm-avx512-x86_64-linux.S",
         "third_party/boringssl/src/gen/bcm/aesni-gcm-x86_64-apple.S",
         "third_party/boringssl/src/gen/bcm/aesni-gcm-x86_64-linux.S",
         "third_party/boringssl/src/gen/bcm/aesni-x86-apple.S",
@@ -19884,7 +19818,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -20892,6 +20826,7 @@ cc_genrule {
          "external/cronet/tot/third_party/metrics_proto/ukm/web_features.proto " +
          "external/cronet/tot/third_party/metrics_proto/user_action_event.proto " +
          "external/cronet/tot/third_party/metrics_proto/user_demographics.proto",
+    host_cross_supported: false,
     out: [
         "third_party/metrics_proto/call_stack_profile.pb.h",
         "third_party/metrics_proto/cast_logs.pb.h",
@@ -20931,6 +20866,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -21006,6 +20944,7 @@ cc_genrule {
          "external/cronet/tot/third_party/metrics_proto/ukm/web_features.proto " +
          "external/cronet/tot/third_party/metrics_proto/user_action_event.proto " +
          "external/cronet/tot/third_party/metrics_proto/user_demographics.proto",
+    host_cross_supported: false,
     out: [
         "third_party/metrics_proto/call_stack_profile.pb.h",
         "third_party/metrics_proto/cast_logs.pb.h",
@@ -21045,6 +20984,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -21120,6 +21062,7 @@ cc_genrule {
          "--proto_path=external/cronet/tot/third_party/quic_trace/src/quic_trace " +
          "--cpp_out=lite=true:$(genDir)/third_party/quic_trace/src/quic_trace/ " +
          "external/cronet/tot/third_party/quic_trace/src/quic_trace/quic_trace.proto",
+    host_cross_supported: false,
     out: [
         "third_party/quic_trace/src/quic_trace/quic_trace.pb.h",
     ],
@@ -21131,6 +21074,9 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 

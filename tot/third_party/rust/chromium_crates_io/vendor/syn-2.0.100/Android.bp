@@ -129,7 +129,6 @@ rust_ffi_static {
                 "printing",
                 "proc-macro",
                 "visit",
-                "visit-mut",
             ],
             flags: [
                 "--cap-lints=allow",
@@ -241,7 +240,6 @@ rust_ffi_static {
                 "printing",
                 "proc-macro",
                 "visit",
-                "visit-mut",
             ],
             flags: [
                 "--cap-lints=allow",

@@ -17,13 +17,14 @@
 #include <vector>
 
 #include "base/containers/linked_list.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "net/base/does_url_match_filter.h"
 #include "net/base/net_export.h"
+#include "net/base/pickle_traits.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_info.h"
 #include "url/gurl.h"
@@ -80,6 +81,36 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
     base::WeakPtr<QueryString> query_string_;
   };
 
+  // An interface for observing changes to the NoVarySearchCache. Only
+  // insertions and refreshes via MaybeInsert() and erasures via Erase() are
+  // reported to this interface. Evictions are implicit, and modifications via
+  // ClearData() are expected to be followed by persisting a fresh copy of the
+  // database.
+  class NET_EXPORT_PRIVATE Observer {
+   public:
+    Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
+    // Called when an entry is inserted or refreshed by the MaybeInsert()
+    // method. Not called when MaybeInsert() results in no changes to the
+    // database.
+    virtual void OnInsert(const std::string& base_url_cache_key,
+                          const HttpNoVarySearchData& nvs_data,
+                          const std::optional<std::string>& query,
+                          base::Time update_time) = 0;
+
+    // Called when an entry is erased by the Erase() method.
+    virtual void OnErase(const std::string& base_url_cache_key,
+                         const HttpNoVarySearchData& nvs_data,
+                         const std::optional<std::string>& query) = 0;
+
+   protected:
+    // Observer objects are never deleted via a base class pointer.
+    virtual ~Observer();
+  };
+
   struct LookupResult {
     GURL original_url;
     EraseHandle erase_handle;
@@ -90,9 +121,13 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   // bytes.
   explicit NoVarySearchCache(size_t max_size);
 
-  // Not copyable, assignable or movable.
+  // Move-constructible to permit deserialization and passing between threads.
+  NoVarySearchCache(NoVarySearchCache&&);
+
+  // Not copyable or assignable.
   NoVarySearchCache(const NoVarySearchCache&) = delete;
   NoVarySearchCache& operator=(const NoVarySearchCache&) = delete;
+  NoVarySearchCache& operator=(NoVarySearchCache&&) = delete;
 
   ~NoVarySearchCache();
 
@@ -129,6 +164,12 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   // nothing if the entry no longer exists.
   void Erase(EraseHandle handle);
 
+  // Set an Observer to be notified about subsequent changes to the cache. This
+  // object does not take ownership of the Observer. Calling the method again
+  // will replace the observer. The method can be called with nullptr to stop
+  // observing.
+  void SetObserver(Observer* observer);
+
   // Returns the size (number of stored original query strings) of the cache.
   size_t GetSizeForTesting() const;
 
@@ -137,23 +178,39 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   bool IsTopLevelMapEmptyForTesting() const;
 
  private:
-  class LruNode;
-  class QueryStringListNode;
+  friend struct PickleTraits<NoVarySearchCache>;
+
+  struct QueryStringList;
+  friend struct PickleTraits<NoVarySearchCache::QueryStringList>;
 
   using BaseURLCacheKey =
       base::StrongAlias<struct BaseURLCacheKeyTagType, std::string>;
+  friend struct PickleTraits<NoVarySearchCache::BaseURLCacheKey>;
+
+  class LruNode;
+  class QueryStringListNode;
 
   struct QueryStringList {
     base::LinkedList<QueryStringListNode> list;
     // nvs_data_ref can't be raw_ref because it needs to be lazily initialized
     // after the QueryStringList has been added to the map.
-    raw_ptr<const HttpNoVarySearchData> nvs_data_ref;
-    raw_ref<const BaseURLCacheKey> key_ref;
+    raw_ptr<const HttpNoVarySearchData> nvs_data_ref = nullptr;
+
+    // key_ref can't be raw_ref because it needs to be added in a second pass
+    // during deserialization.
+    raw_ptr<const BaseURLCacheKey> key_ref = nullptr;
 
     // The referent of this reference has to be the actual key in the map. It is
     // not sufficient for the value to match, because the lifetime has to be the
     // same.
     explicit QueryStringList(const BaseURLCacheKey& key);
+
+    // Needed during deserialization.
+    QueryStringList();
+
+    // Only used during deserialization. This is O(N) in the size of `list`.
+    QueryStringList(QueryStringList&&);
+
     // base::LinkedList<> does not do memory management, so make sure the
     // contents of `list` are deleted on destruction.
     ~QueryStringList();
@@ -178,8 +235,11 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   void EraseQuery(QueryString* query_string);
 
   // Scans all the QueryStrings in `data_map` to find ones in the range
-  // [delete_begin, delete_end) and appends them to `matches`.
-  static void FindQueryStringsInTimeRange(const DataMapType& data_map,
+  // [delete_begin, delete_end) and appends them to `matches`. `data_map` is
+  // mutable to reflect that it is returning mutable pointers to QueryString
+  // objects that it owns. The returned QueryString objects are mutable so the
+  // caller can erase them.
+  static void FindQueryStringsInTimeRange(DataMapType& data_map,
                                           base::Time delete_begin,
                                           base::Time delete_end,
                                           std::vector<QueryString*>& matches);
@@ -189,6 +249,15 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
       const GURL& base,
       const GURL& url,
       const HttpNoVarySearchData& nvs_data);
+
+  // Calls f(query_string_ptr) for every QueryString in `list`.
+  static void ForEachQueryString(base::LinkedList<QueryStringListNode>& list,
+                                 base::FunctionRef<void(QueryString*)> f);
+
+  // Calls f(const_query_string_ptr) for every QueryString in `list`.
+  static void ForEachQueryString(
+      const base::LinkedList<QueryStringListNode>& list,
+      base::FunctionRef<void(const QueryString*)> f);
 
   // The main cache data structure.
   OuterMapType map_;
@@ -201,6 +270,19 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   // QueryString objects will be evicted to avoid exceeding `max_size_`.
   const size_t max_size_;
+
+  // An object to be notified about changes to this cache.
+  raw_ptr<Observer> observer_ = nullptr;
+};
+
+template <>
+struct NET_EXPORT_PRIVATE PickleTraits<NoVarySearchCache> {
+  static void Serialize(base::Pickle& pickle, const NoVarySearchCache& cache);
+
+  static std::optional<NoVarySearchCache> Deserialize(
+      base::PickleIterator& iter);
+
+  static size_t PickleSize(const NoVarySearchCache& cache);
 };
 
 }  // namespace net

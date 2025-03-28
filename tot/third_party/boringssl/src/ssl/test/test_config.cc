@@ -43,9 +43,7 @@
 
 #if defined(OPENSSL_WINDOWS)
 // Windows defines struct timeval in winsock2.h.
-OPENSSL_MSVC_PRAGMA(warning(push, 3))
 #include <winsock2.h>
-OPENSSL_MSVC_PRAGMA(warning(pop))
 #else
 #include <sys/time.h>
 #endif
@@ -321,6 +319,9 @@ const Flag<TestConfig> *FindFlag(const char *name) {
         BoolFlag("-quic", &TestConfig::is_quic),
         IntFlag("-resume-count", &TestConfig::resume_count),
         StringFlag("-write-settings", &TestConfig::write_settings),
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+        BoolFlag("-fuzzer-mode", &TestConfig::fuzzer_mode),
+#endif
         BoolFlag("-fallback-scsv", &TestConfig::fallback_scsv),
         IntVectorFlag("-verify-prefs", &TestConfig::verify_prefs),
         IntVectorFlag("-expect-peer-verify-pref",

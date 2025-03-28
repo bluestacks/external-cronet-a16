@@ -32,7 +32,6 @@ cc_binary {
     ],
     whole_static_libs: [
         "libbase_clogging_ulog_useverity_ubindgen__4a607e49e19da3e5",
-        "libbase_clogging_urust_ulog_uintegration_ubindgen__28d64ef8b615a427",
         "libbase_crust_ulogger__646bebece24fc263",
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
@@ -154,7 +153,7 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
@@ -287,7 +286,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",

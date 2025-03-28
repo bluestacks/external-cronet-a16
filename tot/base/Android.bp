@@ -40,7 +40,6 @@ rust_ffi_static {
     crate_root: "logging/rust_logger.rs",
     rustlibs: [
         "libbase_clogging_ulog_useverity_ubindgen__4a607e49e19da3e5",
-        "libbase_clogging_urust_ulog_uintegration_ubindgen__28d64ef8b615a427",
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
         "libfoldhash__3d2886e384b4e895",
@@ -177,7 +176,6 @@ rust_ffi_static {
     crate_root: "logging/rust_logger.rs",
     rustlibs: [
         "libbase_clogging_ulog_useverity_ubindgen__0495fa00511ddc0a",
-        "libbase_clogging_urust_ulog_uintegration_ubindgen__89890e5f0e59f767",
         "libchromium__ada7dbc4acbf8156",
         "libcxx__3d5c3771dead539b",
         "libfoldhash__9d82c8b43061ff92",
@@ -327,65 +325,6 @@ rust_bindgen {
         "--enable-cxx-namespaces",
     ],
     wrapper_src: "logging/log_severity.h",
-    target: {
-        host: {
-            compile_multilib: "64",
-        },
-    },
-}
-
-// GN: //base:logging_rust_log_integration_bindgen_generator
-rust_bindgen {
-    name: "libtot_cronet_base_logging_rust_log_integration_bindgen_generator",
-    host_cross_supported: false,
-    header_libs: [
-        "tot_cronet_base_debugging_buildflags_export_generated_headers",
-        "tot_cronet_repository_root_include_dirs_anchor",
-    ],
-    cpp_std: "c++17",
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    crate_name: "tot_cronet_base_logging_rust_log_integration_bindgen_generator",
-    source_stem: "bindings",
-    bindgen_flags: [
-        "--enable-cxx-namespaces",
-    ],
-    wrapper_src: "logging/rust_log_integration.h",
-    target: {
-        host: {
-            compile_multilib: "64",
-        },
-    },
-}
-
-// GN: //base:logging_rust_log_integration_bindgen_generator__testing
-rust_bindgen {
-    name: "libtot_cronet_base_logging_rust_log_integration_bindgen_generator__testing",
-    host_supported: true,
-    host_cross_supported: false,
-    header_libs: [
-        "tot_cronet_base_debugging_buildflags__testing_export_generated_headers",
-        "tot_cronet_repository_root_include_dirs_anchor",
-    ],
-    cpp_std: "c++17",
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    crate_name: "tot_cronet_base_logging_rust_log_integration_bindgen_generator__testing",
-    source_stem: "bindings",
-    bindgen_flags: [
-        "--enable-cxx-namespaces",
-    ],
-    wrapper_src: "logging/rust_log_integration.h",
     target: {
         host: {
             compile_multilib: "64",
@@ -1216,7 +1155,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
         "-DBASE_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1747,7 +1686,7 @@ cc_library_static {
     ],
     cflags: [
         "-DBASE_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -3453,7 +3392,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
@@ -3538,7 +3477,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -4091,7 +4030,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
@@ -4174,7 +4113,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -4674,7 +4613,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
         "-DBASE_I18N_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -6070,10 +6009,18 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
+        "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
+        "tot_cronet_base_debugging_buildflags",
         "tot_cronet_base_rust_logger_cxx_generated_gen_header",
+        "tot_cronet_base_tracing_buildflags",
+        "tot_cronet_build_chromeos_buildflags",
     ],
     export_generated_headers: [
+        "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
+        "tot_cronet_base_debugging_buildflags",
         "tot_cronet_base_rust_logger_cxx_generated_gen_header",
+        "tot_cronet_base_tracing_buildflags",
+        "tot_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
@@ -6081,7 +6028,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -6107,6 +6054,7 @@ cc_library_static {
     ],
     include_dirs: [
         "external/cronet/tot/",
+        "external/cronet/tot/base/allocator/partition_allocator/src/",
         "external/cronet/tot/buildtools/third_party/libc++/",
         "external/cronet/tot/third_party/libc++/src/include",
         "external/cronet/tot/third_party/libc++abi/src/include",
@@ -6159,16 +6107,24 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
+        "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
+        "tot_cronet_base_debugging_buildflags__testing",
         "tot_cronet_base_rust_logger_cxx_generated_gen__testing_header",
+        "tot_cronet_base_tracing_buildflags__testing",
+        "tot_cronet_build_chromeos_buildflags__testing",
     ],
     export_generated_headers: [
+        "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
+        "tot_cronet_base_debugging_buildflags__testing",
         "tot_cronet_base_rust_logger_cxx_generated_gen__testing_header",
+        "tot_cronet_base_tracing_buildflags__testing",
+        "tot_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-2\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
         "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
         "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -6192,6 +6148,7 @@ cc_library_static {
     ],
     include_dirs: [
         "external/cronet/tot/",
+        "external/cronet/tot/base/allocator/partition_allocator/src/",
         "external/cronet/tot/buildtools/third_party/libc++/",
         "external/cronet/tot/third_party/libc++/src/include",
         "external/cronet/tot/third_party/libc++abi/src/include",

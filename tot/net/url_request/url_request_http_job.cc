@@ -1452,6 +1452,12 @@ bool URLRequestHttpJob::GetCharset(std::string* charset) {
   return GetResponseHeaders()->GetCharset(charset);
 }
 
+void URLRequestHttpJob::GetClientSideContentDecodingTypes(
+    std::vector<net::SourceStreamType>* types) const {
+  CHECK(types);
+  *types = client_side_content_decoding_types_;
+}
+
 void URLRequestHttpJob::GetResponseInfo(HttpResponseInfo* info) {
   if (override_response_info_) {
     DCHECK(!transaction_.get());
@@ -1476,6 +1482,13 @@ void URLRequestHttpJob::GetLoadTimingInfo(
     return;
   if (transaction_->GetLoadTimingInfo(load_timing_info))
     load_timing_info->receive_headers_end = receive_headers_end_;
+}
+
+void URLRequestHttpJob::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  if (transaction_) {
+    transaction_->PopulateLoadTimingInternalInfo(load_timing_internal_info);
+  }
 }
 
 bool URLRequestHttpJob::GetTransactionRemoteEndpoint(
@@ -1509,16 +1522,25 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
 
   std::unique_ptr<SourceStream> upstream = URLRequestJob::SetUpSourceStream();
 
-  if (request()->client_side_content_decoding_enabled()) {
-    // When client side content encoding is enabled, the client will decode the
-    // body. So returns the original stream.
-    return upstream;
-  }
-
   HttpResponseHeaders* headers = GetResponseHeaders();
-  const std::vector<SourceStreamType> types =
+  std::vector<SourceStreamType> types =
       FilterSourceStream::GetContentEncodingTypes(
           request_->accepted_stream_types(), *headers);
+
+  if (request()->client_side_content_decoding_enabled()) {
+    std::string mime_type;
+    if (!headers->GetMimeType(&mime_type) ||
+        mime_type != "application/signed-exchange") {
+      // When client side content encoding is enabled, and the mime type is not
+      // signed exchange, the client will decode the body. So returns the
+      // original stream.
+      // Note: We exclude signed exchanges because they are parsed inside the
+      // browser process. So the network service needs to decode them.
+      // TODO(crbug.com/406877444): Remove this special-case MIME type check.
+      client_side_content_decoding_types_ = std::move(types);
+      return upstream;
+    }
+  }
   // Note: If multiple encoding types were specified, this only records the last
   // encoding type.
   UMA_HISTOGRAM_ENUMERATION(

@@ -4,8 +4,10 @@
 
 #include "net/http/no_vary_search_cache.h"
 
+#include <algorithm>
 #include <compare>
 #include <iostream>
+#include <limits>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -15,7 +17,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "net/base/pickle.h"
+#include "net/base/pickle_base_types.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_no_vary_search_data.h"
 
@@ -162,9 +167,10 @@ class NoVarySearchCache::QueryString final
       public NoVarySearchCache::QueryStringListNode {
  public:
   // Creates a QueryString and adds it to `list` and `lru_list`.
-  static void CreateAndInsert(std::optional<std::string_view> query,
-                              QueryStringList& query_string_list,
-                              base::LinkedList<LruNode>& lru_list) {
+  static QueryString* CreateAndInsert(std::optional<std::string_view> query,
+                                      QueryStringList& query_string_list,
+                                      base::LinkedList<LruNode>& lru_list,
+                                      base::Time update_time) {
     DCHECK(!query || query->find('#') == std::string_view::npos)
         << "Query contained a '#' character, meaning that the URL reassembly "
            "will not work correctly because the '#' will be re-interpreted as "
@@ -172,10 +178,11 @@ class NoVarySearchCache::QueryString final
         << query.value() << "'";
     // This use of bare new is needed because base::LinkedList does not have
     // ownership semantics.
-    auto* query_string = new QueryString(query, query_string_list);
+    auto* query_string = new QueryString(query, query_string_list, update_time);
     query_string->LruNode::InsertBefore(lru_list.head());
     query_string->QueryStringListNode::InsertBefore(
         query_string_list.list.head());
+    return query_string;
   }
 
   // Not copyable or movable.
@@ -184,7 +191,13 @@ class NoVarySearchCache::QueryString final
 
   // Removes this object from both lists and deletes it.
   void RemoveAndDelete() {
-    LruNode::RemoveFromList();
+    // During deserialization a QueryString is not inserted into the `lru_` list
+    // until the end. If deserialization fails before then, it can be deleted
+    // without ever being inserted into the `lru_` list.
+    if (LruNode::next()) {
+      CHECK(LruNode::previous());
+      LruNode::RemoveFromList();
+    }
     QueryStringListNode::RemoveFromList();
     delete this;
   }
@@ -200,13 +213,11 @@ class NoVarySearchCache::QueryString final
 
   const std::optional<std::string>& query() const { return query_; }
 
-  QueryStringList& query_string_list_ref() {
-    return query_string_list_ref_.get();
-  }
+  QueryStringList& query_string_list_ref() { return *query_string_list_ref_; }
 
-  base::Time insertion_time() const { return insertion_time_; }
+  base::Time update_time() const { return update_time_; }
 
-  void UpdateInsertionTime() { insertion_time_ = base::Time::Now(); }
+  void set_update_time(base::Time update_time) { update_time_ = update_time; }
 
   // Return the original GURL that this entry was constructed from (not
   // including any fragment). It's important to use this method to correctly
@@ -225,12 +236,21 @@ class NoVarySearchCache::QueryString final
     return EraseHandle(weak_factory_.GetWeakPtr());
   }
 
+  void set_query_string_list_ref(
+      base::PassKey<NoVarySearchCache::QueryStringList>,
+      QueryStringList* query_string_list) {
+    query_string_list_ref_ = query_string_list;
+  }
+
  private:
+  friend struct PickleTraits<NoVarySearchCache::QueryStringList>;
+
   QueryString(std::optional<std::string_view> query,
-              QueryStringList& query_string_list)
+              QueryStringList& query_string_list,
+              base::Time update_time)
       : query_(query),
-        query_string_list_ref_(query_string_list),
-        insertion_time_(base::Time::Now()) {}
+        query_string_list_ref_(&query_string_list),
+        update_time_(update_time) {}
 
   // Must only be called from RemoveAndDelete().
   ~QueryString() = default;
@@ -254,13 +274,14 @@ class NoVarySearchCache::QueryString final
   const std::optional<std::string> query_;
 
   // `query_string_list_ref_` allows the keys for this entry to be located in
-  // the cache so that it can be erased efficiently.
-  const raw_ref<QueryStringList> query_string_list_ref_;
+  // the cache so that it can be erased efficiently. It is modified when a
+  // QueryStringList object is moved.
+  raw_ptr<QueryStringList> query_string_list_ref_ = nullptr;
 
-  // `insertion_time_` breaks ties when there are multiple possible matches. The
+  // `update_time_` breaks ties when there are multiple possible matches. The
   // most recent entry will be used as it is most likely to still exist in the
   // disk cache.
-  base::Time insertion_time_;
+  base::Time update_time_;
 
   // EraseHandle uses weak pointers to QueryString objects to enable an entry to
   // be deleted from the cache if it is found not to be readable from the disk
@@ -299,9 +320,19 @@ bool NoVarySearchCache::EraseHandle::IsGoneForTesting() const {
   return !query_string_;
 }
 
+NoVarySearchCache::Observer::~Observer() = default;
+
 NoVarySearchCache::NoVarySearchCache(size_t max_size) : max_size_(max_size) {
-  CHECK_GT(max_size_, 0u);
+  CHECK_GE(max_size_, 1u);
+  // We can't serialize if `max_size` won't fit in an int.
+  CHECK(base::IsValueInRangeForNumericType<int>(max_size));
 }
+
+NoVarySearchCache::NoVarySearchCache(NoVarySearchCache&& rhs)
+    : map_(std::move(rhs.map_)),
+      lru_(std::move(rhs.lru_)),
+      size_(std::exchange(rhs.size_, 0u)),
+      max_size_(rhs.max_size_) {}
 
 NoVarySearchCache::~NoVarySearchCache() {
   map_.clear();
@@ -311,6 +342,7 @@ NoVarySearchCache::~NoVarySearchCache() {
 
 std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
     const HttpRequestInfo& request) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("HttpCache.NoVarySearch.LookupTime");
   const GURL& url = request.url;
   if (!URLIsAcceptable(url)) {
     return std::nullopt;
@@ -335,8 +367,8 @@ std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
   GURL original_url;
   for (auto& [nvs_data, query_strings] : it->second) {
     auto result = FindQueryStringInList(query_strings, base_url, url, nvs_data);
-    if (result && (!best_match || best_match->insertion_time() <
-                                      result->match->insertion_time())) {
+    if (result && (!best_match ||
+                   best_match->update_time() < result->match->update_time())) {
       best_match = result->match;
       original_url = result->original_url;
     }
@@ -376,6 +408,9 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
   if (!maybe_cache_key) {
     return;
   }
+
+  const base::Time update_time = base::Time::Now();
+
   const BaseURLCacheKey cache_key(maybe_cache_key.value());
   const auto [it, _] = map_.try_emplace(cache_key);
   DataMapType& data_map = it->second;
@@ -383,6 +418,15 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
       data_map.emplace(std::move(*maybe_nvs_data), it->first);
   const HttpNoVarySearchData& nvs_data = data_it->first;
   QueryStringList& query_strings = data_it->second;
+
+  const auto call_observer = [this, &cache_key, &nvs_data,
+                              update_time](const QueryString* query_string) {
+    if (observer_) {
+      observer_->OnInsert(cache_key.value(), nvs_data, query_string->query(),
+                          update_time);
+    }
+  };
+
   if (inserted) {
     query_strings.nvs_data_ref = &nvs_data;
   } else {
@@ -394,9 +438,10 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
       QueryString* match = result->match;
       if (match->query() == query) {
         // In the exact match case we can use the existing QueryString object.
-        match->UpdateInsertionTime();
+        match->set_update_time(update_time);
         match->MoveToHead(query_strings.list);
         match->MoveToHead(lru_);
+        call_observer(match);
         return;
       }
 
@@ -410,7 +455,9 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
   }
   CHECK_LE(size_, max_size_);
   ++size_;
-  QueryString::CreateAndInsert(query, query_strings, lru_);
+  auto* query_string =
+      QueryString::CreateAndInsert(query, query_strings, lru_, update_time);
+  call_observer(query_string);
   EvictIfOverfull();
 }
 
@@ -423,7 +470,7 @@ bool NoVarySearchCache::ClearData(UrlFilterType filter_type,
   // then erase them.
   // TODO(https://crbug.com/382394774): Make this algorithm more efficient.
   std::vector<QueryString*> pending_erase;
-  for (const auto& [cache_key, data_map] : map_) {
+  for (auto& [cache_key, data_map] : map_) {
     const std::string base_url_string =
         HttpCache::GetResourceURLFromHttpCacheKey(cache_key.value());
     const GURL base_url(base_url_string);
@@ -443,8 +490,19 @@ bool NoVarySearchCache::ClearData(UrlFilterType filter_type,
 
 void NoVarySearchCache::Erase(EraseHandle handle) {
   if (QueryString* query_string = handle.query_string_.get()) {
+    if (observer_) {
+      auto& query_string_list = query_string->query_string_list_ref();
+      observer_->OnErase(query_string_list.key_ref->value(),
+                         *query_string_list.nvs_data_ref,
+                         query_string->query());
+    }
+
     EraseQuery(query_string);
   }
+}
+
+void NoVarySearchCache::SetObserver(Observer* observer) {
+  observer_ = observer;
 }
 
 // This is out-of-line to discourage inlining so the bots can detect if it is
@@ -458,9 +516,27 @@ bool NoVarySearchCache::IsTopLevelMapEmptyForTesting() const {
 }
 
 NoVarySearchCache::QueryStringList::QueryStringList(const BaseURLCacheKey& key)
-    : key_ref(key) {}
+    : key_ref(&key) {}
+
+NoVarySearchCache::QueryStringList::QueryStringList() = default;
+
+NoVarySearchCache::QueryStringList::QueryStringList(QueryStringList&& rhs)
+    : list(std::move(rhs.list)) {
+  // We should not move a list after the key references have been assigned.
+  CHECK(!rhs.nvs_data_ref);
+  CHECK(!rhs.key_ref);
+  // We have to patch up all the references to `rhs` in our QueryString objects
+  // to point to us instead.
+  ForEachQueryString(list, [&](QueryString* query_string) {
+    query_string->set_query_string_list_ref(base::PassKey<QueryStringList>(),
+                                            this);
+  });
+}
 
 NoVarySearchCache::QueryStringList::~QueryStringList() {
+  // The `list.head()` check works around the unfortunate fact that moving from
+  // a base::LinkedList leaves it in an invalid state where `list.empty()` is
+  // false.
   while (!list.empty()) {
     list.head()->value()->ToQueryString()->RemoveAndDelete();
   }
@@ -481,11 +557,11 @@ void NoVarySearchCache::EraseQuery(QueryString* query_string) {
   const QueryStringList& query_strings = query_string->query_string_list_ref();
   query_string->RemoveAndDelete();
   if (query_strings.list.empty()) {
-    const HttpNoVarySearchData* nvs_data_ref = query_strings.nvs_data_ref.get();
-    const BaseURLCacheKey& key_ref = query_strings.key_ref.get();
+    const HttpNoVarySearchData& nvs_data_ref = *query_strings.nvs_data_ref;
+    const BaseURLCacheKey& key_ref = *query_strings.key_ref;
     const auto map_it = map_.find(key_ref);
     CHECK(map_it != map_.end());
-    const size_t removed_count = map_it->second.erase(*nvs_data_ref);
+    const size_t removed_count = map_it->second.erase(nvs_data_ref);
     CHECK_EQ(removed_count, 1u);
     if (map_it->second.empty()) {
       map_.erase(map_it);
@@ -495,20 +571,18 @@ void NoVarySearchCache::EraseQuery(QueryString* query_string) {
 
 // static
 void NoVarySearchCache::FindQueryStringsInTimeRange(
-    const DataMapType& data_map,
+    DataMapType& data_map,
     base::Time delete_begin,
     base::Time delete_end,
     std::vector<QueryString*>& matches) {
-  for (const auto& [_, query_string_list] : data_map) {
-    for (auto* node = query_string_list.list.head();
-         node != query_string_list.list.end(); node = node->next()) {
-      QueryString* query_string = node->value()->ToQueryString();
-      const base::Time insertion_time = query_string->insertion_time();
-      if ((delete_begin.is_null() || delete_begin <= insertion_time) &&
-          (delete_end.is_max() || delete_end > insertion_time)) {
+  for (auto& [_, query_string_list] : data_map) {
+    ForEachQueryString(query_string_list.list, [&](QueryString* query_string) {
+      const base::Time update_time = query_string->update_time();
+      if ((delete_begin.is_null() || delete_begin <= update_time) &&
+          (delete_end.is_max() || delete_end > update_time)) {
         matches.push_back(query_string);
       }
-    }
+    });
   }
 }
 
@@ -529,6 +603,191 @@ NoVarySearchCache::FindQueryStringInList(QueryStringList& query_strings,
     }
   }
   return std::nullopt;
+}
+
+// static
+void NoVarySearchCache::ForEachQueryString(
+    base::LinkedList<QueryStringListNode>& list,
+    base::FunctionRef<void(QueryString*)> f) {
+  for (auto* node = list.head(); node != list.end(); node = node->next()) {
+    QueryString* query_string = node->value()->ToQueryString();
+    f(query_string);
+  }
+}
+
+// static
+void NoVarySearchCache::ForEachQueryString(
+    const base::LinkedList<QueryStringListNode>& list,
+    base::FunctionRef<void(const QueryString*)> f) {
+  for (auto* node = list.head(); node != list.end(); node = node->next()) {
+    const QueryString* query_string = node->value()->ToQueryString();
+    f(query_string);
+  }
+}
+
+template <>
+struct PickleTraits<NoVarySearchCache::QueryStringList> {
+  static void Serialize(
+      base::Pickle& pickle,
+      const NoVarySearchCache::QueryStringList& query_strings) {
+    // base::LinkedList doesn't keep an element count, so we need to count them
+    // ourselves.
+    size_t size = 0u;
+    for (auto* node = query_strings.list.head();
+         node != query_strings.list.end(); node = node->next()) {
+      ++size;
+    }
+    WriteToPickle(pickle, base::checked_cast<int>(size));
+    NoVarySearchCache::ForEachQueryString(
+        query_strings.list,
+        [&](const NoVarySearchCache::QueryString* query_string) {
+          WriteToPickle(pickle, query_string->query_,
+                        query_string->update_time_);
+        });
+  }
+
+  static std::optional<NoVarySearchCache::QueryStringList> Deserialize(
+      base::PickleIterator& iter) {
+    NoVarySearchCache::QueryStringList query_string_list;
+    size_t size = 0;
+    if (!iter.ReadLength(&size)) {
+      return std::nullopt;
+    }
+    for (size_t i = 0; i < size; ++i) {
+      // QueryString is not movable or copyable, so it won't work well with
+      // PickleTraits. Deserialize it inline instead.
+      auto result =
+          ReadValuesFromPickle<std::optional<std::string>, base::Time>(iter);
+      if (!result) {
+        return std::nullopt;
+      }
+      auto [query, update_time] = std::move(result).value();
+      if (query && query->find('#') != std::string_view::npos) {
+        // A '#' character must not appear in the query.
+        return std::nullopt;
+      }
+      auto* query_string = new NoVarySearchCache::QueryString(
+          std::move(query), query_string_list, update_time);
+      // Serialization happens from head to tail, so to deserialize in the same
+      // order, we add elements at the tail of the list.
+      query_string_list.list.Append(query_string);
+    }
+    return query_string_list;
+  }
+
+  static size_t PickleSize(
+      const NoVarySearchCache::QueryStringList& query_strings) {
+    size_t estimate = EstimatePickleSize(int{});
+    NoVarySearchCache::ForEachQueryString(
+        query_strings.list,
+        [&](const NoVarySearchCache::QueryString* query_string) {
+          estimate += EstimatePickleSize(query_string->query_,
+                                         query_string->update_time_);
+        });
+    return estimate;
+  }
+};
+
+template <>
+struct PickleTraits<NoVarySearchCache::BaseURLCacheKey> {
+  static void Serialize(base::Pickle& pickle,
+                        const NoVarySearchCache::BaseURLCacheKey& key) {
+    WriteToPickle(pickle, *key);
+  }
+
+  static std::optional<NoVarySearchCache::BaseURLCacheKey> Deserialize(
+      base::PickleIterator& iter) {
+    NoVarySearchCache::BaseURLCacheKey key;
+    if (!ReadPickleInto(iter, *key)) {
+      return std::nullopt;
+    }
+    return key;
+  }
+
+  static size_t PickleSize(const NoVarySearchCache::BaseURLCacheKey& key) {
+    return EstimatePickleSize(*key);
+  }
+};
+
+// static
+void PickleTraits<NoVarySearchCache>::Serialize(
+    base::Pickle& pickle,
+    const NoVarySearchCache& cache) {
+  // `size_t` is different sizes on 32-bit and 64-bit platforms. For a
+  // consistent format, serialize as int. This will crash if someone creates a
+  // NoVarySearchCache which supports over 2 billion entries, which would be a
+  // terrible idea anyway.
+  int max_size_as_int = base::checked_cast<int>(cache.max_size_);
+  int size_as_int = base::checked_cast<int>(cache.size_);
+
+  // `lru_` is reconstructed during deserialization and so doesn't need to be
+  // stored explicitly.
+  WriteToPickle(pickle, size_as_int, max_size_as_int, cache.map_);
+}
+
+// static
+std::optional<NoVarySearchCache> PickleTraits<NoVarySearchCache>::Deserialize(
+    base::PickleIterator& iter) {
+  const std::optional<int> maybe_size = ReadValueFromPickle<int>(iter);
+  if (!maybe_size || *maybe_size < 0) {
+    return std::nullopt;
+  }
+  const size_t size = static_cast<size_t>(*maybe_size);
+  const std::optional<int> maybe_max_size = ReadValueFromPickle<int>(iter);
+  if (!maybe_max_size || *maybe_max_size < 1) {
+    return std::nullopt;
+  }
+  const size_t max_size = static_cast<size_t>(*maybe_max_size);
+
+  if (size > max_size) {
+    return std::nullopt;
+  }
+
+  NoVarySearchCache cache(max_size);
+  cache.size_ = size;
+  if (!ReadPickleInto(iter, cache.map_)) {
+    return std::nullopt;
+  }
+
+  using QueryString = NoVarySearchCache::QueryString;
+  // Get a list of every QueryString object in the map so that we can sort
+  // them to reconstruct the `lru_` list.
+  std::vector<QueryString*> all_query_strings;
+  all_query_strings.reserve(size);
+  for (auto& [base_url_cache_key, data_map] : cache.map_) {
+    for (auto& [nvs_data, query_string_list] : data_map) {
+      query_string_list.nvs_data_ref = &nvs_data;
+      query_string_list.key_ref = &base_url_cache_key;
+      NoVarySearchCache::ForEachQueryString(
+          query_string_list.list, [&](QueryString* query_string) {
+            all_query_strings.push_back(query_string);
+          });
+    }
+  }
+  if (size != all_query_strings.size()) {
+    return std::nullopt;
+  }
+
+  // Sort by `update_time`, which we use as an approximation of `use_time`
+  // during deserialization on the assumption that it won't make much
+  // difference.
+  std::ranges::sort(all_query_strings, std::less<base::Time>(),
+                    [](QueryString* qs) { return qs->update_time(); });
+
+  // Insert each entry at the head of the list, so that the oldest entry ends
+  // up at the tail.
+  for (QueryString* qs : all_query_strings) {
+    qs->LruNode::InsertBefore(cache.lru_.head());
+  }
+
+  return cache;
+}
+
+// static
+size_t PickleTraits<NoVarySearchCache>::PickleSize(
+    const NoVarySearchCache& cache) {
+  // `size_` and `max_size_` are pickled as ints.
+  return EstimatePickleSize(int{}, int{}, cache.map_);
 }
 
 }  // namespace net

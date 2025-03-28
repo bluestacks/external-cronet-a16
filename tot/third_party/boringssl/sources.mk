@@ -127,6 +127,7 @@ tot_cronet_crypto_sources := \
   src/crypto/ex_data.cc\
   src/crypto/fipsmodule/bcm.cc\
   src/crypto/fipsmodule/fips_shared_support.cc\
+  src/crypto/fuzzer_mode.cc\
   src/crypto/hpke/hpke.cc\
   src/crypto/hrss/hrss.cc\
   src/crypto/kyber/kyber.cc\
@@ -261,10 +262,10 @@ tot_cronet_crypto_sources_asm := \
   src/crypto/curve25519/asm/x25519-asm-arm.S\
   src/crypto/hrss/asm/poly_rq_mul.S\
   src/crypto/poly1305/poly1305_arm_asm.S\
-  src/gen/bcm/aes-gcm-avx10-x86_64-apple.S\
-  src/gen/bcm/aes-gcm-avx10-x86_64-linux.S\
   src/gen/bcm/aes-gcm-avx2-x86_64-apple.S\
   src/gen/bcm/aes-gcm-avx2-x86_64-linux.S\
+  src/gen/bcm/aes-gcm-avx512-x86_64-apple.S\
+  src/gen/bcm/aes-gcm-avx512-x86_64-linux.S\
   src/gen/bcm/aesni-gcm-x86_64-apple.S\
   src/gen/bcm/aesni-gcm-x86_64-linux.S\
   src/gen/bcm/aesni-x86-apple.S\

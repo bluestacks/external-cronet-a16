@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,29 +15,23 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * A container for a list of observers.
- * <p/>
- * This container can be modified during iteration without invalidating the iterator.
- * So, it safely handles the case of an observer removing itself or other observers from the list
- * while observers are being notified.
- * <p/>
- * The implementation (and the interface) is heavily influenced by the C++ ObserverList.
- * Notable differences:
- *   - The iterator implements NOTIFY_EXISTING_ONLY.
- *   - The range-based for loop is left to the clients to implement in terms of iterator().
- * <p/>
- * This class is not threadsafe. Observers MUST be added, removed and will be notified on the same
- * thread this is created.
  *
- * Normally this class would not need {@code extends @Nullable Object} for the template param E,
- * but because addObserver and removeObserver take {@code @Nullable E obs} the annotation on the
- * template param E is necessary for NullAway to work for users of this class. This can be removed
- * in the future when NullAway improves its handling of generic template parameters.
+ * <p>This container can be modified during iteration without invalidating the iterator. So, it
+ * safely handles the case of an observer removing itself or other observers from the list while
+ * observers are being notified.
+ *
+ * <p>The implementation (and the interface) is heavily influenced by the C++ ObserverList. Notable
+ * differences: - The iterator implements NOTIFY_EXISTING_ONLY. - The range-based for loop is left
+ * to the clients to implement in terms of iterator().
+ *
+ * <p>This class is not threadsafe. Observers MUST be added, removed and will be notified on the
+ * same thread this is created.
  *
  * @param <E> The type of observers that this list should hold.
  */
 @NullMarked
 @NotThreadSafe
-public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
+public class ObserverList<E> implements Iterable<E> {
     /** Extended iterator interface that provides rewind functionality. */
     public interface RewindableIterator<E> extends Iterator<E> {
         /**
@@ -71,16 +64,16 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
 
     /**
      * Add an observer to the list.
-     * <p/>
-     * An observer should not be added to the same list more than once. If an iteration is already
-     * in progress, this observer will be not be visible during that iteration.
+     *
+     * <p>An observer should not be added to the same list more than once. If an iteration is
+     * already in progress, this observer will be not be visible during that iteration.
      *
      * @return true if the observer list changed as a result of the call.
      */
-    public boolean addObserver(@Nullable E obs) {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
+    public boolean addObserver(E obs) {
+        assertSameThreadUsed();
 
-        // Avoid adding null elements to the list as they may be removed on a compaction.
+        // TODO(agrieve): Remove null check once codebase is fully null-annotated.
         if (obs == null || mObservers.contains(obs)) {
             return false;
         }
@@ -99,9 +92,10 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
      *
      * @return true if an element was removed as a result of this call.
      */
-    public boolean removeObserver(@Nullable E obs) {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
+    public boolean removeObserver(E obs) {
+        assertSameThreadUsed();
 
+        // TODO(agrieve): Remove null check once codebase is fully null-annotated.
         if (obs == null) {
             return false;
         }
@@ -125,13 +119,12 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
     }
 
     public boolean hasObserver(E obs) {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
-
+        assertSameThreadUsed();
         return mObservers.contains(obs);
     }
 
     public void clear() {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
+        assertSameThreadUsed();
 
         mCount = 0;
 
@@ -149,8 +142,7 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
 
     @Override
     public Iterator<E> iterator() {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
-
+        assertSameThreadUsed();
         return new ObserverListIterator();
     }
 
@@ -160,8 +152,7 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
      * {@link RewindableIterator#rewind()}.
      */
     public RewindableIterator<E> rewindableIterator() {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
-
+        assertSameThreadUsed();
         return new ObserverListIterator();
     }
 
@@ -170,16 +161,34 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
      * This is equivalent to the number of non-empty spaces in |mObservers|.
      */
     public int size() {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
-
+        assertSameThreadUsed();
         return mCount;
     }
 
     /** Returns true if the ObserverList contains no observers. */
     public boolean isEmpty() {
-        if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
-
+        assertSameThreadUsed();
         return mCount == 0;
+    }
+
+    /**
+     * Asserts that a method is called on the thread which created this {@link ObserverList}, if
+     * {@link this#mEnableThreadAsserts} is true.
+     *
+     * <p>mThreadChecker.assertOnValidThread() asserts false if the thread is not "valid", but its
+     * error message is confusing. This method simply catches the AssertionError and produces a more
+     * informative one.
+     */
+    private void assertSameThreadUsed() {
+        if (!mEnableThreadAsserts) return;
+        try {
+            mThreadChecker.assertOnValidThread();
+        } catch (AssertionError e) {
+            throw new AssertionError(
+                    "ObserverList is not thread-safe; Observers MUST be added, removed and will be"
+                        + " notified on the thread that created the ObserverList.",
+                    e);
+        }
     }
 
     /**
@@ -233,7 +242,7 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
 
         @Override
         public void rewind() {
-            if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
+            assertSameThreadUsed();
 
             compactListIfNeeded();
             ObserverList.this.incrementIterationDepth();
@@ -244,7 +253,7 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
 
         @Override
         public boolean hasNext() {
-            if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
+            assertSameThreadUsed();
 
             int lookupIndex = mIndex;
             while (lookupIndex < mListEndMarker
@@ -260,7 +269,7 @@ public class ObserverList<E extends @Nullable Object> implements Iterable<E> {
 
         @Override
         public E next() {
-            if (mEnableThreadAsserts) mThreadChecker.assertOnValidThread();
+            assertSameThreadUsed();
 
             // Advance if the current element is null.
             while (mIndex < mListEndMarker && ObserverList.this.getObserverAt(mIndex) == null) {

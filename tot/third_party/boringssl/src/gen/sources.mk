@@ -102,10 +102,10 @@ boringssl_bcm_internal_headers := \
   crypto/fipsmodule/tls/kdf.cc.inc
 
 boringssl_bcm_sources_asm := \
-  gen/bcm/aes-gcm-avx10-x86_64-apple.S \
-  gen/bcm/aes-gcm-avx10-x86_64-linux.S \
   gen/bcm/aes-gcm-avx2-x86_64-apple.S \
   gen/bcm/aes-gcm-avx2-x86_64-linux.S \
+  gen/bcm/aes-gcm-avx512-x86_64-apple.S \
+  gen/bcm/aes-gcm-avx512-x86_64-linux.S \
   gen/bcm/aesni-gcm-x86_64-apple.S \
   gen/bcm/aesni-gcm-x86_64-linux.S \
   gen/bcm/aesni-x86-apple.S \
@@ -203,8 +203,8 @@ boringssl_bcm_sources_asm := \
   third_party/fiat/asm/fiat_p256_adx_sqr.S
 
 boringssl_bcm_sources_nasm := \
-  gen/bcm/aes-gcm-avx10-x86_64-win.asm \
   gen/bcm/aes-gcm-avx2-x86_64-win.asm \
+  gen/bcm/aes-gcm-avx512-x86_64-win.asm \
   gen/bcm/aesni-gcm-x86_64-win.asm \
   gen/bcm/aesni-x86-win.asm \
   gen/bcm/aesni-x86_64-win.asm \
@@ -365,6 +365,7 @@ boringssl_crypto_sources := \
   crypto/evp/sign.cc \
   crypto/ex_data.cc \
   crypto/fipsmodule/fips_shared_support.cc \
+  crypto/fuzzer_mode.cc \
   crypto/hpke/hpke.cc \
   crypto/hrss/hrss.cc \
   crypto/kyber/kyber.cc \
@@ -639,7 +640,7 @@ boringssl_crypto_internal_headers := \
   crypto/poly1305/internal.h \
   crypto/pool/internal.h \
   crypto/rand/getrandom_fillin.h \
-  crypto/rand/sysrand_internal.h \
+  crypto/rand/internal.h \
   crypto/rsa/internal.h \
   crypto/spake2plus/internal.h \
   crypto/trust_token/internal.h \
@@ -1062,6 +1063,7 @@ boringssl_fuzz_sources := \
   fuzz/bn_mod_exp.cc \
   fuzz/cert.cc \
   fuzz/client.cc \
+  fuzz/client_no_fuzzer_mode.cc \
   fuzz/conf.cc \
   fuzz/crl_getcrlstatusforcert_fuzzer.cc \
   fuzz/crl_parse_crl_certificatelist_fuzzer.cc \
@@ -1083,6 +1085,7 @@ boringssl_fuzz_sources := \
   fuzz/privkey.cc \
   fuzz/read_pem.cc \
   fuzz/server.cc \
+  fuzz/server_no_fuzzer_mode.cc \
   fuzz/session.cc \
   fuzz/spki.cc \
   fuzz/ssl_ctx_api.cc \
@@ -2184,6 +2187,18 @@ boringssl_pki_test_data := \
   pki/testdata/verify_certificate_chain_unittest/intermediate-eku-any-and-clientauth/serverauth-strict-leaf.test \
   pki/testdata/verify_certificate_chain_unittest/intermediate-eku-any-and-clientauth/serverauth-strict.test \
   pki/testdata/verify_certificate_chain_unittest/intermediate-eku-any-and-clientauth/serverauth.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2pamanifest/any.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2pamanifest/c2pamanifest.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2pamanifest/c2patimestamp.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2pamanifest/chain.pem \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2pamanifest/clientauth.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2pamanifest/serverauth.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2patimestamping/any.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2patimestamping/c2pamanifest.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2patimestamping/c2patimestamp.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2patimestamping/chain.pem \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2patimestamping/clientauth.test \
+  pki/testdata/verify_certificate_chain_unittest/intermediate-eku-c2patimestamping/serverauth.test \
   pki/testdata/verify_certificate_chain_unittest/intermediate-eku-clientauth/any.test \
   pki/testdata/verify_certificate_chain_unittest/intermediate-eku-clientauth/chain.pem \
   pki/testdata/verify_certificate_chain_unittest/intermediate-eku-clientauth/clientauth-strict-leaf.test \

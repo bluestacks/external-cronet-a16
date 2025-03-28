@@ -21,6 +21,7 @@
 #include <openssl/thread.h>
 
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 #if defined(BORINGSSL_CONSTANT_TIME_VALIDATION)
@@ -47,9 +48,7 @@
 #endif
 
 #if defined(OPENSSL_WINDOWS_THREADS)
-OPENSSL_MSVC_PRAGMA(warning(push, 3))
 #include <windows.h>
-OPENSSL_MSVC_PRAGMA(warning(pop))
 #endif
 
 #if defined(__cplusplus)
@@ -783,9 +782,6 @@ static inline uint64_t CRYPTO_bswap8(uint64_t x) {
   return __builtin_bswap64(x);
 }
 #elif defined(_MSC_VER)
-OPENSSL_MSVC_PRAGMA(warning(push, 3))
-#include <stdlib.h>
-OPENSSL_MSVC_PRAGMA(warning(pop))
 #pragma intrinsic(_byteswap_uint64, _byteswap_ulong, _byteswap_ushort)
 static inline uint16_t CRYPTO_bswap2(uint16_t x) { return _byteswap_ushort(x); }
 
@@ -1404,6 +1400,7 @@ inline int CRYPTO_is_ARMv8_SHA512_capable(void) {
 
 #endif  // OPENSSL_ARM || OPENSSL_AARCH64
 
+
 #if defined(BORINGSSL_DISPATCH_TEST)
 // Runtime CPU dispatch testing support
 
@@ -1415,11 +1412,11 @@ inline int CRYPTO_is_ARMv8_SHA512_capable(void) {
 //   3: aes_hw_set_encrypt_key
 //   4: vpaes_encrypt
 //   5: vpaes_set_encrypt_key
-//   6: aes_gcm_enc_update_vaes_avx10_256 [reserved]
-//   7: aes_gcm_enc_update_vaes_avx10_512
-//   8: aes_gcm_enc_update_vaes_avx2
-extern uint8_t BORINGSSL_function_hit[9];
+//   6: aes_gcm_enc_update_vaes_avx2
+//   7: aes_gcm_enc_update_vaes_avx512
+extern uint8_t BORINGSSL_function_hit[8];
 #endif  // BORINGSSL_DISPATCH_TEST
+
 
 // OPENSSL_vasprintf_internal is just like |vasprintf(3)|. If |system_malloc| is
 // 0, memory will be allocated with |OPENSSL_malloc| and must be freed with
@@ -1428,6 +1425,19 @@ extern uint8_t BORINGSSL_function_hit[9];
 OPENSSL_EXPORT int OPENSSL_vasprintf_internal(char **str, const char *format,
                                               va_list args, int system_malloc)
     OPENSSL_PRINTF_FORMAT_FUNC(2, 0);
+
+
+// Fuzzer mode.
+
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+// CRYPTO_fuzzer_mode_enabled returns whether fuzzer mode is enabled. See
+// |CRYPTO_set_fuzzer_mode|. In non-fuzzer builds, this function statically
+// returns zero so the codepaths will be deleted by the optimizer.
+int CRYPTO_fuzzer_mode_enabled(void);
+#else
+inline int CRYPTO_fuzzer_mode_enabled(void) { return 0; }
+#endif
+
 
 #if defined(__cplusplus)
 }  // extern C

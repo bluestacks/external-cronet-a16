@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"
@@ -18,6 +19,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/log/net_log.h"
 #include "net/socket/socket_test_util.h"
@@ -32,6 +34,7 @@ namespace net {
 using test::IsOk;
 
 using Group = HttpStreamPool::Group;
+using Job = HttpStreamPool::Job;
 
 class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
  public:
@@ -120,6 +123,29 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUnused) {
   ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_EQ(pool().TotalActiveStreamCount(), 0u);
+}
+
+// Regression test for crbug.com/399995424. If a socket returned to a Group
+// immediately closes, the Group should destroy itself without accessing deleted
+// `this`.
+TEST_F(HttpStreamPoolGroupTest,
+       ReleaseStreamSocketDisconnectAfterIsConnectedCall) {
+  auto stream_socket = std::make_unique<FakeStreamSocket>();
+  stream_socket->set_was_ever_used(true);
+  stream_socket->set_is_idle(true);
+  stream_socket->set_is_connected(true);
+  FakeStreamSocket* stream_socket_ptr = stream_socket.get();
+
+  Group& group = GetOrCreateTestGroup();
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket),
+      StreamSocketHandle::SocketReuseType::kReusedIdle,
+      LoadTimingInfo::ConnectTiming());
+  CHECK(stream);
+
+  stream_socket_ptr->DisconnectAfterIsConnectedCall();
+  stream.reset();
+  ASSERT_FALSE(GetTestGroup());
 }
 
 TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUsed) {
@@ -327,11 +353,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeCleanupIdleSocket) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
-  RunUntilIdle();
-
-  group.CleanupTimedoutIdleStreamSocketsForTesting();
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
-  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(GetTestGroup());
 }
 
 TEST_F(HttpStreamPoolGroupTest, IPAddressChangeReleaseStreamSocket) {
@@ -463,6 +486,36 @@ TEST_F(HttpStreamPoolGroupTest, EnableDisableQuic) {
   ASSERT_FALSE(pool().CanUseQuic(kHost, NetworkAnonymizationKey(),
                                  /*enable_ip_based_pooling=*/true,
                                  /*enable_alternative_services=*/true));
+}
+
+TEST_F(HttpStreamPoolGroupTest, ComparePausedJobSet) {
+  Group& group = GetOrCreateTestGroup();
+  group.EnsureAttemptManager();
+  group.attempt_manager_->SetIsFailingForTest(true);
+
+  std::unique_ptr<TestJobDelegate> delegate1 =
+      std::make_unique<TestJobDelegate>(group.stream_key());
+  delegate1->CreateAndStartJob(pool());
+
+  FastForwardBy(base::Milliseconds(10));
+
+  // Create two jobs at the same time.
+  std::unique_ptr<TestJobDelegate> delegate2 =
+      std::make_unique<TestJobDelegate>(group.stream_key());
+  delegate2->CreateAndStartJob(pool());
+
+  std::unique_ptr<TestJobDelegate> delegate3 =
+      std::make_unique<TestJobDelegate>(group.stream_key());
+  delegate3->CreateAndStartJob(pool());
+
+  ASSERT_EQ(group.PausedJobCount(), 3u);
+
+  // Ensure that the group is deleted after all delegates are destroyed.
+  delegate1.reset();
+  delegate2.reset();
+  delegate3.reset();
+  WaitForAttemptManagerComplete(*GetTestGroup());
+  ASSERT_FALSE(GetTestGroup());
 }
 
 }  // namespace net

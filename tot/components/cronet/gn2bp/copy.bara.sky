@@ -22,6 +22,7 @@ origin_files = glob([
     "components/miracle_parameter/**",
     "components/nacl/**",
     "components/prefs/**",
+    "components/unexportable_keys/**",
     "crypto/**",
     "ipc/**",
     "net/**",
@@ -36,6 +37,9 @@ origin_files = glob([
     "build/android/CheckInstallApk-debug.apk",
     "build/android/unused_resources/**",
     "build/linux/**",
+    # We don't care about siso, and the contents of the .sisoenv file tend to be
+    # non-deterministic, causing spurious diffs.
+    "build/config/siso/**",
   ]) + glob(["components/cronet/**"]) - glob([
     # Per aosp/2374766
     "components/cronet/native/**",
@@ -61,25 +65,24 @@ origin_files = glob([
     "net/third_party/uri_template/**",
     "third_party/abseil-cpp/**",
     "third_party/android_ndk/sources/android/cpufeatures/**",
-    "third_party/llvm-libc/**",
     # See https://chromium-review.googlesource.com/c/chromium/src/+/4885470
     # Note: Only used for tests.
     "third_party/anonymous_tokens/**",
     "third_party/ashmem/**",
     # Note: Only used for tests.
     "third_party/apache-portable-runtime/**",
-    "third_party/boringssl/**",
     "third_party/brotli/**",
     # Note: Only used for tests.
     "third_party/ced/**",
     "third_party/cpu_features/**",
+    # Note: Only used for tests.
+    "third_party/fuzztest/**",
     # Note: Only used for tests.
     "third_party/google_benchmark/**",
     # Note: Only used for tests.
     "third_party/googletest/**",
     "third_party/icu/**",
     "third_party/jni_zero/**",
-    "third_party/libc++/**",
     "third_party/libc++abi/**",
     # Note: Only used for tests.
     "third_party/libxml/**",
@@ -98,6 +101,25 @@ origin_files = glob([
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
     "third_party/simdutf/**",
+  ]) + glob([
+    "third_party/libc++/**",
+  ]) - glob([
+    # This is not used, and contains a huge number of files (~10k) that slows
+    # down imports and checkouts.
+    "third_party/libc++/src/test/**",
+  ]) + glob([
+    "third_party/llvm-libc/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/llvm-libc/src/test/**"
+  ]) + glob([
+    "third_party/boringssl/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/boringssl/src/fuzz/**",
+    "third_party/boringssl/src/pki/testdata/**",
   ]) + glob([
     # Note: Only used for tests.
     "third_party/quic_trace/**"
@@ -171,9 +193,6 @@ def destination_files_for_channel(import_channel):
       # through the consistency file just like it does for partial file diffs.
       "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
   ]
-  channel_destination_files = []
-  for file in destination_files_to_exclude_per_channel:
-    channel_destination_files.append(import_channel + "/" + file)
   # The scope of the import in the destination (AOSP //external/cronet/channel).
   #
   # Each destination file in this set will be 3-way-merged with its counterpart
@@ -193,7 +212,9 @@ def destination_files_for_channel(import_channel):
   # Note: These are post-transformation files. As such, we have to be aware of
   # which channel we're importing, since we must consider the files within that
   # channel subdirectory.
-  return glob([import_channel + "/**"]) - glob(channel_destination_files)
+  return glob([import_channel + "/**"]) - glob(
+    [import_channel + "/" + file for file in destination_files_to_exclude_per_channel]
+  )
 
 def workflow(name, destination, destination_files, mode, additional_transform, consistency_file_path):
   core.workflow(

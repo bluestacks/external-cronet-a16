@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_session.h"
 
+#include <algorithm>
+#include <array>
 #include <limits>
 #include <map>
 #include <string>
@@ -16,7 +13,10 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -243,7 +242,7 @@ base::Value::Dict NetLogSpdyInitializedParams(NetLogSource source) {
   if (source.IsValid()) {
     source.AddToEventParameters(dict);
   }
-  dict.Set("protocol", NextProtoToString(kProtoHTTP2));
+  dict.Set("protocol", NextProtoToString(NextProto::kProtoHTTP2));
   return dict;
 }
 
@@ -380,11 +379,11 @@ base::Value::Dict NetLogSpdyGreasedFrameParams(spdy::SpdyStreamId stream_id,
 
 // Helper function to return the total size of an array of objects
 // with .size() member functions.
-template <typename T, size_t N>
-size_t GetTotalSize(const T (&arr)[N]) {
+template <typename T>
+size_t GetTotalSize(const T& container_of_containers) {
   size_t total_size = 0;
-  for (size_t i = 0; i < N; ++i) {
-    total_size += arr[i].size();
+  for (const auto& container : container_of_containers) {
+    total_size += container.size();
   }
   return total_size;
 }
@@ -751,16 +750,15 @@ bool SpdySession::CanPool(TransportSecurityState* transport_security_state,
   if (!ssl_info.cert->VerifyNameMatch(new_hostname))
     return false;
 
-  // Port is left at 0 as it is never used.
   if (transport_security_state->CheckPublicKeyPins(
-          HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
+          new_hostname, ssl_info.is_issued_by_known_root,
           ssl_info.public_key_hashes) ==
       TransportSecurityState::PKPStatus::VIOLATED) {
     return false;
   }
 
   switch (transport_security_state->CheckCTRequirements(
-      HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
+      new_hostname, ssl_info.is_issued_by_known_root,
       ssl_info.public_key_hashes, ssl_info.cert.get(),
       ssl_info.ct_policy_compliance)) {
     case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
@@ -1374,8 +1372,6 @@ void SpdySession::MaybeFinishGoingAway() {
 }
 
 base::Value::Dict SpdySession::GetInfoAsValue() const {
-  DCHECK(buffered_spdy_framer_.get());
-
   auto dict =
       base::Value::Dict()
           .Set("source_id", static_cast<int>(net_log_.source().id))
@@ -1391,10 +1387,14 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
                static_cast<int>(max_concurrent_streams_))
           .Set("streams_initiated_count", streams_initiated_count_)
           .Set("streams_abandoned_count", streams_abandoned_count_)
-          .Set("frames_received", buffered_spdy_framer_->frames_received())
+          .Set("frames_received", buffered_spdy_framer_.get()
+                                      ? buffered_spdy_framer_->frames_received()
+                                      : 0)
           .Set("send_window_size", session_send_window_size_)
           .Set("recv_window_size", session_recv_window_size_)
-          .Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_);
+          .Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_)
+          .Set("availability_state",
+               AvailabilityStateToString(availability_state_));
 
   if (!pooled_aliases_.empty()) {
     base::Value::List alias_list;
@@ -1537,6 +1537,19 @@ bool SpdySession::IsBrokenConnectionDetectionEnabled() const {
   return heartbeat_timer_.IsRunning();
 }
 
+// static
+std::string_view SpdySession::AvailabilityStateToString(
+    AvailabilityState state) {
+  switch (state) {
+    case STATE_AVAILABLE:
+      return "Available";
+    case STATE_GOING_AWAY:
+      return "GoingAway";
+    case STATE_DRAINING:
+      return "Draining";
+  }
+}
+
 void SpdySession::InitializeInternal(SpdySessionPool* pool) {
   CHECK(!in_io_loop_);
   DCHECK_EQ(availability_state_, STATE_AVAILABLE);
@@ -1659,7 +1672,7 @@ bool SpdySession::CancelStreamRequest(
   PendingStreamRequestQueue* queue = &pending_create_stream_queues_[priority];
   // Remove |request| from |queue| while preserving the order of the
   // other elements.
-  PendingStreamRequestQueue::iterator it = base::ranges::find(
+  PendingStreamRequestQueue::iterator it = std::ranges::find(
       *queue, request.get(), &base::WeakPtr<SpdyStreamRequest>::get);
   // The request may already be removed if there's a
   // CompleteStreamRequest() in flight.
@@ -1667,8 +1680,8 @@ bool SpdySession::CancelStreamRequest(
     it = queue->erase(it);
     // |request| should be in the queue at most once, and if it is
     // present, should not be pending completion.
-    DCHECK(base::ranges::find(it, queue->end(), request.get(),
-                              &base::WeakPtr<SpdyStreamRequest>::get) ==
+    DCHECK(std::ranges::find(it, queue->end(), request.get(),
+                             &base::WeakPtr<SpdyStreamRequest>::get) ==
            queue->end());
     return true;
   }
@@ -1928,12 +1941,11 @@ int SpdySession::DoReadComplete(int result) {
   last_read_time_ = time_func_();
 
   DCHECK(buffered_spdy_framer_.get());
-  char* data = read_buffer_->data();
-  while (result > 0) {
-    uint32_t bytes_processed =
-        buffered_spdy_framer_->ProcessInput(data, result);
-    result -= bytes_processed;
-    data += bytes_processed;
+  base::span<uint8_t> available_data = read_buffer_->first(result);
+  while (!available_data.empty()) {
+    size_t bytes_processed = buffered_spdy_framer_->ProcessInput(
+        reinterpret_cast<char*>(available_data.data()), available_data.size());
+    available_data = available_data.subspan(bytes_processed);
 
     if (availability_state_ == STATE_DRAINING) {
       return ERR_CONNECTION_CLOSED;
@@ -2191,20 +2203,24 @@ void SpdySession::SendInitialData() {
   if (send_window_update)
     initial_frame_size += window_update_frame->size();
   auto initial_frame_data = std::make_unique<char[]>(initial_frame_size);
-  size_t offset = 0;
 
-  memcpy(initial_frame_data.get() + offset, spdy::kHttp2ConnectionHeaderPrefix,
-         spdy::kHttp2ConnectionHeaderPrefixSize);
-  offset += spdy::kHttp2ConnectionHeaderPrefixSize;
+  // The Quiche interfaces use raw pointers, so have to UNSAFE_TODO() here and
+  // below to use those APIs. Unclear if cleaning up Quiche APIs is in-scope for
+  // the spanification effort, so using UNSAFE_TODO() rather than
+  // UNSAFE_BUFFERS() for now.
+  auto initial_data_span =
+      UNSAFE_TODO(base::span(initial_frame_data.get(), initial_frame_size));
+  base::SpanWriter initial_data_writer(initial_data_span);
 
-  memcpy(initial_frame_data.get() + offset, settings_frame->data(),
-         settings_frame->size());
-  offset += settings_frame->size();
+  initial_data_writer.Write(UNSAFE_TODO(
+      base::span(spdy::kHttp2ConnectionHeaderPrefix,
+                 static_cast<size_t>(spdy::kHttp2ConnectionHeaderPrefixSize))));
+  initial_data_writer.Write(*settings_frame);
 
   if (send_window_update) {
-    memcpy(initial_frame_data.get() + offset, window_update_frame->data(),
-           window_update_frame->size());
+    initial_data_writer.Write(*window_update_frame);
   }
+  CHECK_EQ(initial_data_writer.remaining(), 0u);
 
   auto initial_frame = std::make_unique<spdy::SpdySerializedFrame>(
       std::move(initial_frame_data), initial_frame_size);

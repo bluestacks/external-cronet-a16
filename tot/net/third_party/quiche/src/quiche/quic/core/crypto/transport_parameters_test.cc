@@ -286,7 +286,7 @@ TEST_P(TransportParametersTest, CopyConstructor) {
   orig_params.initial_max_streams_uni.set_value(kFakeInitialMaxStreamsUni);
   orig_params.ack_delay_exponent.set_value(kAckDelayExponentForTest);
   orig_params.max_ack_delay.set_value(kMaxAckDelayForTest);
-  orig_params.min_ack_delay_us.set_value(kMinAckDelayUsForTest);
+  orig_params.min_ack_delay_us_draft10 = kMinAckDelayUsForTest;
   orig_params.disable_active_migration = kFakeDisableMigration;
   orig_params.reliable_stream_reset = kFakeReliableStreamReset;
   orig_params.preferred_address = CreateFakePreferredAddress();
@@ -328,7 +328,7 @@ TEST_P(TransportParametersTest, RoundTripClient) {
   orig_params.initial_max_streams_uni.set_value(kFakeInitialMaxStreamsUni);
   orig_params.ack_delay_exponent.set_value(kAckDelayExponentForTest);
   orig_params.max_ack_delay.set_value(kMaxAckDelayForTest);
-  orig_params.min_ack_delay_us.set_value(kMinAckDelayUsForTest);
+  orig_params.min_ack_delay_us_draft10 = kMinAckDelayUsForTest;
   orig_params.disable_active_migration = kFakeDisableMigration;
   orig_params.reliable_stream_reset = kFakeReliableStreamReset;
   orig_params.active_connection_id_limit.set_value(
@@ -381,7 +381,7 @@ TEST_P(TransportParametersTest, RoundTripServer) {
   orig_params.initial_max_streams_uni.set_value(kFakeInitialMaxStreamsUni);
   orig_params.ack_delay_exponent.set_value(kAckDelayExponentForTest);
   orig_params.max_ack_delay.set_value(kMaxAckDelayForTest);
-  orig_params.min_ack_delay_us.set_value(kMinAckDelayUsForTest);
+  orig_params.min_ack_delay_us_draft10 = kMinAckDelayUsForTest;
   orig_params.disable_active_migration = kFakeDisableMigration;
   orig_params.reliable_stream_reset = kFakeReliableStreamReset;
   orig_params.preferred_address = CreateFakePreferredAddress();
@@ -557,8 +557,8 @@ TEST_P(TransportParametersTest, ParseClientParams) {
       0x0b,  // parameter id
       0x01,  // length
       0x33,  // value
-      // min_ack_delay_us
-      0x80, 0x00, 0xde, 0x1a,  // parameter id
+      // min_ack_delay_us_draft10
+      0xc0, 0x00, 0x00, 0x00, 0xff, 0x04, 0xde, 0x1b,  // parameter id
       0x02,  // length
       0x43, 0xe8,  // value
       // disable_active_migration
@@ -601,7 +601,7 @@ TEST_P(TransportParametersTest, ParseClientParams) {
       0x04,  // length
       0x01, 0x23, 0x45, 0x67,  // initial version
       // version_information
-      0x80, 0xFF, 0x73, 0xDB,  // parameter id
+      0x11,  // parameter id
       0x0C,  // length
       0x01, 0x23, 0x45, 0x67,  // chosen version
       0x01, 0x23, 0x45, 0x67,  // other version 1
@@ -645,7 +645,8 @@ TEST_P(TransportParametersTest, ParseClientParams) {
             new_params.initial_max_streams_uni.value());
   EXPECT_EQ(kAckDelayExponentForTest, new_params.ack_delay_exponent.value());
   EXPECT_EQ(kMaxAckDelayForTest, new_params.max_ack_delay.value());
-  EXPECT_EQ(kMinAckDelayUsForTest, new_params.min_ack_delay_us.value());
+  EXPECT_EQ(0, new_params.min_ack_delay_us.value());
+  EXPECT_EQ(kMinAckDelayUsForTest, *new_params.min_ack_delay_us_draft10);
   EXPECT_EQ(kFakeDisableMigration, new_params.disable_active_migration);
   EXPECT_EQ(kFakeReliableStreamReset, new_params.reliable_stream_reset);
   EXPECT_EQ(kActiveConnectionIdLimitForTest,
@@ -814,8 +815,8 @@ TEST_P(TransportParametersTest, ParseServerParams) {
       0x0b,  // parameter id
       0x01,  // length
       0x33,  // value
-      // min_ack_delay_us
-      0x80, 0x00, 0xde, 0x1a,  // parameter id
+      // min_ack_delay_us_draft10
+      0xc0, 0x00, 0x00, 0x00, 0xff, 0x04, 0xde, 0x1b,  // parameter id
       0x02,  // length
       0x43, 0xe8,  // value
       // disable_active_migration
@@ -862,7 +863,7 @@ TEST_P(TransportParametersTest, ParseServerParams) {
       0x01, 0x23, 0x45, 0x67,
       0x89, 0xab, 0xcd, 0xef,
       // version_information
-      0x80, 0xFF, 0x73, 0xDB,  // parameter id
+      0x11,  // parameter id
       0x0C,  // length
       0x01, 0x23, 0x45, 0x67,  // chosen version
       0x01, 0x23, 0x45, 0x67,  // other version 1
@@ -916,7 +917,8 @@ TEST_P(TransportParametersTest, ParseServerParams) {
             new_params.initial_max_streams_uni.value());
   EXPECT_EQ(kAckDelayExponentForTest, new_params.ack_delay_exponent.value());
   EXPECT_EQ(kMaxAckDelayForTest, new_params.max_ack_delay.value());
-  EXPECT_EQ(kMinAckDelayUsForTest, new_params.min_ack_delay_us.value());
+  EXPECT_EQ(0, new_params.min_ack_delay_us.value());
+  EXPECT_EQ(kMinAckDelayUsForTest, *new_params.min_ack_delay_us_draft10);
   EXPECT_EQ(kFakeDisableMigration, new_params.disable_active_migration);
   EXPECT_EQ(kFakeReliableStreamReset, new_params.reliable_stream_reset);
   ASSERT_NE(nullptr, new_params.preferred_address.get());
@@ -1048,7 +1050,8 @@ TEST_P(TransportParametersTest, SerializationOrderIsRandom) {
   orig_params.initial_max_streams_uni.set_value(kFakeInitialMaxStreamsUni);
   orig_params.ack_delay_exponent.set_value(kAckDelayExponentForTest);
   orig_params.max_ack_delay.set_value(kMaxAckDelayForTest);
-  orig_params.min_ack_delay_us.set_value(kMinAckDelayUsForTest);
+  orig_params.min_ack_delay_us.set_value(0);
+  orig_params.min_ack_delay_us_draft10 = kMinAckDelayUsForTest;
   orig_params.disable_active_migration = kFakeDisableMigration;
   orig_params.reliable_stream_reset = kFakeReliableStreamReset;
   orig_params.active_connection_id_limit.set_value(
@@ -1093,7 +1096,8 @@ TEST_P(TransportParametersTest, Degrease) {
   orig_params.initial_max_streams_uni.set_value(kFakeInitialMaxStreamsUni);
   orig_params.ack_delay_exponent.set_value(kAckDelayExponentForTest);
   orig_params.max_ack_delay.set_value(kMaxAckDelayForTest);
-  orig_params.min_ack_delay_us.set_value(kMinAckDelayUsForTest);
+  orig_params.min_ack_delay_us.set_value(0);
+  orig_params.min_ack_delay_us_draft10 = kMinAckDelayUsForTest;
   orig_params.disable_active_migration = kFakeDisableMigration;
   orig_params.reliable_stream_reset = kFakeReliableStreamReset;
   orig_params.active_connection_id_limit.set_value(
@@ -1152,7 +1156,8 @@ class TransportParametersTicketSerializationTest : public QuicTest {
         kFakeInitialMaxStreamsUni);
     original_params_.ack_delay_exponent.set_value(kAckDelayExponentForTest);
     original_params_.max_ack_delay.set_value(kMaxAckDelayForTest);
-    original_params_.min_ack_delay_us.set_value(kMinAckDelayUsForTest);
+    original_params_.min_ack_delay_us.set_value(0);
+    original_params_.min_ack_delay_us_draft10 = kMinAckDelayUsForTest;
     original_params_.disable_active_migration = kFakeDisableMigration;
     original_params_.reliable_stream_reset = kFakeReliableStreamReset;
     original_params_.preferred_address = CreateFakePreferredAddress();

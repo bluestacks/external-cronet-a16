@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -283,7 +284,9 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
   ASSERT_FALSE(hang_event_.IsSignaled());
 }
 
-TEST_F(HangWatcherTest, NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
+// TODO(crbug.com/385732561): Test is flaky.
+TEST_F(HangWatcherTest,
+       DISABLED_NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
@@ -643,7 +646,7 @@ class HangWatcherSnapshotTest : public testing::Test {
     constexpr char kSeparator{'|'};
 
     for (PlatformThreadId id : ids) {
-      result += base::NumberToString(id) + kSeparator;
+      result += base::NumberToString(id.raw()) + kSeparator;
     }
 
     return result;
@@ -723,16 +726,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   }
 }
 
-// TODO(crbug.com/40187449): On MAC, the base::PlatformThread::CurrentId(...)
-// should return the system wide IDs. The HungThreadIDs test fails because the
-// reported process ids do not match.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HungThreadIDs DISABLED_HungThreadIDs
-#else
-#define MAYBE_HungThreadIDs HungThreadIDs
-#endif
-
-TEST_F(HangWatcherSnapshotTest, MAYBE_HungThreadIDs) {
+TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
   // During hang capture the list of hung threads should be populated.
   hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
     EXPECT_EQ(hang_watcher_.GrabWatchStateSnapshotForTesting()
@@ -951,6 +945,9 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   // invoked enough times.
   hang_watcher_.SetAfterMonitorClosureForTesting(BarrierClosure(
       kMinimumMonitorCount, base::BindLambdaForTesting([&run_loop] {
+        // This should only run if there are threads to watch.
+        EXPECT_TRUE(base::FeatureList::IsEnabled(kEnableHangWatcher));
+
         // Test condition are confirmed, stop monitoring.
         HangWatcher::StopMonitoringForTesting();
 
@@ -969,7 +966,10 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   unregister_thread_closure_ =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
-  run_loop.Run();
+  // The "after monitor" closure only runs if there are threads to watch.
+  if (base::FeatureList::IsEnabled(kEnableHangWatcher)) {
+    run_loop.Run();
+  }
 
   // No monitored scope means no possible hangs.
   ASSERT_FALSE(hang_event_.IsSignaled());

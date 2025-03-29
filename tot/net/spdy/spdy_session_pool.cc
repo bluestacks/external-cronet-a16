@@ -4,6 +4,7 @@
 
 #include "net/spdy/spdy_session_pool.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -235,7 +235,8 @@ SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
     const SpdySessionKey& key,
     const ServiceEndpoint& service_endpoint,
     const std::set<std::string>& dns_aliases) {
-  CHECK(!HasAvailableSession(key, /*is_websocket=*/false));
+  CHECK(!HasAvailableSession(key, /*enable_ip_based_pooling=*/true,
+                             /*is_websocket=*/false));
   CHECK(key.socket_tag() == SocketTag());
 
   base::WeakPtr<SpdySession> session =
@@ -248,10 +249,15 @@ SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
 }
 
 bool SpdySessionPool::HasAvailableSession(const SpdySessionKey& key,
+                                          bool enable_ip_based_pooling,
                                           bool is_websocket) const {
-  const auto it = available_sessions_.find(key);
-  return it != available_sessions_.end() &&
-         (!is_websocket || it->second->support_websocket());
+  auto it = available_sessions_.find(key);
+  if (it == available_sessions_.end() ||
+      (is_websocket && !it->second->support_websocket())) {
+    return false;
+  }
+
+  return enable_ip_based_pooling ? true : key == it->second->spdy_session_key();
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::RequestSession(
@@ -496,7 +502,7 @@ void SpdySessionPool::CloseCurrentIdleSessions(const std::string& description) {
 void SpdySessionPool::CloseAllSessions() {
   auto is_draining = [](const SpdySession* s) { return s->IsDraining(); };
   // Repeat until every SpdySession owned by |this| is draining.
-  while (!base::ranges::all_of(sessions_, is_draining)) {
+  while (!std::ranges::all_of(sessions_, is_draining)) {
     CloseCurrentSessionsHelper(ERR_ABORTED, "Closing all sessions.",
                                false /* idle_only */);
   }
@@ -520,15 +526,10 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
     const {
   base::Value::List list;
 
-  for (const auto& available_session : available_sessions_) {
-    // Only add the session if the key in the map matches the main
-    // host_port_proxy_pair (not an alias).
-    const SpdySessionKey& key = available_session.first;
-    const SpdySessionKey& session_key =
-        available_session.second->spdy_session_key();
-    if (key == session_key)
-      list.Append(available_session.second->GetInfoAsValue());
+  for (const auto& session : sessions_) {
+    list.Append(session->GetInfoAsValue());
   }
+
   return std::make_unique<base::Value>(std::move(list));
 }
 
@@ -713,7 +714,7 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
   // the alias.
   auto it = LookupAvailableSessionByKey(key);
   if (it != available_sessions_.end()) {
-    DCHECK(key != it->second->spdy_session_key());
+    CHECK(key != it->second->spdy_session_key());
 
     // Remove session from available sessions and from aliases, and remove
     // key from the session's pooled alias set, so that a new session can be

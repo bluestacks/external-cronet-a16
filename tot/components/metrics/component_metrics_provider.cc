@@ -97,6 +97,8 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_SODA_FR_FR},
       {"gonpemdgkjcecdgbnaabipppbmgfggbe",
        SystemProfileProto_ComponentId_FIRST_PARTY_SETS},
+      {"hajigopbbjhghbfimgkfmpenfkclmohk",
+       SystemProfileProto_ComponentId_AMOUNT_EXTRACTION_HEURISTIC_REGEXES},
       {"hfnkpimlhhgieaddgfemjhofmfblmnib",
        SystemProfileProto_ComponentId_CRL_SET},
       {"hkifppleldbgkdlijbdfkdpedggaopda",
@@ -168,6 +170,8 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_SODA_JA_JP},
       {"cffplpkejcbdpfnfabnjikeicbedmifn",
        SystemProfileProto_ComponentId_MASKED_DOMAIN_LIST},
+      {"kgdbnmlfakkebekbaceapiaenjgmlhan",
+       SystemProfileProto_ComponentId_FINGERPRINTING_PROTECTION_FILTER_RULES},
   });
 
   const auto result = kComponentMap.find(app_id);

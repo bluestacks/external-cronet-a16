@@ -37,6 +37,7 @@
 #include "net/quic/quic_session_pool.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/gurl.h"
@@ -45,6 +46,17 @@
 namespace net {
 
 namespace {
+
+// Specifies how to handle unexpected states.
+// TODO(crbug.com/346835898): Remove this when we stabilize the implementation.
+enum class CheckConsistencyMode {
+  // Disable consistency checks.
+  kDisabled = 0,
+  // Logging only.
+  kLogging = 1,
+  // Use (D)CHECKs in addition to logging.
+  kStrict = 2,
+};
 
 constexpr base::FeatureParam<size_t> kHttpStreamPoolMaxStreamPerPool{
     &features::kHappyEyeballsV3,
@@ -56,9 +68,34 @@ constexpr base::FeatureParam<size_t> kHttpStreamPoolMaxStreamPerGroup{
     HttpStreamPool::kMaxStreamSocketsPerGroupParamName.data(),
     HttpStreamPool::kDefaultMaxStreamSocketsPerGroup};
 
-constexpr base::FeatureParam<bool> kEnableConsistencyCheck{
+constexpr base::FeatureParam<base::TimeDelta>
+    kHttpStreamPoolConnectionAttemptDelay{
+        &features::kHappyEyeballsV3,
+        HttpStreamPool::kConnectionAttemptDelayParamName.data(),
+        HttpStreamPool::kDefaultConnectionAttemptDelay};
+
+constexpr base::FeatureParam<HttpStreamPool::StreamAttemptDelayBehavior>
+    kStreamAttemptDelayBehavior{
+        &features::kHappyEyeballsV3,
+        HttpStreamPool::kStreamAttemptDelayBehaviorParamName.data(),
+        HttpStreamPool::StreamAttemptDelayBehavior::
+            kStartTimerOnFirstQuicAttempt,
+        HttpStreamPool::kStreamAttemptDelayBehaviorOptions};
+
+constexpr base::FeatureParam<bool> kVerboseNetLog{
+    &features::kHappyEyeballsV3, HttpStreamPool::kVerboseNetLogParamName.data(),
+    false};
+
+constexpr base::FeatureParam<CheckConsistencyMode>::Option
+    kCheckConsistencyModeOptions[] = {
+        {CheckConsistencyMode::kDisabled, "disabled"},
+        {CheckConsistencyMode::kLogging, "logging"},
+        {CheckConsistencyMode::kStrict, "strict"}};
+
+constexpr base::FeatureParam<CheckConsistencyMode> kConsistencyCheck{
     &features::kHappyEyeballsV3,
-    HttpStreamPool::kEnableConsistencyCheckParamName.data(), false};
+    HttpStreamPool::kConsistencyCheckParamName.data(),
+    CheckConsistencyMode::kDisabled, &kCheckConsistencyModeOptions};
 
 // Represents total stream counts in the pool. Only used for consistency check.
 struct StreamCounts {
@@ -85,6 +122,22 @@ std::ostream& operator<<(std::ostream& os, const StreamCounts& counts) {
 
 }  // namespace
 
+// static
+base::TimeDelta HttpStreamPool::GetConnectionAttemptDelay() {
+  return kHttpStreamPoolConnectionAttemptDelay.Get();
+}
+
+// static
+HttpStreamPool::StreamAttemptDelayBehavior
+HttpStreamPool::GetStreamAttemptDelayBehavior() {
+  return kStreamAttemptDelayBehavior.Get();
+}
+
+// static
+bool HttpStreamPool::VerboseNetLog() {
+  return kVerboseNetLog.Get();
+}
+
 HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
                                bool cleanup_on_ip_address_change)
     : http_network_session_(http_network_session),
@@ -106,7 +159,7 @@ HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
 
   http_network_session_->ssl_client_context()->AddObserver(this);
 
-  if (kEnableConsistencyCheck.Get()) {
+  if (kConsistencyCheck.Get() != CheckConsistencyMode::kDisabled) {
     CheckConsistency();
   }
 }
@@ -139,6 +192,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
   // make sure `job_controllers_` always contains `controller` when
   // OnJobControllerComplete() is called.
   job_controllers_.emplace(std::move(controller));
+  if (controller_raw_ptr->respect_limits() == RespectLimits::kIgnore) {
+    ++limit_ignoring_job_controller_counts_;
+  }
 
   return controller_raw_ptr->RequestStream(delegate, net_log);
 }
@@ -153,6 +209,7 @@ int HttpStreamPool::Preconnect(HttpStreamPoolRequestInfo request_info,
       /*enable_ip_based_pooling=*/true,
       /*enable_alternative_services=*/true);
   JobController* controller_raw_ptr = controller.get();
+  CHECK_EQ(controller_raw_ptr->respect_limits(), RespectLimits::kRespect);
   // SAFETY: Using base::Unretained() is safe because `this` will own
   // `controller` when Preconnect() return ERR_IO_PENDING.
   int rv = controller_raw_ptr->Preconnect(
@@ -165,8 +222,15 @@ int HttpStreamPool::Preconnect(HttpStreamPoolRequestInfo request_info,
   return rv;
 }
 
+bool HttpStreamPool::EnsureTotalActiveStreamCountBelowLimit() const {
+  if (limit_ignoring_job_controller_counts_ > 0) {
+    return true;
+  }
+  return TotalActiveStreamCount() < max_stream_sockets_per_pool_;
+}
+
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
+  CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_idle_stream_count_;
 }
 
@@ -176,7 +240,7 @@ void HttpStreamPool::DecrementTotalIdleStreamCount() {
 }
 
 void HttpStreamPool::IncrementTotalHandedOutStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
+  CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_handed_out_stream_count_;
 }
 
@@ -186,7 +250,7 @@ void HttpStreamPool::DecrementTotalHandedOutStreamCount() {
 }
 
 void HttpStreamPool::IncrementTotalConnectingStreamCount() {
-  CHECK_LT(TotalActiveStreamCount(), kDefaultMaxStreamSocketsPerPool);
+  CHECK(EnsureTotalActiveStreamCountBelowLimit());
   ++total_connecting_stream_count_;
 }
 
@@ -199,7 +263,7 @@ void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
     group.second->FlushWithError(ERR_NETWORK_CHANGED,
-                                 StreamCloseReason::kIpAddressChanged,
+                                 StreamSocketCloseReason::kIpAddressChanged,
                                  kIpAddressChanged);
   }
 }
@@ -208,7 +272,7 @@ void HttpStreamPool::OnSSLConfigChanged(
     SSLClientContext::SSLConfigChangeType change_type) {
   for (const auto& group : groups_) {
     group.second->Refresh(kSslConfigChanged,
-                          StreamCloseReason::kSslConfigChanged);
+                          StreamSocketCloseReason::kSslConfigChanged);
   }
   ProcessPendingRequestsInGroups();
 }
@@ -220,7 +284,7 @@ void HttpStreamPool::OnSSLConfigForServersChanged(
         servers.contains(
             HostPortPair::FromSchemeHostPort(group.first.destination()))) {
       group.second->Refresh(kSslConfigChanged,
-                            StreamCloseReason::kSslConfigChanged);
+                            StreamSocketCloseReason::kSslConfigChanged);
     }
   }
   ProcessPendingRequestsInGroups();
@@ -233,14 +297,19 @@ void HttpStreamPool::OnGroupComplete(Group* group) {
 }
 
 void HttpStreamPool::OnJobControllerComplete(JobController* job_controller) {
+  if (job_controller->respect_limits() == RespectLimits::kIgnore) {
+    CHECK_GT(limit_ignoring_job_controller_counts_, 0u);
+    --limit_ignoring_job_controller_counts_;
+  }
   auto it = job_controllers_.find(job_controller);
   CHECK(it != job_controllers_.end());
   job_controllers_.erase(it);
+  CHECK_GE(job_controllers_.size(), limit_ignoring_job_controller_counts_);
 }
 
 void HttpStreamPool::FlushWithError(
     int error,
-    StreamCloseReason attempt_cancel_reason,
+    StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
   for (auto& group : groups_) {
     group.second->FlushWithError(error, attempt_cancel_reason,
@@ -464,7 +533,9 @@ void HttpStreamPool::OnPreconnectComplete(JobController* job_controller,
 }
 
 void HttpStreamPool::CheckConsistency() {
-  CHECK(kEnableConsistencyCheck.Get());
+  CHECK(kConsistencyCheck.Get() != CheckConsistencyMode::kDisabled);
+  const bool is_strict =
+      kConsistencyCheck.Get() == CheckConsistencyMode::kStrict;
 
   const StreamCounts pool_total_counts = {
       .handed_out = total_handed_out_stream_count_,
@@ -482,6 +553,10 @@ void HttpStreamPool::CheckConsistency() {
       groups_total_counts.idle += group->IdleStreamSocketCount();
       groups_total_counts.connecting += group->ConnectingStreamSocketCount();
       groups.Set(key.ToString(), group->GetInfoAsValue());
+
+      if (is_strict) {
+        CHECK(!group->CanComplete()) << key.ToString();
+      }
     }
 
     const bool ok = pool_total_counts == groups_total_counts;
@@ -495,8 +570,14 @@ void HttpStreamPool::CheckConsistency() {
       dict.Set("groups", std::move(groups));
       return dict;
     });
-    VLOG_IF(1, !ok) << "Stream counts mismatch: pool=" << pool_total_counts
-                    << ", groups=" << groups_total_counts;
+
+    if (is_strict) {
+      CHECK(ok) << "Stream counts mismatch: pool=" << pool_total_counts
+                << ", groups=" << groups_total_counts;
+    } else {
+      VLOG_IF(1, !ok) << "Stream counts mismatch: pool=" << pool_total_counts
+                      << ", groups=" << groups_total_counts;
+    }
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

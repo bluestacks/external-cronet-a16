@@ -13,22 +13,25 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 /** Helper methods to deal with threading related tasks. */
+@NullMarked
 public class ThreadUtils {
 
     private static final Object sLock = new Object();
 
     private static volatile boolean sWillOverride;
 
-    private static volatile Handler sUiThreadHandler;
+    private static volatile @Nullable Handler sUiThreadHandler;
 
-    private static Throwable sUiThreadInitializer;
+    private static @Nullable Throwable sUiThreadInitializer;
     private static boolean sThreadAssertsDisabledForTesting;
-    private static Thread sInstrumentationThreadForTesting;
+    private static @Nullable Thread sInstrumentationThreadForTesting;
 
     /**
      * A helper object to ensure that interactions with a particular object only happens on a
@@ -48,7 +51,7 @@ public class ThreadUtils {
      */
     // TODO(b/274802355): Add @CheckDiscard once R8 can remove this.
     public static class ThreadChecker {
-        private Thread mThread;
+        private @Nullable Thread mThread;
 
         public ThreadChecker() {
             resetThreadId();
@@ -86,11 +89,15 @@ public class ThreadUtils {
                 Thread uiThread = getUiThreadLooper().getThread();
                 if (curThread == uiThread) {
                     assert false
-                            : "Background-only class called from UI thread (expected: "
+                            : "Class was initialized on a background thread, but current operation"
+                                  + " was performed on the UI thread (expected: "
                                     + mThread
                                     + ")";
                 } else if (mThread == uiThread) {
-                    assert false : "UI-only class called from background thread: " + curThread;
+                    assert false
+                            : "Class was initialized on the UI thread, but current operation was"
+                                  + " performed on a background thread: "
+                                    + curThread;
                 }
                 assert false
                         : "Method called from wrong background thread. Expected: "
@@ -161,6 +168,7 @@ public class ThreadUtils {
             throw new RuntimeException("Did not yet override the UI thread");
         }
         setUiThread(Looper.getMainLooper());
+        assert sUiThreadHandler != null;
         return sUiThreadHandler;
     }
 
@@ -187,7 +195,7 @@ public class ThreadUtils {
      * @param c The Callable to run
      * @return The result of the callable
      */
-    public static <T> T runOnUiThreadBlocking(Callable<T> c) {
+    public static <T extends @Nullable Object> T runOnUiThreadBlocking(Callable<T> c) {
         return PostTask.runSynchronously(TaskTraits.UI_DEFAULT, c);
     }
 
@@ -198,7 +206,7 @@ public class ThreadUtils {
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    public static <T> FutureTask<T> runOnUiThread(FutureTask<T> task) {
+    public static <T extends @Nullable Object> FutureTask<T> runOnUiThread(FutureTask<T> task) {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, task);
         return task;
     }
@@ -220,7 +228,7 @@ public class ThreadUtils {
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    public static <T> FutureTask<T> postOnUiThread(FutureTask<T> task) {
+    public static <T extends @Nullable Object> FutureTask<T> postOnUiThread(FutureTask<T> task) {
         PostTask.postTask(TaskTraits.UI_DEFAULT, task);
         return task;
     }

@@ -257,6 +257,21 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
     return dns_resolution_end_time_;
   }
 
+  // Checks that the request is only added to, and removed from, a job once.
+  // See https://crbug.com/404586727.
+  void AddedToJob() {
+    CHECK(!added_to_job_) << "Request was already added to a job once";
+    added_to_job_ = true;
+  }
+
+  // Checks that the request is only added to, and removed from, a job once.
+  // See https://crbug.com/404586727.
+  void RemovedFromJob() {
+    CHECK(added_to_job_) << "Request was never added to a job";
+    CHECK(!removed_from_job_) << "Request was already removed from a job";
+    removed_from_job_ = true;
+  }
+
  private:
   raw_ptr<QuicSessionPool> pool_;
   QuicSessionKey session_key_;
@@ -265,6 +280,8 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   CompletionOnceCallback failed_on_default_network_callback_;
   raw_ptr<NetErrorDetails> net_error_details_;  // Unowned.
   std::unique_ptr<QuicChromiumClientSession::Handle> session_;
+  bool added_to_job_ = false;
+  bool removed_from_job_ = false;
 
   base::TimeTicks dns_resolution_start_time_;
   base::TimeTicks dns_resolution_end_time_;
@@ -578,6 +595,19 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                      int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
+
+  // Returns whether we have an existing session to the same server id as
+  // `session_key`. This is used to determine whether we have an existing
+  // session to the host but with different `QuicSessionKey`.
+  std::optional<QuicSessionKey> GetActiveSessionToServerId(
+      const QuicSessionKey& session_key) const;
+
+  // Returns whether we have an active job to the same server id as
+  // `session_key`. This is used to determine whether we have an in-flight
+  // attempt to the host but with different `QuicSessionKey`
+  std::optional<QuicSessionKey> GetActiveJobToServerId(
+      const QuicSessionKey& session_key) const;
+
   int CreateSessionSync(QuicSessionAliasKey key,
                         quic::ParsedQuicVersion quic_version,
                         int cert_verify_flags,
@@ -750,6 +780,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   const quic::ParsedQuicVersionVector& supported_versions() const {
     return params_.supported_versions;
   }
+
+  void CheckQuicSessionKeyMismatch(const QuicSessionKey& session_key,
+                                   url::SchemeHostPort destination) const;
 
   // Whether QUIC is known to have ever worked on current network. This is true
   // when QUIC is expected to work in general, rather than whether QUIC was

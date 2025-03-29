@@ -8,16 +8,27 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
 
+#include "absl/status/status.h"
 #include "absl/strings/string_view.h"
+#include "quiche/quic/core/quic_alarm.h"
 #include "quiche/quic/core/quic_time.h"
 #include "quiche/quic/moqt/moqt_messages.h"
 #include "quiche/quic/moqt/moqt_priority.h"
+#include "quiche/quic/moqt/moqt_publisher.h"
 #include "quiche/quic/moqt/moqt_subscribe_windows.h"
+#include "quiche/common/quiche_buffer_allocator.h"
 #include "quiche/common/quiche_callbacks.h"
 #include "quiche/common/quiche_weak_ptr.h"
+#include "quiche/web_transport/web_transport.h"
 
 namespace moqt {
+
+namespace test {
+class MoqtSessionPeer;
+class SubscribeRemoteTrackPeer;
+}  // namespace test
 
 using MoqtObjectAckFunction =
     quiche::MultiUseCallback<void(uint64_t group_id, uint64_t object_id,
@@ -101,17 +112,25 @@ class SubscribeRemoteTrack : public RemoteTrack {
         const FullTrackName& full_track_name, FullSequence sequence,
         MoqtPriority publisher_priority, MoqtObjectStatus object_status,
         absl::string_view object, bool end_of_message) = 0;
-    // TODO(martinduke): Add final sequence numbers
+    virtual void OnSubscribeDone(FullTrackName full_track_name) = 0;
   };
-  SubscribeRemoteTrack(const MoqtSubscribe& subscribe, Visitor* visitor)
+  SubscribeRemoteTrack(
+      const MoqtSubscribe& subscribe, Visitor* visitor,
+      quic::QuicTimeDelta delivery_timeout = quic::QuicTimeDelta::Infinite())
       : RemoteTrack(subscribe.full_track_name, subscribe.subscribe_id,
                     SubscribeWindow(subscribe.start_group.value_or(0),
                                     subscribe.start_object.value_or(0),
                                     subscribe.end_group.value_or(UINT64_MAX),
-                                    subscribe.end_object.value_or(UINT64_MAX))),
+                                    UINT64_MAX)),
         track_alias_(subscribe.track_alias),
         visitor_(visitor),
+        delivery_timeout_(delivery_timeout),
         subscribe_(std::make_unique<MoqtSubscribe>(subscribe)) {}
+  ~SubscribeRemoteTrack() override {
+    if (subscribe_done_alarm_ != nullptr) {
+      subscribe_done_alarm_->PermanentCancel();
+    }
+  }
 
   void OnObjectOrOk() override {
     subscribe_.reset();  // No SUBSCRIBE_ERROR, no need to store this anymore.
@@ -124,13 +143,192 @@ class SubscribeRemoteTrack : public RemoteTrack {
     // This class will soon be destroyed, so there's no need to null the
     // unique_ptr;
   }
+  // Returns false if the forwarding preference is changing on the track.
+  bool OnObject(bool is_datagram) {
+    OnObjectOrOk();
+    if (!is_datagram_.has_value()) {
+      is_datagram_ = is_datagram;
+      return true;
+    } else {
+      return (is_datagram_ == is_datagram);
+    }
+  }
+  void OnStreamOpened();
+  void OnStreamClosed();
+  void OnSubscribeDone(uint64_t stream_count, const quic::QuicClock* clock,
+                       std::unique_ptr<quic::QuicAlarm> subscribe_done_alarm);
+  bool all_streams_closed() const {
+    return total_streams_.has_value() && *total_streams_ == streams_closed_;
+  }
+
+  // The application can request a Joining FETCH but also for FETCH objects to
+  // be delivered via SubscribeRemoteTrack::Visitor::OnObjectFragment(). When
+  // this occurs, the session passes the FetchTask here to handle incoming
+  // FETCH objects to pipe directly into the visitor.
+  void OnJoiningFetchReady(std::unique_ptr<MoqtFetchTask> fetch_task);
 
  private:
+  friend class test::MoqtSessionPeer;
+  friend class test::SubscribeRemoteTrackPeer;
+
+  void MaybeSetSubscribeDoneAlarm();
+
+  void FetchObjects();
+  std::unique_ptr<MoqtFetchTask> fetch_task_;
+
   const uint64_t track_alias_;
   Visitor* visitor_;
+  std::optional<bool> is_datagram_;
+  int currently_open_streams_ = 0;
+  // Every stream that has received FIN or RESET_STREAM.
+  uint64_t streams_closed_ = 0;
+  // Value assigned on SUBSCRIBE_DONE. Can destroy subscription state if
+  // streams_closed_ == total_streams_.
+  std::optional<uint64_t> total_streams_;
+  // Timer to clean up the track if there are no open streams.
+  quic::QuicTimeDelta delivery_timeout_ = quic::QuicTimeDelta::Infinite();
+  std::unique_ptr<quic::QuicAlarm> subscribe_done_alarm_ = nullptr;
+  const quic::QuicClock* clock_ = nullptr;
+
   // For convenience, store the subscribe message if it has to be re-sent with
   // a new track alias.
   std::unique_ptr<MoqtSubscribe> subscribe_;
+};
+
+// MoqtSession calls this when a FETCH_OK or FETCH_ERROR is received. The
+// destination of the callback owns |fetch_task| and MoqtSession will react
+// safely if the owner destroys it.
+using FetchResponseCallback =
+    quiche::SingleUseCallback<void(std::unique_ptr<MoqtFetchTask> fetch_task)>;
+
+// This is a callback to MoqtSession::IncomingDataStream. Called when the
+// FetchTask has its object cache empty, on creation, and whenever the
+// application reads it.
+using CanReadCallback = quiche::MultiUseCallback<void()>;
+
+// If the application destroys the FetchTask, this is a signal to MoqtSession to
+// cancel the FETCH and STOP_SENDING the stream.
+using TaskDestroyedCallback = quiche::SingleUseCallback<void()>;
+
+// Class for upstream FETCH. It will notify the application using |callback|
+// when a FETCH_OK or FETCH_ERROR is received.
+class UpstreamFetch : public RemoteTrack {
+ public:
+  UpstreamFetch(const MoqtFetch& fetch, FetchResponseCallback callback)
+      : RemoteTrack(
+            fetch.full_track_name, fetch.fetch_id,
+            fetch.joining_fetch.has_value()
+                ? SubscribeWindow(0, 0)
+                : SubscribeWindow(
+                      fetch.start_object,
+                      FullSequence(fetch.end_group,
+                                   fetch.end_object.value_or(UINT64_MAX)))),
+        ok_callback_(std::move(callback)) {
+    // Immediately set the data stream type.
+    CheckDataStreamType(MoqtDataStreamType::kStreamHeaderFetch);
+  }
+  UpstreamFetch(const UpstreamFetch&) = delete;
+  ~UpstreamFetch();
+
+  class UpstreamFetchTask : public MoqtFetchTask {
+   public:
+    // If the UpstreamFetch is destroyed, it will call OnStreamAndFetchClosed
+    // which sets the TaskDestroyedCallback to nullptr. Thus, |callback| can
+    // assume that UpstreamFetch is valid.
+    UpstreamFetchTask(FullSequence largest_id, absl::Status status,
+                      TaskDestroyedCallback callback)
+        : largest_id_(largest_id),
+          status_(status),
+          task_destroyed_callback_(std::move(callback)),
+          weak_ptr_factory_(this) {}
+    ~UpstreamFetchTask() override;
+
+    // Implementation of MoqtFetchTask.
+    GetNextObjectResult GetNextObject(PublishedObject& output) override;
+    void SetObjectAvailableCallback(
+        ObjectsAvailableCallback callback) override {
+      object_available_callback_ = std::move(callback);
+    };
+    absl::Status GetStatus() override { return status_; };
+    FullSequence GetLargestId() const override { return largest_id_; }
+
+    quiche::QuicheWeakPtr<UpstreamFetchTask> weak_ptr() {
+      return weak_ptr_factory_.Create();
+    }
+
+    // MoqtSession should not use this function; use
+    // UpstreamFetch::OnStreamOpened() instead, in case the task does not exist
+    // yet.
+    void set_can_read_callback(CanReadCallback callback) {
+      can_read_callback_ = std::move(callback);
+      can_read_callback_();  // Accept the first object.
+    }
+
+    // Called when the data stream receives a new object.
+    void NewObject(const MoqtObject& message);
+    void AppendPayloadToObject(absl::string_view payload);
+    // MoqtSession calls this for a hint if the object has been read.
+    bool HasObject() const { return next_object_.has_value(); }
+    bool NeedsMorePayload() const {
+      return next_object_.has_value() && next_object_->payload_length > 0;
+    }
+    // MoqtSession calls NotifyNewObject() after NewObject() because it has to
+    // exit the parser loop before the callback possibly causes another read.
+    // Furthermore, NewObject() may be a partial object, and so
+    // NotifyNewObject() is called only when the object is complete.
+    void NotifyNewObject();
+
+    // Deletes callbacks to session or stream, updates the status. If |error|
+    // has no value, will append an EOF to the object stream.
+    void OnStreamAndFetchClosed(
+        std::optional<webtransport::StreamErrorCode> error,
+        absl::string_view reason_phrase);
+
+   private:
+    FullSequence largest_id_;
+    absl::Status status_;
+    TaskDestroyedCallback task_destroyed_callback_;
+
+    // Object delivery state. The payload_length member is used to track the
+    // payload bytes not yet received. The application receives a
+    // PublishedObject that is constructed from next_object_ and payload_.
+    std::optional<MoqtObject> next_object_;
+    // Store payload separately. Will be converted into QuicheMemSlice only when
+    // complete, since QuicheMemSlice is immutable.
+    quiche::QuicheBuffer payload_;
+
+    // The task should only call object_available_callback_ when the last result
+    // was kPending. Otherwise, there can be recursive loops of
+    // GetNextObjectResult().
+    bool need_object_available_callback_ = true;
+    bool eof_ = false;  // The next object is EOF.
+    // The Fetch task signals the application when it has new objects.
+    ObjectsAvailableCallback object_available_callback_;
+    // The Fetch task signals the stream when it has dispensed of an object.
+    CanReadCallback can_read_callback_;
+
+    // Must be last.
+    quiche::QuicheWeakPtrFactory<UpstreamFetchTask> weak_ptr_factory_;
+  };
+
+  // Arrival of FETCH_OK/FETCH_ERROR.
+  void OnFetchResult(FullSequence largest_id, absl::Status status,
+                     TaskDestroyedCallback callback);
+
+  UpstreamFetchTask* task() { return task_.GetIfAvailable(); }
+
+  // Manage the relationship with the data stream.
+  void OnStreamOpened(CanReadCallback callback);
+
+ private:
+  quiche::QuicheWeakPtr<UpstreamFetchTask> task_;
+
+  // Before FetchTask is created, an incoming stream will register the callback
+  // here instead.
+  CanReadCallback can_read_callback_;
+
+  // Initial values from Fetch() call.
+  FetchResponseCallback ok_callback_;  // Will be destroyed on FETCH_OK.
 };
 
 }  // namespace moqt

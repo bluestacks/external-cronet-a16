@@ -384,7 +384,7 @@ TEST(FileTest, Append) {
 
   // Test passing the file around.
   file = std::move(file2);
-  EXPECT_FALSE(file2.IsValid());
+  EXPECT_FALSE(file2.IsValid());  // NOLINT(bugprone-use-after-move)
   ASSERT_TRUE(file.IsValid());
 
   char append_data_to_write[] = "78";
@@ -639,12 +639,12 @@ TEST(FileTest, WriteAtCurrentPositionSpans) {
 
   std::string data("test");
   size_t first_chunk_size = data.size() / 2;
-  std::optional<size_t> result =
-      file.WriteAtCurrentPos(as_byte_span(data).first(first_chunk_size));
+  const auto [first, second] = as_byte_span(data).split_at(first_chunk_size);
+  std::optional<size_t> result = file.WriteAtCurrentPos(first);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(first_chunk_size, result.value());
 
-  result = file.WriteAtCurrentPos(as_byte_span(data).subspan(first_chunk_size));
+  result = file.WriteAtCurrentPos(second);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(first_chunk_size, result.value());
 
@@ -960,11 +960,12 @@ TEST(FileDeathTest, InvalidFlags) {
         // temporary folder in TMP, which is set by the test runner parent
         // process to a temporary folder for the test. This means that the
         // folder created here is always deleted during test runner cleanup.
-        std::string tmp_folder;
-        ASSERT_TRUE(Environment::Create()->GetVar("TMP", &tmp_folder));
+        std::optional<std::string> tmp_folder =
+            Environment::Create()->GetVar("TMP");
+        ASSERT_TRUE(tmp_folder.has_value());
         ScopedTempDir temp_dir;
         ASSERT_TRUE(temp_dir.CreateUniqueTempDirUnderPath(
-            FilePath(UTF8ToWide(tmp_folder))));
+            FilePath(UTF8ToWide(tmp_folder.value()))));
         FilePath file_path = temp_dir.GetPath().AppendASCII("file");
 
         File file(file_path, File::FLAG_CREATE | File::FLAG_WIN_EXECUTE |

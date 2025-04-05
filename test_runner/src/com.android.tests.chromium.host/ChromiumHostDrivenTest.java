@@ -30,20 +30,25 @@ import android.annotation.NonNull;
 
 import com.android.ddmlib.MultiLineReceiver;
 import com.android.tradefed.config.Option;
-import com.android.tradefed.device.CollectingOutputReceiver;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
+import com.android.tradefed.error.HarnessRuntimeException;
 import com.android.tradefed.invoker.TestInformation;
+import com.android.tradefed.invoker.TestInvocation;
 import com.android.tradefed.log.LogUtil;
+import com.android.tradefed.result.FileInputStreamSource;
 import com.android.tradefed.result.ITestInvocationListener;
 import com.android.tradefed.result.LogDataType;
-import com.android.tradefed.result.FileInputStreamSource;
+import com.android.tradefed.result.error.TestErrorIdentifier;
+import com.android.tradefed.result.proto.TestRecordProto.FailureStatus;
 import com.android.tradefed.testtype.GTestListTestParser;
 import com.android.tradefed.testtype.GTestResultParser;
 import com.android.tradefed.testtype.IDeviceTest;
 import com.android.tradefed.testtype.IRemoteTest;
 import com.android.tradefed.testtype.ITestCollector;
 import com.android.tradefed.testtype.ITestFilterReceiver;
+import com.android.tradefed.util.CommandResult;
+import com.android.tradefed.util.CommandStatus;
 import com.android.tradefed.util.FileUtil;
 
 import com.google.common.base.Joiner;
@@ -65,7 +70,6 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
 
     private static final String CLEAR_CLANG_COVERAGE_FILES =
             "find /data/misc/trace -name '*.profraw' -delete";
-    private static final Duration TESTS_TIMEOUT = Duration.ofMinutes(30);
     private static final String GTEST_FLAG_PRINT_TIME = "--gtest_print_time";
     private static final String GTEST_FLAG_FILTER = "--gtest_filter";
     private static final String GTEST_FLAG_LIST_TESTS = "--gtest_list_tests";
@@ -80,6 +84,13 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
             "The set of annotations to exclude tests from running. A test must have "
                 + "none of the annotations in this list to run.")
     private Set<String> excludeFilters = new LinkedHashSet<>();
+
+    @Option(
+            name = "timeout",
+            description = "Sets the timeout for the test instrumentation in millis.",
+            isTimeVal = true)
+    private long mTimeoutMs = 10 * 60 * 1000; // 10 minutes.
+
     private boolean collectTestsOnly = false;
     private ITestDevice device = null;
 
@@ -113,7 +124,7 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
             getDevice().pushFile(resultFile, deviceFileDestination);
             FileUtil.deleteFile(resultFile);
         } catch (IOException e) {
-            throw new FailedChromiumGTestException(
+            throw new IllegalStateException(
                     "Failed to create temp file for result on the device.", e);
         } finally {
             FileUtil.deleteFile(resultFile);
@@ -171,7 +182,7 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
             devicePath = String.format("/data/local/tmp/%s", tmpFlagFile.getName());
             getDevice().pushFile(tmpFlagFile, devicePath);
         } catch (IOException e) {
-            throw new FailedChromiumGTestException(
+            throw new IllegalStateException(
                     "Failed to create temp file for gtest filter flag on the device.", e);
         } finally {
             FileUtil.deleteFile(tmpFlagFile);
@@ -216,14 +227,17 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
     @NonNull
     private String createRunAllTestsCommand(@NonNull String resultFilePath)
             throws DeviceNotAvailableException {
-        InstrumentationCommandBuilder builder = new InstrumentationCommandBuilder(TEST_RUNNER)
-                .addArgument(NATIVE_TEST_ACTIVITY_KEY, NATIVE_UNIT_TEST_ACTIVITY_KEY)
-                .addArgument(RUN_IN_SUBTHREAD_KEY, "1")
-                .addArgument(EXTRA_SHARD_NANO_TIMEOUT_KEY, String.valueOf(TESTS_TIMEOUT.toNanos()))
-                .addArgument(LIBRARY_TO_LOAD_ACTIVITY_KEY, libraryToLoad)
-                .addArgument(STDOUT_FILE_KEY, resultFilePath)
-                .addArgument(COMMAND_LINE_FLAGS_KEY,
-                        String.format("'%s'", getAllGTestFlags()));
+        InstrumentationCommandBuilder builder =
+                new InstrumentationCommandBuilder(TEST_RUNNER)
+                        .addArgument(NATIVE_TEST_ACTIVITY_KEY, NATIVE_UNIT_TEST_ACTIVITY_KEY)
+                        .addArgument(RUN_IN_SUBTHREAD_KEY, "1")
+                        .addArgument(
+                                EXTRA_SHARD_NANO_TIMEOUT_KEY,
+                                String.valueOf(Duration.ofMillis(mTimeoutMs).toNanos()))
+                        .addArgument(LIBRARY_TO_LOAD_ACTIVITY_KEY, libraryToLoad)
+                        .addArgument(STDOUT_FILE_KEY, resultFilePath)
+                        .addArgument(
+                                COMMAND_LINE_FLAGS_KEY, String.format("'%s'", getAllGTestFlags()));
         if (isCoverageEnabled) {
             builder.addArgument(DUMP_COVERAGE_KEY, "true");
         }
@@ -246,33 +260,70 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
      * This is automatically invoked by the {@link com.android.tradefed.testtype.HostTest}.
      *
      * @param testInfo The {@link TestInformation} object containing useful information to run
-     *                 tests.
+     *     tests.
      * @param listener the {@link ITestInvocationListener} of test results
      */
     @Override
     public void run(TestInformation testInfo, ITestInvocationListener listener)
             throws DeviceNotAvailableException {
-        if (Strings.isNullOrEmpty(libraryToLoad)) {
-            throw new IllegalStateException("No library provided to be loaded.");
+        TestListenerWithTime testListener =
+                new TestListenerWithTime(System.currentTimeMillis(), libraryToLoad, listener);
+        try {
+            if (Strings.isNullOrEmpty(libraryToLoad)) {
+                throw new IllegalStateException("No library provided to be loaded.");
+            }
+            String resultFilePath = createTempResultFileOnDevice();
+            String cmd = createRunAllTestsCommand(resultFilePath);
+            printHostLogs(cmd);
+            // We don't care about the result of this command. If it
+            // fails then it will be retried as |executeShellV2Command| retries
+            // by default 2 more times and if all of them fail then it will
+            // throw an exception which will fail the test anyway.
+            getDevice().executeShellV2Command(CLEAR_CLANG_COVERAGE_FILES);
+            CommandResult result =
+                    getDevice()
+                            .executeShellV2Command(
+                                    cmd,
+                                    /* timeout= */ mTimeoutMs,
+                                    /* timeUnit= */ TimeUnit.MILLISECONDS,
+                                    // Don't retry as the parent runner will already
+                                    // handle that.
+                                    /* retry= */ 0);
+            if (result.getStatus().equals(CommandStatus.TIMED_OUT)) {
+                throw new HarnessRuntimeException(
+                        "The test instrumentation has timed out! Check the device logcat for"
+                                + " further information.",
+                        TestErrorIdentifier.TEST_TIMEOUT);
+            } else if (!result.getStatus().equals(CommandStatus.SUCCESS)) {
+                throw new HarnessRuntimeException(
+                        String.format("Failed to run adb command: '%s'", cmd),
+                        TestErrorIdentifier.TEST_BINARY_EXIT_CODE_ERROR);
+            }
+            parseAndReport(resultFilePath, testListener);
+        } catch (Exception e) {
+            // We want to catch the exception before we propagate it upward
+            // to the parent runner. It's the responsibility of the test runner
+            // to call testRunStarted and testRunFailed. However, if our test
+            // fails before we even reach the parsing stage of results then
+            // testRunStarted would never be called and this leads to TH
+            // silently passing the test.
+            // b/402068773
+            testListener.failRun(
+                    TestInvocation.createFailureFromException(e, FailureStatus.TEST_FAILURE));
+            throw e;
+        } finally {
+            // If testRunStarted was not called and we didn't throw any
+            // exceptions then something has gone wrong in the test runner. It's
+            // safer to fail than to silently pass. b/402068773
+            testListener.failRunIfNotStarted();
         }
-        String resultFilePath = createTempResultFileOnDevice();
-        String cmd = createRunAllTestsCommand(resultFilePath);
-        printHostLogs(cmd);
-        getDevice().executeShellCommand(CLEAR_CLANG_COVERAGE_FILES);
-        ITestInvocationListener listenerWithTime = new TestListenerWithTime(
-                System.currentTimeMillis(), listener);
-        getDevice().executeShellCommand(cmd, new CollectingOutputReceiver(),
-                /* maxTimeBeforeTimeOut */ TESTS_TIMEOUT.toMinutes(),
-                /* timeUnit */ TimeUnit.MINUTES,
-                /* retryAttempts */ 1);
-        parseAndReport(resultFilePath, listenerWithTime);
     }
 
     private void parseAndReport(@NonNull String resultFilePath,
             @NonNull ITestInvocationListener listener) throws DeviceNotAvailableException {
         File resultFile = device.pullFile(resultFilePath);
         if (resultFile == null) {
-            throw new FailedChromiumGTestException(
+            throw new IllegalStateException(
                     "Failed to retrieve gtest results file from device.");
         }
         try (FileInputStreamSource data = new FileInputStreamSource(resultFile)) {
@@ -284,8 +335,11 @@ public class ChromiumHostDrivenTest implements IRemoteTest, IDeviceTest, ITestCo
         try {
             lines = Files.readAllLines(resultFile.toPath()).toArray(String[]::new);
         } catch (IOException e) {
-            throw new FailedChromiumGTestException(
+            throw new IllegalStateException(
                     "Failed to read gtest results file on host machine.", e);
+        }
+        if (lines.length == 0) {
+            throw new IllegalStateException("Expected gtest results but found nothing.");
         }
         MultiLineReceiver parser;
         // the parser automatically reports the test result back to the infra through the listener.

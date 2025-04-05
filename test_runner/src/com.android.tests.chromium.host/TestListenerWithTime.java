@@ -24,7 +24,6 @@ import com.android.tradefed.result.InputStreamSource;
 import com.android.tradefed.result.LogDataType;
 import com.android.tradefed.result.TestDescription;
 import com.android.tradefed.result.TestSummary;
-import com.android.tradefed.util.proto.TfMetricProtoUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,15 +31,35 @@ import java.util.Map;
 public class TestListenerWithTime implements ITestInvocationListener {
     private final long testStartingTime;
     private final ITestInvocationListener delegate;
+    private final String mRunName;
+    private boolean mTestRunStarted;
 
-    public TestListenerWithTime(long testStartingTime, ITestInvocationListener delegate) {
+    public TestListenerWithTime(
+            long testStartingTime, String runName, ITestInvocationListener delegate) {
         this.testStartingTime = testStartingTime;
+        this.mRunName = runName;
         this.delegate = delegate;
+    }
+
+    public void failRun(FailureDescription failure) {
+        // We call testRunStarted here (if it's not called) and
+        // testRunFailed as the parent runner does not guarantee that it
+        // will call that for us.
+        this.testRunStartIfNotStarted();
+        this.testRunFailed(failure);
+        this.testRunEnded(0, new HashMap<String, String>());
+    }
+
+    public void testRunStartIfNotStarted() {
+        if (!mTestRunStarted) {
+            this.testRunStarted(mRunName, 0);
+        }
     }
 
     @Override
     public void testRunStarted(String runName, int testCount) {
-        delegate.testRunStarted(runName, testCount, /* attemptNumber = */ 0, testStartingTime);
+        mTestRunStarted = true;
+        delegate.testRunStarted(runName, testCount, /* attemptNumber= */ 0, testStartingTime);
     }
 
     // -------------- Delegate ---------------
@@ -55,7 +74,6 @@ public class TestListenerWithTime implements ITestInvocationListener {
         delegate.invocationEnded(elapsedTime);
     }
 
-
     @Override
     public void invocationFailed(Throwable cause) {
         delegate.invocationFailed(cause);
@@ -65,7 +83,6 @@ public class TestListenerWithTime implements ITestInvocationListener {
     public void invocationFailed(FailureDescription failure) {
         delegate.invocationFailed(failure);
     }
-
 
     @Override
     public TestSummary getSummary() {
@@ -87,15 +104,15 @@ public class TestListenerWithTime implements ITestInvocationListener {
         delegate.testModuleEnded();
     }
 
-
     @Override
     public void testRunStarted(String runName, int testCount, int attemptNumber) {
+        mTestRunStarted = true;
         delegate.testRunStarted(runName, testCount, attemptNumber, testStartingTime);
     }
 
     @Override
-    public void testRunStarted(
-            String runName, int testCount, int attemptNumber, long startTime) {
+    public void testRunStarted(String runName, int testCount, int attemptNumber, long startTime) {
+        mTestRunStarted = true;
         delegate.testRunStarted(runName, testCount, attemptNumber, startTime);
     }
 
@@ -109,15 +126,14 @@ public class TestListenerWithTime implements ITestInvocationListener {
         delegate.testRunFailed(failure);
     }
 
-
     @Override
     public void testRunEnded(long elapsedTimeMillis, Map<String, String> runMetrics) {
         delegate.testRunEnded(elapsedTimeMillis, runMetrics);
     }
 
     @Override
-    public void testRunEnded(long elapsedTimeMillis,
-            HashMap<String, MetricMeasurement.Metric> runMetrics) {
+    public void testRunEnded(
+            long elapsedTimeMillis, HashMap<String, MetricMeasurement.Metric> runMetrics) {
         delegate.testRunEnded(elapsedTimeMillis, runMetrics);
     }
 
@@ -151,7 +167,6 @@ public class TestListenerWithTime implements ITestInvocationListener {
         delegate.testAssumptionFailure(test, trace);
     }
 
-
     @Override
     public void testAssumptionFailure(TestDescription test, FailureDescription failure) {
         delegate.testAssumptionFailure(test, failure);
@@ -168,27 +183,33 @@ public class TestListenerWithTime implements ITestInvocationListener {
     }
 
     @Override
-    public void testEnded(TestDescription test,
-            HashMap<String, MetricMeasurement.Metric> testMetrics) {
+    public void testEnded(
+            TestDescription test, HashMap<String, MetricMeasurement.Metric> testMetrics) {
         delegate.testEnded(test, testMetrics);
     }
 
     @Override
-    public void testLog(String dataName, LogDataType dataType,
-        InputStreamSource dataStream) {
+    public void testLog(String dataName, LogDataType dataType, InputStreamSource dataStream) {
         delegate.testLog(dataName, dataType, dataStream);
     }
 
     @Override
-    public void testEnded(
-            TestDescription test, long endTime, Map<String, String> testMetrics) {
+    public void testEnded(TestDescription test, long endTime, Map<String, String> testMetrics) {
         delegate.testEnded(test, endTime, testMetrics);
     }
 
     @Override
     public void testEnded(
-            TestDescription test, long endTime,
+            TestDescription test,
+            long endTime,
             HashMap<String, MetricMeasurement.Metric> testMetrics) {
         delegate.testEnded(test, endTime, testMetrics);
+    }
+
+    public void failRunIfNotStarted() {
+        if (!mTestRunStarted) {
+            this.failRun(
+                    FailureDescription.create("testRunStarted was not called on the listener!"));
+        }
     }
 }

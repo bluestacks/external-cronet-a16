@@ -4683,7 +4683,7 @@ tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidBidirectiona
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidCallbackExceptionWrapper.java: d4f64d1332f0758f787126d1aaf6280182828db2b633b92b717d4d880670aae1
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHeaderBlockWrapper.java: df3898d77f05c9dee6bafae8cc29a86fa198f2b0d16a24663bf5caef9e7bce09
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java: 9f24a2ca06ebb6e152990747262e9a8cc1e9955dbb76055b6be42719eff09f4c
-tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java: 78c6c03e2413d6b38dd0696eaeff92f2c5dc17b746db0d8bc63cb2805b03e721
+tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java: 0832f6959177d4d46b8276079fec4645d7c8e6ca31adc095dd58521382159066
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpExceptionWrapper.java: df9187e0cc913ef40fee75dd84140bbf3d929ae5aaa50d3ce8e6a2633644f627
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidNetworkExceptionWrapper.java: c7a1f307184b661d02837d61a96a13750438b67428df79c509cf579b86636fe3
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidQuicExceptionWrapper.java: 8088148d444aa86f7f4c694a0af7e3646d9862dfc643a6bb6431ae597deb806d
@@ -4694,7 +4694,7 @@ tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidUrlRequestCa
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidUrlRequestStatusListenerWrapper.java: 8266aa00fb8a40f287c5684654b1d8009b6615579049aa4d3cad20bdd7b0bd73
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidUrlRequestWrapper.java: 859bbe5255a86e2910e5f2495d6461d68fba018ac441a01fa52628b75c766c93
 tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidUrlResponseInfoWrapper.java: d43b243ab0f6780a47170a3e1a8acad9fde670921b4882c84bc4a55caa1a1ee2
-tot/components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java: 6e2fc657c5ad061ad6b0e466dfe8f65bc4199f8e53c1290190e2b8b5f5b4961c
+tot/components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java: 424578500c7ee4974192b299778607d49f370f96725881ecd928bdb32e9a925e
 tot/components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java: 538dd4c4a66cc2c8c99c80407a7039a9e6040da473780885f8c02cb2ccb2165c
 tot/components/cronet/android/java/src/org/chromium/net/impl/CallbackExceptionImpl.java: 6c2f87484b5ba20decb9afee5d7d5628fc7d1fc2d1577e95578a45ef34023a6b
 tot/components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java: f0133ed7ee22a89071160d4199d35b7ae2094934296f62d23a3a872f764ecabe
@@ -4707,7 +4707,7 @@ tot/components/cronet/android/java/src/org/chromium/net/impl/CronetLogger.java: 
 tot/components/cronet/android/java/src/org/chromium/net/impl/CronetLoggerFactory.java: 88f8e30b99bc56bd818d8fb545d6d109ab1676c284e92017457dee5b3fdcc4f3
 tot/components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java: 356fbef739849d990ee91fd063cf6b6846c87c0291128800a3fb6666b17ca7f1
 tot/components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java: a194557f63fa6ff468e149df89dcbebead74b9c69b29c096417a479d66b4bc17
-tot/components/cronet/android/java/src/org/chromium/net/impl/CronetRequestCommon.java: c60304cbee44ecd7c45a28ca9875bb459729eebc20e10770273860c388e8dbea
+tot/components/cronet/android/java/src/org/chromium/net/impl/CronetRequestCommon.java: 1125b22dab5fa567a323859a2b87e4da7dc7e80d886acb92a558092d9edec89f
 tot/components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java: cda4c5904229534df6f8ab1102064bb72c8971ceda543a72edba099e297bbb8f
 tot/components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java: 8116c49d8c283ab8b59a2845975a865c2fd31e422bb2715646db36362ed3bfaa
 tot/components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java: 2bc3194ddc4cfb4e1767e029a0ea64604c3761cf924f8dcae5510360bfcdc91c
@@ -44016,28 +44016,6 @@ index 8f9a61a..8ead1ea 100644
 --keep class org.chromium.net.impl.JavaCronetProvider {
 -    public <init>(android.content.Context);
 -}
-diff --git a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java
-index 487d6fb..fc84055 100644
---- a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java
-+++ b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java
-@@ -41,7 +41,7 @@ import java.util.concurrent.Executor;
- import java.util.concurrent.RejectedExecutionException;
- 
- @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
--class AndroidHttpEngineWrapper extends CronetEngineBase {
-+public class AndroidHttpEngineWrapper extends CronetEngineBase {
-     private static final String TAG = "HttpEngineWrapper";
- 
-     private static boolean sNetlogUnsupportedLogged;
-@@ -312,7 +312,7 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
-      * @return True iff the thread priority was set.
-      */
-     @VisibleForTesting
--    boolean setThreadPriority() {
-+    public boolean setThreadPriority() {
-         // Double-check that we always get called from the same thread. If this assertion fails,
-         // it means we were called from a thread that is not the Cronet internal thread, which
-         // is a problem because it means we could end up changing the priority of some random
 diff --git a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidUrlRequestWrapper.java b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidUrlRequestWrapper.java
 index 307928d..50f2edb 100644
 --- a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/AndroidUrlRequestWrapper.java
@@ -44060,19 +44038,6 @@ index 307928d..50f2edb 100644
  
  import java.nio.ByteBuffer;
  import java.util.Collection;
-diff --git a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java
-index e0b4675..7ecd482 100644
---- a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java
-+++ b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java
-@@ -60,7 +60,7 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
-      * @param executor the {@link Executor} on which {@code callback} methods will be invoked
-      * @param cronetEngine the {@link CronetEngine} used to create the stream
-      */
--    BidirectionalStreamBuilderImpl(
-+    public BidirectionalStreamBuilderImpl(
-             String url,
-             BidirectionalStream.Callback callback,
-             Executor executor,
 diff --git a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java
 index e115977..7c210af 100644
 --- a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java
@@ -44189,19 +44154,6 @@ index c248cf1..fcbc1b7 100644
          }
  
          /** @return the MAJOR version of cronet used for the traffic */
-diff --git a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetRequestCommon.java b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetRequestCommon.java
-index 9ba546f..54906e0 100644
---- a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetRequestCommon.java
-+++ b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetRequestCommon.java
-@@ -16,7 +16,7 @@ import java.util.Map;
-  * A random assortment of utilities for factoring out commonalities between CronetUrlRequest and
-  * CronetBidirectionalStream implementations.
-  */
--final class CronetRequestCommon {
-+public final class CronetRequestCommon {
-     private CronetRequestCommon() {}
- 
-     public static RequestTerminalState finishedReasonToCronetTrafficInfoRequestTerminalState(
 diff --git a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java b/checkout/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java
 index c638e11..e93b96b 100644
 --- a/premerge/tot/components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java

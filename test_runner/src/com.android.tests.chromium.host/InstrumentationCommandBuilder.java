@@ -25,7 +25,8 @@ public class InstrumentationCommandBuilder {
     private final List<Pair<String, String>> arguments;
     private final String activityName;
     // Instrument and wait until execution has finished before returning
-    private static final String BASE_CMD = "am instrument -w --no-isolated-storage ";
+    private static final String BASE_CMD =
+            "am instrument -w --no-hidden-api-checks --no-isolated-storage ";
 
     public InstrumentationCommandBuilder(String activity) {
         this.activityName = activity;

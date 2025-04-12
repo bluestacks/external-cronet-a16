@@ -16,7 +16,7 @@ import java.util.Map;
  * A random assortment of utilities for factoring out commonalities between CronetUrlRequest and
  * CronetBidirectionalStream implementations.
  */
-public final class CronetRequestCommon {
+final class CronetRequestCommon {
     private CronetRequestCommon() {}
 
     public static RequestTerminalState finishedReasonToCronetTrafficInfoRequestTerminalState(

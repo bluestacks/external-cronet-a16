@@ -41,7 +41,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
-public class AndroidHttpEngineWrapper extends CronetEngineBase {
+class AndroidHttpEngineWrapper extends CronetEngineBase {
     private static final String TAG = "HttpEngineWrapper";
 
     private static boolean sNetlogUnsupportedLogged;
@@ -312,7 +312,7 @@ public class AndroidHttpEngineWrapper extends CronetEngineBase {
      * @return True iff the thread priority was set.
      */
     @VisibleForTesting
-    public boolean setThreadPriority() {
+    boolean setThreadPriority() {
         // Double-check that we always get called from the same thread. If this assertion fails,
         // it means we were called from a thread that is not the Cronet internal thread, which
         // is a problem because it means we could end up changing the priority of some random

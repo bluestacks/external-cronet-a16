@@ -60,7 +60,7 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
      * @param executor the {@link Executor} on which {@code callback} methods will be invoked
      * @param cronetEngine the {@link CronetEngine} used to create the stream
      */
-    public BidirectionalStreamBuilderImpl(
+    BidirectionalStreamBuilderImpl(
             String url,
             BidirectionalStream.Callback callback,
             Executor executor,

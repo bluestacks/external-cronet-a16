@@ -497,7 +497,8 @@ ThreadCache::ThreadCache(PartitionRoot* root)
       root_(root),
       thread_id_(internal::base::PlatformThread::CurrentId()),
       next_(nullptr),
-      prev_(nullptr) {
+      prev_(nullptr),
+      scheduler_loop_quarantine_branch_(root) {
   ThreadCacheRegistry::Instance().RegisterThreadCache(this);
 
   memset(&stats_, 0, sizeof(stats_));
@@ -520,16 +521,12 @@ ThreadCache::ThreadCache(PartitionRoot* root)
 
   // When enabled, initialize scheduler loop quarantine branch.
   // This branch is only used within this thread, so not `lock_required`.
-  if (root_->settings.scheduler_loop_quarantine) {
-    internal::LightweightQuarantineBranchConfig per_thread_config = {
-        .lock_required = false,
-        .branch_capacity_in_bytes =
-            root_->scheduler_loop_quarantine_branch_capacity_in_bytes,
-    };
-    scheduler_loop_quarantine_branch_.emplace(
-        root_->GetSchedulerLoopQuarantineRoot().CreateBranch(
-            per_thread_config));
-  }
+  const auto& scheduler_loop_quarantine_config =
+      root_->settings.scheduler_loop_quarantine_thread_local_config;
+  PA_CHECK(!scheduler_loop_quarantine_config.enable_quarantine ||
+           !scheduler_loop_quarantine_config.quarantine_config.lock_required);
+  scheduler_loop_quarantine_branch_.Configure(
+      root_->scheduler_loop_quarantine_root, scheduler_loop_quarantine_config);
 }
 
 ThreadCache::~ThreadCache() {
@@ -862,6 +859,41 @@ void ThreadCache::PurgeInternalHelper() {
   for (auto& bucket : buckets_) {
     ClearBucketHelper<crash_on_corruption>(bucket, 0);
   }
+}
+
+bool ThreadCache::IsInFreelist(uintptr_t address,
+                               size_t bucket_index,
+                               size_t& position) {
+  PA_REENTRANCY_GUARD(is_in_thread_cache_);
+
+  auto& bucket = buckets_[bucket_index];
+  if (!bucket.freelist_head) [[unlikely]] {
+    return false;
+  }
+  internal::PartitionFreelistEntry* entry = bucket.freelist_head;
+
+  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
+      get_freelist_dispatcher_from_root();
+  size_t index = 0;
+  size_t length = bucket.count;
+  while (entry != nullptr && index < length) {
+    if (address == internal::SlotStartPtr2Addr(entry)) {
+      position = index;
+      return true;
+    }
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+    internal::PartitionFreelistEntry* next =
+        freelist_dispatcher->GetNextForThreadCacheTrue(entry, bucket.slot_size);
+#else
+    internal::PartitionFreelistEntry* next =
+        freelist_dispatcher->GetNextForThreadCache<true>(entry,
+                                                         bucket.slot_size);
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+    entry = next;
+    ++index;
+  }
+  position = 0;
+  return false;
 }
 
 }  // namespace partition_alloc

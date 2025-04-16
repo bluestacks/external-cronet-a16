@@ -73,10 +73,6 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin",
     base::Milliseconds(5)};
 
-BASE_FEATURE(kUseDnsHttpsSvcbAlpn,
-             "UseDnsHttpsSvcbAlpn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseHostResolverCache,
              "UseHostResolverCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -152,6 +148,15 @@ BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSearchEnginePreconnectInterval,
              "SearchEnginePreconnectInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchEnginePreconnect2,
+             "SearchEnginePreconnect2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+extern const base::FeatureParam<int> kMaxPreconnectRetryInterval(
+    &kSearchEnginePreconnect2,
+    "MaxPreconnectRetryInterval",
+    30);
 
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
@@ -324,6 +329,27 @@ BASE_FEATURE(kAsyncMultiPortPath,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Probabilistic reveal tokens configuration settings
+BASE_FEATURE(kEnableProbabilisticRevealTokens,
+             "EnableProbabilisticRevealTokens",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kProbabilisticRevealTokenServer{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokenServer",
+    /*default_value=*/"https://aaftokenissuer.pa.googleapis.com"};
+
+const base::FeatureParam<std::string> kProbabilisticRevealTokenServerPath{
+    &kEnableProbabilisticRevealTokens,
+    /*name=*/"ProbabilisticRevealTokenServerPath",
+    /*default_value=*/"/v1/issueprts"};
+
+const base::FeatureParam<bool>
+    kAttachProbabilisticRevealTokensOnAllProxiedRequests{
+        &kEnableProbabilisticRevealTokens,
+        /*name=*/"AttachProbabilisticRevealTokensOnAllProxiedRequests",
+        /*default_value=*/false};
+
 // IP protection experiment configuration settings
 BASE_FEATURE(kEnableIpProtectionProxy,
              "EnableIpPrivacyProxy",
@@ -333,26 +359,10 @@ const base::FeatureParam<std::string> kIpPrivacyTokenServer{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
     /*default_value=*/"https://prod.ipprotectionauth.goog"};
 
-const base::FeatureParam<std::string> kIpPrivacyProbabilisticRevealTokenServer{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyProbabilisticRevealTokenServer",
-    /*default_value=*/"https://prod.probabilisticrevealtoken.goog"};
-
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetInitialDataPath{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyTokenServerGetInitialDataPath",
     /*default_value=*/"/v1/ipblinding/getInitialData"};
-
-const base::FeatureParam<std::string>
-    kIpPrivacyProbabilisticRevealTokenServerPath{
-        &kEnableIpProtectionProxy,
-        /*name=*/"IpPrivacyProbabilisticRevealTokenServerPath",
-        /*default_value=*/"/v1/ipblinding/getProbabilisticRevealToken"};
-
-const base::FeatureParam<bool> kIpPrivacyStoreProbabilisticRevealTokens{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyStoreProbabilisticRevealTokens",
-    /*default_value=*/false};
 
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetTokensPath{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServerGetTokensPath",
@@ -473,6 +483,10 @@ BASE_FEATURE_PARAM(size_t,
                    &kExcludeLargeBodyReports,
                    "max_report_body_size_kb",
                    1024);
+
+BASE_FEATURE(kRelatedWebsitePartitionAPI,
+             "RelatedWebsitePartitionAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
@@ -602,10 +616,6 @@ BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
              "ReportingApiEnableEnterpriseCookieIssues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptimizeParsingDataUrls,
-             "OptimizeParsingDataUrls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSimdutfBase64Support,
              "SimdutfBase64Support",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -669,7 +679,7 @@ const base::FeatureParam<base::TimeDelta>
         /*default_value=*/base::Days(1)};
 
 #if BUILDFLAG(USE_NSS_CERTS)
-// TODO(crbug.com/40928765): Remove this flag after a few milestones.
+// TODO(crbug.com/390333881): Remove this flag after a few milestones.
 BASE_FEATURE(kNewClientCertPathBuilding,
              "NewClientCertPathBuilding",
              base::FEATURE_ENABLED_BY_DEFAULT);

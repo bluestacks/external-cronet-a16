@@ -19,6 +19,7 @@
 #include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/ref_unique_cookie_key.h"
 #include "net/cookies/unique_cookie_key.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -205,7 +206,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   bool operator<(const CanonicalCookie& other) const {
     // Use the cookie properties that uniquely identify a cookie to determine
     // ordering.
-    return UniqueKey() < other.UniqueKey();
+    return RefUniqueKey() < other.RefUniqueKey();
   }
 
   bool operator==(const CanonicalCookie& other) const {
@@ -241,7 +242,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   bool IsEquivalent(const CanonicalCookie& ecc) const {
     // It seems like it would make sense to take secure, httponly, and samesite
     // into account, but the RFC doesn't specify this.
-    return IsEquivalent(UniqueKey(), ecc);
+    return IsEquivalent(RefUniqueKey(), ecc);
   }
 
   // This function exists to help optimize the case of when a single cookie is
@@ -255,10 +256,10 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // The function allows the caller to cache cookie1's UniqueKey and reuse it
   // as `this_key`. This function is preferable to manually comparing cookie's
   // `UniqueKey` as it helps keep the comparison logic in one place.
-  bool IsEquivalent(const UniqueCookieKey& this_key,
+  bool IsEquivalent(const RefUniqueCookieKey& this_key,
                     const CanonicalCookie& ecc) const {
-    DCHECK(this_key == UniqueKey());
-    return this_key == ecc.UniqueKey();
+    DCHECK(this_key == RefUniqueKey());
+    return this_key == ecc.RefUniqueKey();
   }
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order
@@ -298,6 +299,11 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // scenario is ok because the good value is still listed first.
   bool IsEquivalentForSecureCookieMatching(
       const CanonicalCookie& secure_cookie) const;
+
+  // Returns true if the |other| cookie's data members match, except for the
+  // value. The heuristic is that, if the value changes, then `LastUpdateDate`
+  // is likely different.
+  bool IsProbablyEquivalentTo(const CanonicalCookie& other) const;
 
   // Returns true if the |other| cookie's data members (instance variables)
   // match, for comparing cookies in collections.
@@ -416,7 +422,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   base::Time last_update_date_;
   CookiePriority priority_{COOKIE_PRIORITY_MEDIUM};
   CookieSourceType source_type_{CookieSourceType::kUnknown};
-  base::MetricsSubSampler metrics_subsampler_;
 };
 
 // Used to pass excluded cookie information when it's possible that the

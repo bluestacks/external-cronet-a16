@@ -388,13 +388,28 @@ class PartitionAllocTest
 
   PartitionOptions GetCommonPartitionOptions() {
     PartitionOptions opts;
-    // Requires explicit `FreeFlag` to activate, no effect otherwise.
-    opts.zapping_by_free_flags = PartitionOptions::kEnabled;
     opts.eventually_zero_freed_memory = PartitionOptions::kEnabled;
     opts.fewer_memory_regions = PartitionOptions::kDisabled;
-    opts.scheduler_loop_quarantine = PartitionOptions::kEnabled;
-    opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
-        std::numeric_limits<size_t>::max();
+    opts.scheduler_loop_quarantine_global_config = {
+        .quarantine_config =
+            {
+                .lock_required = true,
+                .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
+                .leak_on_destruction = true,
+            },
+        .enable_quarantine = true,
+        .enable_zapping = true,
+    };
+    opts.scheduler_loop_quarantine_thread_local_config = {
+        .quarantine_config =
+            {
+                .lock_required = false,
+                .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
+                .leak_on_destruction = false,
+            },
+        .enable_quarantine = true,
+        .enable_zapping = true,
+    };
     return opts;
   }
 
@@ -2659,6 +2674,13 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
+  if (
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+      allocator.root()->brp_enabled() ||
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+      allocator.root()->settings.use_cookie) {
+    EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
+  }
 }
 
 // As above, but when this isn't the only slot in the span.
@@ -2669,6 +2691,13 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
+  if (
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+      allocator.root()->brp_enabled() ||
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+      allocator.root()->settings.use_cookie) {
+    EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
+  }
   allocator.root()->Free(ptr0);
 }
 
@@ -2828,6 +2857,8 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookie) {
   // Crash at `free()`, either by cookie check failure or InSlotMetadata
   // corruption.
   EXPECT_DEATH(allocator.root()->Free(array), "");
+  // It should also crash with `CheckMetadataIntegrity()`.
+  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(array), "");
   // Restore integrity, otherwise the process will crash in TearDown().
   array[usable_size] = previous_value;
   allocator.root()->Free(array);
@@ -2852,6 +2883,8 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookieWithRealisticData) {
   // Crash at `free()`, either by cookie check failure or InSlotMetadata
   // corruption.
   EXPECT_DEATH(allocator.root()->Free(array), "");
+  // It should also crash with `CheckMetadataIntegrity()`.
+  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(array), "");
   // Restore integrity, otherwise the process will crash in TearDown().
   array[usable_size] = previous_value;
   allocator.root()->Free(array);
@@ -3792,20 +3825,27 @@ TEST_P(PartitionAllocTest, ZeroFill) {
 }
 
 TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
-  LightweightQuarantineBranch& branch =
+  SchedulerLoopQuarantineBranch& branch =
       allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
-
-  constexpr size_t kCapacityInBytes = std::numeric_limits<size_t>::max();
-  size_t original_capacity_in_bytes = branch.GetCapacityInBytes();
-  branch.SetCapacityInBytes(kCapacityInBytes);
 
   for (size_t size : kTestSizes) {
     SCOPED_TRACE(size);
 
+    ASSERT_GT(branch.GetConfigurationForTesting()
+                  .quarantine_config.branch_capacity_in_bytes,
+              size);
+
     void* object = allocator.root()->Alloc(size);
     allocator.root()->Free<FreeFlags::kSchedulerLoopQuarantine>(object);
 
-    ASSERT_TRUE(branch.IsQuarantinedForTesting(object));
+    if (size <= kMaxBucketed) {
+      ASSERT_TRUE(
+          branch.GetInternalBranchForTesting().IsQuarantinedForTesting(object));
+    } else {
+      // Direct-mapped allocations should not be quarantined.
+      ASSERT_FALSE(
+          branch.GetInternalBranchForTesting().IsQuarantinedForTesting(object));
+    }
   }
 
   for (int i = 0; i < 10; ++i) {
@@ -3814,15 +3854,14 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
         allocator.root(), 250);
   }
 
-  branch.Purge();
-  branch.SetCapacityInBytes(original_capacity_in_bytes);
+  branch.GetInternalBranchForTesting().Purge();
 }
 
 // Ensures `Free<kSchedulerLoopQuarantine>` works as `Free<kNone>` if disabled.
 // See: https://crbug.com/324994233.
 TEST_P(PartitionAllocTest, SchedulerLoopQuarantineDisabled) {
   PartitionOptions opts = GetCommonPartitionOptions();
-  opts.scheduler_loop_quarantine = PartitionOptions::kDisabled;
+  opts.scheduler_loop_quarantine_global_config = {};
   opts.thread_cache = PartitionOptions::kDisabled;
   std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(opts, {});
 
@@ -3864,7 +3903,10 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   EXPECT_EQ(kFreedByte, *(static_cast<unsigned char*>(ptr) + size - 1));
 
   // Make sure the quarantine is empty before the root is reset.
-  allocator.root()->GetSchedulerLoopQuarantineBranchForTesting().Purge();
+  allocator.root()
+      ->GetSchedulerLoopQuarantineBranchForTesting()
+      .GetInternalBranchForTesting()
+      .Purge();
 }
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
@@ -4531,7 +4573,9 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   }
 
   constexpr uint64_t kCookie = 0x1234567890ABCDEF;
+#if !PA_BUILDFLAG(IS_IOS)
   constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
+#endif  // !PA_BUILDFLAG(IS_IOS)
 
   size_t alloc_size = 64 - ExtraAllocSize(allocator);
   uint64_t* ptr1 =
@@ -4556,8 +4600,10 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   // The allocation shouldn't be reclaimed, and its contents should be zapped.
   // Retag ptr1 to get its correct MTE tag.
   ptr1 = TagPtr(ptr1);
+#if !PA_BUILDFLAG(IS_IOS)
   EXPECT_NE(*ptr1, kCookie);
   EXPECT_EQ(*ptr1, kQuarantined);
+#endif  // !PA_BUILDFLAG(IS_IOS)
 
   // The allocator should not reuse the original slot since its reference count
   // doesn't equal zero.
@@ -5171,9 +5217,9 @@ TEST_P(PartitionAllocTest,
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 2);
 
-  LightweightQuarantineBranch& branch =
+  SchedulerLoopQuarantineBranch& branch =
       allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
-  branch.Purge();
+  branch.GetInternalBranchForTesting().Purge();
 }
 
 // Similar to `PartitionAllocTest.DanglingPtr`, but using
@@ -5219,9 +5265,9 @@ TEST_P(PartitionAllocTest, DanglingPtrReleaseAfterSchedulerLoopQuarantineExit) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 
-  LightweightQuarantineBranch& branch =
+  SchedulerLoopQuarantineBranch& branch =
       allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
-  branch.Purge();
+  branch.GetInternalBranchForTesting().Purge();
 
   // The dangling raw_ptr stop referencing it again.
   // Allocation should not be reclaimed because it is still held by the

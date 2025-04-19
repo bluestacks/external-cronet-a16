@@ -333,6 +333,11 @@ class EmbeddedTestServer {
     // intermediate cert (if an intermediate is configured).
     std::vector<std::string> policy_oids;
 
+    // QWAC QC types for the QcStatements extension. If non-empty, the
+    // QcStatements extension will be set on the leaf cert containing values
+    // appropriate for a QWAC with the given QC types.
+    std::vector<bssl::der::Input> qwac_qc_types;
+
     // Value to use for leaf's basicConstraints isCA field
     bool leaf_is_ca = false;
 
@@ -351,6 +356,13 @@ class EmbeddedTestServer {
 
     // Generate embedded SCTList in the certificate for the specified logs.
     std::vector<CertBuilder::SctConfig> embedded_scts;
+
+    // If non-empty, raw bytes to use as the leaf subject. If empty, a random
+    // valid subject will be generated.
+    // (This can be used for testing behavior with invalid or weird encodings,
+    // if we need tests to set specific subjects for more normal cases, we
+    // should consider adding a more ergonomic API for that.)
+    std::vector<uint8_t> subject_tlv;
   };
 
   using UpgradeResultOrHttpResponse =
@@ -707,6 +719,8 @@ class EmbeddedTestServer {
   net::SSLServerConfig ssl_config_;
   ServerCertificate cert_ = CERT_OK;
   ServerCertificateConfig cert_config_;
+  // If non-empty, will be used instead of `x509_cert_`.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain_;
   scoped_refptr<X509Certificate> x509_cert_;
   // May be null if no intermediate is generated.
   scoped_refptr<X509Certificate> intermediate_;

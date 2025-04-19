@@ -25,7 +25,7 @@ package {
 java_library {
     name: "tot_cronet_base_version_info_android_channel_enum_java",
     static_libs: [
-        "tot_cronet_base_version_info_android_channel_enum_java__process_device",
+        "tot_cronet_base_version_info_android_channel_enum_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -89,7 +89,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_version_info_android_channel_enum_java__testing",
     static_libs: [
-        "tot_cronet_base_version_info_android_channel_enum_java__process_device__testing",
+        "tot_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -110,7 +110,7 @@ java_library {
     name: "tot_cronet_base_version_info_android_version_constants_java",
     static_libs: [
         "tot_cronet_base_version_info_android_channel_enum_java",
-        "tot_cronet_base_version_info_android_version_constants_java__process_device",
+        "tot_cronet_base_version_info_android_version_constants_java__compile_java",
         "tot_cronet_build_android_build_java",
         "tot_cronet_third_party_jni_zero_jni_zero_java",
     ],
@@ -188,7 +188,7 @@ java_library {
     name: "tot_cronet_base_version_info_android_version_constants_java__testing",
     static_libs: [
         "tot_cronet_base_version_info_android_channel_enum_java__testing",
-        "tot_cronet_base_version_info_android_version_constants_java__process_device__testing",
+        "tot_cronet_base_version_info_android_version_constants_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
         "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
     ],

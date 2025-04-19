@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -112,6 +113,11 @@ class BASE_EXPORT PartitionAllocSupport {
   static bool ShouldEnablePartitionAllocWithAdvancedChecks(
       const std::string& process_type);
 
+  // Returns quarantine configuration for `process_name` and `branch_type`.
+  static ::partition_alloc::internal::SchedulerLoopQuarantineConfig
+  GetSchedulerLoopQuarantineConfiguration(
+      features::internal::SchedulerLoopQuarantineBranchType branch_type);
+
  private:
   PartitionAllocSupport();
 
@@ -157,6 +163,13 @@ class BASE_EXPORT MemoryReclaimerSupport {
   bool in_foreground_ = true;
   bool has_pending_task_ = false;
 };
+
+// Utility function to detect Double-Free or Out-of-Bounds writes.
+// This function can be called to memory assumed to be valid.
+// If not, this may crash (not guaranteed).
+// This is useful if you want to investigate crashes at `free()`,
+// to know which point at execution it goes wrong.
+BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
 
 }  // namespace base::allocator
 

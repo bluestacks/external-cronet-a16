@@ -24,6 +24,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cinttypes>
 #include <cstddef>
@@ -204,6 +205,28 @@ centipede::Environment CreateCentipedeEnvironmentFromConfiguration(
   centipede::Environment env = CreateDefaultCentipedeEnvironment();
   constexpr absl::Duration kUnitTestDefaultDuration = absl::Seconds(3);
   env.fuzztest_single_test_mode = true;
+  if (configuration.time_limit_per_input < absl::InfiniteDuration()) {
+    const int64_t time_limit_seconds =
+        absl::ToInt64Seconds(configuration.time_limit_per_input);
+    if (time_limit_seconds < 1) {
+      absl::FPrintF(
+          GetStderr(),
+          "[!] Input time limit %s is too small - rounding up to one second\n",
+          absl::StrCat(configuration.time_limit_per_input));
+    }
+    env.timeout_per_input = std::clamp<decltype(env.timeout_per_input)>(
+        time_limit_seconds, 1,
+        std::numeric_limits<decltype(env.timeout_per_input)>::max());
+  }
+  constexpr size_t kMiB = 1024 * 1024;
+  FUZZTEST_INTERNAL_CHECK(configuration.rss_limit % kMiB == 0,
+                          "configuration.rss_limit is not a multiple of MiB.");
+  env.rss_limit_mb = configuration.rss_limit / kMiB;
+  constexpr size_t kKiB = 1024;
+  FUZZTEST_INTERNAL_CHECK(
+      configuration.stack_limit % kKiB == 0,
+      "configuration.stack_limit is not a multiple of KiB.");
+  env.stack_limit_kb = configuration.stack_limit / kKiB;
   env.populate_binary_info = false;
   const auto args = GetProcessArgs();
   FUZZTEST_INTERNAL_CHECK(
@@ -495,19 +518,19 @@ void PopulateTestLimitsToCentipedeRunner(const Configuration& configuration) {
     CentipedeSetRssLimit(/*rss_limit_mb=*/configuration.rss_limit >> 20);
   }
   if (configuration.time_limit_per_input < absl::InfiniteDuration()) {
-    const int64_t time_limit_seconds =
+    int64_t time_limit_seconds =
         absl::ToInt64Seconds(configuration.time_limit_per_input);
-    if (time_limit_seconds <= 0) {
+    if (time_limit_seconds < 1) {
       absl::FPrintF(
           GetStderr(),
-          "[!] Skip setting per-input time limit that is too short: %s\n",
-          absl::FormatDuration(configuration.time_limit_per_input));
-    } else {
-      absl::FPrintF(GetStderr(),
-                    "[.] Per-input time limit set to: %" PRId64 "s\n",
-                    time_limit_seconds);
-      CentipedeSetTimeoutPerInput(time_limit_seconds);
+          "[!] Input time limit %s is too small - rounding up to one second\n",
+          absl::StrCat(configuration.time_limit_per_input));
+      time_limit_seconds = 1;
     }
+    absl::FPrintF(GetStderr(),
+                  "[.] Per-input time limit set to: %" PRId64 "s\n",
+                  time_limit_seconds);
+    CentipedeSetTimeoutPerInput(time_limit_seconds);
   }
 }
 
@@ -587,6 +610,37 @@ bool CentipedeFuzzerAdaptor::RunInFuzzingMode(
   return Run(argc, argv, RunMode::kFuzz, configuration);
 }
 
+bool CentipedeFuzzerAdaptor::ReplayCrashInSingleProcess(
+    const Configuration& configuration) {
+  centipede::DefaultCallbacksFactory<centipede::CentipedeDefaultCallbacks>
+      factory;
+  TempDir crash_export_dir("fuzztest_crash");
+  auto export_crash_env = CreateCentipedeEnvironmentFromConfiguration(
+      configuration, /*workdir=*/"", test_.full_name(), runtime_.run_mode());
+  std::string crash_file =
+      (std::filesystem::path(crash_export_dir.path()) / "crash").string();
+  export_crash_env.export_crash_file = crash_file;
+  export_crash_env.replay_crash = false;
+  export_crash_env.export_crash = true;
+  if (centipede::CentipedeMain(export_crash_env, factory) != EXIT_SUCCESS) {
+    absl::FPrintF(
+        GetStderr(),
+        "[!] Encountered error when using Centipede to export the crash "
+        "input.");
+    return false;
+  }
+  CentipedeAdaptorRunnerCallbacks runner_callbacks(&runtime_, &fuzzer_impl_,
+                                                   &configuration);
+  static char replay_argv0[] = "replay_argv";
+  char* replay_argv[] = {replay_argv0, crash_file.data()};
+
+  fuzzer_impl_.fixture_driver_->SetUpFuzzTest();
+  const int result =
+      centipede::RunnerMain(/*argc=*/2, replay_argv, runner_callbacks);
+  fuzzer_impl_.fixture_driver_->TearDownFuzzTest();
+  return result == 0;
+}
+
 // TODO(xinhaoyuan): Consider merging `mode` into `configuration`.
 bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
                                  const Configuration& configuration) {
@@ -617,6 +671,11 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
     // TODO(b/393582695): Consider whether we need some kind of reporting
     // enabled in the controller mode to handle test setup failures.
     runtime_.EnableReporter(&fuzzer_impl_.stats_, [] { return absl::Now(); });
+  }
+  if (!configuration.corpus_database.empty() &&
+      configuration.crashing_input_to_reproduce.has_value() &&
+      configuration.replay_in_single_process) {
+    return ReplayCrashInSingleProcess(configuration);
   }
   fuzzer_impl_.fixture_driver_->SetUpFuzzTest();
   bool to_tear_down_fuzz_test = true;
@@ -658,31 +717,8 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
         configuration, workdir_path, test_.full_name(), mode);
     centipede::DefaultCallbacksFactory<centipede::CentipedeDefaultCallbacks>
         factory;
-    if (!configuration.corpus_database.empty()) {
-      if (!env.crash_id.empty() && configuration.replay_in_single_process) {
-        TempDir crash_fetch_dir("fuzztest_crash");
-        auto export_crash_env = env;
-        std::string crash_file =
-            (std::filesystem::path(crash_fetch_dir.path()) / "crash").string();
-        export_crash_env.export_crash_file = crash_file;
-        export_crash_env.replay_crash = false;
-        export_crash_env.export_crash = true;
-        if (centipede::CentipedeMain(export_crash_env, factory) !=
-            EXIT_SUCCESS) {
-          absl::FPrintF(
-              GetStderr(),
-              "[!] Encountered error when using Centipede to export the crash "
-              "input.");
-          return EXIT_FAILURE;
-        }
-        CentipedeAdaptorRunnerCallbacks runner_callbacks(
-            &runtime_, &fuzzer_impl_, &configuration);
-        static char replay_argv0[] = "replay_argv";
-        char* replay_argv[] = {replay_argv0, crash_file.data()};
-        return centipede::RunnerMain(/*argc=*/2, replay_argv, runner_callbacks);
-      }
-    } else if (const char* minimize_dir_chars =
-                   std::getenv("FUZZTEST_MINIMIZE_TESTSUITE_DIR")) {
+    if (const char* minimize_dir_chars =
+            std::getenv("FUZZTEST_MINIMIZE_TESTSUITE_DIR")) {
       const std::string minimize_dir = minimize_dir_chars;
       const char* corpus_out_dir_chars =
           std::getenv("FUZZTEST_TESTSUITE_OUT_DIR");

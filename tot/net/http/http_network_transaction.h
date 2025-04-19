@@ -451,8 +451,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // transaction.
   int64_t total_sent_bytes_ = 0;
 
-  // When the transaction started creating a stream.
+  // When the transaction started / finished creating a stream.
   base::TimeTicks create_stream_start_time_;
+  base::TimeTicks create_stream_end_time_;
 
   // When the transaction started / finished sending the request, including
   // the body, if present. |send_start_time_| is set to |base::TimeTicks()|
@@ -532,6 +533,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   base::TimeTicks blocked_initialize_stream_start_time_;
   base::TimeTicks blocked_generate_proxy_auth_token_start_time_;
   base::TimeTicks blocked_generate_server_auth_token_start_time_;
+
+  // Timing information for the connected callback.
+  base::TimeTicks connected_callback_start_time_;
+  base::TimeTicks connected_callback_end_time_;
 
   // The number of bytes of the body received from network.
   int64_t received_body_bytes_ = 0;

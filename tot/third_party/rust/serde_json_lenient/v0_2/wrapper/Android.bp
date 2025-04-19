@@ -40,6 +40,7 @@ rust_ffi_static {
     crate_name: "third_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper",
     crate_root: "lib.rs",
     rustlibs: [
+        "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
         "libfoldhash__3d2886e384b4e895",
@@ -53,7 +54,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -70,7 +71,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -87,7 +88,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -104,7 +105,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -121,7 +122,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -139,7 +140,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -180,6 +181,7 @@ rust_ffi_static {
     crate_name: "third_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper",
     crate_root: "lib.rs",
     rustlibs: [
+        "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
         "libchromium__ada7dbc4acbf8156",
         "libcxx__3d5c3771dead539b",
         "libfoldhash__9d82c8b43061ff92",
@@ -193,7 +195,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -210,7 +212,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -227,7 +229,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -244,7 +246,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -261,7 +263,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -300,15 +302,13 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -387,14 +387,12 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",

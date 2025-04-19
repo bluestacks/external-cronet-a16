@@ -219,6 +219,9 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
 int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
                                   CompletionOnceCallback callback,
                                   const NetLogWithSource& net_log) {
+  TRACE_EVENT("net", "HttpNetworkTransaction::Start",
+              NetLogWithSourceToFlow(net_log), "url", request_info->url);
+
   if (request_info->load_flags & LOAD_ONLY_FROM_CACHE)
     return ERR_CACHE_MISS;
 
@@ -278,6 +281,9 @@ int HttpNetworkTransaction::RestartIgnoringLastError(
   DCHECK(!stream_request_.get());
   DCHECK_EQ(STATE_NONE, next_state_);
 
+  TRACE_EVENT("net", "HttpNetworkTransaction::RestartIgnoringLastError",
+              NetLogWithSourceToFlow(net_log_));
+
   if (!CheckMaxRestarts())
     return ERR_TOO_MANY_RETRIES;
 
@@ -303,6 +309,9 @@ int HttpNetworkTransaction::RestartWithCertificate(
   DCHECK(!stream_request_.get());
   DCHECK(!stream_.get());
   DCHECK_EQ(STATE_NONE, next_state_);
+
+  TRACE_EVENT("net", "HttpNetworkTransaction::RestartWithCertificate",
+              NetLogWithSourceToFlow(net_log_));
 
   if (!CheckMaxRestarts())
     return ERR_TOO_MANY_RETRIES;
@@ -333,6 +342,9 @@ int HttpNetworkTransaction::RestartWithCertificate(
 
 int HttpNetworkTransaction::RestartWithAuth(const AuthCredentials& credentials,
                                             CompletionOnceCallback callback) {
+  TRACE_EVENT("net", "HttpNetworkTransaction::RestartWithAuth",
+              NetLogWithSourceToFlow(net_log_));
+
   if (!CheckMaxRestarts())
     return ERR_TOO_MANY_RETRIES;
 
@@ -387,6 +399,7 @@ void HttpNetworkTransaction::PrepareForAuthRestart(HttpAuth::Target target) {
 
     session_->http_server_properties()->SetHTTP11Required(
         url::SchemeHostPort(rewritten_url), network_anonymization_key_);
+    stream_->SetHTTP11Required();
   }
 
   bool keep_alive = false;
@@ -428,6 +441,8 @@ void HttpNetworkTransaction::DidDrainBodyForAuthRestart(bool keep_alive) {
       // Close the stream and mark it as not_reusable.  Even in the
       // keep_alive case, we've determined that the stream_ is not
       // reusable if new_stream is NULL.
+      TRACE_EVENT("net", "HttpNetworkTransaction::DidDrainBodyForAuthRestart",
+                  NetLogWithSourceToFlow(net_log_));
       stream_->Close(true);
       next_state_ = STATE_CREATE_STREAM;
     } else {
@@ -563,6 +578,18 @@ bool HttpNetworkTransaction::GetLoadTimingInfo(
 
 void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
     LoadTimingInternalInfo* load_timing_internal_info) const {
+  if (!create_stream_start_time_.is_null() &&
+      !create_stream_end_time_.is_null()) {
+    CHECK_LE(create_stream_start_time_, create_stream_end_time_);
+    load_timing_internal_info->create_stream_delay =
+        create_stream_end_time_ - create_stream_start_time_;
+  }
+  if (!connected_callback_start_time_.is_null() &&
+      !connected_callback_end_time_.is_null()) {
+    CHECK_LE(connected_callback_start_time_, connected_callback_end_time_);
+    load_timing_internal_info->connected_callback_delay =
+        connected_callback_end_time_ - connected_callback_start_time_;
+  }
   if (!initialize_stream_start_time_.is_null() &&
       !initialize_stream_end_time_.is_null()) {
     CHECK_LE(initialize_stream_start_time_, initialize_stream_end_time_);
@@ -642,12 +669,22 @@ void HttpNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
 }
 
 int HttpNetworkTransaction::ResumeNetworkStart() {
+  TRACE_EVENT("net", "HttpNetworkTransaction::ResumeNetworkStart",
+              NetLogWithSourceToFlow(net_log_));
   DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
   return DoLoop(OK);
 }
 
 void HttpNetworkTransaction::ResumeAfterConnected(int result) {
   DCHECK_EQ(next_state_, STATE_CONNECTED_CALLBACK_COMPLETE);
+
+  connected_callback_end_time_ = base::TimeTicks::Now();
+  CHECK(!connected_callback_start_time_.is_null());
+  CHECK_LE(connected_callback_start_time_, connected_callback_end_time_);
+  base::UmaHistogramTimes(
+      "Net.NetworkTransaction.ConnectedCallbackDelay",
+      connected_callback_end_time_ - connected_callback_start_time_);
+
   OnIOComplete(result);
 }
 
@@ -939,6 +976,8 @@ int HttpNetworkTransaction::DoLoop(int result) {
 }
 
 int HttpNetworkTransaction::DoNotifyBeforeCreateStream() {
+  TRACE_EVENT("net", "HttpNetworkTransaction::NotifyBeforeCreateStream",
+              NetLogWithSourceToFlow(net_log_));
   next_state_ = STATE_CREATE_STREAM;
   bool defer = false;
   if (!before_network_start_callback_.is_null())
@@ -950,7 +989,8 @@ int HttpNetworkTransaction::DoNotifyBeforeCreateStream() {
 
 int HttpNetworkTransaction::DoCreateStream() {
   TRACE_EVENT("net", "HttpNetworkTransaction::CreateStream",
-              NetLogWithSourceToFlow(net_log_));
+              NetLogWithSourceToFlow(net_log_), "retry_attempts",
+              retry_attempts_, "num_restarts", num_restarts_);
   response_.network_accessed = true;
 
   next_state_ = STATE_CREATE_STREAM_COMPLETE;
@@ -962,6 +1002,10 @@ int HttpNetworkTransaction::DoCreateStream() {
   }
 
   create_stream_start_time_ = base::TimeTicks::Now();
+  // Reset `create_stream_end_time__` to prevent an inconsistent state in
+  // case that `DoCreateStream` is called multiple times.
+  create_stream_end_time_ = base::TimeTicks();
+
   if (ForWebSocketHandshake()) {
     stream_request_ =
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
@@ -983,9 +1027,11 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   RecordStreamRequestResult(result);
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {
+    create_stream_end_time_ = base::TimeTicks::Now();
     next_state_ = STATE_CONNECTED_CALLBACK;
     DCHECK(stream_.get());
     CHECK(!create_stream_start_time_.is_null());
+    CHECK_LE(create_stream_start_time_, create_stream_end_time_);
     base::UmaHistogramTimes(
         base::StrCat(
             {"Net.NetworkTransaction.Create",
@@ -993,7 +1039,7 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
                                       : "HttpStreamTime."),
              (IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ""),
              NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
-        base::TimeTicks::Now() - create_stream_start_time_);
+        create_stream_end_time_ - create_stream_start_time_);
     if (!reset_connection_and_request_for_resend_start_time_.is_null()) {
       base::UmaHistogramTimes(
           "Net.NetworkTransaction.ResetConnectionAndResendRequestTime",
@@ -1109,6 +1155,11 @@ int HttpNetworkTransaction::DoConnectedCallback() {
     stream_->GetSSLInfo(&ssl_info);
     is_issued_by_known_root = ssl_info.is_issued_by_known_root;
   }
+
+  connected_callback_start_time_ = base::TimeTicks::Now();
+  // Reset `connected_callback_end_time_` to prevent an inconsistent state in
+  // case that `DoConnectedCallback` is called multiple times.
+  connected_callback_end_time_ = base::TimeTicks();
 
   return connected_callback_.Run(
       TransportInfo(type, remote_endpoint_,
@@ -1374,7 +1425,9 @@ int HttpNetworkTransaction::DoReadHeaders() {
 
 int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   TRACE_EVENT("net", "HttpNetworkTransaction::ReadHeadersComplete",
-              NetLogWithSourceToFlow(net_log_), "result", result);
+              NetLogWithSourceToFlow(net_log_), "result", result,
+              "response_code",
+              response_.headers ? response_.headers->response_code() : -1);
   // We can get a ERR_SSL_CLIENT_AUTH_CERT_NEEDED here due to SSL renegotiation.
   // Server certificate errors are impossible. Rather than reverify the new
   // server certificate, BoringSSL forbids server certificates from changing.
@@ -2091,6 +2144,10 @@ bool HttpNetworkTransaction::CheckMaxRestarts() {
 
 void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
     RetryReason retry_reason) {
+  TRACE_EVENT("net",
+              "HttpNetworkTransaction::ResetConnectionAndRequestForResend",
+              NetLogWithSourceToFlow(net_log_), "retry_reason", retry_reason);
+
   reset_connection_and_request_for_resend_start_time_ = base::TimeTicks::Now();
 
   // TODO:(crbug.com/1495705): Remove this CHECK after fixing the bug.

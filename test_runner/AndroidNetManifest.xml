@@ -37,8 +37,7 @@
         android:name="org.chromium.native_test.NativeUnitTestActivity"
         android:configChanges="orientation|keyboardHidden"
         android:exported="true"
-        android:label="NativeTest"
-        android:process=":test_process" >
+        android:label="NativeTest">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
@@ -46,8 +45,7 @@
       </intent-filter>
     </activity>
     <service android:name="org.chromium.net.test.DummySpnegoAuthenticatorService"
-             android:exported="false"
-             android:process=":test_process">
+             android:exported="false">
       <intent-filter>
         <action android:name="android.accounts.AccountAuthenticator" />
       </intent-filter>

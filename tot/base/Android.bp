@@ -40,6 +40,7 @@ rust_ffi_static {
     crate_root: "logging/rust_logger.rs",
     rustlibs: [
         "libbase_clogging_ulog_useverity_ubindgen__4a607e49e19da3e5",
+        "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
         "libfoldhash__3d2886e384b4e895",
@@ -49,7 +50,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -66,7 +67,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -83,7 +84,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -100,7 +101,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -117,7 +118,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -135,7 +136,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -176,6 +177,7 @@ rust_ffi_static {
     crate_root: "logging/rust_logger.rs",
     rustlibs: [
         "libbase_clogging_ulog_useverity_ubindgen__0495fa00511ddc0a",
+        "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
         "libchromium__ada7dbc4acbf8156",
         "libcxx__3d5c3771dead539b",
         "libfoldhash__9d82c8b43061ff92",
@@ -185,7 +187,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -202,7 +204,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -219,7 +221,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -236,7 +238,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -253,7 +255,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -336,7 +338,7 @@ rust_bindgen {
 java_library {
     name: "tot_cronet_base_activity_state_java",
     static_libs: [
-        "tot_cronet_base_activity_state_java__process_device",
+        "tot_cronet_base_activity_state_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -404,7 +406,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_activity_state_java__testing",
     static_libs: [
-        "tot_cronet_base_activity_state_java__process_device__testing",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -763,6 +765,7 @@ cc_library_static {
         "memory/read_only_shared_memory_region.cc",
         "memory/ref_counted.cc",
         "memory/ref_counted_memory.cc",
+        "memory/safety_checks.cc",
         "memory/shared_memory_mapper.cc",
         "memory/shared_memory_mapping.cc",
         "memory/shared_memory_security_policy.cc",
@@ -1026,13 +1029,40 @@ cc_library_static {
         "timer/timer.cc",
         "timer/wall_clock_timer.cc",
         "token.cc",
+        "trace_event/application_state_proto_android.cc",
+        "trace_event/cpufreq_monitor_android.cc",
         "trace_event/heap_profiler_allocation_context.cc",
         "trace_event/heap_profiler_allocation_context_tracker.cc",
         "trace_event/histogram_scope.cc",
+        "trace_event/interned_args_helper.cc",
+        "trace_event/java_heap_dump_provider_android.cc",
+        "trace_event/log_message.cc",
+        "trace_event/malloc_dump_provider.cc",
+        "trace_event/memory_allocator_dump.cc",
         "trace_event/memory_allocator_dump_guid.cc",
+        "trace_event/memory_dump_manager.cc",
+        "trace_event/memory_dump_provider_info.cc",
+        "trace_event/memory_dump_request_args.cc",
+        "trace_event/memory_dump_scheduler.cc",
+        "trace_event/memory_infra_background_allowlist.cc",
+        "trace_event/memory_pressure_level_proto.cc",
+        "trace_event/memory_usage_estimator.cc",
         "trace_event/named_trigger.cc",
-        "trace_event/trace_event_stub.cc",
+        "trace_event/perfetto_proto_appender.cc",
+        "trace_event/process_memory_dump.cc",
+        "trace_event/trace_arguments.cc",
+        "trace_event/trace_buffer.cc",
+        "trace_event/trace_config.cc",
+        "trace_event/trace_config_category_filter.cc",
+        "trace_event/trace_event_impl.cc",
         "trace_event/trace_id_helper.cc",
+        "trace_event/trace_log.cc",
+        "trace_event/traced_value.cc",
+        "trace_event/tracing_agent.cc",
+        "tracing/perfetto_platform.cc",
+        "tracing/perfetto_task_runner.cc",
+        "tracing/trace_time.cc",
+        "tracing/tracing_tls.cc",
         "unguessable_token.cc",
         "uuid.cc",
         "value_iterators.cc",
@@ -1043,6 +1073,7 @@ cc_library_static {
     shared_libs: [
         "libandroid",
         "liblog",
+        "libprotobuf-cpp-lite",
         "libz",
         "tot_cronet_libcrypto",
         "tot_cronet_libpki",
@@ -1050,6 +1081,40 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
+        "tot_cronet_1baaa48e_android_cpp_gen_h",
+        "tot_cronet_1baaa48e_android_zero_gen_h",
+        "tot_cronet_1baaa48e_ftrace_cpp_gen_h",
+        "tot_cronet_1baaa48e_ftrace_zero_gen_h",
+        "tot_cronet_1baaa48e_gpu_cpp_gen_h",
+        "tot_cronet_1baaa48e_gpu_zero_gen_h",
+        "tot_cronet_1baaa48e_inode_file_cpp_gen_h",
+        "tot_cronet_1baaa48e_inode_file_zero_gen_h",
+        "tot_cronet_1baaa48e_interceptors_cpp_gen_h",
+        "tot_cronet_1baaa48e_interceptors_zero_gen_h",
+        "tot_cronet_1baaa48e_power_cpp_gen_h",
+        "tot_cronet_1baaa48e_power_zero_gen_h",
+        "tot_cronet_1baaa48e_process_stats_cpp_gen_h",
+        "tot_cronet_1baaa48e_process_stats_zero_gen_h",
+        "tot_cronet_1baaa48e_profiling_cpp_gen_h",
+        "tot_cronet_1baaa48e_profiling_zero_gen_h",
+        "tot_cronet_1baaa48e_statsd_cpp_gen_h",
+        "tot_cronet_1baaa48e_statsd_zero_gen_h",
+        "tot_cronet_1baaa48e_sys_stats_cpp_gen_h",
+        "tot_cronet_1baaa48e_sys_stats_zero_gen_h",
+        "tot_cronet_1baaa48e_system_info_cpp_gen_h",
+        "tot_cronet_1baaa48e_system_info_zero_gen_h",
+        "tot_cronet_1baaa48e_track_event_cpp_gen_h",
+        "tot_cronet_1baaa48e_track_event_zero_gen_h",
+        "tot_cronet_30b2e32c_common_cpp_gen_h",
+        "tot_cronet_30b2e32c_common_zero_gen_h",
+        "tot_cronet_30b2e32c_config_cpp_gen_h",
+        "tot_cronet_30b2e32c_config_zero_gen_h",
+        "tot_cronet_30b2e32c_ipc_cpp_gen_h",
+        "tot_cronet_30b2e32c_ipc_ipc_gen_h",
+        "tot_cronet_30b2e32c_ipc_wire_protocol_cpp_gen_h",
+        "tot_cronet_30b2e32c_trace_minimal_zero_gen_h",
+        "tot_cronet_30b2e32c_trace_non_minimal_zero_gen_h",
+        "tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen_h",
         "tot_cronet_base_allocator_buildflags",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
         "tot_cronet_base_anchor_functions_buildflags",
@@ -1060,6 +1125,7 @@ cc_library_static {
         "tot_cronet_base_base_shared_preferences_jni__action",
         "tot_cronet_base_build_date",
         "tot_cronet_base_build_info_jni__action",
+        "tot_cronet_base_bundle_utils_jni__action",
         "tot_cronet_base_callback_jni__action",
         "tot_cronet_base_cfi_buildflags",
         "tot_cronet_base_check_version_internal_action",
@@ -1068,13 +1134,17 @@ cc_library_static {
         "tot_cronet_base_content_uri_utils_jni__action",
         "tot_cronet_base_debugging_buildflags",
         "tot_cronet_base_feature_list_buildflags",
+        "tot_cronet_base_features_jni__action",
+        "tot_cronet_base_file_utils_jni__action",
         "tot_cronet_base_fuzzing_buildflags",
         "tot_cronet_base_ios_cronet_buildflags",
         "tot_cronet_base_jank_tracker_jni__action",
+        "tot_cronet_base_jni_android_jni__action",
         "tot_cronet_base_library_loader_jni__action",
         "tot_cronet_base_memory_jni__action",
         "tot_cronet_base_metrics_jni__action",
         "tot_cronet_base_orderfile_buildflags",
+        "tot_cronet_base_path_utils_jni__action",
         "tot_cronet_base_power_monitor_buildflags",
         "tot_cronet_base_process_launcher_jni__action",
         "tot_cronet_base_profiler_buildflags",
@@ -1093,11 +1163,67 @@ cc_library_static {
         "tot_cronet_build_config_compiler_compiler_buildflags",
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
+        "tot_cronet_build_rust_allocator_buildflags",
+        "tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
+        "tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
+        "tot_cronet_ff61d121_android_zero_gen_h",
+        "tot_cronet_ff61d121_chrome_zero_gen_h",
+        "tot_cronet_ff61d121_etw_zero_gen_h",
+        "tot_cronet_ff61d121_filesystem_zero_gen_h",
+        "tot_cronet_ff61d121_ftrace_zero_gen_h",
+        "tot_cronet_ff61d121_gpu_zero_gen_h",
+        "tot_cronet_ff61d121_interned_data_zero_gen_h",
+        "tot_cronet_ff61d121_perfetto_zero_gen_h",
+        "tot_cronet_ff61d121_power_zero_gen_h",
+        "tot_cronet_ff61d121_profiling_zero_gen_h",
+        "tot_cronet_ff61d121_ps_zero_gen_h",
+        "tot_cronet_ff61d121_statsd_zero_gen_h",
+        "tot_cronet_ff61d121_sys_stats_zero_gen_h",
+        "tot_cronet_ff61d121_system_info_zero_gen_h",
+        "tot_cronet_ff61d121_track_event_cpp_gen_h",
+        "tot_cronet_ff61d121_track_event_zero_gen_h",
+        "tot_cronet_ff61d121_translation_zero_gen_h",
         "tot_cronet_third_party_jni_zero_generate_jni__action",
         "tot_cronet_third_party_jni_zero_system_jni__action",
+        "tot_cronet_third_party_perfetto_gn_gen_buildflags",
         "tot_cronet_third_party_rust_serde_json_lenient_v0_2_wrapper_wrapper_cxx_generated_gen_header",
     ],
     export_generated_headers: [
+        "tot_cronet_1baaa48e_android_cpp_gen_h",
+        "tot_cronet_1baaa48e_android_zero_gen_h",
+        "tot_cronet_1baaa48e_ftrace_cpp_gen_h",
+        "tot_cronet_1baaa48e_ftrace_zero_gen_h",
+        "tot_cronet_1baaa48e_gpu_cpp_gen_h",
+        "tot_cronet_1baaa48e_gpu_zero_gen_h",
+        "tot_cronet_1baaa48e_inode_file_cpp_gen_h",
+        "tot_cronet_1baaa48e_inode_file_zero_gen_h",
+        "tot_cronet_1baaa48e_interceptors_cpp_gen_h",
+        "tot_cronet_1baaa48e_interceptors_zero_gen_h",
+        "tot_cronet_1baaa48e_power_cpp_gen_h",
+        "tot_cronet_1baaa48e_power_zero_gen_h",
+        "tot_cronet_1baaa48e_process_stats_cpp_gen_h",
+        "tot_cronet_1baaa48e_process_stats_zero_gen_h",
+        "tot_cronet_1baaa48e_profiling_cpp_gen_h",
+        "tot_cronet_1baaa48e_profiling_zero_gen_h",
+        "tot_cronet_1baaa48e_statsd_cpp_gen_h",
+        "tot_cronet_1baaa48e_statsd_zero_gen_h",
+        "tot_cronet_1baaa48e_sys_stats_cpp_gen_h",
+        "tot_cronet_1baaa48e_sys_stats_zero_gen_h",
+        "tot_cronet_1baaa48e_system_info_cpp_gen_h",
+        "tot_cronet_1baaa48e_system_info_zero_gen_h",
+        "tot_cronet_1baaa48e_track_event_cpp_gen_h",
+        "tot_cronet_1baaa48e_track_event_zero_gen_h",
+        "tot_cronet_30b2e32c_common_cpp_gen_h",
+        "tot_cronet_30b2e32c_common_zero_gen_h",
+        "tot_cronet_30b2e32c_config_cpp_gen_h",
+        "tot_cronet_30b2e32c_config_zero_gen_h",
+        "tot_cronet_30b2e32c_ipc_cpp_gen_h",
+        "tot_cronet_30b2e32c_ipc_ipc_gen_h",
+        "tot_cronet_30b2e32c_ipc_wire_protocol_cpp_gen_h",
+        "tot_cronet_30b2e32c_trace_minimal_zero_gen_h",
+        "tot_cronet_30b2e32c_trace_non_minimal_zero_gen_h",
+        "tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen_h",
         "tot_cronet_base_allocator_buildflags",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
         "tot_cronet_base_anchor_functions_buildflags",
@@ -1108,6 +1234,7 @@ cc_library_static {
         "tot_cronet_base_base_shared_preferences_jni__action",
         "tot_cronet_base_build_date",
         "tot_cronet_base_build_info_jni__action",
+        "tot_cronet_base_bundle_utils_jni__action",
         "tot_cronet_base_callback_jni__action",
         "tot_cronet_base_cfi_buildflags",
         "tot_cronet_base_check_version_internal_action",
@@ -1116,13 +1243,17 @@ cc_library_static {
         "tot_cronet_base_content_uri_utils_jni__action",
         "tot_cronet_base_debugging_buildflags",
         "tot_cronet_base_feature_list_buildflags",
+        "tot_cronet_base_features_jni__action",
+        "tot_cronet_base_file_utils_jni__action",
         "tot_cronet_base_fuzzing_buildflags",
         "tot_cronet_base_ios_cronet_buildflags",
         "tot_cronet_base_jank_tracker_jni__action",
+        "tot_cronet_base_jni_android_jni__action",
         "tot_cronet_base_library_loader_jni__action",
         "tot_cronet_base_memory_jni__action",
         "tot_cronet_base_metrics_jni__action",
         "tot_cronet_base_orderfile_buildflags",
+        "tot_cronet_base_path_utils_jni__action",
         "tot_cronet_base_power_monitor_buildflags",
         "tot_cronet_base_process_launcher_jni__action",
         "tot_cronet_base_profiler_buildflags",
@@ -1141,8 +1272,30 @@ cc_library_static {
         "tot_cronet_build_config_compiler_compiler_buildflags",
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
+        "tot_cronet_build_rust_allocator_buildflags",
+        "tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
+        "tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
+        "tot_cronet_ff61d121_android_zero_gen_h",
+        "tot_cronet_ff61d121_chrome_zero_gen_h",
+        "tot_cronet_ff61d121_etw_zero_gen_h",
+        "tot_cronet_ff61d121_filesystem_zero_gen_h",
+        "tot_cronet_ff61d121_ftrace_zero_gen_h",
+        "tot_cronet_ff61d121_gpu_zero_gen_h",
+        "tot_cronet_ff61d121_interned_data_zero_gen_h",
+        "tot_cronet_ff61d121_perfetto_zero_gen_h",
+        "tot_cronet_ff61d121_power_zero_gen_h",
+        "tot_cronet_ff61d121_profiling_zero_gen_h",
+        "tot_cronet_ff61d121_ps_zero_gen_h",
+        "tot_cronet_ff61d121_statsd_zero_gen_h",
+        "tot_cronet_ff61d121_sys_stats_zero_gen_h",
+        "tot_cronet_ff61d121_system_info_zero_gen_h",
+        "tot_cronet_ff61d121_track_event_cpp_gen_h",
+        "tot_cronet_ff61d121_track_event_zero_gen_h",
+        "tot_cronet_ff61d121_translation_zero_gen_h",
         "tot_cronet_third_party_jni_zero_generate_jni__action",
         "tot_cronet_third_party_jni_zero_system_jni__action",
+        "tot_cronet_third_party_perfetto_gn_gen_buildflags",
         "tot_cronet_third_party_rust_serde_json_lenient_v0_2_wrapper_wrapper_cxx_generated_gen_header",
     ],
     export_header_lib_headers: [
@@ -1155,9 +1308,8 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
         "-DBASE_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",
@@ -1165,7 +1317,6 @@ cc_library_static {
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_CHROMIUM_ICU=1",
         "-DU_ENABLE_DYLOAD=0",
         "-DU_ENABLE_RESOURCE_TRACING=0",
@@ -1199,6 +1350,8 @@ cc_library_static {
         "external/cronet/tot/third_party/icu/source/i18n/",
         "external/cronet/tot/third_party/libc++/src/include",
         "external/cronet/tot/third_party/libc++abi/src/include",
+        "external/cronet/tot/third_party/perfetto/include/",
+        "external/cronet/tot/third_party/protobuf/src/",
     ],
     header_libs: [
         "libgtest_prod_headers",
@@ -1351,6 +1504,7 @@ cc_library_static {
         "memory/read_only_shared_memory_region.cc",
         "memory/ref_counted.cc",
         "memory/ref_counted_memory.cc",
+        "memory/safety_checks.cc",
         "memory/shared_memory_mapper.cc",
         "memory/shared_memory_mapping.cc",
         "memory/shared_memory_security_policy.cc",
@@ -1609,10 +1763,34 @@ cc_library_static {
         "trace_event/heap_profiler_allocation_context.cc",
         "trace_event/heap_profiler_allocation_context_tracker.cc",
         "trace_event/histogram_scope.cc",
+        "trace_event/interned_args_helper.cc",
+        "trace_event/log_message.cc",
+        "trace_event/malloc_dump_provider.cc",
+        "trace_event/memory_allocator_dump.cc",
         "trace_event/memory_allocator_dump_guid.cc",
+        "trace_event/memory_dump_manager.cc",
+        "trace_event/memory_dump_provider_info.cc",
+        "trace_event/memory_dump_request_args.cc",
+        "trace_event/memory_dump_scheduler.cc",
+        "trace_event/memory_infra_background_allowlist.cc",
+        "trace_event/memory_pressure_level_proto.cc",
+        "trace_event/memory_usage_estimator.cc",
         "trace_event/named_trigger.cc",
-        "trace_event/trace_event_stub.cc",
+        "trace_event/perfetto_proto_appender.cc",
+        "trace_event/process_memory_dump.cc",
+        "trace_event/trace_arguments.cc",
+        "trace_event/trace_buffer.cc",
+        "trace_event/trace_config.cc",
+        "trace_event/trace_config_category_filter.cc",
+        "trace_event/trace_event_impl.cc",
         "trace_event/trace_id_helper.cc",
+        "trace_event/trace_log.cc",
+        "trace_event/traced_value.cc",
+        "trace_event/tracing_agent.cc",
+        "tracing/perfetto_platform.cc",
+        "tracing/perfetto_task_runner.cc",
+        "tracing/trace_time.cc",
+        "tracing/tracing_tls.cc",
         "unguessable_token.cc",
         "uuid.cc",
         "value_iterators.cc",
@@ -1621,11 +1799,46 @@ cc_library_static {
         "vlog.cc",
     ],
     shared_libs: [
+        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
+        "tot_cronet_1baaa48e_android_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_android_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_power_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_power_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_common_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_common_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_config_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_config_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_ipc_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_wire_protocol_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_minimal_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_non_minimal_zero_gen__testing_h",
+        "tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen__testing_h",
         "tot_cronet_base_allocator_buildflags__testing",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
         "tot_cronet_base_anchor_functions_buildflags__testing",
@@ -1651,9 +1864,65 @@ cc_library_static {
         "tot_cronet_build_chromeos_buildflags__testing",
         "tot_cronet_build_config_compiler_compiler_buildflags__testing",
         "tot_cronet_build_ios_buildflags__testing",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
+        "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_zero_gen__testing_h",
+        "tot_cronet_ff61d121_chrome_zero_gen__testing_h",
+        "tot_cronet_ff61d121_etw_zero_gen__testing_h",
+        "tot_cronet_ff61d121_filesystem_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ftrace_zero_gen__testing_h",
+        "tot_cronet_ff61d121_gpu_zero_gen__testing_h",
+        "tot_cronet_ff61d121_interned_data_zero_gen__testing_h",
+        "tot_cronet_ff61d121_perfetto_zero_gen__testing_h",
+        "tot_cronet_ff61d121_power_zero_gen__testing_h",
+        "tot_cronet_ff61d121_profiling_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ps_zero_gen__testing_h",
+        "tot_cronet_ff61d121_statsd_zero_gen__testing_h",
+        "tot_cronet_ff61d121_sys_stats_zero_gen__testing_h",
+        "tot_cronet_ff61d121_system_info_zero_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_cpp_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_zero_gen__testing_h",
+        "tot_cronet_ff61d121_translation_zero_gen__testing_h",
+        "tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
         "tot_cronet_third_party_rust_serde_json_lenient_v0_2_wrapper_wrapper_cxx_generated_gen__testing_header",
     ],
     export_generated_headers: [
+        "tot_cronet_1baaa48e_android_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_android_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_power_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_power_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_common_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_common_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_config_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_config_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_ipc_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_wire_protocol_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_minimal_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_non_minimal_zero_gen__testing_h",
+        "tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen__testing_h",
         "tot_cronet_base_allocator_buildflags__testing",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
         "tot_cronet_base_anchor_functions_buildflags__testing",
@@ -1679,6 +1948,28 @@ cc_library_static {
         "tot_cronet_build_chromeos_buildflags__testing",
         "tot_cronet_build_config_compiler_compiler_buildflags__testing",
         "tot_cronet_build_ios_buildflags__testing",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
+        "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_zero_gen__testing_h",
+        "tot_cronet_ff61d121_chrome_zero_gen__testing_h",
+        "tot_cronet_ff61d121_etw_zero_gen__testing_h",
+        "tot_cronet_ff61d121_filesystem_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ftrace_zero_gen__testing_h",
+        "tot_cronet_ff61d121_gpu_zero_gen__testing_h",
+        "tot_cronet_ff61d121_interned_data_zero_gen__testing_h",
+        "tot_cronet_ff61d121_perfetto_zero_gen__testing_h",
+        "tot_cronet_ff61d121_power_zero_gen__testing_h",
+        "tot_cronet_ff61d121_profiling_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ps_zero_gen__testing_h",
+        "tot_cronet_ff61d121_statsd_zero_gen__testing_h",
+        "tot_cronet_ff61d121_sys_stats_zero_gen__testing_h",
+        "tot_cronet_ff61d121_system_info_zero_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_cpp_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_zero_gen__testing_h",
+        "tot_cronet_ff61d121_translation_zero_gen__testing_h",
+        "tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
         "tot_cronet_third_party_rust_serde_json_lenient_v0_2_wrapper_wrapper_cxx_generated_gen__testing_header",
     ],
     defaults: [
@@ -1686,16 +1977,14 @@ cc_library_static {
     ],
     cflags: [
         "-DBASE_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",
         "-DIS_RAW_PTR_IMPL",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_CHROMIUM_ICU=1",
         "-DU_ENABLE_DYLOAD=0",
         "-DU_ENABLE_RESOURCE_TRACING=0",
@@ -1727,6 +2016,8 @@ cc_library_static {
         "external/cronet/tot/third_party/icu/source/i18n/",
         "external/cronet/tot/third_party/libc++/src/include",
         "external/cronet/tot/third_party/libc++abi/src/include",
+        "external/cronet/tot/third_party/perfetto/include/",
+        "external/cronet/tot/third_party/protobuf/src/",
     ],
     cpp_std: "c++20",
     ldflags: [
@@ -1830,6 +2121,9 @@ cc_library_static {
                 "system/sys_info_android.cc",
                 "threading/platform_thread_android.cc",
                 "time/time_android.cc",
+                "trace_event/application_state_proto_android.cc",
+                "trace_event/cpufreq_monitor_android.cc",
+                "trace_event/java_heap_dump_provider_android.cc",
             ],
             shared_libs: [
                 "liblog",
@@ -1851,13 +2145,18 @@ cc_library_static {
                 "tot_cronet_base_base_minimal_jni__action__testing",
                 "tot_cronet_base_base_shared_preferences_jni__action__testing",
                 "tot_cronet_base_build_info_jni__action__testing",
+                "tot_cronet_base_bundle_utils_jni__action__testing",
                 "tot_cronet_base_callback_jni__action__testing",
                 "tot_cronet_base_command_line_jni__action__testing",
                 "tot_cronet_base_content_uri_utils_jni__action__testing",
+                "tot_cronet_base_features_jni__action__testing",
+                "tot_cronet_base_file_utils_jni__action__testing",
                 "tot_cronet_base_jank_tracker_jni__action__testing",
+                "tot_cronet_base_jni_android_jni__action__testing",
                 "tot_cronet_base_library_loader_jni__action__testing",
                 "tot_cronet_base_memory_jni__action__testing",
                 "tot_cronet_base_metrics_jni__action__testing",
+                "tot_cronet_base_path_utils_jni__action__testing",
                 "tot_cronet_base_process_launcher_jni__action__testing",
                 "tot_cronet_base_sys_utils_jni__action__testing",
                 "tot_cronet_base_tasks_jni__action__testing",
@@ -1952,6 +2251,9 @@ cc_library_static {
                 "system/sys_info_android.cc",
                 "threading/platform_thread_android.cc",
                 "time/time_android.cc",
+                "trace_event/application_state_proto_android.cc",
+                "trace_event/cpufreq_monitor_android.cc",
+                "trace_event/java_heap_dump_provider_android.cc",
             ],
             shared_libs: [
                 "liblog",
@@ -1975,13 +2277,18 @@ cc_library_static {
                 "tot_cronet_base_base_minimal_jni__action__testing",
                 "tot_cronet_base_base_shared_preferences_jni__action__testing",
                 "tot_cronet_base_build_info_jni__action__testing",
+                "tot_cronet_base_bundle_utils_jni__action__testing",
                 "tot_cronet_base_callback_jni__action__testing",
                 "tot_cronet_base_command_line_jni__action__testing",
                 "tot_cronet_base_content_uri_utils_jni__action__testing",
+                "tot_cronet_base_features_jni__action__testing",
+                "tot_cronet_base_file_utils_jni__action__testing",
                 "tot_cronet_base_jank_tracker_jni__action__testing",
+                "tot_cronet_base_jni_android_jni__action__testing",
                 "tot_cronet_base_library_loader_jni__action__testing",
                 "tot_cronet_base_memory_jni__action__testing",
                 "tot_cronet_base_metrics_jni__action__testing",
+                "tot_cronet_base_path_utils_jni__action__testing",
                 "tot_cronet_base_process_launcher_jni__action__testing",
                 "tot_cronet_base_sys_utils_jni__action__testing",
                 "tot_cronet_base_tasks_jni__action__testing",
@@ -2074,6 +2381,9 @@ cc_library_static {
                 "system/sys_info_android.cc",
                 "threading/platform_thread_android.cc",
                 "time/time_android.cc",
+                "trace_event/application_state_proto_android.cc",
+                "trace_event/cpufreq_monitor_android.cc",
+                "trace_event/java_heap_dump_provider_android.cc",
             ],
             shared_libs: [
                 "liblog",
@@ -2094,13 +2404,18 @@ cc_library_static {
                 "tot_cronet_base_base_minimal_jni__action__testing",
                 "tot_cronet_base_base_shared_preferences_jni__action__testing",
                 "tot_cronet_base_build_info_jni__action__testing",
+                "tot_cronet_base_bundle_utils_jni__action__testing",
                 "tot_cronet_base_callback_jni__action__testing",
                 "tot_cronet_base_command_line_jni__action__testing",
                 "tot_cronet_base_content_uri_utils_jni__action__testing",
+                "tot_cronet_base_features_jni__action__testing",
+                "tot_cronet_base_file_utils_jni__action__testing",
                 "tot_cronet_base_jank_tracker_jni__action__testing",
+                "tot_cronet_base_jni_android_jni__action__testing",
                 "tot_cronet_base_library_loader_jni__action__testing",
                 "tot_cronet_base_memory_jni__action__testing",
                 "tot_cronet_base_metrics_jni__action__testing",
+                "tot_cronet_base_path_utils_jni__action__testing",
                 "tot_cronet_base_process_launcher_jni__action__testing",
                 "tot_cronet_base_sys_utils_jni__action__testing",
                 "tot_cronet_base_tasks_jni__action__testing",
@@ -2193,6 +2508,9 @@ cc_library_static {
                 "system/sys_info_android.cc",
                 "threading/platform_thread_android.cc",
                 "time/time_android.cc",
+                "trace_event/application_state_proto_android.cc",
+                "trace_event/cpufreq_monitor_android.cc",
+                "trace_event/java_heap_dump_provider_android.cc",
             ],
             shared_libs: [
                 "liblog",
@@ -2215,13 +2533,18 @@ cc_library_static {
                 "tot_cronet_base_base_minimal_jni__action__testing",
                 "tot_cronet_base_base_shared_preferences_jni__action__testing",
                 "tot_cronet_base_build_info_jni__action__testing",
+                "tot_cronet_base_bundle_utils_jni__action__testing",
                 "tot_cronet_base_callback_jni__action__testing",
                 "tot_cronet_base_command_line_jni__action__testing",
                 "tot_cronet_base_content_uri_utils_jni__action__testing",
+                "tot_cronet_base_features_jni__action__testing",
+                "tot_cronet_base_file_utils_jni__action__testing",
                 "tot_cronet_base_jank_tracker_jni__action__testing",
+                "tot_cronet_base_jni_android_jni__action__testing",
                 "tot_cronet_base_library_loader_jni__action__testing",
                 "tot_cronet_base_memory_jni__action__testing",
                 "tot_cronet_base_metrics_jni__action__testing",
+                "tot_cronet_base_path_utils_jni__action__testing",
                 "tot_cronet_base_process_launcher_jni__action__testing",
                 "tot_cronet_base_sys_utils_jni__action__testing",
                 "tot_cronet_base_tasks_jni__action__testing",
@@ -2314,6 +2637,9 @@ cc_library_static {
                 "system/sys_info_android.cc",
                 "threading/platform_thread_android.cc",
                 "time/time_android.cc",
+                "trace_event/application_state_proto_android.cc",
+                "trace_event/cpufreq_monitor_android.cc",
+                "trace_event/java_heap_dump_provider_android.cc",
             ],
             shared_libs: [
                 "liblog",
@@ -2336,13 +2662,18 @@ cc_library_static {
                 "tot_cronet_base_base_minimal_jni__action__testing",
                 "tot_cronet_base_base_shared_preferences_jni__action__testing",
                 "tot_cronet_base_build_info_jni__action__testing",
+                "tot_cronet_base_bundle_utils_jni__action__testing",
                 "tot_cronet_base_callback_jni__action__testing",
                 "tot_cronet_base_command_line_jni__action__testing",
                 "tot_cronet_base_content_uri_utils_jni__action__testing",
+                "tot_cronet_base_features_jni__action__testing",
+                "tot_cronet_base_file_utils_jni__action__testing",
                 "tot_cronet_base_jank_tracker_jni__action__testing",
+                "tot_cronet_base_jni_android_jni__action__testing",
                 "tot_cronet_base_library_loader_jni__action__testing",
                 "tot_cronet_base_memory_jni__action__testing",
                 "tot_cronet_base_metrics_jni__action__testing",
+                "tot_cronet_base_path_utils_jni__action__testing",
                 "tot_cronet_base_process_launcher_jni__action__testing",
                 "tot_cronet_base_sys_utils_jni__action__testing",
                 "tot_cronet_base_tasks_jni__action__testing",
@@ -2383,6 +2714,9 @@ cc_library_static {
                 "-fno-unwind-tables",
                 "-msse3",
             ],
+            generated_headers: [
+                "tot_cronet_build_chromeos_buildflags__testing",
+            ],
         },
     },
 }
@@ -2411,11 +2745,19 @@ java_library {
         "tot_cronet_base_base_shared_preferences_jni_java__compile_java__testing",
         "tot_cronet_base_base_switches_java__compile_java__testing",
         "tot_cronet_base_build_info_java__compile_java__testing",
+        "tot_cronet_base_bundle_utils_java__compile_java__testing",
         "tot_cronet_base_callback_java__compile_java__testing",
         "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_clang_profiler_java__compile_java__testing",
+        "tot_cronet_base_command_line_init_utils_java__compile_java__testing",
         "tot_cronet_base_command_line_java__compile_java__testing",
         "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_features_java__compile_java__testing",
+        "tot_cronet_base_file_provider_utils_java__compile_java__testing",
+        "tot_cronet_base_file_utils_java__compile_java__testing",
         "tot_cronet_base_jank_tracker_java__compile_java__testing",
+        "tot_cronet_base_jni_android_java__compile_java__testing",
+        "tot_cronet_base_jni_utils_java__compile_java__testing",
         "tot_cronet_base_library_loader_java__compile_java__testing",
         "tot_cronet_base_library_loader_jni_java__compile_java__testing",
         "tot_cronet_base_lifetime_java__compile_java__testing",
@@ -2424,6 +2766,8 @@ java_library {
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
         "tot_cronet_base_metrics_java__compile_java__testing",
         "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_path_utils_java__compile_java__testing",
+        "tot_cronet_base_pii_elider_java__compile_java__testing",
         "tot_cronet_base_promise_java__compile_java__testing",
         "tot_cronet_base_resetters_java__compile_java__testing",
         "tot_cronet_base_stream_util_java__compile_java__testing",
@@ -2436,6 +2780,7 @@ java_library {
         "tot_cronet_base_unowned_user_data_java__compile_java__testing",
         "tot_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
         "tot_cronet_base_version_info_android_version_constants_java__compile_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
         "tot_cronet_build_android_build_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
@@ -2451,7 +2796,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_base_cached_flags_java__testing",
     static_libs: [
-        "tot_cronet_base_base_cached_flags_java__process_device__testing",
+        "tot_cronet_base_base_cached_flags_java__compile_java__testing",
         "tot_cronet_base_base_java__testing",
         "tot_cronet_base_base_shared_preferences_java__testing",
         "tot_cronet_build_android_build_java__testing",
@@ -2481,14 +2826,24 @@ java_library {
         "tot_cronet_base_base_minimal_jni_java",
         "tot_cronet_base_base_switches_java",
         "tot_cronet_base_build_info_java",
+        "tot_cronet_base_bundle_utils_java",
         "tot_cronet_base_callback_java",
+        "tot_cronet_base_clang_profiler_java",
+        "tot_cronet_base_command_line_init_utils_java",
         "tot_cronet_base_command_line_java",
+        "tot_cronet_base_features_java",
+        "tot_cronet_base_file_provider_utils_java",
+        "tot_cronet_base_file_utils_java",
         "tot_cronet_base_jank_tracker_java",
+        "tot_cronet_base_jni_android_java",
+        "tot_cronet_base_jni_utils_java",
         "tot_cronet_base_library_loader_java",
         "tot_cronet_base_lifetime_java",
         "tot_cronet_base_log_java",
         "tot_cronet_base_memory_java",
         "tot_cronet_base_metrics_java",
+        "tot_cronet_base_path_utils_java",
+        "tot_cronet_base_pii_elider_java",
         "tot_cronet_base_promise_java",
         "tot_cronet_base_resetters_java",
         "tot_cronet_base_stream_util_java",
@@ -2498,6 +2853,7 @@ java_library {
         "tot_cronet_base_time_utils_java",
         "tot_cronet_base_unowned_user_data_java",
         "tot_cronet_base_version_info_android_version_constants_java",
+        "tot_cronet_base_wrapped_class_loader_java",
         "tot_cronet_build_android_build_java",
         "tot_cronet_third_party_jni_zero_jni_zero_java",
     ],
@@ -2527,44 +2883,26 @@ java_library {
         "android/java/src/org/chromium/base/ApkAssets.java",
         "android/java/src/org/chromium/base/BaseFeatureMap.java",
         "android/java/src/org/chromium/base/BinderCallsListener.java",
-        "android/java/src/org/chromium/base/BundleUtils.java",
         "android/java/src/org/chromium/base/CallbackController.java",
         "android/java/src/org/chromium/base/CancelableRunnable.java",
         "android/java/src/org/chromium/base/CollectionUtil.java",
-        "android/java/src/org/chromium/base/CommandLineInitUtil.java",
         "android/java/src/org/chromium/base/CpuFeatures.java",
         "android/java/src/org/chromium/base/DiscardableReferencePool.java",
         "android/java/src/org/chromium/base/EventLog.java",
-        "android/java/src/org/chromium/base/FeatureList.java",
-        "android/java/src/org/chromium/base/FeatureMap.java",
-        "android/java/src/org/chromium/base/FeatureOverrides.java",
-        "android/java/src/org/chromium/base/FeatureParam.java",
-        "android/java/src/org/chromium/base/Features.java",
         "android/java/src/org/chromium/base/FieldTrialList.java",
-        "android/java/src/org/chromium/base/FileProviderUtils.java",
-        "android/java/src/org/chromium/base/FileUtils.java",
-        "android/java/src/org/chromium/base/Flag.java",
         "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
         "android/java/src/org/chromium/base/InputHintChecker.java",
         "android/java/src/org/chromium/base/IntStringCallback.java",
         "android/java/src/org/chromium/base/IntentUtils.java",
-        "android/java/src/org/chromium/base/JNIUtils.java",
         "android/java/src/org/chromium/base/JavaExceptionReporter.java",
         "android/java/src/org/chromium/base/JavaHandlerThread.java",
-        "android/java/src/org/chromium/base/JniAndroid.java",
         "android/java/src/org/chromium/base/JniCallbackUtils.java",
         "android/java/src/org/chromium/base/JniOnceCallback.java",
         "android/java/src/org/chromium/base/JniRepeatingCallback.java",
         "android/java/src/org/chromium/base/LocaleUtils.java",
         "android/java/src/org/chromium/base/MathUtils.java",
-        "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
-        "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
-        "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
-        "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
         "android/java/src/org/chromium/base/PackageManagerUtils.java",
         "android/java/src/org/chromium/base/PathService.java",
-        "android/java/src/org/chromium/base/PathUtils.java",
-        "android/java/src/org/chromium/base/PiiElider.java",
         "android/java/src/org/chromium/base/PostNativeFlag.java",
         "android/java/src/org/chromium/base/PowerMonitor.java",
         "android/java/src/org/chromium/base/PowerMonitorForQ.java",
@@ -2577,8 +2915,6 @@ java_library {
         "android/java/src/org/chromium/base/UserData.java",
         "android/java/src/org/chromium/base/UserDataHost.java",
         "android/java/src/org/chromium/base/ValueChangedCallback.java",
-        "android/java/src/org/chromium/base/WrappedClassLoader.java",
-        "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java",
     ],
     static_libs: [
         "jsr305",
@@ -2601,11 +2937,19 @@ java_library {
         "tot_cronet_base_base_minimal_jni_java__compile_java",
         "tot_cronet_base_base_switches_java__compile_java",
         "tot_cronet_base_build_info_java__compile_java",
+        "tot_cronet_base_bundle_utils_java__compile_java",
         "tot_cronet_base_callback_java__compile_java",
         "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_clang_profiler_java__compile_java",
+        "tot_cronet_base_command_line_init_utils_java__compile_java",
         "tot_cronet_base_command_line_java__compile_java",
         "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_features_java__compile_java",
+        "tot_cronet_base_file_provider_utils_java__compile_java",
+        "tot_cronet_base_file_utils_java__compile_java",
         "tot_cronet_base_jank_tracker_java__compile_java",
+        "tot_cronet_base_jni_android_java__compile_java",
+        "tot_cronet_base_jni_utils_java__compile_java",
         "tot_cronet_base_library_loader_java__compile_java",
         "tot_cronet_base_library_loader_jni_java__compile_java",
         "tot_cronet_base_lifetime_java__compile_java",
@@ -2614,6 +2958,8 @@ java_library {
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
         "tot_cronet_base_metrics_java__compile_java",
         "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_path_utils_java__compile_java",
+        "tot_cronet_base_pii_elider_java__compile_java",
         "tot_cronet_base_promise_java__compile_java",
         "tot_cronet_base_resetters_java__compile_java",
         "tot_cronet_base_stream_util_java__compile_java",
@@ -2626,6 +2972,7 @@ java_library {
         "tot_cronet_base_unowned_user_data_java__compile_java",
         "tot_cronet_base_version_info_android_channel_enum_java__compile_java",
         "tot_cronet_base_version_info_android_version_constants_java__compile_java",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java",
         "tot_cronet_build_android_build_java__compile_java",
         "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
         "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
@@ -2645,44 +2992,26 @@ java_library {
         "android/java/src/org/chromium/base/ApkAssets.java",
         "android/java/src/org/chromium/base/BaseFeatureMap.java",
         "android/java/src/org/chromium/base/BinderCallsListener.java",
-        "android/java/src/org/chromium/base/BundleUtils.java",
         "android/java/src/org/chromium/base/CallbackController.java",
         "android/java/src/org/chromium/base/CancelableRunnable.java",
         "android/java/src/org/chromium/base/CollectionUtil.java",
-        "android/java/src/org/chromium/base/CommandLineInitUtil.java",
         "android/java/src/org/chromium/base/CpuFeatures.java",
         "android/java/src/org/chromium/base/DiscardableReferencePool.java",
         "android/java/src/org/chromium/base/EventLog.java",
-        "android/java/src/org/chromium/base/FeatureList.java",
-        "android/java/src/org/chromium/base/FeatureMap.java",
-        "android/java/src/org/chromium/base/FeatureOverrides.java",
-        "android/java/src/org/chromium/base/FeatureParam.java",
-        "android/java/src/org/chromium/base/Features.java",
         "android/java/src/org/chromium/base/FieldTrialList.java",
-        "android/java/src/org/chromium/base/FileProviderUtils.java",
-        "android/java/src/org/chromium/base/FileUtils.java",
-        "android/java/src/org/chromium/base/Flag.java",
         "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
         "android/java/src/org/chromium/base/InputHintChecker.java",
         "android/java/src/org/chromium/base/IntStringCallback.java",
         "android/java/src/org/chromium/base/IntentUtils.java",
-        "android/java/src/org/chromium/base/JNIUtils.java",
         "android/java/src/org/chromium/base/JavaExceptionReporter.java",
         "android/java/src/org/chromium/base/JavaHandlerThread.java",
-        "android/java/src/org/chromium/base/JniAndroid.java",
         "android/java/src/org/chromium/base/JniCallbackUtils.java",
         "android/java/src/org/chromium/base/JniOnceCallback.java",
         "android/java/src/org/chromium/base/JniRepeatingCallback.java",
         "android/java/src/org/chromium/base/LocaleUtils.java",
         "android/java/src/org/chromium/base/MathUtils.java",
-        "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
-        "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
-        "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
-        "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
         "android/java/src/org/chromium/base/PackageManagerUtils.java",
         "android/java/src/org/chromium/base/PathService.java",
-        "android/java/src/org/chromium/base/PathUtils.java",
-        "android/java/src/org/chromium/base/PiiElider.java",
         "android/java/src/org/chromium/base/PostNativeFlag.java",
         "android/java/src/org/chromium/base/PowerMonitor.java",
         "android/java/src/org/chromium/base/PowerMonitorForQ.java",
@@ -2695,8 +3024,6 @@ java_library {
         "android/java/src/org/chromium/base/UserData.java",
         "android/java/src/org/chromium/base/UserDataHost.java",
         "android/java/src/org/chromium/base/ValueChangedCallback.java",
-        "android/java/src/org/chromium/base/WrappedClassLoader.java",
-        "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java",
     ],
     static_libs: [
         "jsr305",
@@ -2716,11 +3043,19 @@ java_library {
         "tot_cronet_base_base_minimal_jni_java__compile_java__testing",
         "tot_cronet_base_base_switches_java__compile_java__testing",
         "tot_cronet_base_build_info_java__compile_java__testing",
+        "tot_cronet_base_bundle_utils_java__compile_java__testing",
         "tot_cronet_base_callback_java__compile_java__testing",
         "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_clang_profiler_java__compile_java__testing",
+        "tot_cronet_base_command_line_init_utils_java__compile_java__testing",
         "tot_cronet_base_command_line_java__compile_java__testing",
         "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_features_java__compile_java__testing",
+        "tot_cronet_base_file_provider_utils_java__compile_java__testing",
+        "tot_cronet_base_file_utils_java__compile_java__testing",
         "tot_cronet_base_jank_tracker_java__compile_java__testing",
+        "tot_cronet_base_jni_android_java__compile_java__testing",
+        "tot_cronet_base_jni_utils_java__compile_java__testing",
         "tot_cronet_base_library_loader_java__compile_java__testing",
         "tot_cronet_base_library_loader_jni_java__compile_java__testing",
         "tot_cronet_base_lifetime_java__compile_java__testing",
@@ -2729,6 +3064,8 @@ java_library {
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
         "tot_cronet_base_metrics_java__compile_java__testing",
         "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_path_utils_java__compile_java__testing",
+        "tot_cronet_base_pii_elider_java__compile_java__testing",
         "tot_cronet_base_promise_java__compile_java__testing",
         "tot_cronet_base_resetters_java__compile_java__testing",
         "tot_cronet_base_stream_util_java__compile_java__testing",
@@ -2741,6 +3078,7 @@ java_library {
         "tot_cronet_base_unowned_user_data_java__compile_java__testing",
         "tot_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
         "tot_cronet_base_version_info_android_version_constants_java__compile_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
         "tot_cronet_build_android_build_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
@@ -2764,14 +3102,24 @@ java_library {
         "tot_cronet_base_base_minimal_jni_java__testing",
         "tot_cronet_base_base_switches_java__testing",
         "tot_cronet_base_build_info_java__testing",
+        "tot_cronet_base_bundle_utils_java__testing",
         "tot_cronet_base_callback_java__testing",
+        "tot_cronet_base_clang_profiler_java__testing",
+        "tot_cronet_base_command_line_init_utils_java__testing",
         "tot_cronet_base_command_line_java__testing",
+        "tot_cronet_base_features_java__testing",
+        "tot_cronet_base_file_provider_utils_java__testing",
+        "tot_cronet_base_file_utils_java__testing",
         "tot_cronet_base_jank_tracker_java__testing",
+        "tot_cronet_base_jni_android_java__testing",
+        "tot_cronet_base_jni_utils_java__testing",
         "tot_cronet_base_library_loader_java__testing",
         "tot_cronet_base_lifetime_java__testing",
         "tot_cronet_base_log_java__testing",
         "tot_cronet_base_memory_java__testing",
         "tot_cronet_base_metrics_java__testing",
+        "tot_cronet_base_path_utils_java__testing",
+        "tot_cronet_base_pii_elider_java__testing",
         "tot_cronet_base_promise_java__testing",
         "tot_cronet_base_resetters_java__testing",
         "tot_cronet_base_stream_util_java__testing",
@@ -2781,6 +3129,7 @@ java_library {
         "tot_cronet_base_time_utils_java__testing",
         "tot_cronet_base_unowned_user_data_java__testing",
         "tot_cronet_base_version_info_android_version_constants_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__testing",
         "tot_cronet_build_android_build_java__testing",
         "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
     ],
@@ -2908,11 +3257,19 @@ java_library {
         "tot_cronet_base_base_shared_preferences_jni_java__compile_java__testing",
         "tot_cronet_base_base_switches_java__compile_java__testing",
         "tot_cronet_base_build_info_java__compile_java__testing",
+        "tot_cronet_base_bundle_utils_java__compile_java__testing",
         "tot_cronet_base_callback_java__compile_java__testing",
         "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_clang_profiler_java__compile_java__testing",
+        "tot_cronet_base_command_line_init_utils_java__compile_java__testing",
         "tot_cronet_base_command_line_java__compile_java__testing",
         "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_features_java__compile_java__testing",
+        "tot_cronet_base_file_provider_utils_java__compile_java__testing",
+        "tot_cronet_base_file_utils_java__compile_java__testing",
         "tot_cronet_base_jank_tracker_java__compile_java__testing",
+        "tot_cronet_base_jni_android_java__compile_java__testing",
+        "tot_cronet_base_jni_utils_java__compile_java__testing",
         "tot_cronet_base_library_loader_java__compile_java__testing",
         "tot_cronet_base_library_loader_jni_java__compile_java__testing",
         "tot_cronet_base_lifetime_java__compile_java__testing",
@@ -2921,6 +3278,8 @@ java_library {
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
         "tot_cronet_base_metrics_java__compile_java__testing",
         "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_path_utils_java__compile_java__testing",
+        "tot_cronet_base_pii_elider_java__compile_java__testing",
         "tot_cronet_base_promise_java__compile_java__testing",
         "tot_cronet_base_resetters_java__compile_java__testing",
         "tot_cronet_base_stream_util_java__compile_java__testing",
@@ -2933,6 +3292,7 @@ java_library {
         "tot_cronet_base_unowned_user_data_java__compile_java__testing",
         "tot_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
         "tot_cronet_base_version_info_android_version_constants_java__compile_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
         "tot_cronet_build_android_build_java__compile_java__testing",
         "tot_cronet_testing_android_instrumentation_test_runner_java__compile_java__testing",
         "tot_cronet_testing_android_instrumentation_test_runner_permissions_java__testing",
@@ -2960,7 +3320,7 @@ java_library {
         "junit",
         "tot_cronet_base_base_cached_flags_java__testing",
         "tot_cronet_base_base_java__testing",
-        "tot_cronet_base_base_java_test_support__process_device__testing",
+        "tot_cronet_base_base_java_test_support__compile_java__testing",
         "tot_cronet_base_base_java_url_utils_for_test__testing",
         "tot_cronet_base_tasks_java__testing",
         "tot_cronet_build_android_build_java__testing",
@@ -3013,11 +3373,19 @@ java_library {
         "tot_cronet_base_base_minimal_jni_java__compile_java__testing",
         "tot_cronet_base_base_switches_java__compile_java__testing",
         "tot_cronet_base_build_info_java__compile_java__testing",
+        "tot_cronet_base_bundle_utils_java__compile_java__testing",
         "tot_cronet_base_callback_java__compile_java__testing",
         "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_clang_profiler_java__compile_java__testing",
+        "tot_cronet_base_command_line_init_utils_java__compile_java__testing",
         "tot_cronet_base_command_line_java__compile_java__testing",
         "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_features_java__compile_java__testing",
+        "tot_cronet_base_file_provider_utils_java__compile_java__testing",
+        "tot_cronet_base_file_utils_java__compile_java__testing",
         "tot_cronet_base_jank_tracker_java__compile_java__testing",
+        "tot_cronet_base_jni_android_java__compile_java__testing",
+        "tot_cronet_base_jni_utils_java__compile_java__testing",
         "tot_cronet_base_library_loader_java__compile_java__testing",
         "tot_cronet_base_library_loader_jni_java__compile_java__testing",
         "tot_cronet_base_lifetime_java__compile_java__testing",
@@ -3026,6 +3394,8 @@ java_library {
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
         "tot_cronet_base_metrics_java__compile_java__testing",
         "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_path_utils_java__compile_java__testing",
+        "tot_cronet_base_pii_elider_java__compile_java__testing",
         "tot_cronet_base_promise_java__compile_java__testing",
         "tot_cronet_base_resetters_java__compile_java__testing",
         "tot_cronet_base_stream_util_java__compile_java__testing",
@@ -3038,6 +3408,7 @@ java_library {
         "tot_cronet_base_unowned_user_data_java__compile_java__testing",
         "tot_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
         "tot_cronet_base_version_info_android_version_constants_java__compile_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
         "tot_cronet_build_android_build_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
@@ -3055,7 +3426,7 @@ java_library {
     static_libs: [
         "junit",
         "tot_cronet_base_base_java__testing",
-        "tot_cronet_base_base_java_url_utils_for_test__process_device__testing",
+        "tot_cronet_base_base_java_url_utils_for_test__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
         "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
     ],
@@ -3275,11 +3646,19 @@ java_library {
         "tot_cronet_base_base_shared_preferences_jni_java__compile_java__testing",
         "tot_cronet_base_base_switches_java__compile_java__testing",
         "tot_cronet_base_build_info_java__compile_java__testing",
+        "tot_cronet_base_bundle_utils_java__compile_java__testing",
         "tot_cronet_base_callback_java__compile_java__testing",
         "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_clang_profiler_java__compile_java__testing",
+        "tot_cronet_base_command_line_init_utils_java__compile_java__testing",
         "tot_cronet_base_command_line_java__compile_java__testing",
         "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_features_java__compile_java__testing",
+        "tot_cronet_base_file_provider_utils_java__compile_java__testing",
+        "tot_cronet_base_file_utils_java__compile_java__testing",
         "tot_cronet_base_jank_tracker_java__compile_java__testing",
+        "tot_cronet_base_jni_android_java__compile_java__testing",
+        "tot_cronet_base_jni_utils_java__compile_java__testing",
         "tot_cronet_base_library_loader_java__compile_java__testing",
         "tot_cronet_base_library_loader_jni_java__compile_java__testing",
         "tot_cronet_base_lifetime_java__compile_java__testing",
@@ -3288,6 +3667,8 @@ java_library {
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
         "tot_cronet_base_metrics_java__compile_java__testing",
         "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_path_utils_java__compile_java__testing",
+        "tot_cronet_base_pii_elider_java__compile_java__testing",
         "tot_cronet_base_promise_java__compile_java__testing",
         "tot_cronet_base_resetters_java__compile_java__testing",
         "tot_cronet_base_stream_util_java__compile_java__testing",
@@ -3300,6 +3681,7 @@ java_library {
         "tot_cronet_base_unowned_user_data_java__compile_java__testing",
         "tot_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
         "tot_cronet_base_version_info_android_version_constants_java__compile_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
         "tot_cronet_build_android_build_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
         "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
@@ -3317,7 +3699,7 @@ java_library {
     static_libs: [
         "guava",
         "tot_cronet_base_base_java__testing",
-        "tot_cronet_base_base_shared_preferences_java__process_device__testing",
+        "tot_cronet_base_base_shared_preferences_java__compile_java__testing",
         "tot_cronet_base_base_shared_preferences_jni_java__testing",
         "tot_cronet_build_android_build_java__testing",
         "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
@@ -3392,14 +3774,13 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -3477,13 +3858,12 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -3586,7 +3966,7 @@ cc_library_static {
 java_library {
     name: "tot_cronet_base_base_switches_java",
     static_libs: [
-        "tot_cronet_base_base_switches_java__process_device",
+        "tot_cronet_base_base_switches_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -3645,7 +4025,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_base_switches_java__testing",
     static_libs: [
-        "tot_cronet_base_base_switches_java__process_device__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -3668,6 +4048,7 @@ java_library {
         "tot_cronet_base_build_info_java__process_device",
         "tot_cronet_base_command_line_java",
         "tot_cronet_base_log_java",
+        "tot_cronet_base_resetters_java",
         "tot_cronet_base_tasks_java",
         "tot_cronet_base_version_info_android_version_constants_java",
         "tot_cronet_build_android_build_java",
@@ -3801,6 +4182,7 @@ java_library {
         "tot_cronet_base_build_info_java__process_device__testing",
         "tot_cronet_base_command_line_java__testing",
         "tot_cronet_base_log_java__testing",
+        "tot_cronet_base_resetters_java__testing",
         "tot_cronet_base_tasks_java__testing",
         "tot_cronet_base_version_info_android_version_constants_java__testing",
         "tot_cronet_build_android_build_java__testing",
@@ -3820,12 +4202,152 @@ java_library {
     ],
 }
 
+// GN: //base:bundle_utils_java
+java_library {
+    name: "tot_cronet_base_bundle_utils_java",
+    static_libs: [
+        "tot_cronet_base_bundle_utils_java__process_device",
+        "tot_cronet_base_log_java",
+        "tot_cronet_base_metrics_java",
+        "tot_cronet_base_resetters_java",
+        "tot_cronet_base_tasks_java",
+        "tot_cronet_base_wrapped_class_loader_java",
+        "tot_cronet_build_android_build_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:bundle_utils_java__compile_java
+java_library {
+    name: "tot_cronet_base_bundle_utils_java__compile_java",
+    srcs: [
+        ":tot_cronet_base_bundle_utils_jni__action__java_proxy_only",
+        "android/java/src/org/chromium/base/BundleUtils.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java",
+        "tot_cronet_base_base_switches_java__compile_java",
+        "tot_cronet_base_callback_java__compile_java",
+        "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_command_line_java__compile_java",
+        "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
+        "tot_cronet_base_metrics_java__compile_java",
+        "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_resetters_java__compile_java",
+        "tot_cronet_base_tasks_java__compile_java",
+        "tot_cronet_base_tasks_jni_java__compile_java",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java",
+        "tot_cronet_base_time_utils_java__compile_java",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:bundle_utils_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_bundle_utils_java__compile_java__testing",
+    srcs: [
+        ":tot_cronet_base_bundle_utils_jni__action__testing__java_proxy_only",
+        "android/java/src/org/chromium/base/BundleUtils.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
+        "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
+        "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
+        "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
+        "tot_cronet_base_tasks_jni_java__compile_java__testing",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:bundle_utils_java__testing
+java_library {
+    name: "tot_cronet_base_bundle_utils_java__testing",
+    static_libs: [
+        "tot_cronet_base_bundle_utils_java__process_device__testing",
+        "tot_cronet_base_log_java__testing",
+        "tot_cronet_base_metrics_java__testing",
+        "tot_cronet_base_resetters_java__testing",
+        "tot_cronet_base_tasks_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
 // GN: //base:callback_java
 java_library {
     name: "tot_cronet_base_callback_java",
     static_libs: [
         "jsr305",
-        "tot_cronet_base_callback_java__process_device",
+        "tot_cronet_base_callback_java__compile_java",
         "tot_cronet_base_callback_jni_java",
         "tot_cronet_build_android_build_java",
         "tot_cronet_third_party_jni_zero_jni_zero_java",
@@ -3914,7 +4436,7 @@ java_library {
     name: "tot_cronet_base_callback_java__testing",
     static_libs: [
         "jsr305",
-        "tot_cronet_base_callback_java__process_device__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
         "tot_cronet_base_callback_jni_java__testing",
         "tot_cronet_build_android_build_java__testing",
         "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
@@ -4030,14 +4552,13 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -4113,13 +4634,12 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -4220,11 +4740,237 @@ cc_library_static {
     },
 }
 
+// GN: //base:clang_profiler_java
+java_library {
+    name: "tot_cronet_base_clang_profiler_java",
+    static_libs: [
+        "tot_cronet_base_clang_profiler_java__compile_java",
+        "tot_cronet_build_android_build_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:clang_profiler_java__compile_java
+java_library {
+    name: "tot_cronet_base_clang_profiler_java__compile_java",
+    srcs: [
+        "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:clang_profiler_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_clang_profiler_java__compile_java__testing",
+    srcs: [
+        "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:clang_profiler_java__testing
+java_library {
+    name: "tot_cronet_base_clang_profiler_java__testing",
+    static_libs: [
+        "tot_cronet_base_clang_profiler_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:command_line_init_utils_java
+java_library {
+    name: "tot_cronet_base_command_line_init_utils_java",
+    static_libs: [
+        "tot_cronet_base_build_info_java",
+        "tot_cronet_base_command_line_init_utils_java__compile_java",
+        "tot_cronet_base_command_line_java",
+        "tot_cronet_base_supplier_java",
+        "tot_cronet_base_tasks_java",
+        "tot_cronet_build_android_build_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:command_line_init_utils_java__compile_java
+java_library {
+    name: "tot_cronet_base_command_line_init_utils_java__compile_java",
+    srcs: [
+        "android/java/src/org/chromium/base/CommandLineInitUtil.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java",
+        "tot_cronet_base_android_info_java__compile_java",
+        "tot_cronet_base_base_switches_java__compile_java",
+        "tot_cronet_base_build_info_java__compile_java",
+        "tot_cronet_base_callback_java__compile_java",
+        "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_command_line_java__compile_java",
+        "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_lifetime_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
+        "tot_cronet_base_metrics_java__compile_java",
+        "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_promise_java__compile_java",
+        "tot_cronet_base_resetters_java__compile_java",
+        "tot_cronet_base_supplier_java__compile_java",
+        "tot_cronet_base_tasks_java__compile_java",
+        "tot_cronet_base_tasks_jni_java__compile_java",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java",
+        "tot_cronet_base_time_utils_java__compile_java",
+        "tot_cronet_base_unowned_user_data_java__compile_java",
+        "tot_cronet_base_version_info_android_channel_enum_java__compile_java",
+        "tot_cronet_base_version_info_android_version_constants_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:command_line_init_utils_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_command_line_init_utils_java__compile_java__testing",
+    srcs: [
+        "android/java/src/org/chromium/base/CommandLineInitUtil.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
+        "tot_cronet_base_android_info_java__compile_java__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
+        "tot_cronet_base_build_info_java__compile_java__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
+        "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
+        "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_lifetime_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
+        "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_promise_java__compile_java__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
+        "tot_cronet_base_supplier_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
+        "tot_cronet_base_tasks_jni_java__compile_java__testing",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
+        "tot_cronet_base_unowned_user_data_java__compile_java__testing",
+        "tot_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
+        "tot_cronet_base_version_info_android_version_constants_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:command_line_init_utils_java__testing
+java_library {
+    name: "tot_cronet_base_command_line_init_utils_java__testing",
+    static_libs: [
+        "tot_cronet_base_build_info_java__testing",
+        "tot_cronet_base_command_line_init_utils_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__testing",
+        "tot_cronet_base_supplier_java__testing",
+        "tot_cronet_base_tasks_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
 // GN: //base:command_line_java
 java_library {
     name: "tot_cronet_base_command_line_java",
     static_libs: [
-        "tot_cronet_base_command_line_java__process_device",
+        "tot_cronet_base_command_line_java__compile_java",
         "tot_cronet_base_command_line_jni_java",
         "tot_cronet_base_log_java",
         "tot_cronet_base_resetters_java",
@@ -4307,7 +5053,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_command_line_java__testing",
     static_libs: [
-        "tot_cronet_base_command_line_java__process_device__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
         "tot_cronet_base_command_line_jni_java__testing",
         "tot_cronet_base_log_java__testing",
         "tot_cronet_base_resetters_java__testing",
@@ -4439,11 +5185,177 @@ cc_library_headers {
     ],
 }
 
-// GN: //base:flagged_apis_java
+// GN: //base:features_java
 java_library {
-    name: "tot_cronet_base_flagged_apis_java",
+    name: "tot_cronet_base_features_java",
     static_libs: [
-        "tot_cronet_base_flagged_apis_java__process_device",
+        "jsr305",
+        "tot_cronet_base_features_java__process_device",
+        "tot_cronet_base_library_loader_java",
+        "tot_cronet_base_resetters_java",
+        "tot_cronet_build_android_build_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:features_java__compile_java
+java_library {
+    name: "tot_cronet_base_features_java__compile_java",
+    srcs: [
+        ":tot_cronet_base_features_jni__action__java_proxy_only",
+        "android/java/src/org/chromium/base/FeatureList.java",
+        "android/java/src/org/chromium/base/FeatureMap.java",
+        "android/java/src/org/chromium/base/FeatureOverrides.java",
+        "android/java/src/org/chromium/base/FeatureParam.java",
+        "android/java/src/org/chromium/base/Features.java",
+        "android/java/src/org/chromium/base/Flag.java",
+        "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
+        "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
+        "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
+        "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
+    ],
+    static_libs: [
+        "jsr305",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java",
+        "tot_cronet_base_base_switches_java__compile_java",
+        "tot_cronet_base_callback_java__compile_java",
+        "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_command_line_java__compile_java",
+        "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_library_loader_java__compile_java",
+        "tot_cronet_base_library_loader_jni_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
+        "tot_cronet_base_metrics_java__compile_java",
+        "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_resetters_java__compile_java",
+        "tot_cronet_base_stream_util_java__compile_java",
+        "tot_cronet_base_sys_utils_java__compile_java",
+        "tot_cronet_base_tasks_java__compile_java",
+        "tot_cronet_base_tasks_jni_java__compile_java",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java",
+        "tot_cronet_base_time_utils_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:features_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_features_java__compile_java__testing",
+    srcs: [
+        ":tot_cronet_base_features_jni__action__testing__java_proxy_only",
+        "android/java/src/org/chromium/base/FeatureList.java",
+        "android/java/src/org/chromium/base/FeatureMap.java",
+        "android/java/src/org/chromium/base/FeatureOverrides.java",
+        "android/java/src/org/chromium/base/FeatureParam.java",
+        "android/java/src/org/chromium/base/Features.java",
+        "android/java/src/org/chromium/base/Flag.java",
+        "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
+        "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
+        "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
+        "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
+    ],
+    static_libs: [
+        "jsr305",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
+        "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
+        "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_library_loader_java__compile_java__testing",
+        "tot_cronet_base_library_loader_jni_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
+        "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
+        "tot_cronet_base_stream_util_java__compile_java__testing",
+        "tot_cronet_base_sys_utils_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
+        "tot_cronet_base_tasks_jni_java__compile_java__testing",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:features_java__testing
+java_library {
+    name: "tot_cronet_base_features_java__testing",
+    static_libs: [
+        "jsr305",
+        "tot_cronet_base_features_java__process_device__testing",
+        "tot_cronet_base_library_loader_java__testing",
+        "tot_cronet_base_resetters_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:file_provider_utils_java
+java_library {
+    name: "tot_cronet_base_file_provider_utils_java",
+    static_libs: [
+        "tot_cronet_base_file_provider_utils_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -4458,11 +5370,11 @@ java_library {
     ],
 }
 
-// GN: //base:flagged_apis_java__compile_java
+// GN: //base:file_provider_utils_java__compile_java
 java_library {
-    name: "tot_cronet_base_flagged_apis_java__compile_java",
+    name: "tot_cronet_base_file_provider_utils_java__compile_java",
     srcs: [
-        "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",
+        "android/java/src/org/chromium/base/FileProviderUtils.java",
     ],
     defaults: [
         "tot_cronet_java_framework_defaults",
@@ -4479,11 +5391,11 @@ java_library {
     ],
 }
 
-// GN: //base:flagged_apis_java__compile_java__testing
+// GN: //base:file_provider_utils_java__compile_java__testing
 java_library {
-    name: "tot_cronet_base_flagged_apis_java__compile_java__testing",
+    name: "tot_cronet_base_file_provider_utils_java__compile_java__testing",
     srcs: [
-        "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",
+        "android/java/src/org/chromium/base/FileProviderUtils.java",
     ],
     apex_available: [
         "com.android.tethering",
@@ -4498,17 +5410,119 @@ java_library {
     ],
 }
 
-// GN: //base:flagged_apis_java__testing
+// GN: //base:file_provider_utils_java__testing
 java_library {
-    name: "tot_cronet_base_flagged_apis_java__testing",
+    name: "tot_cronet_base_file_provider_utils_java__testing",
     static_libs: [
-        "tot_cronet_base_flagged_apis_java__process_device__testing",
+        "tot_cronet_base_file_provider_utils_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:file_utils_java
+java_library {
+    name: "tot_cronet_base_file_utils_java",
+    static_libs: [
+        "tot_cronet_base_file_provider_utils_java",
+        "tot_cronet_base_file_utils_java__process_device",
+        "tot_cronet_base_log_java",
+        "tot_cronet_build_android_build_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:file_utils_java__compile_java
+java_library {
+    name: "tot_cronet_base_file_utils_java__compile_java",
+    srcs: [
+        ":tot_cronet_base_file_utils_jni__action__java_proxy_only",
+        "android/java/src/org/chromium/base/FileUtils.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "tot_cronet_base_file_provider_utils_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:file_utils_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_file_utils_java__compile_java__testing",
+    srcs: [
+        ":tot_cronet_base_file_utils_jni__action__testing__java_proxy_only",
+        "android/java/src/org/chromium/base/FileUtils.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "tot_cronet_base_file_provider_utils_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:file_utils_java__testing
+java_library {
+    name: "tot_cronet_base_file_utils_java__testing",
+    static_libs: [
+        "tot_cronet_base_file_provider_utils_java__testing",
+        "tot_cronet_base_file_utils_java__process_device__testing",
+        "tot_cronet_base_log_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
     sdk_version: "current",
     visibility: [
         "//external/cronet:__subpackages__",
@@ -4543,10 +5557,45 @@ cc_library_static {
     shared_libs: [
         "libandroid",
         "liblog",
+        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_cross_supported: false,
     generated_headers: [
+        "tot_cronet_1baaa48e_android_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_android_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_power_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_power_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_common_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_common_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_config_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_config_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_ipc_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_wire_protocol_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_minimal_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_non_minimal_zero_gen__testing_h",
+        "tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen__testing_h",
         "tot_cronet_base_allocator_buildflags__testing",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
         "tot_cronet_base_anchor_functions_buildflags__testing",
@@ -4557,6 +5606,7 @@ cc_library_static {
         "tot_cronet_base_debugging_buildflags__testing",
         "tot_cronet_base_feature_list_buildflags__testing",
         "tot_cronet_base_fuzzing_buildflags__testing",
+        "tot_cronet_base_i18n_transliterator__testing",
         "tot_cronet_base_ios_cronet_buildflags__testing",
         "tot_cronet_base_orderfile_buildflags__testing",
         "tot_cronet_base_power_monitor_buildflags__testing",
@@ -4572,11 +5622,67 @@ cc_library_static {
         "tot_cronet_build_chromeos_buildflags__testing",
         "tot_cronet_build_config_compiler_compiler_buildflags__testing",
         "tot_cronet_build_ios_buildflags__testing",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
+        "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_zero_gen__testing_h",
+        "tot_cronet_ff61d121_chrome_zero_gen__testing_h",
+        "tot_cronet_ff61d121_etw_zero_gen__testing_h",
+        "tot_cronet_ff61d121_filesystem_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ftrace_zero_gen__testing_h",
+        "tot_cronet_ff61d121_gpu_zero_gen__testing_h",
+        "tot_cronet_ff61d121_interned_data_zero_gen__testing_h",
+        "tot_cronet_ff61d121_perfetto_zero_gen__testing_h",
+        "tot_cronet_ff61d121_power_zero_gen__testing_h",
+        "tot_cronet_ff61d121_profiling_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ps_zero_gen__testing_h",
+        "tot_cronet_ff61d121_statsd_zero_gen__testing_h",
+        "tot_cronet_ff61d121_sys_stats_zero_gen__testing_h",
+        "tot_cronet_ff61d121_system_info_zero_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_cpp_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_zero_gen__testing_h",
+        "tot_cronet_ff61d121_translation_zero_gen__testing_h",
         "tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         "tot_cronet_third_party_jni_zero_system_jni__action__testing",
+        "tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
         "tot_cronet_third_party_rust_serde_json_lenient_v0_2_wrapper_wrapper_cxx_generated_gen__testing_header",
     ],
     export_generated_headers: [
+        "tot_cronet_1baaa48e_android_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_android_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_ftrace_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_gpu_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_inode_file_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_interceptors_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_power_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_power_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_process_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_profiling_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_statsd_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_sys_stats_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_system_info_zero_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_cpp_gen__testing_h",
+        "tot_cronet_1baaa48e_track_event_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_common_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_common_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_config_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_config_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_ipc_gen__testing_h",
+        "tot_cronet_30b2e32c_ipc_wire_protocol_cpp_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_minimal_zero_gen__testing_h",
+        "tot_cronet_30b2e32c_trace_non_minimal_zero_gen__testing_h",
+        "tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen__testing_h",
         "tot_cronet_base_allocator_buildflags__testing",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
         "tot_cronet_base_anchor_functions_buildflags__testing",
@@ -4587,6 +5693,7 @@ cc_library_static {
         "tot_cronet_base_debugging_buildflags__testing",
         "tot_cronet_base_feature_list_buildflags__testing",
         "tot_cronet_base_fuzzing_buildflags__testing",
+        "tot_cronet_base_i18n_transliterator__testing",
         "tot_cronet_base_ios_cronet_buildflags__testing",
         "tot_cronet_base_orderfile_buildflags__testing",
         "tot_cronet_base_power_monitor_buildflags__testing",
@@ -4602,8 +5709,30 @@ cc_library_static {
         "tot_cronet_build_chromeos_buildflags__testing",
         "tot_cronet_build_config_compiler_compiler_buildflags__testing",
         "tot_cronet_build_ios_buildflags__testing",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
+        "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
+        "tot_cronet_ff61d121_android_zero_gen__testing_h",
+        "tot_cronet_ff61d121_chrome_zero_gen__testing_h",
+        "tot_cronet_ff61d121_etw_zero_gen__testing_h",
+        "tot_cronet_ff61d121_filesystem_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ftrace_zero_gen__testing_h",
+        "tot_cronet_ff61d121_gpu_zero_gen__testing_h",
+        "tot_cronet_ff61d121_interned_data_zero_gen__testing_h",
+        "tot_cronet_ff61d121_perfetto_zero_gen__testing_h",
+        "tot_cronet_ff61d121_power_zero_gen__testing_h",
+        "tot_cronet_ff61d121_profiling_zero_gen__testing_h",
+        "tot_cronet_ff61d121_ps_zero_gen__testing_h",
+        "tot_cronet_ff61d121_statsd_zero_gen__testing_h",
+        "tot_cronet_ff61d121_sys_stats_zero_gen__testing_h",
+        "tot_cronet_ff61d121_system_info_zero_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_cpp_gen__testing_h",
+        "tot_cronet_ff61d121_track_event_zero_gen__testing_h",
+        "tot_cronet_ff61d121_translation_zero_gen__testing_h",
         "tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         "tot_cronet_third_party_jni_zero_system_jni__action__testing",
+        "tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
         "tot_cronet_third_party_rust_serde_json_lenient_v0_2_wrapper_wrapper_cxx_generated_gen__testing_header",
     ],
     defaults: [
@@ -4613,16 +5742,14 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
         "-DBASE_I18N_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_CHROMIUM_ICU=1",
         "-DU_ENABLE_DYLOAD=0",
         "-DU_ENABLE_RESOURCE_TRACING=0",
@@ -4656,6 +5783,8 @@ cc_library_static {
         "external/cronet/tot/third_party/icu/source/i18n/",
         "external/cronet/tot/third_party/libc++/src/include",
         "external/cronet/tot/third_party/libc++abi/src/include",
+        "external/cronet/tot/third_party/perfetto/include/",
+        "external/cronet/tot/third_party/protobuf/src/",
     ],
     cpp_std: "c++20",
     ldflags: [
@@ -4859,6 +5988,274 @@ java_library {
     ],
 }
 
+// GN: //base:jni_android_java
+java_library {
+    name: "tot_cronet_base_jni_android_java",
+    static_libs: [
+        "tot_cronet_base_jni_android_java__process_device",
+        "tot_cronet_base_log_java",
+        "tot_cronet_base_pii_elider_java",
+        "tot_cronet_build_android_build_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:jni_android_java__compile_java
+java_library {
+    name: "tot_cronet_base_jni_android_java__compile_java",
+    srcs: [
+        ":tot_cronet_base_jni_android_jni__action__java_proxy_only",
+        "android/java/src/org/chromium/base/JniAndroid.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java",
+        "tot_cronet_base_base_switches_java__compile_java",
+        "tot_cronet_base_callback_java__compile_java",
+        "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_command_line_java__compile_java",
+        "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
+        "tot_cronet_base_metrics_java__compile_java",
+        "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_pii_elider_java__compile_java",
+        "tot_cronet_base_resetters_java__compile_java",
+        "tot_cronet_base_tasks_java__compile_java",
+        "tot_cronet_base_tasks_jni_java__compile_java",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java",
+        "tot_cronet_base_time_utils_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:jni_android_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_jni_android_java__compile_java__testing",
+    srcs: [
+        ":tot_cronet_base_jni_android_jni__action__testing__java_proxy_only",
+        "android/java/src/org/chromium/base/JniAndroid.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
+        "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
+        "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
+        "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_pii_elider_java__compile_java__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
+        "tot_cronet_base_tasks_jni_java__compile_java__testing",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:jni_android_java__testing
+java_library {
+    name: "tot_cronet_base_jni_android_java__testing",
+    static_libs: [
+        "tot_cronet_base_jni_android_java__process_device__testing",
+        "tot_cronet_base_log_java__testing",
+        "tot_cronet_base_pii_elider_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:jni_utils_java
+java_library {
+    name: "tot_cronet_base_jni_utils_java",
+    static_libs: [
+        "tot_cronet_base_bundle_utils_java",
+        "tot_cronet_base_jni_utils_java__compile_java",
+        "tot_cronet_base_log_java",
+        "tot_cronet_build_android_build_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:jni_utils_java__compile_java
+java_library {
+    name: "tot_cronet_base_jni_utils_java__compile_java",
+    srcs: [
+        "android/java/src/org/chromium/base/JNIUtils.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java",
+        "tot_cronet_base_base_switches_java__compile_java",
+        "tot_cronet_base_bundle_utils_java__compile_java",
+        "tot_cronet_base_callback_java__compile_java",
+        "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_command_line_java__compile_java",
+        "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
+        "tot_cronet_base_metrics_java__compile_java",
+        "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_resetters_java__compile_java",
+        "tot_cronet_base_tasks_java__compile_java",
+        "tot_cronet_base_tasks_jni_java__compile_java",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java",
+        "tot_cronet_base_time_utils_java__compile_java",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:jni_utils_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_jni_utils_java__compile_java__testing",
+    srcs: [
+        "android/java/src/org/chromium/base/JNIUtils.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
+        "tot_cronet_base_bundle_utils_java__compile_java__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
+        "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
+        "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
+        "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
+        "tot_cronet_base_tasks_jni_java__compile_java__testing",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:jni_utils_java__testing
+java_library {
+    name: "tot_cronet_base_jni_utils_java__testing",
+    static_libs: [
+        "tot_cronet_base_bundle_utils_java__testing",
+        "tot_cronet_base_jni_utils_java__compile_java__testing",
+        "tot_cronet_base_log_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
 // GN: //base:library_loader_java
 java_library {
     name: "tot_cronet_base_library_loader_java",
@@ -4867,7 +6264,7 @@ java_library {
         "tot_cronet_base_base_switches_java",
         "tot_cronet_base_callback_java",
         "tot_cronet_base_command_line_java",
-        "tot_cronet_base_library_loader_java__process_device",
+        "tot_cronet_base_library_loader_java__compile_java",
         "tot_cronet_base_library_loader_jni_java",
         "tot_cronet_base_log_java",
         "tot_cronet_base_metrics_java",
@@ -5012,7 +6409,7 @@ java_library {
         "tot_cronet_base_base_switches_java__testing",
         "tot_cronet_base_callback_java__testing",
         "tot_cronet_base_command_line_java__testing",
-        "tot_cronet_base_library_loader_java__process_device__testing",
+        "tot_cronet_base_library_loader_java__compile_java__testing",
         "tot_cronet_base_library_loader_jni_java__testing",
         "tot_cronet_base_log_java__testing",
         "tot_cronet_base_metrics_java__testing",
@@ -5123,7 +6520,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_lifetime_java",
     static_libs: [
-        "tot_cronet_base_lifetime_java__process_device",
+        "tot_cronet_base_lifetime_java__compile_java",
         "tot_cronet_base_tasks_java",
         "tot_cronet_build_android_build_java",
     ],
@@ -5232,7 +6629,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_lifetime_java__testing",
     static_libs: [
-        "tot_cronet_base_lifetime_java__process_device__testing",
+        "tot_cronet_base_lifetime_java__compile_java__testing",
         "tot_cronet_base_tasks_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
@@ -5253,7 +6650,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_log_java",
     static_libs: [
-        "tot_cronet_base_log_java__process_device",
+        "tot_cronet_base_log_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -5319,7 +6716,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_log_java__testing",
     static_libs: [
-        "tot_cronet_base_log_java__process_device__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -5513,7 +6910,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_metrics_ScopedSysTraceEvent_java",
     static_libs: [
-        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__process_device",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -5572,7 +6969,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_metrics_ScopedSysTraceEvent_java__testing",
     static_libs: [
-        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__process_device__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -5593,7 +6990,7 @@ java_library {
         "tot_cronet_base_callback_java",
         "tot_cronet_base_log_java",
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java",
-        "tot_cronet_base_metrics_java__process_device",
+        "tot_cronet_base_metrics_java__compile_java",
         "tot_cronet_base_metrics_jni_java",
         "tot_cronet_base_time_utils_java",
         "tot_cronet_build_android_build_java",
@@ -5713,7 +7110,7 @@ java_library {
         "tot_cronet_base_callback_java__testing",
         "tot_cronet_base_log_java__testing",
         "tot_cronet_base_metrics_ScopedSysTraceEvent_java__testing",
-        "tot_cronet_base_metrics_java__process_device__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
         "tot_cronet_base_metrics_jni_java__testing",
         "tot_cronet_base_time_utils_java__testing",
         "tot_cronet_build_android_build_java__testing",
@@ -5813,12 +7210,264 @@ java_library {
     ],
 }
 
+// GN: //base:path_utils_java
+java_library {
+    name: "tot_cronet_base_path_utils_java",
+    static_libs: [
+        "tot_cronet_base_log_java",
+        "tot_cronet_base_path_utils_java__process_device",
+        "tot_cronet_base_tasks_java",
+        "tot_cronet_build_android_build_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:path_utils_java__compile_java
+java_library {
+    name: "tot_cronet_base_path_utils_java__compile_java",
+    srcs: [
+        ":tot_cronet_base_path_utils_jni__action__java_proxy_only",
+        "android/java/src/org/chromium/base/PathUtils.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java",
+        "tot_cronet_base_base_switches_java__compile_java",
+        "tot_cronet_base_callback_java__compile_java",
+        "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_command_line_java__compile_java",
+        "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
+        "tot_cronet_base_metrics_java__compile_java",
+        "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_resetters_java__compile_java",
+        "tot_cronet_base_tasks_java__compile_java",
+        "tot_cronet_base_tasks_jni_java__compile_java",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java",
+        "tot_cronet_base_time_utils_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:path_utils_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_path_utils_java__compile_java__testing",
+    srcs: [
+        ":tot_cronet_base_path_utils_jni__action__testing__java_proxy_only",
+        "android/java/src/org/chromium/base/PathUtils.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
+        "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
+        "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
+        "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
+        "tot_cronet_base_tasks_jni_java__compile_java__testing",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:path_utils_java__testing
+java_library {
+    name: "tot_cronet_base_path_utils_java__testing",
+    static_libs: [
+        "tot_cronet_base_log_java__testing",
+        "tot_cronet_base_path_utils_java__process_device__testing",
+        "tot_cronet_base_tasks_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:pii_elider_java
+java_library {
+    name: "tot_cronet_base_pii_elider_java",
+    static_libs: [
+        "tot_cronet_base_pii_elider_java__compile_java",
+        "tot_cronet_base_tasks_java",
+        "tot_cronet_build_android_build_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:pii_elider_java__compile_java
+java_library {
+    name: "tot_cronet_base_pii_elider_java__compile_java",
+    srcs: [
+        "android/java/src/org/chromium/base/PiiElider.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java",
+        "tot_cronet_base_base_switches_java__compile_java",
+        "tot_cronet_base_callback_java__compile_java",
+        "tot_cronet_base_callback_jni_java__compile_java",
+        "tot_cronet_base_command_line_java__compile_java",
+        "tot_cronet_base_command_line_jni_java__compile_java",
+        "tot_cronet_base_log_java__compile_java",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
+        "tot_cronet_base_metrics_java__compile_java",
+        "tot_cronet_base_metrics_jni_java__compile_java",
+        "tot_cronet_base_resetters_java__compile_java",
+        "tot_cronet_base_tasks_java__compile_java",
+        "tot_cronet_base_tasks_jni_java__compile_java",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java",
+        "tot_cronet_base_time_utils_java__compile_java",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:pii_elider_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_pii_elider_java__compile_java__testing",
+    srcs: [
+        "android/java/src/org/chromium/base/PiiElider.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "androidx.annotation_annotation-experimental",
+        "error_prone_annotations",
+        "tot_cronet_base_activity_state_java__compile_java__testing",
+        "tot_cronet_base_base_switches_java__compile_java__testing",
+        "tot_cronet_base_callback_java__compile_java__testing",
+        "tot_cronet_base_callback_jni_java__compile_java__testing",
+        "tot_cronet_base_command_line_java__compile_java__testing",
+        "tot_cronet_base_command_line_jni_java__compile_java__testing",
+        "tot_cronet_base_log_java__compile_java__testing",
+        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
+        "tot_cronet_base_metrics_java__compile_java__testing",
+        "tot_cronet_base_metrics_jni_java__compile_java__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
+        "tot_cronet_base_tasks_jni_java__compile_java__testing",
+        "tot_cronet_base_tasks_minimal_jni_java__compile_java__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:pii_elider_java__testing
+java_library {
+    name: "tot_cronet_base_pii_elider_java__testing",
+    static_libs: [
+        "tot_cronet_base_pii_elider_java__compile_java__testing",
+        "tot_cronet_base_tasks_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
 // GN: //base:promise_java
 java_library {
     name: "tot_cronet_base_promise_java",
     static_libs: [
         "tot_cronet_base_callback_java",
-        "tot_cronet_base_promise_java__process_device",
+        "tot_cronet_base_promise_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -5897,7 +7546,7 @@ java_library {
     name: "tot_cronet_base_promise_java__testing",
     static_libs: [
         "tot_cronet_base_callback_java__testing",
-        "tot_cronet_base_promise_java__process_device__testing",
+        "tot_cronet_base_promise_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -5917,7 +7566,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_resetters_java",
     static_libs: [
-        "tot_cronet_base_resetters_java__process_device",
+        "tot_cronet_base_resetters_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -5984,7 +7633,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_resetters_java__testing",
     static_libs: [
-        "tot_cronet_base_resetters_java__process_device__testing",
+        "tot_cronet_base_resetters_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -6014,6 +7663,8 @@ cc_library_static {
         "tot_cronet_base_rust_logger_cxx_generated_gen_header",
         "tot_cronet_base_tracing_buildflags",
         "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
+        "tot_cronet_build_rust_allocator_buildflags",
     ],
     export_generated_headers: [
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
@@ -6021,6 +7672,8 @@ cc_library_static {
         "tot_cronet_base_rust_logger_cxx_generated_gen_header",
         "tot_cronet_base_tracing_buildflags",
         "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
+        "tot_cronet_build_rust_allocator_buildflags",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
@@ -6028,15 +7681,13 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -6112,6 +7763,8 @@ cc_library_static {
         "tot_cronet_base_rust_logger_cxx_generated_gen__testing_header",
         "tot_cronet_base_tracing_buildflags__testing",
         "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
     ],
     export_generated_headers: [
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
@@ -6119,19 +7772,19 @@ cc_library_static {
         "tot_cronet_base_rust_logger_cxx_generated_gen__testing_header",
         "tot_cronet_base_tracing_buildflags__testing",
         "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -6233,101 +7886,11 @@ cc_library_static {
     },
 }
 
-// GN: //base:service_loader_java
-java_library {
-    name: "tot_cronet_base_service_loader_java",
-    static_libs: [
-        "tot_cronet_base_resetters_java",
-        "tot_cronet_base_service_loader_java__process_device",
-        "tot_cronet_build_android_build_java",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base:service_loader_java__compile_java
-java_library {
-    name: "tot_cronet_base_service_loader_java__compile_java",
-    srcs: [
-        "android/java/src/org/chromium/base/ServiceLoaderUtil.java",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental",
-        "tot_cronet_base_resetters_java__compile_java",
-        "tot_cronet_build_android_build_java__compile_java",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base:service_loader_java__compile_java__testing
-java_library {
-    name: "tot_cronet_base_service_loader_java__compile_java__testing",
-    srcs: [
-        "android/java/src/org/chromium/base/ServiceLoaderUtil.java",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental",
-        "tot_cronet_base_resetters_java__compile_java__testing",
-        "tot_cronet_build_android_build_java__compile_java__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base:service_loader_java__testing
-java_library {
-    name: "tot_cronet_base_service_loader_java__testing",
-    static_libs: [
-        "tot_cronet_base_resetters_java__testing",
-        "tot_cronet_base_service_loader_java__process_device__testing",
-        "tot_cronet_build_android_build_java__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
 // GN: //base:stream_util_java
 java_library {
     name: "tot_cronet_base_stream_util_java",
     static_libs: [
-        "tot_cronet_base_stream_util_java__process_device",
+        "tot_cronet_base_stream_util_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -6386,7 +7949,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_stream_util_java__testing",
     static_libs: [
-        "tot_cronet_base_stream_util_java__process_device__testing",
+        "tot_cronet_base_stream_util_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -6407,7 +7970,7 @@ java_library {
         "tot_cronet_base_lifetime_java",
         "tot_cronet_base_promise_java",
         "tot_cronet_base_resetters_java",
-        "tot_cronet_base_supplier_java__process_device",
+        "tot_cronet_base_supplier_java__compile_java",
         "tot_cronet_base_tasks_java",
         "tot_cronet_base_unowned_user_data_java",
         "tot_cronet_build_android_build_java",
@@ -6551,7 +8114,7 @@ java_library {
         "tot_cronet_base_lifetime_java__testing",
         "tot_cronet_base_promise_java__testing",
         "tot_cronet_base_resetters_java__testing",
-        "tot_cronet_base_supplier_java__process_device__testing",
+        "tot_cronet_base_supplier_java__compile_java__testing",
         "tot_cronet_base_tasks_java__testing",
         "tot_cronet_base_unowned_user_data_java__testing",
         "tot_cronet_build_android_build_java__testing",
@@ -6718,7 +8281,7 @@ java_library {
         "tot_cronet_base_log_java",
         "tot_cronet_base_metrics_java",
         "tot_cronet_base_resetters_java",
-        "tot_cronet_base_tasks_java__process_device",
+        "tot_cronet_base_tasks_java__compile_java",
         "tot_cronet_base_tasks_jni_java",
         "tot_cronet_base_tasks_minimal_jni_java",
         "tot_cronet_base_time_utils_java",
@@ -6877,7 +8440,7 @@ java_library {
         "tot_cronet_base_log_java__testing",
         "tot_cronet_base_metrics_java__testing",
         "tot_cronet_base_resetters_java__testing",
-        "tot_cronet_base_tasks_java__process_device__testing",
+        "tot_cronet_base_tasks_java__compile_java__testing",
         "tot_cronet_base_tasks_jni_java__testing",
         "tot_cronet_base_tasks_minimal_jni_java__testing",
         "tot_cronet_base_time_utils_java__testing",
@@ -7061,7 +8624,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_time_utils_java",
     static_libs: [
-        "tot_cronet_base_time_utils_java__process_device",
+        "tot_cronet_base_time_utils_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -7120,7 +8683,7 @@ java_library {
 java_library {
     name: "tot_cronet_base_time_utils_java__testing",
     static_libs: [
-        "tot_cronet_base_time_utils_java__process_device__testing",
+        "tot_cronet_base_time_utils_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -7139,7 +8702,7 @@ java_library {
     static_libs: [
         "tot_cronet_base_lifetime_java",
         "tot_cronet_base_tasks_java",
-        "tot_cronet_base_unowned_user_data_java__process_device",
+        "tot_cronet_base_unowned_user_data_java__compile_java",
         "tot_cronet_build_android_build_java",
     ],
     defaults: [
@@ -7251,7 +8814,7 @@ java_library {
     static_libs: [
         "tot_cronet_base_lifetime_java__testing",
         "tot_cronet_base_tasks_java__testing",
-        "tot_cronet_base_unowned_user_data_java__process_device__testing",
+        "tot_cronet_base_unowned_user_data_java__compile_java__testing",
         "tot_cronet_build_android_build_java__testing",
     ],
     apex_available: [
@@ -7261,6 +8824,82 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
     ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:wrapped_class_loader_java
+java_library {
+    name: "tot_cronet_base_wrapped_class_loader_java",
+    static_libs: [
+        "tot_cronet_base_wrapped_class_loader_java__compile_java",
+        "tot_cronet_build_android_build_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:wrapped_class_loader_java__compile_java
+java_library {
+    name: "tot_cronet_base_wrapped_class_loader_java__compile_java",
+    srcs: [
+        "android/java/src/org/chromium/base/WrappedClassLoader.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "tot_cronet_build_android_build_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:wrapped_class_loader_java__compile_java__testing
+java_library {
+    name: "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
+    srcs: [
+        "android/java/src/org/chromium/base/WrappedClassLoader.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "tot_cronet_build_android_build_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:wrapped_class_loader_java__testing
+java_library {
+    name: "tot_cronet_base_wrapped_class_loader_java__testing",
+    static_libs: [
+        "tot_cronet_base_wrapped_class_loader_java__compile_java__testing",
+        "tot_cronet_build_android_build_java__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     sdk_version: "current",
     visibility: [
         "//external/cronet:__subpackages__",

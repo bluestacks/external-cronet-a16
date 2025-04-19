@@ -39,7 +39,7 @@ license {
 java_library {
     name: "tot_cronet_third_party_jni_zero_gendeps_java",
     static_libs: [
-        "tot_cronet_third_party_jni_zero_gendeps_java__process_device",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
     ],
     defaults: [
         "tot_cronet_java_framework_defaults",
@@ -99,7 +99,7 @@ java_library {
 java_library {
     name: "tot_cronet_third_party_jni_zero_gendeps_java__testing",
     static_libs: [
-        "tot_cronet_third_party_jni_zero_gendeps_java__process_device__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
     ],
     apex_available: [
         "com.android.tethering",
@@ -215,14 +215,13 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -311,14 +310,13 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -385,7 +383,7 @@ java_library {
     static_libs: [
         "tot_cronet_third_party_jni_zero_gendeps_java",
         "tot_cronet_third_party_jni_zero_generate_jni_java",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__process_device",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
     ],
     defaults: [
         "tot_cronet_java_framework_defaults",
@@ -469,7 +467,7 @@ java_library {
     static_libs: [
         "tot_cronet_third_party_jni_zero_gendeps_java__testing",
         "tot_cronet_third_party_jni_zero_generate_jni_java__testing",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__process_device__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
     ],
     apex_available: [
         "com.android.tethering",

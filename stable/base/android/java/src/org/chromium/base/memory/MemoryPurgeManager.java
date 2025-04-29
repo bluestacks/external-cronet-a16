@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class is similar in principle to MemoryPurgeManager in blink, but on the browser process
@@ -25,6 +26,7 @@ import org.chromium.base.metrics.RecordHistogram;
  *
  * <p>UI thread only.
  */
+@NullMarked
 public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateListener {
     private boolean mStarted;
     private long mLastBackgroundPeriodStart = NEVER;
@@ -190,10 +192,13 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
     }
 
     protected boolean shouldSelfFreeze() {
+        // This is the last check before we call native.
         if (!LibraryLoader.getInstance().isInitialized()) return false;
         if (MemoryPurgeManagerJni.get() == null) return false;
 
-        return MemoryPurgeManagerJni.get().isSelfFreezeEnabled();
+        // We don't check the feature here, because we need to forward to
+        // native in all cases, in order to record metrics.
+        return true;
     }
 
     @NativeMethods
@@ -201,7 +206,5 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         void postDelayedPurgeTaskOnUiThread(long delayMillis);
 
         boolean isOnPreFreezeMemoryTrimEnabled();
-
-        boolean isSelfFreezeEnabled();
     }
 }

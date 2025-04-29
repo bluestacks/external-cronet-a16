@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/apple/bridging.h"
@@ -17,12 +18,12 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -234,7 +235,7 @@ FilePath GetInnermostAppBundlePath(const FilePath& exec_name) {
     return FilePath();
   }
 
-  auto app = ranges::find_if(
+  auto app = std::ranges::find_if(
       Reversed(components), [](const std::string& component) -> bool {
         return component.size() > kExtLength && EndsWith(component, kExt);
       });
@@ -310,7 +311,8 @@ const char* BaseBundleID() {
 void SetBaseBundleID(const char* new_base_bundle_id) {
   if (new_base_bundle_id != base_bundle_id) {
     free((void*)base_bundle_id);
-    base_bundle_id = new_base_bundle_id ? strdup(new_base_bundle_id) : nullptr;
+    base_bundle_id =
+        new_base_bundle_id ? UNSAFE_TODO(strdup(new_base_bundle_id)) : nullptr;
   }
 }
 

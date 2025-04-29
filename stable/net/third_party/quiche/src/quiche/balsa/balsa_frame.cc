@@ -1249,22 +1249,12 @@ size_t BalsaFrame::ProcessInput(const char* input, size_t size) {
             return current - input;
           }
           const char c = *current;
-          if (http_validation_policy_.disallow_lone_cr_in_chunk_extension) {
-            // This is a CR character and the next one is not LF.
-            const bool cr_followed_by_non_lf =
-                c == '\r' && current + 1 < end && *(current + 1) != '\n';
-            // The last character processed by the last ProcessInput() call was
-            // CR, this is the first character of the current ProcessInput()
-            // call, and it is not LF.
-            const bool previous_cr_followed_by_non_lf =
-                last_char_was_slash_r_ && current == input && c != '\n';
-            if (cr_followed_by_non_lf || previous_cr_followed_by_non_lf) {
-              HandleError(BalsaFrameEnums::INVALID_CHUNK_EXTENSION);
-              return current - input;
-            }
-            if (current + 1 == end) {
-              last_char_was_slash_r_ = c == '\r';
-            }
+          if (!IsValidChunkExtensionCharacter(c, current, input, end)) {
+            HandleError(BalsaFrameEnums::INVALID_CHUNK_EXTENSION);
+            return current - input;
+          }
+          if (current + 1 == end) {
+            last_char_was_slash_r_ = c == '\r';
           }
           if (c == '\r' || c == '\n') {
             extensions_length = (extensions_start == current)
@@ -1331,7 +1321,6 @@ size_t BalsaFrame::ProcessInput(const char* input, size_t size) {
 
           const char c = *current;
           ++current;
-
           if (c == '\n') {
             break;
           }
@@ -1499,6 +1488,33 @@ void BalsaFrame::HandleHeadersTooLongError() {
   }
 
   HandleError(BalsaFrameEnums::HEADERS_TOO_LONG);
+}
+
+bool BalsaFrame::IsValidChunkExtensionCharacter(char c, const char* current,
+                                                const char* begin,
+                                                const char* end) {
+  if (http_validation_policy_.disallow_lone_cr_in_chunk_extension) {
+    // This is a CR character and the next one is not LF.
+    const bool cr_followed_by_non_lf =
+        c == '\r' && current + 1 < end && *(current + 1) != '\n';
+    // The last character processed by the last ProcessInput() call was
+    // CR, this is the first character of the current ProcessInput()
+    // call, and it is not LF.
+    const bool previous_cr_followed_by_non_lf =
+        last_char_was_slash_r_ && current == begin && c != '\n';
+    if (cr_followed_by_non_lf || previous_cr_followed_by_non_lf) {
+      return false;
+    }
+  }
+  const bool prev_c_is_cr =
+      current == begin ? last_char_was_slash_r_ : *(current - 1) == '\r';
+  // This is a LF char and the previous one was not CR.
+  if (c == '\n' && !prev_c_is_cr) {
+    if (http_validation_policy_.disallow_lone_lf_in_chunk_extension) {
+      return false;
+    }
+  }
+  return true;
 }
 
 const int32_t BalsaFrame::kValidTerm1;

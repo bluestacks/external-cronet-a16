@@ -108,6 +108,20 @@ std::vector<uint16_t> GetCertCompressionAlgos(
   return cert_compression_algos;
 }
 
+std::vector<uint8_t> GetTransportParameters(
+    const SSL_CLIENT_HELLO* client_hello) {
+  const uint8_t* transport_params_data;
+  size_t transport_params_len;
+  int rv = SSL_early_callback_ctx_extension_get(
+      client_hello, TLSEXT_TYPE_quic_transport_parameters,
+      &transport_params_data, &transport_params_len);
+  if (rv != 1) {
+    return {};
+  }
+  return std::vector<uint8_t>(transport_params_data,
+                              transport_params_data + transport_params_len);
+}
+
 }  // namespace
 
 TlsChloExtractor::TlsChloExtractor()
@@ -422,6 +436,8 @@ void TlsChloExtractor::HandleParsedChlo(const SSL_CLIENT_HELLO* client_hello) {
                                    2, 2);
     }
   }
+
+  transport_params_ = GetTransportParameters(client_hello);
 
   // Update our state now that we've parsed a full CHLO.
   if (state_ == State::kInitial) {

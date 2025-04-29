@@ -105,6 +105,7 @@ class DiskCacheEntryTest : public DiskCacheTestWithCache {
   void TruncateBackwards();
   void ZeroWriteBackwards();
   void SparseOffset64Bit();
+  void SparseReadLength0();
 };
 
 // This part of the test runs on the background thread.
@@ -719,19 +720,17 @@ void DiskCacheEntryTest::GetTimes(int stream_index) {
 
   Time t1 = Time::Now();
   ASSERT_THAT(CreateEntry(key, &entry), IsOk());
-  EXPECT_TRUE(entry->GetLastModified() >= t1);
-  EXPECT_TRUE(entry->GetLastModified() == entry->GetLastUsed());
+  EXPECT_TRUE(entry->GetLastUsed() >= t1);
 
   AddDelay();
   Time t2 = Time::Now();
   EXPECT_TRUE(t2 > t1);
   EXPECT_EQ(0, WriteData(entry, stream_index, 200, nullptr, 0, false));
   if (type_ == net::APP_CACHE) {
-    EXPECT_TRUE(entry->GetLastModified() < t2);
+    EXPECT_TRUE(entry->GetLastUsed() < t2);
   } else {
-    EXPECT_TRUE(entry->GetLastModified() >= t2);
+    EXPECT_TRUE(entry->GetLastUsed() >= t2);
   }
-  EXPECT_TRUE(entry->GetLastModified() == entry->GetLastUsed());
 
   AddDelay();
   Time t3 = Time::Now();
@@ -741,13 +740,10 @@ void DiskCacheEntryTest::GetTimes(int stream_index) {
   EXPECT_EQ(kSize, ReadData(entry, stream_index, 0, buffer.get(), kSize));
   if (type_ == net::APP_CACHE) {
     EXPECT_TRUE(entry->GetLastUsed() < t2);
-    EXPECT_TRUE(entry->GetLastModified() < t2);
   } else if (type_ == net::SHADER_CACHE) {
     EXPECT_TRUE(entry->GetLastUsed() < t3);
-    EXPECT_TRUE(entry->GetLastModified() < t3);
   } else {
     EXPECT_TRUE(entry->GetLastUsed() >= t3);
-    EXPECT_TRUE(entry->GetLastModified() < t3);
   }
   entry->Close();
 }
@@ -1497,7 +1493,6 @@ void DiskCacheEntryTest::DoomedEntry(int stream_index) {
   EXPECT_EQ(2000, ReadData(entry, stream_index, 0, buffer2.get(), 2000));
   EXPECT_EQ(0, memcmp(buffer1->data(), buffer2->data(), kSize1));
   EXPECT_EQ(key, entry->GetKey());
-  EXPECT_TRUE(initial < entry->GetLastModified());
   EXPECT_TRUE(initial < entry->GetLastUsed());
 
   entry->Close();
@@ -4263,10 +4258,10 @@ TEST_F(DiskCacheEntryTest, SimpleCacheStream1SizeChanges) {
                          base::File::FLAG_READ | base::File::FLAG_OPEN);
   ASSERT_TRUE(entry_file0.IsValid());
 
-  int data_size[disk_cache::kSimpleEntryStreamCount] = {kSize, stream1_size, 0};
+  auto data_size = std::to_array<int32_t>({kSize, stream1_size, 0});
   int sparse_data_size = 0;
-  disk_cache::SimpleEntryStat entry_stat(
-      base::Time::Now(), base::Time::Now(), data_size, sparse_data_size);
+  disk_cache::SimpleEntryStat entry_stat(base::Time::Now(), data_size,
+                                         sparse_data_size);
   int eof_offset = entry_stat.GetEOFOffsetInFile(key.size(), 0);
   disk_cache::SimpleFileEOF eof_record;
   ASSERT_EQ(static_cast<int>(sizeof(eof_record)),
@@ -4452,7 +4447,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream2) {
   const size_t kSize = kHalfSize * 2;
   const char key[] = "key";
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer->span().first(kHalfSize), false);
+  CacheTestFillBuffer(buffer->first(kHalfSize), false);
 
   disk_cache::Entry* entry;
 
@@ -4478,8 +4473,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream3) {
   const char key[] = "key";
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer1->span().first(static_cast<unsigned>(kHalfSize)),
-                      false);
+  CacheTestFillBuffer(buffer1->first(static_cast<unsigned>(kHalfSize)), false);
 
   disk_cache::Entry* entry;
 
@@ -4513,8 +4507,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream4) {
   const char key[] = "key";
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer1->span().first(static_cast<unsigned>(kHalfSize)),
-                      false);
+  CacheTestFillBuffer(buffer1->first(static_cast<unsigned>(kHalfSize)), false);
 
   disk_cache::Entry* entry;
 
@@ -4549,7 +4542,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream5) {
   const size_t kSize = kHalfSize * 2;
   const char key[] = "key";
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer->span().first(kHalfSize), false);
+  CacheTestFillBuffer(buffer->first(kHalfSize), false);
 
   disk_cache::Entry* entry;
 
@@ -5475,6 +5468,48 @@ TEST_F(DiskCacheEntryTest, BlockFileSparsePendingAfterDtor) {
   // Create a new instance as a way of flushing the thread.
   InitCache();
   FlushQueueForTest();
+}
+
+void DiskCacheEntryTest::SparseReadLength0() {
+  InitCache();
+
+  static constexpr char kKey[] = "a key";
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry(kKey, &entry), IsOk());
+  ASSERT_TRUE(entry != nullptr);
+
+  static constexpr int kWriteSize = 1024;
+  static constexpr int64_t kOffset = 22;
+
+  auto write_buffer = base::MakeRefCounted<net::IOBufferWithSize>(kWriteSize);
+  CacheTestFillBuffer(write_buffer->span(), /*no_nulls=*/false);
+
+  EXPECT_EQ(kWriteSize,
+            WriteSparseData(entry, kOffset, write_buffer.get(), kWriteSize));
+
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(0);
+  EXPECT_EQ(0, ReadSparseData(entry, kOffset + 11, read_buffer.get(), 0));
+
+  entry->Close();
+}
+
+TEST_F(DiskCacheEntryTest, SparseReadLength0) {
+  InitCache();
+  SparseReadLength0();
+}
+
+TEST_F(DiskCacheEntryTest, SimpleSparseReadLength0) {
+  // https://crbug.com/392690731
+  SetSimpleCacheMode();
+  InitCache();
+  SparseReadLength0();
+}
+
+TEST_F(DiskCacheEntryTest, MemoryOnlySparseReadLength0) {
+  SetMemoryOnlyMode();
+  InitCache();
+  SparseReadLength0();
 }
 
 class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {

@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -22,7 +23,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -108,6 +108,14 @@ namespace {
 const int kLargeNumEntries = 100;
 #else
 const int kLargeNumEntries = 512;
+#endif
+
+// The size of the HTTP cache is multiplied by 4 by default on non-Windows.
+constexpr bool kHTTPCacheSizeIsIncreased =
+#if BUILDFLAG(IS_WIN)
+    false;
+#else
+    true;
 #endif
 
 }  // namespace
@@ -1642,7 +1650,6 @@ TEST_F(DiskCacheBackendTest, NewEvictionTrimInvalidEntry2) {
 
 void DiskCacheBackendTest::BackendEnumerations() {
   InitCache();
-  Time initial = Time::Now();
 
   const int kNumEntries = 100;
   for (int i = 0; i < kNumEntries; i++) {
@@ -1652,20 +1659,15 @@ void DiskCacheBackendTest::BackendEnumerations() {
     entry->Close();
   }
   EXPECT_EQ(kNumEntries, cache_->GetEntryCount());
-  Time final = Time::Now();
 
   disk_cache::Entry* entry;
   std::unique_ptr<TestIterator> iter = CreateIterator();
   int count = 0;
-  Time last_modified[kNumEntries];
   Time last_used[kNumEntries];
   while (iter->OpenNextEntry(&entry) == net::OK) {
     ASSERT_TRUE(nullptr != entry);
     if (count < kNumEntries) {
-      last_modified[count] = entry->GetLastModified();
       last_used[count] = entry->GetLastUsed();
-      EXPECT_TRUE(initial <= last_modified[count]);
-      EXPECT_TRUE(final >= last_modified[count]);
     }
 
     entry->Close();
@@ -1679,7 +1681,6 @@ void DiskCacheBackendTest::BackendEnumerations() {
   while (iter->OpenNextEntry(&entry) == net::OK) {
     ASSERT_TRUE(nullptr != entry);
     if (count < kNumEntries) {
-      EXPECT_TRUE(last_modified[count] == entry->GetLastModified());
       EXPECT_TRUE(last_used[count] == entry->GetLastUsed());
     }
     entry->Close();
@@ -3491,7 +3492,7 @@ TEST_F(DiskCacheBackendTest, Backend_UsageStats) {
   EXPECT_FALSE(stats.empty());
 
   disk_cache::StatsItems::value_type hits("Create hit", "0x1");
-  EXPECT_EQ(1, base::ranges::count(stats, hits));
+  EXPECT_EQ(1, std::ranges::count(stats, hits));
 
   ResetCaches();
 
@@ -3504,7 +3505,7 @@ TEST_F(DiskCacheBackendTest, Backend_UsageStats) {
   cache_->GetStats(&stats);
   EXPECT_FALSE(stats.empty());
 
-  EXPECT_EQ(1, base::ranges::count(stats, hits));
+  EXPECT_EQ(1, std::ranges::count(stats, hits));
 }
 
 void DiskCacheBackendTest::BackendDoomAll() {
@@ -3649,7 +3650,7 @@ TEST_F(DiskCacheTest, MultipleInstances) {
 // Test the six regions of the curve that determines the max cache size.
 TEST_F(DiskCacheTest, AutomaticMaxSize) {
   using disk_cache::kDefaultCacheSize;
-  int64_t large_size = kDefaultCacheSize;
+  const int64_t large_size = kDefaultCacheSize;
 
   // Region 1: expected = available * 0.8
   EXPECT_EQ((kDefaultCacheSize - 1) * 8 / 10,
@@ -3662,34 +3663,115 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
   // Region 2: expected = default_size
   EXPECT_EQ(kDefaultCacheSize,
             disk_cache::PreferredCacheSize(large_size * 10 / 8));
-  EXPECT_EQ(kDefaultCacheSize,
-            disk_cache::PreferredCacheSize(large_size * 10 - 1));
+
+  {
+    // The "internal size" from PreferredCacheSizeInternal() is less than 20% of
+    // the available space. As a result, when `kHTTPCacheSizeIsIncreased` is
+    // true, the value obtained here is scaled with:
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // 0.2 * available space.
+    const int64_t available_space = large_size * 10 - 1;
+    EXPECT_EQ(
+        kHTTPCacheSizeIsIncreased ? available_space / 5 : kDefaultCacheSize,
+        disk_cache::PreferredCacheSize(available_space));
+  }
 
   // Region 3: expected = available * 0.1
-  EXPECT_EQ(kDefaultCacheSize, disk_cache::PreferredCacheSize(large_size * 10));
-  EXPECT_EQ((kDefaultCacheSize * 25 - 1) / 10,
-            disk_cache::PreferredCacheSize(large_size * 25 - 1));
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // 0.2 * available space.
+    const int64_t available_space = large_size * 10;
+    EXPECT_EQ(
+        kHTTPCacheSizeIsIncreased ? available_space / 5 : kDefaultCacheSize,
+        disk_cache::PreferredCacheSize(available_space));
+  }
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // 0.2 * available space.
+    const int64_t available_space = large_size * 25 - 1;
+    EXPECT_EQ(
+        kHTTPCacheSizeIsIncreased ? available_space / 5 : available_space / 10,
+        disk_cache::PreferredCacheSize(available_space));
+  }
 
   // Region 4: expected = default_size * 2.5
-  EXPECT_EQ(kDefaultCacheSize * 25 / 10,
-            disk_cache::PreferredCacheSize(large_size * 25));
-  EXPECT_EQ(kDefaultCacheSize * 25 / 10,
-            disk_cache::PreferredCacheSize(large_size * 100 - 1));
-  EXPECT_EQ(kDefaultCacheSize * 25 / 10,
-            disk_cache::PreferredCacheSize(large_size * 100));
-  EXPECT_EQ(kDefaultCacheSize * 25 / 10,
-            disk_cache::PreferredCacheSize(large_size * 250 - 1));
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // 0.2 * available space.
+    const int64_t available_space = large_size * 25;
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased ? available_space / 5
+                                        : kDefaultCacheSize * 25 / 10,
+              disk_cache::PreferredCacheSize(available_space));
+  }
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
+    const int64_t available_space = large_size * 100 - 1;
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
+                                        : kDefaultCacheSize * 25 / 10,
+              disk_cache::PreferredCacheSize(available_space));
+  }
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
+    const int64_t available_space = large_size * 100;
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
+                                        : kDefaultCacheSize * 25 / 10,
+              disk_cache::PreferredCacheSize(available_space));
+  }
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
+    const int64_t available_space = large_size * 250 - 1;
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
+                                        : kDefaultCacheSize * 25 / 10,
+              disk_cache::PreferredCacheSize(available_space));
+  }
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
+    const int64_t available_space = large_size * 250;
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
+                                        : kDefaultCacheSize * 25 / 10,
+              disk_cache::PreferredCacheSize(available_space));
+  }
 
   // Region 5: expected = available * 0.1
   int64_t largest_size = kDefaultCacheSize * 4;
-  EXPECT_EQ(kDefaultCacheSize * 25 / 10,
-            disk_cache::PreferredCacheSize(large_size * 250));
-  EXPECT_EQ(largest_size - 1,
-            disk_cache::PreferredCacheSize(largest_size * 100 - 1));
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // internal size * 4 (internal size is available_space - 1).
+    const int64_t available_space = largest_size * 100 - 1;
+    EXPECT_EQ(
+        kHTTPCacheSizeIsIncreased ? 4 * (largest_size - 1) : largest_size - 1,
+        disk_cache::PreferredCacheSize(available_space));
+  }
 
   // Region 6: expected = largest possible size
-  EXPECT_EQ(largest_size, disk_cache::PreferredCacheSize(largest_size * 100));
-  EXPECT_EQ(largest_size, disk_cache::PreferredCacheSize(largest_size * 10000));
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // internal size * 4 (internal size is available_space).
+    const int64_t available_space = largest_size * 100;
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased ? largest_size * 4 : largest_size,
+              disk_cache::PreferredCacheSize(available_space));
+  }
+  {
+    // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
+    // min(0.2 * available space, internal size * 4), which evaluates to
+    // internal size * 4 (internal size is available_space).
+    const int64_t available_space = largest_size * 10000;
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased ? largest_size * 4 : largest_size,
+              disk_cache::PreferredCacheSize(available_space));
+  }
 }
 
 // Make sure that we keep the total memory used by the internal buffers under
@@ -4324,7 +4406,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
             std::numeric_limits<uint64_t>::max());
 
   int max_default_size =
-      2 * disk_cache::PreferredCacheSize(std::numeric_limits<int32_t>::max());
+      4 * disk_cache::PreferredCacheSize(std::numeric_limits<int32_t>::max());
 
   ASSERT_GE(max_default_size, 0);
   EXPECT_LT(simple_cache_impl_->index()->max_size(),
@@ -4332,9 +4414,8 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
 
   uint64_t max_size_without_scaling = simple_cache_impl_->index()->max_size();
 
-  // Scale to 200%. The size should be twice of |max_size_without_scaling| but
-  // since that's capped on 20% of available size, checking for the size to be
-  // between max_size_without_scaling and max_size_without_scaling*2.
+  // Scale to 200%. Depending on whether the default is scaled to 400%, this
+  // should increase or reduce the size.
   {
     base::test::ScopedFeatureList scoped_feature_list;
     std::map<std::string, std::string> field_trial_params;
@@ -4346,63 +4427,14 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
 
     uint64_t max_size_scaled = simple_cache_impl_->index()->max_size();
 
-    EXPECT_GE(max_size_scaled, max_size_without_scaling);
-    EXPECT_LE(max_size_scaled, 2 * max_size_without_scaling);
+    if (kHTTPCacheSizeIsIncreased) {
+      EXPECT_GE(max_size_without_scaling, max_size_scaled);
+      EXPECT_LE(max_size_without_scaling, 2 * max_size_scaled);
+    } else {
+      EXPECT_GE(max_size_scaled, max_size_without_scaling);
+      EXPECT_LE(max_size_scaled, 2 * max_size_without_scaling);
+    }
   }
-}
-
-TEST_F(DiskCacheBackendTest, SimpleLastModified) {
-  // Simple cache used to incorrectly set LastModified on entries based on
-  // timestamp of the cache directory, and not the entries' file
-  // (https://crbug.com/714143). So this test arranges for a situation
-  // where this would occur by doing:
-  // 1) Write entry 1
-  // 2) Delay
-  // 3) Write entry 2. This sets directory time stamp to be different from
-  //    timestamp of entry 1 (due to the delay)
-  // It then checks whether the entry 1 got the proper timestamp or not.
-
-  SetSimpleCacheMode();
-  InitCache();
-  std::string key1 = GenerateKey(true);
-  std::string key2 = GenerateKey(true);
-
-  disk_cache::Entry* entry1;
-  ASSERT_THAT(CreateEntry(key1, &entry1), IsOk());
-
-  // Make the Create complete --- SimpleCache can handle it optimistically,
-  // and if we let it go fully async then trying to flush the Close might just
-  // flush the Create.
-  disk_cache::FlushCacheThreadForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  entry1->Close();
-
-  // Make the ::Close actually complete, since it is asynchronous.
-  disk_cache::FlushCacheThreadForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  Time entry1_timestamp = Time::NowFromSystemTime();
-
-  // Don't want AddDelay since it sleep 1s(!) for SimpleCache, and we don't
-  // care about reduced precision in index here.
-  while (base::Time::NowFromSystemTime() <=
-         (entry1_timestamp + base::Milliseconds(10))) {
-    base::PlatformThread::Sleep(base::Milliseconds(1));
-  }
-
-  disk_cache::Entry* entry2;
-  ASSERT_THAT(CreateEntry(key2, &entry2), IsOk());
-  entry2->Close();
-  disk_cache::FlushCacheThreadForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  disk_cache::Entry* reopen_entry1;
-  ASSERT_THAT(OpenEntry(key1, &reopen_entry1), IsOk());
-
-  // This shouldn't pick up entry2's write time incorrectly.
-  EXPECT_LE(reopen_entry1->GetLastModified(), entry1_timestamp);
-  reopen_entry1->Close();
 }
 
 TEST_F(DiskCacheBackendTest, SimpleFdLimit) {

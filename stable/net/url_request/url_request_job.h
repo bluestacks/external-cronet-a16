@@ -25,7 +25,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
-#include "net/filter/source_stream.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/socket/connection_attempts.h"
@@ -43,6 +42,7 @@ class HttpResponseInfo;
 class IOBuffer;
 struct LoadTimingInfo;
 class ProxyChain;
+class SourceStream;
 class SSLCertRequestInfo;
 class SSLInfo;
 class SSLPrivateKey;
@@ -135,6 +135,10 @@ class NET_EXPORT URLRequestJob {
   // each event blocked the request.  See FixupLoadTimingInfo in url_request.h
   // for more information on the difference.
   virtual void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
+
+  // Populates load timing internal information.
+  virtual void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const;
 
   // Gets the remote endpoint that the network stack is currently fetching the
   // URL from. Returns true and fills in |endpoint| if it is available; returns

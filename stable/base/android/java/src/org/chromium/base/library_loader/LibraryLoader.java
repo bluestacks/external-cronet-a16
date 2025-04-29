@@ -16,8 +16,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeLibraryLoadedStatus;
-import org.jni_zero.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BaseSwitches;
@@ -34,6 +32,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -52,6 +52,7 @@ import javax.annotation.concurrent.GuardedBy;
  * <p>See also base/android/library_loader/library_loader_hooks.cc, which contains the native
  * counterpart to this class.
  */
+@NullMarked
 @JNINamespace("base::android")
 public class LibraryLoader {
     private static final String TAG = "LibraryLoader";
@@ -87,6 +88,7 @@ public class LibraryLoader {
     @Retention(RetentionPolicy.SOURCE)
     private @interface LoadState {
         int NOT_LOADED = 0;
+        // TODO(crbug.com/404880581): Make this a boolean.
         int MAIN_DEX_LOADED = 1;
         int LOADED = 2;
     }
@@ -119,10 +121,10 @@ public class LibraryLoader {
     // Always accessed via getLinker() because the choice of the class can be influenced by
     // public setLinkerImplementation() below.
     @GuardedBy("mLock")
-    private Linker mLinker;
+    private @Nullable Linker mLinker;
 
     @GuardedBy("mLock")
-    private NativeLibraryPreloader mLibraryPreloader;
+    private @Nullable NativeLibraryPreloader mLibraryPreloader;
 
     @GuardedBy("mLock")
     private boolean mLibraryPreloaderCalled;
@@ -131,11 +133,6 @@ public class LibraryLoader {
     // This is exposed to clients.
     @GuardedBy("mLock")
     private boolean mLoadedByZygote;
-
-    // One-way switch becomes true when the Java command line is switched to
-    // native.
-    @GuardedBy("mLock")
-    private boolean mCommandLineSwitched;
 
     // Enumeration telling which init* methods were used, and therefore
     // which process the library is loaded in.
@@ -152,7 +149,7 @@ public class LibraryLoader {
     @VisibleForTesting public static boolean sOverrideNativeLibraryCannotBeLoadedForTesting;
 
     // Allow embedders to register a callback to handle native library load failures.
-    public static Callback<UnsatisfiedLinkError> sLoadFailedCallback;
+    public static @Nullable Callback<UnsatisfiedLinkError> sLoadFailedCallback;
 
     // Returns true when sharing RELRO between the browser process and the app zygote should *not*
     // be attempted.
@@ -416,15 +413,6 @@ public class LibraryLoader {
     protected LibraryLoader() {
         if (DEBUG) {
             logLinkerUsed();
-        }
-        if (BuildConfig.ENABLE_ASSERTS) {
-            NativeLibraryLoadedStatus.setProvider(
-                    new NativeLibraryLoadedStatusProvider() {
-                        @Override
-                        public boolean areNativeMethodsReady() {
-                            return isMainDexLoaded();
-                        }
-                    });
         }
     }
 
@@ -771,22 +759,18 @@ public class LibraryLoader {
     // initialization is done. This is okay in the WebView's case since the
     // JNI is already loaded by this point.
     public void switchCommandLineForWebView() {
-        synchronized (mLock) {
-            ensureCommandLineSwitchedAlreadyLocked();
-        }
+        ensureCommandLineSwitched();
     }
 
     // Switch the CommandLine over from Java to native if it hasn't already been done.
-    // This must happen after the code is loaded and after JNI is ready (since after the
-    // switch the Java CommandLine will delegate all calls the native CommandLine).
-    @GuardedBy("mLock")
-    private void ensureCommandLineSwitchedAlreadyLocked() {
+    // Must happen as soon as native is loaded to ensure flags are available when queried.
+    private void ensureCommandLineSwitched() {
         assert isMainDexLoaded();
-        if (mCommandLineSwitched) {
-            return;
+        // TODO(agrieve): We should fail rather than silently initialize here.
+        if (!CommandLine.isInitialized()) {
+            CommandLine.init(null);
         }
-        CommandLine.enableNativeProxy();
-        mCommandLineSwitched = true;
+        CommandLine.getInstance().switchToNativeImpl();
     }
 
     /**
@@ -816,7 +800,7 @@ public class LibraryLoader {
             }
         }
 
-        ensureCommandLineSwitchedAlreadyLocked();
+        ensureCommandLineSwitched();
 
         // Invoke content::LibraryLoaded() in //content/app/android/library_loader_hooks.cc
         // via a hook stored in //base/android/library_loader/library_loader_hooks.cc.

@@ -18,10 +18,11 @@
 
 #include "net/ntlm/ntlm.h"
 
+#include <algorithm>
+#include <array>
 #include <iterator>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/ntlm/ntlm_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +66,7 @@ TEST(NtlmTest, MapHashToDesKeysAllOnes) {
   // is undefined, so clear it to do memcmp.
   ClearLsb(result);
 
-  EXPECT_TRUE(base::ranges::equal(expected, result));
+  EXPECT_TRUE(std::ranges::equal(expected, result));
 }
 
 TEST(NtlmTest, MapHashToDesKeysAllZeros) {
@@ -79,7 +80,7 @@ TEST(NtlmTest, MapHashToDesKeysAllZeros) {
   // is undefined, so clear it to do memcmp.
   ClearLsb(result);
 
-  EXPECT_TRUE(base::ranges::equal(expected, result));
+  EXPECT_TRUE(std::ranges::equal(expected, result));
 }
 
 TEST(NtlmTest, MapHashToDesKeysAlternatingBits) {
@@ -96,7 +97,7 @@ TEST(NtlmTest, MapHashToDesKeysAlternatingBits) {
   // is undefined, so clear it to do memcmp.
   ClearLsb(result);
 
-  EXPECT_TRUE(base::ranges::equal(expected, result));
+  EXPECT_TRUE(std::ranges::equal(expected, result));
 }
 
 TEST(NtlmTest, GenerateNtlmHashV1PasswordSpecTests) {
@@ -206,10 +207,8 @@ TEST(NtlmTest, GenerateNtlmHashV2SpecTests) {
 }
 
 TEST(NtlmTest, GenerateProofInputV2SpecTests) {
-  std::vector<uint8_t> proof_input;
-  proof_input =
+  std::array<uint8_t, kProofInputLenV2> proof_input =
       GenerateProofInputV2(test::kServerTimestamp, test::kClientChallenge);
-  ASSERT_EQ(kProofInputLenV2, proof_input.size());
 
   // |GenerateProofInputV2| generates the first |kProofInputLenV2| bytes of
   // what [MS-NLMP] calls "temp".

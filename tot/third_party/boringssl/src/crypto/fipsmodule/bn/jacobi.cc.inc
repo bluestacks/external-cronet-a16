@@ -42,29 +42,32 @@ int bn_jacobi(const BIGNUM *a, const BIGNUM *b, BN_CTX *ctx) {
     return -2;
   }
 
-  bssl::BN_CTXScope scope(ctx);
+  int ret = -2;
+  BN_CTX_start(ctx);
   BIGNUM *A = BN_CTX_get(ctx);
   BIGNUM *B = BN_CTX_get(ctx);
   if (B == NULL) {
-    return -2;
+    goto end;
   }
 
   if (!BN_copy(A, a) ||
       !BN_copy(B, b)) {
-    return -2;
+    goto end;
   }
 
   // Adapted from logic to compute the Kronecker symbol, originally implemented
   // according to Henri Cohen, "A Course in Computational Algebraic Number
   // Theory" (algorithm 1.4.10).
 
-  int ret = 1;
+  ret = 1;
+
   while (1) {
     // Cohen's step 3:
 
     // B is positive and odd
     if (BN_is_zero(A)) {
-      return BN_is_one(B) ? ret : 0;
+      ret = BN_is_one(B) ? ret : 0;
+      goto end;
     }
 
     // now A is non-zero
@@ -73,7 +76,8 @@ int bn_jacobi(const BIGNUM *a, const BIGNUM *b, BN_CTX *ctx) {
       i++;
     }
     if (!BN_rshift(A, A, i)) {
-      return -2;
+      ret = -2;
+      goto end;
     }
     if (i & 1) {
       // i is odd
@@ -89,11 +93,16 @@ int bn_jacobi(const BIGNUM *a, const BIGNUM *b, BN_CTX *ctx) {
 
     // (A, B) := (B mod |A|, |A|)
     if (!BN_nnmod(B, B, A, ctx)) {
-      return -2;
+      ret = -2;
+      goto end;
     }
     BIGNUM *tmp = A;
     A = B;
     B = tmp;
     tmp->neg = 0;
   }
+
+end:
+  BN_CTX_end(ctx);
+  return ret;
 }

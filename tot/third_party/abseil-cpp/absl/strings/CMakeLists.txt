@@ -998,7 +998,6 @@ absl_cc_library(
     absl::span
     absl::strings
     absl::type_traits
-    absl::weakly_mixed_integer
   PUBLIC
 )
 

@@ -14,19 +14,12 @@
 
 #include "./fuzztest/internal/fixture_driver.h"
 
-#include <utility>
-
-#include "absl/functional/any_invocable.h"
-
 namespace fuzztest::internal {
 
 UntypedFixtureDriver::~UntypedFixtureDriver() = default;
-void UntypedFixtureDriver::RunFuzzTest(absl::AnyInvocable<void() &&> run_test) {
-  std::move(run_test)();
-}
-void UntypedFixtureDriver::RunFuzzTestIteration(
-    absl::AnyInvocable<void() &&> run_iteration) {
-  std::move(run_iteration)();
-}
+void UntypedFixtureDriver::SetUpFuzzTest() {}
+void UntypedFixtureDriver::SetUpIteration() {}
+void UntypedFixtureDriver::TearDownIteration() {}
+void UntypedFixtureDriver::TearDownFuzzTest() {}
 
 }  // namespace fuzztest::internal

@@ -122,40 +122,43 @@ err:
 static void *v2i_AUTHORITY_INFO_ACCESS(const X509V3_EXT_METHOD *method,
                                        const X509V3_CTX *ctx,
                                        const STACK_OF(CONF_VALUE) *nval) {
-  bssl::UniquePtr<AUTHORITY_INFO_ACCESS> ainfo(sk_ACCESS_DESCRIPTION_new_null());
-  if (ainfo == nullptr) {
-    return nullptr;
+  AUTHORITY_INFO_ACCESS *ainfo = NULL;
+  ACCESS_DESCRIPTION *acc;
+  if (!(ainfo = sk_ACCESS_DESCRIPTION_new_null())) {
+    return NULL;
   }
   for (size_t i = 0; i < sk_CONF_VALUE_num(nval); i++) {
     const CONF_VALUE *cnf = sk_CONF_VALUE_value(nval, i);
-    bssl::UniquePtr<ACCESS_DESCRIPTION> acc(ACCESS_DESCRIPTION_new());
-    if (acc == nullptr) {
-      return nullptr;
+    if (!(acc = ACCESS_DESCRIPTION_new()) ||
+        !sk_ACCESS_DESCRIPTION_push(ainfo, acc)) {
+      goto err;
     }
     char *ptmp = strchr(cnf->name, ';');
     if (!ptmp) {
       OPENSSL_PUT_ERROR(X509V3, X509V3_R_INVALID_SYNTAX);
-      return nullptr;
+      goto err;
     }
     CONF_VALUE ctmp;
     ctmp.name = ptmp + 1;
     ctmp.value = cnf->value;
     if (!v2i_GENERAL_NAME_ex(acc->location, method, ctx, &ctmp, 0)) {
-      return nullptr;
+      goto err;
     }
-    bssl::UniquePtr<char> objtmp(OPENSSL_strndup(cnf->name, ptmp - cnf->name));
-    if (objtmp == nullptr) {
-      return nullptr;
+    char *objtmp = OPENSSL_strndup(cnf->name, ptmp - cnf->name);
+    if (objtmp == NULL) {
+      goto err;
     }
-    acc->method = OBJ_txt2obj(objtmp.get(), 0);
+    acc->method = OBJ_txt2obj(objtmp, 0);
     if (!acc->method) {
       OPENSSL_PUT_ERROR(X509V3, X509V3_R_BAD_OBJECT);
-      ERR_add_error_data(2, "value=", objtmp.get());
-      return nullptr;
+      ERR_add_error_data(2, "value=", objtmp);
+      OPENSSL_free(objtmp);
+      goto err;
     }
-    if (!bssl::PushToStack(ainfo.get(), std::move(acc))) {
-      return nullptr;
-    }
+    OPENSSL_free(objtmp);
   }
-  return ainfo.release();
+  return ainfo;
+err:
+  sk_ACCESS_DESCRIPTION_pop_free(ainfo, ACCESS_DESCRIPTION_free);
+  return NULL;
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/base/ip_endpoint.h"
 
 #include <string.h>
@@ -21,7 +26,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
-#include "net/base/ip_address_util.h"
 #include "net/base/sys_addrinfo.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -87,7 +91,8 @@ base::Value IPEndPoint::ScopeIdToValue(std::optional<uint32_t> scope_id) {
   }
 
   char* name = nullptr;
-  char buf[IF_NAMESIZE + 1] = {0};
+  char buf[IF_NAMESIZE + 1];
+  memset(buf, 0, sizeof(buf));
   if (index_to_name_func_for_testing_) {
     name = index_to_name_func_for_testing_(scope_id.value(), buf);
   } else {
@@ -193,11 +198,11 @@ bool IPEndPoint::ToSockAddr(struct sockaddr* address,
         return false;
       *address_length = kSockaddrInSize;
       struct sockaddr_in* addr = reinterpret_cast<struct sockaddr_in*>(address);
-      // Zero out address struct.
-      *addr = {};
+      memset(addr, 0, sizeof(struct sockaddr_in));
       addr->sin_family = AF_INET;
       addr->sin_port = base::HostToNet16(port_);
-      addr->sin_addr = ToInAddr(address_);
+      memcpy(&addr->sin_addr, address_.bytes().data(),
+             IPAddress::kIPv4AddressSize);
       break;
     }
     case IPAddress::kIPv6AddressSize: {
@@ -206,11 +211,11 @@ bool IPEndPoint::ToSockAddr(struct sockaddr* address,
       *address_length = kSockaddrIn6Size;
       struct sockaddr_in6* addr6 =
           reinterpret_cast<struct sockaddr_in6*>(address);
-      // Zero out address struct.
-      *addr6 = {};
+      memset(addr6, 0, sizeof(struct sockaddr_in6));
       addr6->sin6_family = AF_INET6;
       addr6->sin6_port = base::HostToNet16(port_);
-      addr6->sin6_addr = ToIn6Addr(address_);
+      memcpy(&addr6->sin6_addr, address_.bytes().data(),
+             IPAddress::kIPv6AddressSize);
       if (IsIPv6LinkLocal() && scope_id_) {
         addr6->sin6_scope_id = *scope_id_;
       }

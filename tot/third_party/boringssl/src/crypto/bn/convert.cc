@@ -19,8 +19,6 @@
 #include <limits.h>
 #include <stdio.h>
 
-#include <algorithm>
-
 #include <openssl/bio.h>
 #include <openssl/bytestring.h>
 #include <openssl/err.h>
@@ -198,32 +196,33 @@ int BN_hex2bn(BIGNUM **outp, const char *in) {
 char *BN_bn2dec(const BIGNUM *a) {
   // It is easier to print strings little-endian, so we assemble it in reverse
   // and fix at the end.
-  bssl::ScopedCBB cbb;
-  if (!CBB_init(cbb.get(), 16) || //
-      !CBB_add_u8(cbb.get(), 0 /* trailing NUL */)) {
-    return nullptr;
+  BIGNUM *copy = NULL;
+  CBB cbb;
+  if (!CBB_init(&cbb, 16) || //
+      !CBB_add_u8(&cbb, 0 /* trailing NUL */)) {
+    goto err;
   }
 
   if (BN_is_zero(a)) {
-    if (!CBB_add_u8(cbb.get(), '0')) {
-      return nullptr;
+    if (!CBB_add_u8(&cbb, '0')) {
+      goto err;
     }
   } else {
-    bssl::UniquePtr<BIGNUM> copy(BN_dup(a));
-    if (copy == nullptr) {
-      return nullptr;
+    copy = BN_dup(a);
+    if (copy == NULL) {
+      goto err;
     }
 
-    while (!BN_is_zero(copy.get())) {
-      BN_ULONG word = BN_div_word(copy.get(), BN_DEC_CONV);
+    while (!BN_is_zero(copy)) {
+      BN_ULONG word = BN_div_word(copy, BN_DEC_CONV);
       if (word == (BN_ULONG)-1) {
-        return nullptr;
+        goto err;
       }
 
-      const int add_leading_zeros = !BN_is_zero(copy.get());
+      const int add_leading_zeros = !BN_is_zero(copy);
       for (int i = 0; i < BN_DEC_NUM && (add_leading_zeros || word != 0); i++) {
-        if (!CBB_add_u8(cbb.get(), '0' + word % 10)) {
-          return nullptr;
+        if (!CBB_add_u8(&cbb, '0' + word % 10)) {
+          goto err;
         }
         word /= 10;
       }
@@ -232,18 +231,30 @@ char *BN_bn2dec(const BIGNUM *a) {
   }
 
   if (BN_is_negative(a) && //
-      !CBB_add_u8(cbb.get(), '-')) {
-    return nullptr;
+      !CBB_add_u8(&cbb, '-')) {
+    goto err;
   }
 
   uint8_t *data;
   size_t len;
-  if (!CBB_finish(cbb.get(), &data, &len)) {
-    return nullptr;
+  if (!CBB_finish(&cbb, &data, &len)) {
+    goto err;
   }
 
-  std::reverse(data, data + len);
-  return reinterpret_cast<char *>(data);
+  // Reverse the buffer.
+  for (size_t i = 0; i < len / 2; i++) {
+    uint8_t tmp = data[i];
+    data[i] = data[len - 1 - i];
+    data[len - 1 - i] = tmp;
+  }
+
+  BN_free(copy);
+  return (char *)data;
+
+err:
+  BN_free(copy);
+  CBB_cleanup(&cbb);
+  return NULL;
 }
 
 int BN_dec2bn(BIGNUM **outp, const char *in) {
@@ -274,28 +285,33 @@ int BN_asc2bn(BIGNUM **outp, const char *in) {
 }
 
 int BN_print(BIO *bp, const BIGNUM *a) {
+  int i, j, v, z = 0;
+  int ret = 0;
+
   if (a->neg && BIO_write(bp, "-", 1) != 1) {
-    return 0;
+    goto end;
   }
 
   if (BN_is_zero(a) && BIO_write(bp, "0", 1) != 1) {
-    return 0;
+    goto end;
   }
 
-  int z = 0;
-  for (int i = bn_minimal_width(a) - 1; i >= 0; i--) {
-    for (int j = BN_BITS2 - 4; j >= 0; j -= 4) {
+  for (i = bn_minimal_width(a) - 1; i >= 0; i--) {
+    for (j = BN_BITS2 - 4; j >= 0; j -= 4) {
       // strip leading zeros
-      int v = ((int)(a->d[i] >> (long)j)) & 0x0f;
+      v = ((int)(a->d[i] >> (long)j)) & 0x0f;
       if (z || v != 0) {
         if (BIO_write(bp, &hextable[v], 1) != 1) {
-          return 0;
+          goto end;
         }
         z = 1;
       }
     }
   }
-  return 1;
+  ret = 1;
+
+end:
+  return ret;
 }
 
 int BN_print_fp(FILE *fp, const BIGNUM *a) {

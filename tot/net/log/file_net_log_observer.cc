@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/log/file_net_log_observer.h"
 
 #include <algorithm>
@@ -92,29 +97,24 @@ size_t WriteToFile(base::File* file,
 // then deletes |source_path|.
 void AppendToFileThenDelete(const base::FilePath& source_path,
                             base::File* destination_file,
-                            base::span<uint8_t> read_buffer) {
-  base::File source_file(source_path, base::File::FLAG_OPEN |
-                                          base::File::FLAG_READ |
-                                          base::File::FLAG_DELETE_ON_CLOSE);
-  if (!source_file.IsValid()) {
+                            char* read_buffer,
+                            size_t read_buffer_size) {
+  base::ScopedFILE source_file(base::OpenFile(source_path, "rb"));
+  if (!source_file)
     return;
-  }
 
-  // Read `source_path`'s contents in chunks of read_buffer_size and append
-  // to `destination_file`.
-  while (true) {
-    std::optional<size_t> num_bytes_read =
-        source_file.ReadAtCurrentPos(read_buffer);
-    // ReadAtCurrentPos() returns 0 on EOF, but nullopt on other errors, so need
-    // to check for both of those cases.
-    if (!num_bytes_read.has_value() || num_bytes_read.value() == 0) {
-      break;
-    }
+  // Read |source_path|'s contents in chunks of read_buffer_size and append
+  // to |destination_file|.
+  size_t num_bytes_read;
+  while ((num_bytes_read =
+              fread(read_buffer, 1, read_buffer_size, source_file.get())) > 0) {
     WriteToFile(destination_file,
-                base::as_string_view(read_buffer.first(*num_bytes_read)));
+                std::string_view(read_buffer, num_bytes_read));
   }
 
-  // `source_file` should fall out of scope and be deleted.
+  // Now that it has been copied, delete the source file.
+  source_file.reset();
+  base::DeleteFile(source_path);
 }
 
 base::FilePath SiblingInprogressDirectory(const base::FilePath& log_path) {
@@ -523,8 +523,6 @@ FileNetLogObserver::FileNetLogObserver(
 
 std::string FileNetLogObserver::CaptureModeToString(NetLogCaptureMode mode) {
   switch (mode) {
-    case NetLogCaptureMode::kHeavilyRedacted:
-      return "HeavilyRedacted";
     case NetLogCaptureMode::kDefault:
       return "Default";
     case NetLogCaptureMode::kIncludeSensitive:
@@ -786,8 +784,8 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
 
   // Allocate a 64K buffer used for reading the files. At most kReadBufferSize
   // bytes will be in memory at a time.
-  constexpr size_t kReadBufferSize = 1 << 16;  // 64KiB
-  std::vector<uint8_t> read_buffer(kReadBufferSize, 0);
+  const size_t kReadBufferSize = 1 << 16;  // 64KiB
+  auto read_buffer = std::make_unique<char[]>(kReadBufferSize);
 
   if (final_log_file_.IsValid()) {
     // Truncate the final log file.
@@ -795,7 +793,7 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
 
     // Append the constants file.
     AppendToFileThenDelete(GetConstantsFilePath(), &final_log_file_,
-                           read_buffer);
+                           read_buffer.get(), kReadBufferSize);
 
     // Iterate over the events files, from oldest to most recent, and append
     // them to the final destination. Note that "file numbers" start at 1 not 0.
@@ -807,7 +805,8 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
     for (size_t filenumber = begin_filenumber; filenumber < end_filenumber;
          ++filenumber) {
       AppendToFileThenDelete(GetEventFilePath(FileNumberToIndex(filenumber)),
-                             &final_log_file_, read_buffer);
+                             &final_log_file_, read_buffer.get(),
+                             kReadBufferSize);
     }
 
     // Account for the final event line ending in a ",\n". Strip it to form
@@ -815,7 +814,8 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
     RewindIfWroteEventBytes(&final_log_file_);
 
     // Append the polled data.
-    AppendToFileThenDelete(GetClosingFilePath(), &final_log_file_, read_buffer);
+    AppendToFileThenDelete(GetClosingFilePath(), &final_log_file_,
+                           read_buffer.get(), kReadBufferSize);
   }
 
   // Delete the inprogress directory (and anything that may still be left inside

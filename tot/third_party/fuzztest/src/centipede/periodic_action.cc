@@ -24,7 +24,7 @@
 #include "absl/synchronization/mutex.h"
 #include "absl/time/time.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 class PeriodicAction::Impl {
  public:
@@ -124,4 +124,4 @@ void PeriodicAction::Nudge() { pimpl_->Nudge(); }
 PeriodicAction::PeriodicAction(PeriodicAction&&) = default;
 PeriodicAction& PeriodicAction::operator=(PeriodicAction&&) = default;
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

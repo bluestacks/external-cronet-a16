@@ -7,8 +7,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <array>
-
 // This test suite uses SSLClientSocket to test the implementation of
 // SSLServerSocket. In order to establish connections between the sockets
 // we need two additional classes:
@@ -100,7 +98,7 @@ const char kWrongClientCertFileName[] = "client_2.pem";
 const char kWrongClientPrivateKeyFileName[] = "client_2.pk8";
 #endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
-const auto kEcdheCiphers = std::to_array<uint16_t>({
+const uint16_t kEcdheCiphers[] = {
     0xc007,  // ECDHE_ECDSA_WITH_RC4_128_SHA
     0xc009,  // ECDHE_ECDSA_WITH_AES_128_CBC_SHA
     0xc00a,  // ECDHE_ECDSA_WITH_AES_256_CBC_SHA
@@ -113,7 +111,7 @@ const auto kEcdheCiphers = std::to_array<uint16_t>({
     0xc030,  // ECDHE_RSA_WITH_AES_256_GCM_SHA384
     0xcca8,  // ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
     0xcca9,  // ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
-});
+};
 
 class FakeDataChannel {
  public:
@@ -1197,10 +1195,8 @@ TEST_F(SSLServerSocketTest, ExportKeyingMaterial) {
 TEST_F(SSLServerSocketTest, RequireEcdheFlag) {
   // Disable all ECDHE suites on the client side.
   SSLContextConfig config;
-  config.disabled_cipher_suites.assign(kEcdheCiphers.data(),
-                                       base::span<const uint16_t>(kEcdheCiphers)
-                                           .subspan(std::size(kEcdheCiphers))
-                                           .data());
+  config.disabled_cipher_suites.assign(
+      kEcdheCiphers, kEcdheCiphers + std::size(kEcdheCiphers));
 
   // Legacy RSA key exchange ciphers only exist in TLS 1.2 and below.
   config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
@@ -1330,10 +1326,8 @@ TEST_F(SSLServerSocketTest,
 TEST_F(SSLServerSocketTest, HandshakeServerSSLPrivateKeyRequireEcdhe) {
   // Disable all ECDHE suites on the client side.
   SSLContextConfig config;
-  config.disabled_cipher_suites.assign(kEcdheCiphers.data(),
-                                       base::span<const uint16_t>(kEcdheCiphers)
-                                           .subspan(std::size(kEcdheCiphers))
-                                           .data());
+  config.disabled_cipher_suites.assign(
+      kEcdheCiphers, kEcdheCiphers + std::size(kEcdheCiphers));
   // TLS 1.3 always works with SSLPrivateKey.
   config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
   ssl_config_service_->UpdateSSLConfigAndNotify(config);

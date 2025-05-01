@@ -40,7 +40,7 @@
 
 #include "absl/functional/bind_front.h"
 #include "absl/functional/function_ref.h"
-#include "absl/log/absl_check.h"
+#include "absl/log/check.h"
 #include "absl/random/bit_gen_ref.h"
 #include "absl/random/discrete_distribution.h"
 #include "absl/random/random.h"
@@ -94,9 +94,10 @@ constexpr size_t kValueMaxPrintLength = 2048;
 constexpr absl::string_view kTrimIndicator = " ...<value too long>";
 constexpr absl::string_view kReproducerDirName = "fuzztest_repro";
 
-std::string GetFilterForCrashingInput(absl::string_view test_name,
-                                      absl::string_view crashing_input_path) {
-  return absl::StrCat(test_name, "/Regression/", Basename(crashing_input_path));
+std::string GetFilterForCrashingInput(absl::string_view crashing_input_path) {
+  std::vector<std::string> dirs = absl::StrSplit(crashing_input_path, '/');
+  CHECK(dirs.size() > 2) << "Invalid crashing input path!";
+  return absl::StrCat(dirs[dirs.size() - 3], "/Regression/", dirs.back());
 }
 
 // Returns a reproduction command for replaying
@@ -107,7 +108,7 @@ std::string GetReproductionCommand(const Configuration* configuration,
                                    absl::string_view test_name) {
   const bool is_reproducer_in_corpus_db =
       configuration && configuration->crashing_input_to_reproduce;
-  ABSL_CHECK(!reproducer_path.empty() || is_reproducer_in_corpus_db);
+  CHECK(!reproducer_path.empty() || is_reproducer_in_corpus_db);
   if (!configuration || !configuration->reproduction_command_template) {
     absl::string_view reproducer =
         is_reproducer_in_corpus_db ? *configuration->crashing_input_to_reproduce
@@ -121,8 +122,8 @@ std::string GetReproductionCommand(const Configuration* configuration,
   }
   const std::string command_template =
       *configuration->reproduction_command_template;
-  ABSL_CHECK(absl::StrContains(command_template, kTestFilterPlaceholder));
-  ABSL_CHECK(absl::StrContains(command_template, kExtraArgsPlaceholder));
+  CHECK(absl::StrContains(command_template, kTestFilterPlaceholder));
+  CHECK(absl::StrContains(command_template, kExtraArgsPlaceholder));
   if (is_reproducer_in_corpus_db) {
     const std::string corpus_db = configuration->corpus_database;
     std::vector<std::string> extra_args = {absl::StrCat(
@@ -131,7 +132,7 @@ std::string GetReproductionCommand(const Configuration* configuration,
         command_template,
         {{kTestFilterPlaceholder,
           GetFilterForCrashingInput(
-              test_name, *configuration->crashing_input_to_reproduce)},
+              *configuration->crashing_input_to_reproduce)},
          {kExtraArgsPlaceholder, absl::StrJoin(extra_args, " ")}});
   } else {
     return absl::StrReplaceAll(
@@ -454,14 +455,14 @@ void Runtime::CheckWatchdogLimits() {
 
 void Runtime::SetCurrentTest(const FuzzTest* test,
                              const Configuration* configuration) {
-  ABSL_CHECK((test != nullptr) == (configuration != nullptr));
+  CHECK((test != nullptr) == (configuration != nullptr));
   current_test_ = test;
   current_configuration_ = configuration;
   if (configuration == nullptr) return;
   if (const auto test_time_limit = configuration->GetTimeLimitPerTest();
       test_time_limit < absl::InfiniteDuration()) {
     const absl::Status has_enough_time =
-        fuzztest::internal::VerifyBazelHasEnoughTimeToRunTest(
+        centipede::VerifyBazelHasEnoughTimeToRunTest(
             creation_time_, test_time_limit, test_counter_,
             configuration->fuzz_tests.size());
     FUZZTEST_INTERNAL_CHECK_PRECONDITION(
@@ -1021,7 +1022,8 @@ bool FuzzTestFuzzerImpl::RunInUnitTestMode(const Configuration& configuration) {
   runtime_.SetCurrentTest(&test_, &configuration);
   runtime_.EnableReporter(&stats_, [] { return absl::Now(); });
   runtime_.SetSkippingRequested(false);
-  fixture_driver_->RunFuzzTest([&] {
+  fixture_driver_->SetUpFuzzTest();
+  [&] {
     if (runtime_.skipping_requested()) {
       absl::FPrintF(GetStderr(),
                     "[.] Skipping %s per request from the test setup.\n",
@@ -1093,7 +1095,8 @@ bool FuzzTestFuzzerImpl::RunInUnitTestMode(const Configuration& configuration) {
         break;
       }
     }
-  });
+  }();
+  fixture_driver_->TearDownFuzzTest();
   runtime_.DisableReporter();
   runtime_.SetCurrentTest(nullptr, nullptr);
   return true;
@@ -1122,11 +1125,11 @@ FuzzTestFuzzerImpl::RunResult FuzzTestFuzzerImpl::RunOneInput(
   }
 
   runtime_.SetSkippingRequested(false);
-  fixture_driver_->RunFuzzTestIteration([&] {
-    if (!runtime_.skipping_requested()) {
-      fixture_driver_->Test(std::move(untyped_args));
-    }
-  });
+  fixture_driver_->SetUpIteration();
+  if (!runtime_.skipping_requested()) {
+    fixture_driver_->Test(std::move(untyped_args));
+  }
+  fixture_driver_->TearDownIteration();
   if (execution_coverage_ != nullptr) {
     execution_coverage_->SetIsTracing(false);
   }
@@ -1191,14 +1194,13 @@ bool FuzzTestFuzzerImpl::RunInFuzzingMode(int* /*argc*/, char*** /*argv*/,
   runtime_.SetCurrentTest(&test_, &configuration);
   runtime_.EnableReporter(&stats_, [] { return absl::Now(); });
   runtime_.SetSkippingRequested(false);
-  bool success = false;
-  fixture_driver_->RunFuzzTest([&] {
+  fixture_driver_->SetUpFuzzTest();
+  const bool success = [&] {
     if (runtime_.skipping_requested()) {
       absl::FPrintF(GetStderr(),
                     "[.] Skipping %s per request from the test setup.\n",
                     test_.full_name());
-      success = true;
-      return;
+      return true;
     }
     [[maybe_unused]] auto watchdog = runtime_.CreateWatchdog();
     PopulateLimits(configuration, execution_coverage_);
@@ -1207,15 +1209,14 @@ bool FuzzTestFuzzerImpl::RunInFuzzingMode(int* /*argc*/, char*** /*argv*/,
     if (ReplayInputsIfAvailable(configuration)) {
       // If ReplayInputs returns, it means the replay didn't crash.
       // We don't want to actually run the fuzzer so exit now.
-      success = true;
-      return;
+      return true;
     }
 
     if (execution_coverage_ == nullptr) {
       absl::FPrintF(
           GetStderr(),
           "\n\n[!] To fuzz, please build with --config=fuzztest.\n\n\n");
-      return;
+      return false;
     }
 
     stats_.total_edges = execution_coverage_->GetCounterMap().size();
@@ -1227,8 +1228,7 @@ bool FuzzTestFuzzerImpl::RunInFuzzingMode(int* /*argc*/, char*** /*argv*/,
           GetStderr(),
           "[*] Selected %d corpus inputs in minimization mode - exiting.\n",
           stats_.useful_inputs);
-      success = true;
-      return;
+      return true;
     }
 
     CorpusDatabase corpus_database(configuration);
@@ -1320,8 +1320,9 @@ bool FuzzTestFuzzerImpl::RunInFuzzingMode(int* /*argc*/, char*** /*argv*/,
     absl::FPrintF(GetStderr(), "\n[.] Fuzzing was terminated.\n");
     runtime_.PrintFinalStatsOnDefaultSink();
     absl::FPrintF(GetStderr(), "\n");
-    success = true;
-  });
+    return true;
+  }();
+  fixture_driver_->TearDownFuzzTest();
   runtime_.DisableReporter();
   runtime_.SetCurrentTest(nullptr, nullptr);
   return success;

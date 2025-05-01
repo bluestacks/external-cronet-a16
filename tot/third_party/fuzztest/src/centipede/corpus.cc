@@ -38,7 +38,7 @@
 #include "./common/remote_file.h"
 #include "./common/status_macros.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 //------------------------------------------------------------------------------
 //                                  Corpus
@@ -319,4 +319,4 @@ size_t CoverageFrontier::Compute(
   return num_functions_in_frontier_;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

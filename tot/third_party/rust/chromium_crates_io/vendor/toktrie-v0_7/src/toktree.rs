@@ -334,7 +334,7 @@ impl TokTrie {
                 String::from_utf8_lossy(&bytes[1..]).to_string()
             } else {
                 let s = String::from_utf8_lossy(bytes);
-                if s.is_empty() {
+                if s.len() == 0 {
                     format!("≺EMPTY[{}]≻", idx)
                 } else if !s.contains('\u{fffd}') {
                     let mut s = format!("{:?}", s).replace("\\\"", "\"");

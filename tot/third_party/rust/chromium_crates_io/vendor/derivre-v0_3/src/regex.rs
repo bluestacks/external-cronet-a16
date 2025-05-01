@@ -121,7 +121,7 @@ impl Regex {
 
     pub fn new_with_parser(parser: regex_syntax::Parser, rx: &str) -> Result<Self> {
         let mut exprset = ExprSet::new(256);
-        let rx = exprset.parse_expr(parser.clone(), rx, false)?;
+        let rx = exprset.parse_expr(parser.clone(), rx)?;
         Self::new_with_exprset(exprset, rx, u64::MAX)
     }
 

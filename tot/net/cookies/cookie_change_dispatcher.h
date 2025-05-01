@@ -35,10 +35,7 @@ enum class CookieChangeCause {
   // The cookie was automatically evicted during garbage collection.
   EVICTED,
   // The cookie was overwritten with an already-expired expiration date.
-  EXPIRED_OVERWRITE,
-  // The newly inserted cookie overwrote a cookie but did not result in any
-  // change.
-  INSERTED_NO_CHANGE_OVERWRITE,
+  EXPIRED_OVERWRITE
 };
 
 struct NET_EXPORT CookieChangeInfo {

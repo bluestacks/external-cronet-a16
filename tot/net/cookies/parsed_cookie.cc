@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // Portions of this code based on Mozilla:
 //   (netwerk/cookie/src/nsCookieService.cpp)
 /* ***** BEGIN LICENSE BLOCK *****
@@ -65,17 +70,16 @@ const char kSameSiteTokenName[] = "samesite";
 const char kPriorityTokenName[] = "priority";
 const char kPartitionedTokenName[] = "partitioned";
 
-constexpr char kTerminatorRawString[] = "\n\r\0";
-constexpr std::string_view kTerminator(kTerminatorRawString,
-                                       sizeof(kTerminatorRawString) - 1);
-constexpr std::string_view kWhitespace = " \t";
-constexpr char kValueSeparator = ';';
-constexpr std::string_view kTokenSeparator = ";=";
+const char kTerminator[] = "\n\r\0";
+const int kTerminatorLen = sizeof(kTerminator) - 1;
+const char kWhitespace[] = " \t";
+const char kValueSeparator = ';';
+const char kTokenSeparator[] = ";=";
 
 // Returns true if |c| occurs in |chars|
 // TODO(erikwright): maybe make this take an iterator, could check for end also?
-inline bool CharIsA(const char c, std::string_view chars) {
-  return chars.find(c) != std::string_view::npos;
+inline bool CharIsA(const char c, const char* chars) {
+  return strchr(chars, c) != nullptr;
 }
 
 // Seek the iterator to the first occurrence of |character|.
@@ -92,7 +96,7 @@ inline bool SeekToCharacter(std::string_view::iterator* it,
 // Returns true if it hit the end, false otherwise.
 inline bool SeekTo(std::string_view::iterator* it,
                    const std::string_view::iterator& end,
-                   std::string_view chars) {
+                   const char* chars) {
   for (; *it != end && !CharIsA(**it, chars); ++(*it)) {
   }
   return *it == end;
@@ -101,14 +105,14 @@ inline bool SeekTo(std::string_view::iterator* it,
 // Returns true if it hit the end, false otherwise.
 inline bool SeekPast(std::string_view::iterator* it,
                      const std::string_view::iterator& end,
-                     std::string_view chars) {
+                     const char* chars) {
   for (; *it != end && CharIsA(**it, chars); ++(*it)) {
   }
   return *it == end;
 }
 inline bool SeekBackPast(std::string_view::iterator* it,
                          const std::string_view::iterator& end,
-                         std::string_view chars) {
+                         const char* chars) {
   for (; *it != end && CharIsA(**it, chars); --(*it)) {
   }
   return *it == end;
@@ -297,7 +301,8 @@ std::string ParsedCookie::ToCookieLine() const {
 std::string_view::iterator ParsedCookie::FindFirstTerminator(
     std::string_view s) {
   std::string_view::iterator end = s.end();
-  size_t term_pos = s.find_first_of(kTerminator);
+  size_t term_pos =
+      s.find_first_of(std::string_view(kTerminator, kTerminatorLen));
   if (term_pos != std::string_view::npos) {
     // We found a character we should treat as an end of string.
     end = s.begin() + term_pos;
@@ -456,7 +461,7 @@ bool ParsedCookie::CookieAttributeValueHasValidCharSet(
 }
 
 // static
-bool ParsedCookie::CookieAttributeValueHasValidSize(std::string_view value) {
+bool ParsedCookie::CookieAttributeValueHasValidSize(const std::string& value) {
   return (value.size() <= kMaxCookieAttributeValueSize);
 }
 

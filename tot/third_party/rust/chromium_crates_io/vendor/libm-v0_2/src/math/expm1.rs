@@ -115,7 +115,7 @@ pub fn expm1(mut x: f64) -> f64 {
     }
     ui = ((0x3ff + k) as u64) << 52; /* 2^k */
     let twopk = f64::from_bits(ui);
-    if !(0..=56).contains(&k) {
+    if k < 0 || k > 56 {
         /* suffice to return exp(x)-1 */
         y = x - e + 1.0;
         if k == 1024 {

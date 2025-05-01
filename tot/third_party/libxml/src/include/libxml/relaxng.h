@@ -16,7 +16,7 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 
-#ifdef LIBXML_RELAXNG_ENABLED
+#ifdef LIBXML_SCHEMAS_ENABLED
 
 #ifdef __cplusplus
 extern "C" {
@@ -219,6 +219,6 @@ XMLPUBFUN int
 }
 #endif
 
-#endif /* LIBXML_RELAXNG_ENABLED */
+#endif /* LIBXML_SCHEMAS_ENABLED */
 
 #endif /* __XML_RELAX_NG__ */

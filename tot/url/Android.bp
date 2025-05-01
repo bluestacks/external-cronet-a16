@@ -143,6 +143,7 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
+        "tot_cronet_build_rust_allocator_buildflags",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
         "tot_cronet_ff61d121_android_zero_gen_h",
@@ -253,6 +254,7 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
+        "tot_cronet_build_rust_allocator_buildflags",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
         "tot_cronet_ff61d121_android_zero_gen_h",
@@ -284,9 +286,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DANDROID_NDK_VERSION_ROLL=r27_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DIS_URL_IMPL",
@@ -456,6 +458,7 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_robolectric_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -544,6 +547,7 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_robolectric_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -575,9 +579,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DANDROID_NDK_VERSION_ROLL=r27_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DIS_URL_IMPL",
@@ -656,7 +660,7 @@ java_library {
     static_libs: [
         "tot_cronet_build_android_build_java",
         "tot_cronet_third_party_jni_zero_jni_zero_java",
-        "tot_cronet_url_url_java__filtered",
+        "tot_cronet_url_url_java__process_device",
     ],
     defaults: [
         "tot_cronet_java_framework_defaults",
@@ -670,53 +674,9 @@ java_library {
     ],
 }
 
-// GN: //url:url_java__testing
+// GN: //url:url_java__compile_java
 java_library {
-    name: "tot_cronet_url_url_java__testing",
-    static_libs: [
-        "tot_cronet_build_android_build_java__testing",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
-        "tot_cronet_url_url_java__testing__filtered",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-        "tot_cronet_java_framework_test_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //url:url_java__testing
-java_library {
-    name: "tot_cronet_url_url_java__testing__unfiltered",
-    srcs: [
-        ":tot_cronet_url_url_jni_headers__action__testing__java_proxy_only",
-        "android/java/src/org/chromium/url/IDNStringUtil.java",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-        "tot_cronet_java_framework_test_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "tot_cronet_build_android_build_java__testing__unfiltered",
-        "tot_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
-        "tot_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__testing__unfiltered",
-    ],
-}
-
-// GN: //url:url_java
-java_library {
-    name: "tot_cronet_url_url_java__unfiltered",
+    name: "tot_cronet_url_url_java__compile_java",
     srcs: [
         ":tot_cronet_url_url_jni_headers__action__java_proxy_only",
         "android/java/src/org/chromium/url/IDNStringUtil.java",
@@ -729,9 +689,53 @@ java_library {
     ],
     min_sdk_version: "30",
     libs: [
-        "tot_cronet_build_android_build_java__unfiltered",
-        "tot_cronet_third_party_jni_zero_gendeps_java__unfiltered",
-        "tot_cronet_third_party_jni_zero_generate_jni_java__unfiltered",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__unfiltered",
+        "tot_cronet_build_android_build_java__compile_java",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //url:url_java__compile_java__testing
+java_library {
+    name: "tot_cronet_url_url_java__compile_java__testing",
+    srcs: [
+        ":tot_cronet_url_url_jni_headers__action__testing__java_proxy_only",
+        "android/java/src/org/chromium/url/IDNStringUtil.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "tot_cronet_build_android_build_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
+    ],
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //url:url_java__testing
+java_library {
+    name: "tot_cronet_url_url_java__testing",
+    static_libs: [
+        "tot_cronet_build_android_build_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
+        "tot_cronet_url_url_java__process_device__testing",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    sdk_version: "current",
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }

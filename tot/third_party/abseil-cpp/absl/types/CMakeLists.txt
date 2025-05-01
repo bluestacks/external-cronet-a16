@@ -43,7 +43,6 @@ absl_cc_library(
     absl::nullability
     absl::throw_delegate
     absl::type_traits
-    absl::weakly_mixed_integer
   PUBLIC
 )
 
@@ -61,7 +60,6 @@ absl_cc_test(
     absl::core_headers
     absl::exception_testing
     absl::fixed_array
-    absl::hash
     absl::inlined_vector
     absl::hash_testing
     absl::strings

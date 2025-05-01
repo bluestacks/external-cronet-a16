@@ -203,7 +203,7 @@ CookieChangeDispatcher& DelayedCookieMonster::GetChangeDispatcher() {
 }
 
 void DelayedCookieMonster::SetCookieableSchemes(
-    std::vector<std::string> schemes,
+    const std::vector<std::string>& schemes,
     SetCookieableSchemesCallback callback) {
   ADD_FAILURE();
 }

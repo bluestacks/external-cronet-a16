@@ -63,7 +63,7 @@
 //  would be trivial if the number of elements in a corpus file could be
 //  determined without reading all of it.
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace fs = std::filesystem;
 
@@ -541,4 +541,4 @@ absl::Status GenerateSeedCorpusFromConfig(  //
   return absl::OkStatus();
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

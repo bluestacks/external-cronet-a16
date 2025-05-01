@@ -12,8 +12,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <concepts>
 #include <functional>
 #include <initializer_list>
@@ -520,7 +522,7 @@ class GSL_POINTER span {
              internal::FixedExtentConstructibleFromExtent<extent, N> &&
              std::ranges::borrowed_range<R>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr explicit(N != extent) span(R&& range)
+  constexpr explicit span(R&& range)
       // SAFETY: `std::ranges::size()` returns the number of elements
       // `std::ranges::data()` will point to, so accessing those elements will
       // be safe.
@@ -725,7 +727,6 @@ class GSL_POINTER span {
                          StrictNumeric<size_type> count) const {
     DCHECK(size_type{count} != dynamic_extent)
         << "base does not allow dynamic_extent in two-arg subspan()";
-    // Deliberately combine tests to minimize code size.
     CHECK(size_type{offset} <= size() &&
           size_type{count} <= size() - size_type{offset});
     // SAFETY: `data()` points to at least `extent` elements, so `offset`
@@ -1172,7 +1173,6 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
                          StrictNumeric<size_type> count) const {
     DCHECK(size_type{count} != dynamic_extent)
         << "base does not allow dynamic_extent in two-arg subspan()";
-    // Deliberately combine tests to minimize code size.
     CHECK(size_type{offset} <= size() &&
           size_type{count} <= size() - size_type{offset});
     // SAFETY: `data()` points to at least `size()` elements, so `offset`

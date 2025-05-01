@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"

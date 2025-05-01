@@ -18,20 +18,20 @@
 #include "./centipede/centipede_callbacks.h"
 #include "./centipede/environment.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // Usage:
 //   class MyCentipedeCallbacks: public CentipedeCallbacks { ... }
 //   int main(int argc, char **argv) {
 //     InitGoogle(argv[0], &argc, &argv, /*remove_flags=*/true);
-//     fuzztest::internal::Environment env;  // reads FLAGS.
-//     fuzztest::internal::DefaultCallbacksFactory<MyCentipedeCallbacks>
-//     callbacks_factory; return fuzztest::internal::CentipedeMain(env,
+//     centipede::Environment env;  // reads FLAGS.
+//     centipede::DefaultCallbacksFactory<MyCentipedeCallbacks>
+//     callbacks_factory; return centipede::CentipedeMain(env,
 //     callbacks_factory);
 //   }
 int CentipedeMain(const Environment &env,
                   CentipedeCallbacksFactory &callbacks_factory);
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_CENTIPEDE_INTERFACE_H_

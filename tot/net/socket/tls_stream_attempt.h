@@ -43,17 +43,14 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
     kAbort,
   };
 
-  // An interface to interact with TlsStreamAttempt.
-  class NET_EXPORT_PRIVATE Delegate {
+  // An interface that provides a SSLConfig to TlsStreamAttempt lazily.
+  class NET_EXPORT_PRIVATE SSLConfigProvider {
    public:
-    Delegate() = default;
-    virtual ~Delegate() = default;
+    SSLConfigProvider() = default;
+    virtual ~SSLConfigProvider() = default;
 
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-
-    // Called when TCP handshake completes.
-    virtual void OnTcpHandshakeComplete() = 0;
+    SSLConfigProvider(const SSLConfigProvider&) = delete;
+    SSLConfigProvider& operator=(const SSLConfigProvider&) = delete;
 
     // Returns OK when a SSLConfig is immediately available. `callback` is never
     // invoked. Otherwise, returns ERR_IO_PENDING when `this` can't provide a
@@ -70,7 +67,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
                    IPEndPoint ip_endpoint,
                    perfetto::Track track,
                    HostPortPair host_port_pair,
-                   Delegate* delegate);
+                   SSLConfigProvider* ssl_config_provider);
 
   TlsStreamAttempt(const TlsStreamAttempt&) = delete;
   TlsStreamAttempt& operator=(const TlsStreamAttempt&) = delete;
@@ -81,6 +78,11 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   LoadState GetLoadState() const override;
   base::Value::Dict GetInfoAsValue() const override;
   scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo() override;
+
+  // Set a callback that will be invoked after the TCP handshake completes.
+  // Note that the callback won't be called and discarded immediately when
+  // `this` has already completed the TCP handshake.
+  void SetTcpHandshakeCompletionCallback(CompletionOnceCallback callback);
 
   bool IsTcpHandshakeCompleted() { return tcp_handshake_completed_; }
 
@@ -115,9 +117,10 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   State next_state_ = State::kNone;
   const HostPortPair host_port_pair_;
-  const raw_ptr<Delegate> delegate_;
+  raw_ptr<SSLConfigProvider> ssl_config_provider_;
 
   std::unique_ptr<TcpStreamAttempt> nested_attempt_;
+  CompletionOnceCallback tcp_handshake_completion_callback_;
 
   bool tcp_handshake_completed_ = false;
   bool tls_handshake_started_ = false;

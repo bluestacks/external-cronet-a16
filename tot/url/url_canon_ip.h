@@ -7,8 +7,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <array>
-
 #ifndef URL_URL_CANON_IP_H_
 #define URL_URL_CANON_IP_H_
 
@@ -159,7 +157,7 @@ constexpr CanonHostInfo::Family DoIPv4AddressToNumber(
   // populated front to back, with the first one corresponding to the last
   // component, which allows for early exit if the last component isn't a
   // number.
-  std::array<uint32_t, 4> component_values;
+  uint32_t component_values[4];
   uint8_t existing_components = 0;
   // `existing_components` is used to index `component_values`.
   // All possible values must be in range.
@@ -284,7 +282,7 @@ struct IPv6Parsed {
   }
 
   // There can be up to 8 hex components (colon separated) in the literal.
-  std::array<Component, 8> hex_components;
+  Component hex_components[8];
 
   // The count of hex components present. Ranges from [0,8].
   uint8_t num_hex_components;

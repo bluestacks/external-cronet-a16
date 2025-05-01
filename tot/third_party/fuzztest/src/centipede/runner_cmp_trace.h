@@ -22,7 +22,7 @@
 #include <cstdint>
 #include <cstring>
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // Captures up to `kNumItems` different CMP argument pairs.
 // Every argument is `kFixedSize` bytes.
@@ -135,6 +135,6 @@ class CmpTrace {
   size_t rand_seed_;
 };
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_RUNNER_CMP_TRACE_H_

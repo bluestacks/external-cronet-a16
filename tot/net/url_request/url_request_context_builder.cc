@@ -248,12 +248,12 @@ void URLRequestContextBuilder::SetHttpServerProperties(
   http_server_properties_ = std::move(http_server_properties);
 }
 
-void URLRequestContextBuilder::SetWrapHttpNetworkLayerCallback(
-    WrapHttpNetworkLayerCallback wrap_http_network_layer_callback) {
-  // Can't set both a wrapper callback and a factory directly for testing.
-  CHECK(!http_transaction_factory_for_testing_);
-  wrap_http_network_layer_callback_ =
-      std::move(wrap_http_network_layer_callback);
+void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
+    CreateHttpTransactionFactoryCallback
+        create_http_network_transaction_factory) {
+  http_transaction_factory_.reset();
+  create_http_network_transaction_factory_ =
+      std::move(create_http_network_transaction_factory);
 }
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -536,20 +536,15 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       http_network_session_params_, network_session_context));
 
   std::unique_ptr<HttpTransactionFactory> http_transaction_factory;
-  if (http_transaction_factory_for_testing_) {
-    // Use the factory provided for testing, bypassing default creation and
-    // wrapping.
-    http_transaction_factory = std::move(http_transaction_factory_for_testing_);
-  } else {
-    // Create the default network layer.
-    auto network_layer =
-        std::make_unique<HttpNetworkLayer>(context->http_network_session());
-    // If a wrapper callback exists, use it; otherwise, use the default layer.
+  if (http_transaction_factory_) {
+    http_transaction_factory = std::move(http_transaction_factory_);
+  } else if (!create_http_network_transaction_factory_.is_null()) {
     http_transaction_factory =
-        wrap_http_network_layer_callback_
-            ? std::move(wrap_http_network_layer_callback_)
-                  .Run(std::move(network_layer))
-            : std::move(network_layer);
+        std::move(create_http_network_transaction_factory_)
+            .Run(context->http_network_session());
+  } else {
+    http_transaction_factory =
+        std::make_unique<HttpNetworkLayer>(context->http_network_session());
   }
 
   if (enable_shared_dictionary_) {

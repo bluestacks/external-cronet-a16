@@ -425,17 +425,17 @@ int DSA_generate_key(DSA *dsa) {
     return 0;
   }
 
-  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
-  if (ctx == nullptr) {
-    return 0;
+  int ok = 0;
+  BIGNUM *pub_key = NULL, *priv_key = NULL;
+  BN_CTX *ctx = BN_CTX_new();
+  if (ctx == NULL) {
+    goto err;
   }
 
-  int ok = 0;
-  BIGNUM *pub_key = nullptr;
-  BIGNUM *priv_key = dsa->priv_key;
-  if (priv_key == nullptr) {
+  priv_key = dsa->priv_key;
+  if (priv_key == NULL) {
     priv_key = BN_new();
-    if (priv_key == nullptr) {
+    if (priv_key == NULL) {
       goto err;
     }
   }
@@ -445,16 +445,16 @@ int DSA_generate_key(DSA *dsa) {
   }
 
   pub_key = dsa->pub_key;
-  if (pub_key == nullptr) {
+  if (pub_key == NULL) {
     pub_key = BN_new();
-    if (pub_key == nullptr) {
+    if (pub_key == NULL) {
       goto err;
     }
   }
 
   if (!BN_MONT_CTX_set_locked(&dsa->method_mont_p, &dsa->method_mont_lock,
-                              dsa->p, ctx.get()) ||
-      !BN_mod_exp_mont_consttime(pub_key, dsa->g, priv_key, dsa->p, ctx.get(),
+                              dsa->p, ctx) ||
+      !BN_mod_exp_mont_consttime(pub_key, dsa->g, priv_key, dsa->p, ctx,
                                  dsa->method_mont_p)) {
     goto err;
   }
@@ -467,12 +467,13 @@ int DSA_generate_key(DSA *dsa) {
   ok = 1;
 
 err:
-  if (dsa->pub_key == nullptr) {
+  if (dsa->pub_key == NULL) {
     BN_free(pub_key);
   }
-  if (dsa->priv_key == nullptr) {
+  if (dsa->priv_key == NULL) {
     BN_free(priv_key);
   }
+  BN_CTX_free(ctx);
 
   return ok;
 }
@@ -914,28 +915,31 @@ void *DSA_get_ex_data(const DSA *dsa, int idx) {
 }
 
 DH *DSA_dup_DH(const DSA *dsa) {
-  if (dsa == nullptr) {
-    return nullptr;
+  if (dsa == NULL) {
+    return NULL;
   }
 
-  bssl::UniquePtr<DH> ret(DH_new());
-  if (ret == nullptr) {
-    return nullptr;
+  DH *ret = DH_new();
+  if (ret == NULL) {
+    goto err;
   }
-  if (dsa->q != nullptr) {
+  if (dsa->q != NULL) {
     ret->priv_length = BN_num_bits(dsa->q);
-    if ((ret->q = BN_dup(dsa->q)) == nullptr) {
-      return nullptr;
+    if ((ret->q = BN_dup(dsa->q)) == NULL) {
+      goto err;
     }
   }
-  if ((dsa->p != nullptr && (ret->p = BN_dup(dsa->p)) == nullptr) ||
-      (dsa->g != nullptr && (ret->g = BN_dup(dsa->g)) == nullptr) ||
-      (dsa->pub_key != nullptr &&
-       (ret->pub_key = BN_dup(dsa->pub_key)) == nullptr) ||
-      (dsa->priv_key != nullptr &&
-       (ret->priv_key = BN_dup(dsa->priv_key)) == nullptr)) {
-    return nullptr;
+  if ((dsa->p != NULL && (ret->p = BN_dup(dsa->p)) == NULL) ||
+      (dsa->g != NULL && (ret->g = BN_dup(dsa->g)) == NULL) ||
+      (dsa->pub_key != NULL && (ret->pub_key = BN_dup(dsa->pub_key)) == NULL) ||
+      (dsa->priv_key != NULL &&
+       (ret->priv_key = BN_dup(dsa->priv_key)) == NULL)) {
+    goto err;
   }
 
-  return ret.release();
+  return ret;
+
+err:
+  DH_free(ret);
+  return NULL;
 }

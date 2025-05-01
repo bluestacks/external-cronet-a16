@@ -4,10 +4,11 @@
 
 package org.chromium.base.test.transit;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,16 +18,12 @@ import java.util.List;
 public abstract class CarryOn extends ConditionalState {
 
     private final int mId;
-    private final String mName;
+    private String mName;
     private static int sLastCarryOnId = 2000;
 
     protected CarryOn() {
         mId = ++sLastCarryOnId;
-        String className = getClass().getSimpleName();
-        mName =
-                className.isBlank()
-                        ? String.format("<C%d>", mId)
-                        : String.format("<C%d: %s>", mId, className);
+        mName = String.format("<C%d: %s>", mId, getClass().getSimpleName());
     }
 
     @Override

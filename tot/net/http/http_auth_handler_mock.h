@@ -5,7 +5,6 @@
 #ifndef NET_HTTP_HTTP_AUTH_HANDLER_MOCK_H_
 #define NET_HTTP_HTTP_AUTH_HANDLER_MOCK_H_
 
-#include <array>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -64,9 +63,8 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
         std::unique_ptr<HttpAuthHandler>* handler) override;
 
    private:
-    std::array<std::vector<std::unique_ptr<HttpAuthHandler>>,
-               HttpAuth::AUTH_NUM_TARGETS>
-        handlers_;
+    std::vector<std::unique_ptr<HttpAuthHandler>>
+        handlers_[HttpAuth::AUTH_NUM_TARGETS];
     bool do_init_from_challenge_ = false;
   };
 

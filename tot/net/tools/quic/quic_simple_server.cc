@@ -199,8 +199,4 @@ void QuicSimpleServer::OnReadComplete(int result) {
   StartReading();
 }
 
-int QuicSimpleServer::NumSessions() {
-  return dispatcher_->NumSessions();
-}
-
 }  // namespace net

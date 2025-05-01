@@ -16,7 +16,7 @@
 
 #include "gtest/gtest.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace {
 
@@ -78,4 +78,4 @@ TEST(RunnerFlags, ToString) {
   EXPECT_EQ(runner_flags.ToString(), ":b=x:a:c=y:");
 }
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

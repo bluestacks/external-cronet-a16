@@ -2743,13 +2743,40 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies_Redirect) {
   }
 
   // If redirect chains are considered:
-  // Verify that the Strict cookie may not be sent for a cross-scheme
-  // (same-registrable-domain) redirected top level navigation. The Lax cookie
-  // is sent regardless, because this is a top-level navigation.
+  // Verify that the Strict cookie may or may not be sent for a cross-scheme
+  // (same-registrable-domain) redirected top level navigation, depending on the
+  // status of Schemeful Same-Site. The Lax cookie is sent regardless, because
+  // this is a top-level navigation.
   //
   // If redirect chains are not considered:
   // Verify that both cookies are sent, because this is a top-level navigation.
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
+    TestDelegate d;
+    GURL url = http_server.GetURL(
+        kHost, "/server-redirect?" +
+                   https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(
+        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame,
+                              kHttpOrigin, kHttpOrigin, kHttpSiteForCookies));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kHttpSiteForCookies);
+    req->set_initiator(kOrigin);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(2u, req->url_chain().size());
+    EXPECT_NE(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kSchemefulSameSite);
     TestDelegate d;
     GURL url = http_server.GetURL(
         kHost, "/server-redirect?" +
@@ -3409,9 +3436,39 @@ TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
     EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
   }
 
-  // Verify that SameSite cookies may not be set for a cross-scheme
-  // (same-registrable-domain) redirected subresource request.
+  // Verify that SameSite cookies may or may not be set for a cross-scheme
+  // (same-registrable-domain) redirected subresource request, depending on the
+  // status of Schemeful Same-Site and whether redirect chains are considered.
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kSchemefulSameSite);
+    TestDelegate d;
+    GURL set_cookie_url = https_server.GetURL(
+        kHost, "/set-cookie?Strict8=1;SameSite=Strict&Lax8=1;SameSite=Lax");
+    GURL url =
+        http_server.GetURL(kHost, "/server-redirect?" + set_cookie_url.spec());
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(
+        IsolationInfo::Create(IsolationInfo::RequestType::kOther, kHttpOrigin,
+                              kHttpOrigin, kHttpSiteForCookies));
+    req->set_first_party_url_policy(
+        RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+    req->set_site_for_cookies(kHttpSiteForCookies);
+    req->set_initiator(kOrigin);
+
+    expected_cookies += 2;
+    expected_set_cookie_count += 2;
+
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_EQ(expected_cookies,
+              static_cast<int>(GetAllCookies(&default_context()).size()));
+    EXPECT_EQ(expected_set_cookie_count, network_delegate.set_cookie_count());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kSchemefulSameSite);
     TestDelegate d;
     GURL set_cookie_url = https_server.GetURL(
         kHost, "/set-cookie?Strict9=1;SameSite=Strict&Lax9=1;SameSite=Lax");
@@ -8795,9 +8852,10 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
 // does not return an HttpTransaction.
 TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetWrapHttpNetworkLayerCallback(
-      base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
-        // Make the HttpNetworkLayer think it's suspended.
+  context_builder->SetCreateHttpTransactionFactoryCallback(
+      base::BindOnce([](HttpNetworkSession* session) {
+        // Create a new HttpNetworkLayer that thinks it's suspended.
+        auto network_layer = std::make_unique<HttpNetworkLayer>(session);
         network_layer->OnSuspend();
         std::unique_ptr<HttpTransactionFactory> factory =
             std::make_unique<HttpCache>(std::move(network_layer),
@@ -8822,9 +8880,8 @@ namespace {
 // HttpTransactionFactory that synchronously fails to create transactions.
 class FailingHttpTransactionFactory : public HttpTransactionFactory {
  public:
-  explicit FailingHttpTransactionFactory(
-      std::unique_ptr<HttpTransactionFactory> network_layer)
-      : network_layer_(std::move(network_layer)) {}
+  explicit FailingHttpTransactionFactory(HttpNetworkSession* network_session)
+      : network_session_(network_session) {}
 
   FailingHttpTransactionFactory(const FailingHttpTransactionFactory&) = delete;
   FailingHttpTransactionFactory& operator=(
@@ -8840,12 +8897,10 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 
   HttpCache* GetCache() override { return nullptr; }
 
-  HttpNetworkSession* GetSession() override {
-    return network_layer_->GetSession();
-  }
+  HttpNetworkSession* GetSession() override { return network_session_; }
 
  private:
-  std::unique_ptr<HttpTransactionFactory> network_layer_;
+  raw_ptr<HttpNetworkSession> network_session_;
 };
 
 }  // namespace
@@ -8859,11 +8914,10 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 // behaviors.
 TEST_F(URLRequestTestHTTP, NetworkCancelAfterCreateTransactionFailsTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetWrapHttpNetworkLayerCallback(
-      base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
+  context_builder->SetCreateHttpTransactionFactoryCallback(
+      base::BindOnce([](HttpNetworkSession* session) {
         std::unique_ptr<HttpTransactionFactory> factory =
-            std::make_unique<FailingHttpTransactionFactory>(
-                std::move(network_layer));
+            std::make_unique<FailingHttpTransactionFactory>(session);
         return factory;
       }));
   auto& network_delegate = *context_builder->set_network_delegate(
@@ -13686,6 +13740,7 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(pattern));
+  network_delegate.set_is_storage_access_header_enabled(true);
   if (test.expect_retry) {
     // The network delegate is only consulted for the Storage Access status
     // during a retry; it should claim that storage access is active at that
@@ -13828,6 +13883,7 @@ TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true, false})));
+  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13879,6 +13935,7 @@ TEST_F(StorageAccessHeaderURLRequestTest, AuthChallengeIgnoresRetryHeader) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
+  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13923,6 +13980,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
+  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13961,6 +14019,7 @@ TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true})));
+  network_delegate.set_is_storage_access_header_enabled(true);
   network_delegate.set_storage_access_status(
       cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
@@ -13994,6 +14053,37 @@ TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
           CookieSettingOverrides(
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
   EXPECT_TRUE(d.auth_required_called());
+}
+
+TEST_F(StorageAccessHeaderURLRequestTest, NoRetryWhenDisabled) {
+  set_response_sequence({ResponseKind::kOk});
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  auto& network_delegate = *context_builder->set_network_delegate(
+      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
+          std::vector({false})));
+  network_delegate.set_is_storage_access_header_enabled(false);
+  auto context = context_builder->Build();
+  TestDelegate d;
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  req->Start();
+  d.RunUntilComplete();
+
+  // This expects 2 records for 1 request, since it should not have been
+  // retried.
+  EXPECT_THAT(network_delegate.cookie_setting_overrides_records(),
+              ElementsAre(CookieSettingOverrides(), CookieSettingOverrides()));
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
+      /*sample=*/
+      net::cookie_util::ActivateStorageAccessRetryOutcome::
+          kFailureHeaderDisabled,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace net

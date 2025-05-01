@@ -20,7 +20,6 @@
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
-#include "net/device_bound_sessions/session_usage.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 
@@ -262,18 +261,9 @@ bool Session::ShouldDeferRequest(
     return false;
   }
 
-  if (request->device_bound_session_usage() < SessionUsage::kNoUsage) {
-    request->set_device_bound_session_usage(SessionUsage::kNoUsage);
-  }
-
   if (!IncludesUrl(request->url())) {
     // Request is not in scope for this session.
     return false;
-  }
-
-  if (request->device_bound_session_usage() <
-      SessionUsage::kInScopeNotDeferred) {
-    request->set_device_bound_session_usage(SessionUsage::kInScopeNotDeferred);
   }
 
   request->net_log().AddEvent(
@@ -374,7 +364,6 @@ bool Session::ShouldDeferRequest(
           });
 
       // There's an unsatisfied craving. Defer the request.
-      request->set_device_bound_session_usage(SessionUsage::kDeferred);
       return true;
     }
   }

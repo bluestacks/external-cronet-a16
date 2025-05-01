@@ -67,7 +67,7 @@ class BaseWatcher : public MessagePumpIOSForIO::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
 
  protected:
-  raw_ptr<MessagePumpIOSForIO::FdWatchController> controller_;
+  MessagePumpIOSForIO::FdWatchController* controller_;
 };
 
 class DeleteWatcher : public BaseWatcher {
@@ -80,7 +80,7 @@ class DeleteWatcher : public BaseWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override {
     DCHECK(controller_);
     delete controller_;
-    controller_ = nullptr;
+    controller_ = NULL;
   }
 };
 
@@ -118,7 +118,7 @@ class StopWatcher : public BaseWatcher {
   }
 
  private:
-  raw_ptr<MessagePumpIOSForIO> pump_;
+  MessagePumpIOSForIO* pump_;
   int fd_to_start_watching_;
 };
 

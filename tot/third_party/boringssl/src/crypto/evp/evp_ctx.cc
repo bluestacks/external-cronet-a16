@@ -108,36 +108,37 @@ void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx) {
 
 EVP_PKEY_CTX *EVP_PKEY_CTX_dup(EVP_PKEY_CTX *ctx) {
   if (!ctx->pmeth || !ctx->pmeth->copy) {
-    return nullptr;
+    return NULL;
   }
 
-  bssl::UniquePtr<EVP_PKEY_CTX> ret(
-      reinterpret_cast<EVP_PKEY_CTX *>(OPENSSL_zalloc(sizeof(EVP_PKEY_CTX))));
+  EVP_PKEY_CTX *ret =
+      reinterpret_cast<EVP_PKEY_CTX *>(OPENSSL_zalloc(sizeof(EVP_PKEY_CTX)));
   if (!ret) {
-    return nullptr;
+    return NULL;
   }
 
   ret->pmeth = ctx->pmeth;
   ret->engine = ctx->engine;
   ret->operation = ctx->operation;
 
-  if (ctx->pkey != nullptr) {
+  if (ctx->pkey != NULL) {
     EVP_PKEY_up_ref(ctx->pkey);
     ret->pkey = ctx->pkey;
   }
 
-  if (ctx->peerkey != nullptr) {
+  if (ctx->peerkey != NULL) {
     EVP_PKEY_up_ref(ctx->peerkey);
     ret->peerkey = ctx->peerkey;
   }
 
-  if (ctx->pmeth->copy(ret.get(), ctx) <= 0) {
-    ret->pmeth = nullptr;
+  if (ctx->pmeth->copy(ret, ctx) <= 0) {
+    ret->pmeth = NULL;
+    EVP_PKEY_CTX_free(ret);
     OPENSSL_PUT_ERROR(EVP, ERR_LIB_EVP);
-    return nullptr;
+    return NULL;
   }
 
-  return ret.release();
+  return ret;
 }
 
 EVP_PKEY *EVP_PKEY_CTX_get0_pkey(EVP_PKEY_CTX *ctx) { return ctx->pkey; }

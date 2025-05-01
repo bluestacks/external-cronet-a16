@@ -154,18 +154,14 @@ bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (finalized_result_.has_value()) {
-    // If there are no endpoints in the finalized result, `this` is not ready
-    // for cryptographic handshakes.
-    return !finalized_result_->endpoints.empty();
+    return true;
   }
 
   if (job_ && job_.value()->dns_task_results_manager()) {
     return job_.value()->dns_task_results_manager()->IsMetadataReady();
   }
 
-  // If there is no running DnsTask, `this` is not ready for cryptographic
-  // handshakes until receiving the final results.
-  return false;
+  return true;
 }
 
 ResolveErrorInfo

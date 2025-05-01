@@ -40,7 +40,7 @@
 #include "./centipede/util.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 // llvm-symbolizer output for a binary with 3 functions:
@@ -538,4 +538,4 @@ TEST(FrontierWeightDeath, InvalidCallee) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

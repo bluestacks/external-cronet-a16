@@ -21,19 +21,15 @@ xmlInitIOCallbacks(void);
 XML_HIDDEN int
 xmlNoNetExists(const char *filename);
 
-XML_HIDDEN xmlParserErrors
+XML_HIDDEN int
 xmlParserInputBufferCreateUrl(const char *URI, xmlCharEncoding enc,
-                              xmlParserInputFlags flags,
-                              xmlParserInputBufferPtr *out);
+                              int flags, xmlParserInputBufferPtr *out);
 
 XML_HIDDEN xmlParserInputBufferPtr
-xmlNewInputBufferString(const char *str, xmlParserInputFlags flags);
+xmlNewInputBufferString(const char *str, int flags);
 XML_HIDDEN xmlParserInputBufferPtr
-xmlNewInputBufferMemory(const void *mem, size_t size,
-                        xmlParserInputFlags flags, xmlCharEncoding enc);
-
-XML_HIDDEN xmlParserErrors
-xmlInputFromFd(xmlParserInputBufferPtr buf, int fd, xmlParserInputFlags flags);
+xmlNewInputBufferMemory(const void *mem, size_t size, int flags,
+                        xmlCharEncoding enc);
 
 #ifdef LIBXML_OUTPUT_ENABLED
 XML_HIDDEN void

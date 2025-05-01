@@ -18,6 +18,7 @@
     (defined(OPENSSL_X86) || defined(OPENSSL_X86_64))
 
 #include <inttypes.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -95,13 +96,16 @@ static void handle_cpu_env(uint32_t *out, const char *in) {
   const int or_op = in[0] == '|';
   const int skip_first_byte = invert_op || or_op;
   const int hex = in[skip_first_byte] == '0' && in[skip_first_byte + 1] == 'x';
-  const int base = hex ? 16 : 10;
 
-  const char *start = in + skip_first_byte;
-  char *end;
-  unsigned long long v = strtoull(start, &end, base);
+  int sscanf_result;
+  uint64_t v;
+  if (hex) {
+    sscanf_result = sscanf(in + invert_op + 2, "%" PRIx64, &v);
+  } else {
+    sscanf_result = sscanf(in + invert_op, "%" PRIu64, &v);
+  }
 
-  if (end == start || *end != '\0') {
+  if (!sscanf_result) {
     return;
   }
 

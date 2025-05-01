@@ -57,7 +57,7 @@
 #include "./common/logging.h"
 #include "./common/remote_file.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 size_t GetRandomSeed(size_t seed) {
   if (seed != 0) return seed;
@@ -231,7 +231,7 @@ ByteArray PackFeaturesAndHashAsRawBytes(const ByteArray &data,
 }
 
 std::string UnpackFeaturesAndHash(ByteSpan blob,
-                                  FeatureVec *absl_nonnull features) {
+                                  absl::Nonnull<FeatureVec *> features) {
   size_t features_len_in_bytes = blob.size() - kHashLen;
   features->resize(features_len_in_bytes / sizeof(feature_t));
   memcpy(features->data(), blob.data(), features_len_in_bytes);
@@ -359,4 +359,4 @@ void Munmap(uint8_t *ptr, size_t size) {
   CHECK_EQ(result, 0);
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

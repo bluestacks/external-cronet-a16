@@ -39,7 +39,7 @@
 #include "./centipede/periodic_action.h"
 #include "./centipede/rusage_stats.h"
 
-namespace fuzztest::internal {
+namespace centipede::perf {
 
 //------------------------------------------------------------------------------
 //                          RUsageProfiler::Snapshot
@@ -129,7 +129,7 @@ class ProfileReportGenerator {
  public:
   ProfileReportGenerator(                                     //
       const std::deque<RUsageProfiler::Snapshot>& snapshots,  //
-      RUsageProfiler::ReportSink* absl_nonnull report_sink)
+      absl::Nonnull<RUsageProfiler::ReportSink*> report_sink)
       : snapshots_{snapshots}, report_sink_{report_sink} {
     for (const auto& snapshot : snapshots_) {
       timing_low_ = RUsageTiming::LowWater(  //
@@ -482,7 +482,7 @@ void RUsageProfiler::PrintReport(  //
 }
 
 void RUsageProfiler::GenerateReport(
-    ReportSink* absl_nonnull report_sink) const {
+    absl::Nonnull<ReportSink*> report_sink) const {
   absl::ReaderMutexLock lock{&mutex_};
   // Prevent interleaved reports from multiple concurrent RUsageProfilers.
   ABSL_CONST_INIT static absl::Mutex report_generation_mutex_{absl::kConstInit};
@@ -547,4 +547,4 @@ void RUsageProfiler::GenerateReport(
   }
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede::perf

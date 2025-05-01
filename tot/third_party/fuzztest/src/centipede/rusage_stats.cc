@@ -45,7 +45,7 @@
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
 
-namespace fuzztest::internal {
+namespace centipede::perf {
 
 //------------------------------------------------------------------------------
 //                               ProcessTimer
@@ -135,7 +135,7 @@ const ProcessTimer global_process_timer;
 //------------------------------------------------------------------------------
 
 bool ReadProcFileFields(const std::string& path,
-                        const char* absl_nonnull format, ...) {
+                        absl::Nonnull<const char*> format, ...) {
   bool success = false;
   va_list value_list;
   va_start(value_list, format);
@@ -660,4 +660,4 @@ std::ostream& operator<<(std::ostream& os, const RUsageMemory& m) {
   return os << m.ShortStr();
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede::perf

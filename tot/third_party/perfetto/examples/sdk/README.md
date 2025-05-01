@@ -15,7 +15,7 @@ Dependencies:
 First, check out the latest Perfetto release:
 
 ```bash
-git clone https://github.com/google/perfetto -b v50.1
+git clone https://github.com/google/perfetto -b v49.0
 ```
 
 Then, build using CMake:

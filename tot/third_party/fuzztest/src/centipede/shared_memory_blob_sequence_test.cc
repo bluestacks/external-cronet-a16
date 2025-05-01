@@ -26,7 +26,7 @@
 
 #include "gtest/gtest.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 std::string ShmemName() {
   std::ostringstream oss;
@@ -253,4 +253,4 @@ TEST_P(SharedMemoryBlobSequenceTest, ReleaseSharedMemory) {
 }
 #endif
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

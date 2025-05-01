@@ -45,7 +45,7 @@ void CookieStore::SetCookieAccessDelegate(
 
 std::optional<bool> CookieStore::SiteHasCookieInOtherPartition(
     const net::SchemefulSite& site,
-    const CookiePartitionKey& partition_key) const {
+    const std::optional<CookiePartitionKey>& partition_key) const {
   return std::nullopt;
 }
 

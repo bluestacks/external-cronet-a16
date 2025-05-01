@@ -339,10 +339,6 @@ export class AppImpl implements App {
     this.appCtx.setActiveTrace(traceImpl.__traceCtxForApp);
   }
 
-  closeCurrentTrace() {
-    this.appCtx.closeCurrentTrace();
-  }
-
   get embeddedMode(): boolean {
     return this.appCtx.embeddedMode;
   }

@@ -15,7 +15,6 @@
 
 namespace base::apple {
 
-#if !BUILDFLAG(IS_IOS_TVOS)
 class DispatchSourceTest : public testing::Test {
  public:
   void SetUp() override {
@@ -121,7 +120,6 @@ TEST_F(DispatchSourceTest, NoMessagesAfterDestruction) {
 
   dispatch_release(queue);
 }
-#endif
 
 class DispatchSourceFdTest : public testing::Test {
  public:

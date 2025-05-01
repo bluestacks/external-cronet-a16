@@ -75,26 +75,8 @@ export class Histogram implements m.ClassComponent<HistogramAttrs> {
       m(VegaView, {
         spec: stringifyJsonWithBigints(this.getVegaSpec(attrs)),
         data: {},
-        eventHandlers: [
-          {
-            name: 'click',
-            handler: ({item}) => {
-              if (item && attrs.onPointSelection !== undefined) {
-                attrs.onPointSelection(item);
-              }
-            },
-          },
-        ],
-        signalHandlers: [
-          {
-            name: VegaLiteSelectionTypes.INTERVAL,
-            handler: ({value}) => {
-              if (attrs.onIntervalSelection !== undefined) {
-                attrs.onIntervalSelection(value);
-              }
-            },
-          },
-        ],
+        onPointSelection: attrs.onPointSelection,
+        onIntervalSelection: attrs.onIntervalSelection,
       }),
     );
   }

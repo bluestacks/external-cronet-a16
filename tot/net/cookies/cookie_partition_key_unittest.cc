@@ -24,34 +24,31 @@ class CookiePartitionKeyTest : public ::testing::Test {};
 
 TEST(CookiePartitionKeyTest, TestFromStorage) {
   struct {
-    std::string top_level_site;
+    const std::string top_level_site;
     bool third_party;
-    base::expected<std::optional<CookiePartitionKey>, std::string>
-        expected_output;
+    const std::optional<CookiePartitionKey> expected_output;
   } cases[] = {
       {/*empty site*/
-       "", true, base::ok(std::nullopt)},
+       "", true, CookiePartitionKey::FromURLForTesting(GURL(""))},
       /*invalid site*/
-      {"Invalid", true,
-       base::unexpected(
-           "Cannot deserialize opaque origin to CookiePartitionKey")},
+      {"Invalid", true, std::nullopt},
       /*malformed site*/
-      {"https://toplevelsite.com/", true,
-       base::unexpected("Cannot deserialize malformed top_level_site to "
-                        "CookiePartitionKey")},
+      {"https://toplevelsite.com/", true, std::nullopt},
       /*valid site: cross site*/
       {"https://toplevelsite.com", true,
-       base::ok(CookiePartitionKey::FromURLForTesting(
-           GURL("https://toplevelsite.com")))},
+       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))},
       /*valid site: same site*/
       {"https://toplevelsite.com", false,
-       base::ok(CookiePartitionKey::FromURLForTesting(
-           GURL("https://toplevelsite.com"), kSameSite))},
-  };
+       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
+                                             kSameSite)}};
   for (const auto& tc : cases) {
     base::expected<std::optional<CookiePartitionKey>, std::string> got =
         CookiePartitionKey::FromStorage(tc.top_level_site, tc.third_party);
-    EXPECT_EQ(tc.expected_output, got) << got.ToString();
+    EXPECT_EQ(got.has_value(), tc.expected_output.has_value());
+    if (!tc.top_level_site.empty() && tc.expected_output.has_value()) {
+      ASSERT_TRUE(got.has_value()) << "Expected result to have value.";
+      EXPECT_EQ(got.value()->IsThirdParty(), tc.third_party);
+    }
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -146,19 +143,64 @@ TEST(CookiePartitionKeyTest, Serialization) {
       {CookiePartitionKey::FromURLForTesting(GURL()), std::nullopt},
       // AncestorChain::kSameSite
       {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
-                                             kSameSite),
+                                             kSameSite, std::nullopt),
        Output{"https://toplevelsite.com", false}},
       // AncestorChain::kCrossSite
       {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
-                                             kCrossSite),
+                                             kCrossSite, std::nullopt),
        Output{"https://toplevelsite.com", true}},
       // With nonce
-      {CookiePartitionKey::FromURLForTesting(GURL("https://cookiesite.com"),
-                                             kCrossSite, nonce),
+      {CookiePartitionKey::FromNetworkIsolationKey(
+           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
+                               SchemefulSite(GURL("https://cookiesite.com")),
+                               nonce),
+           SiteForCookies::FromUrl(GURL::EmptyGURL()),
+           SchemefulSite(GURL("https://toplevelsite.com")),
+           /*main_frame_navigation=*/false),
        std::nullopt},
-      // Same site w/ nonce
-      {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
-                                             kSameSite, nonce),
+      // Same site no nonce from NIK
+      {CookiePartitionKey::FromNetworkIsolationKey(
+           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
+                               SchemefulSite(GURL("https://toplevelsite.com"))),
+           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
+           SchemefulSite(GURL("https://toplevelsite.com")),
+           /*main_frame_navigation=*/false),
+       Output{"https://toplevelsite.com", false}},
+      // Different request_site results in cross site ancestor
+      {CookiePartitionKey::FromNetworkIsolationKey(
+           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
+                               SchemefulSite(GURL("https://toplevelsite.com"))),
+           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
+           SchemefulSite(GURL("https://differentOrigin.com")),
+           /*main_frame_navigation=*/false),
+       Output{"https://toplevelsite.com", true}},
+      // Different request_site but main_frame_navigation=true results in same
+      // site ancestor
+      {CookiePartitionKey::FromNetworkIsolationKey(
+           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
+                               SchemefulSite(GURL("https://toplevelsite.com"))),
+           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
+           SchemefulSite(GURL("https://differentOrigin.com")),
+           /*main_frame_navigation=*/true),
+       Output{"https://toplevelsite.com", false}},
+      // Different request_site  and null site_for_cookies but
+      // main_frame_navigation=true results in same
+      // site ancestor
+      {CookiePartitionKey::FromNetworkIsolationKey(
+           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
+                               SchemefulSite(GURL("https://toplevelsite.com"))),
+           SiteForCookies::FromUrl(GURL()),
+           SchemefulSite(GURL("https://differentOrigin.com")),
+           /*main_frame_navigation=*/true),
+       Output{"https://toplevelsite.com", false}},
+      // Same site with nonce from NIK
+      {CookiePartitionKey::FromNetworkIsolationKey(
+           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
+                               SchemefulSite(GURL("https://toplevelsite.com")),
+                               nonce),
+           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
+           SchemefulSite(GURL("https://toplevelsite.com")),
+           /*main_frame_navigation=*/false),
        std::nullopt},
       // Invalid partition key
       {std::make_optional(
@@ -180,9 +222,10 @@ TEST(CookiePartitionKeyTest, Serialization) {
 }
 
 TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
-  const SchemefulSite kTopLevelSite(GURL("https://toplevelsite.com"));
-  const SchemefulSite kCookieSite(GURL("https://cookiesite.com"));
-  const SchemefulSite kLocalhost(GURL("https://localhost:8000"));
+  const SchemefulSite kTopLevelSite =
+      SchemefulSite(GURL("https://toplevelsite.com"));
+  const SchemefulSite kCookieSite =
+      SchemefulSite(GURL("https://cookiesite.com"));
   const base::UnguessableToken kNonce = base::UnguessableToken::Create();
 
   struct TestCase {
@@ -193,81 +236,55 @@ TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
     const SchemefulSite request_site;
     const bool main_frame_navigation;
   } test_cases[] = {
-      {"Empty", NetworkIsolationKey(), std::nullopt, SiteForCookies(),
-       SchemefulSite(),
+      {"Empty", NetworkIsolationKey(), std::nullopt,
+       SiteForCookies::FromUrl(GURL::EmptyGURL()), SchemefulSite(GURL("")),
        /*main_frame_navigation=*/false},
       {"WithTopLevelSite", NetworkIsolationKey(kTopLevelSite, kCookieSite),
        CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL()),
-       SiteForCookies(), kTopLevelSite,
+       SiteForCookies::FromUrl(GURL::EmptyGURL()), SchemefulSite(kTopLevelSite),
        /*main_frame_navigation=*/false},
       {"WithNonce", NetworkIsolationKey(kTopLevelSite, kCookieSite, kNonce),
        CookiePartitionKey::FromURLForTesting(kCookieSite.GetURL(), kCrossSite,
                                              kNonce),
-       SiteForCookies(), kTopLevelSite,
+       SiteForCookies::FromUrl(GURL::EmptyGURL()), SchemefulSite(kTopLevelSite),
        /*main_frame_navigation=*/false},
       {"WithNetworkIsolationPartition",
        NetworkIsolationKey(
            kTopLevelSite, kCookieSite, /*nonce=*/std::nullopt,
            NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
-       std::nullopt, SiteForCookies(), kTopLevelSite,
+       std::nullopt, SiteForCookies::FromUrl(GURL::EmptyGURL()),
+       SchemefulSite(kTopLevelSite),
        /*main_frame_navigation=*/false},
       {"WithCrossSiteAncestorSameSite",
        NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
        CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kSameSite,
                                              std::nullopt),
-       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kTopLevelSite,
-       /*main_frame_navigation=*/false},
+       SiteForCookies::FromUrl(GURL(kTopLevelSite.GetURL())),
+       SchemefulSite(kTopLevelSite), /*main_frame_navigation=*/false},
       {"Nonced first party NIK results in kCrossSite partition key",
        NetworkIsolationKey(kTopLevelSite, kTopLevelSite, kNonce),
        CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kCrossSite,
                                              kNonce),
-       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kTopLevelSite,
-       /*main_frame_navigation=*/false},
+       SiteForCookies::FromUrl(GURL(kTopLevelSite.GetURL())),
+       SchemefulSite(kTopLevelSite), /*main_frame_navigation=*/false},
       {"WithCrossSiteAncestorNotSameSite",
        NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
        CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kCrossSite,
                                              std::nullopt),
-       SiteForCookies(), kCookieSite,
+       SiteForCookies::FromUrl(GURL::EmptyGURL()), kCookieSite,
        /*main_frame_navigation=*/false},
       {"TestMainFrameNavigationParam",
        NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
        CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kSameSite,
                                              std::nullopt),
-       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kCookieSite,
-       /*main_frame_navigation=*/true},
+       SiteForCookies::FromUrl(GURL(kTopLevelSite.GetURL())),
+       SchemefulSite(kCookieSite), /*main_frame_navigation=*/true},
       {"PresenceOfNonceTakesPriorityOverMainFrameNavigation",
        NetworkIsolationKey(kTopLevelSite, kTopLevelSite, kNonce),
        CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kCrossSite,
                                              kNonce),
-       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kTopLevelSite,
-       /*main_frame_navigation=*/true},
-      {"LocalhostABA", NetworkIsolationKey(kLocalhost, kLocalhost),
-       CookiePartitionKey::FromURLForTesting(kLocalhost.GetURL(), kCrossSite,
-                                             std::nullopt),
-       SiteForCookies(), kLocalhost,
-       /*main_frame_navigation=*/false},
-      {"LocalhostCrossSite", NetworkIsolationKey(kLocalhost, kCookieSite),
-       CookiePartitionKey::FromURLForTesting(kLocalhost.GetURL(), kCrossSite,
-                                             std::nullopt),
-       SiteForCookies(), kLocalhost,
-       /*main_frame_navigation=*/false},
-      // Different request_site results in cross site ancestor
-      {"DifferentRequestSite",
-       NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
-       CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(),
-                                             kCrossSite),
-       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kCookieSite,
-       /*main_frame_navigation=*/false},
-      {"DifferentRequestSiteMainFrameNavigation",
-       NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
-       CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kSameSite),
-       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kCookieSite,
-       /*main_frame_navigation=*/true},
-      {"DifferentRequestSiteMainFrameNavigationNullSiteForCookies",
-       NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
-       CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kSameSite),
-       SiteForCookies(), kCookieSite,
-       /*main_frame_navigation=*/true},
+       SiteForCookies::FromUrl(GURL(kTopLevelSite.GetURL())),
+       SchemefulSite(kTopLevelSite), /*main_frame_navigation=*/true},
   };
 
   for (const auto& test_case : test_cases) {
@@ -331,16 +348,21 @@ TEST(CookiePartitionKeyTest, FromStorageKeyComponents) {
 
 TEST(CookiePartitionKeyTest, FromScript) {
   auto key = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key.from_script());
-  EXPECT_TRUE(key.site().opaque());
-  EXPECT_TRUE(key.IsThirdParty());
+  EXPECT_TRUE(key);
+  EXPECT_TRUE(key->from_script());
+  EXPECT_TRUE(key->site().opaque());
+  EXPECT_TRUE(key->IsThirdParty());
 
   auto key2 = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key2.from_script());
-  EXPECT_TRUE(key2.site().opaque());
-  EXPECT_TRUE(key2.IsThirdParty());
+  EXPECT_TRUE(key2);
+  EXPECT_TRUE(key2->from_script());
+  EXPECT_TRUE(key2->site().opaque());
+  EXPECT_TRUE(key2->IsThirdParty());
 
-  EXPECT_EQ(key, key2);
+  // The keys should not be equal because they get created with different opaque
+  // sites. Test both the '==' and '!=' operators here.
+  EXPECT_FALSE(key == key2);
+  EXPECT_TRUE(key != key2);
 }
 
 TEST(CookiePartitionKeyTest, IsSerializeable) {
@@ -372,35 +394,67 @@ TEST(CookiePartitionKeyTest, Equality_WithAncestorChain) {
 }
 
 TEST(CookiePartitionKeyTest, Equality_WithNonce) {
-  GURL frame_url("https://cookiesite.com");
+  SchemefulSite top_level_site =
+      SchemefulSite(GURL("https://toplevelsite.com"));
+  SchemefulSite frame_site = SchemefulSite(GURL("https://cookiesite.com"));
   base::UnguessableToken nonce1 = base::UnguessableToken::Create();
   base::UnguessableToken nonce2 = base::UnguessableToken::Create();
-  ASSERT_NE(nonce1, nonce2);
+  EXPECT_NE(nonce1, nonce2);
+  auto key1 = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site, nonce1), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_TRUE(key1.has_value());
 
-  CookiePartitionKey key1 =
-      CookiePartitionKey::FromURLForTesting(frame_url, kCrossSite, nonce1);
-  CookiePartitionKey key2 =
-      CookiePartitionKey::FromURLForTesting(frame_url, kCrossSite, nonce2);
+  auto key2 = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site, nonce2), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_TRUE(key1.has_value() && key2.has_value());
   EXPECT_NE(key1, key2);
 
-  CookiePartitionKey key3 =
-      CookiePartitionKey::FromURLForTesting(frame_url, kCrossSite, nonce1);
+  auto key3 = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site, nonce1), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
   EXPECT_EQ(key1, key3);
-  CookiePartitionKey unnonced_key =
-      CookiePartitionKey::FromURLForTesting(frame_url, kCrossSite);
+  // Confirm that nonce is evaluated before main_frame_navigation
+  auto key4 = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site, nonce1), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/true);
+  EXPECT_EQ(key1, key4);
+  auto unnonced_key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site), SiteForCookies(),
+      frame_site, /*main_frame_navigation=*/false);
   EXPECT_NE(key1, unnonced_key);
 }
 
 TEST(CookiePartitionKeyTest, NoncedKeyForbidsUnpartitionedAccess) {
-  GURL frame_url("https://cookiesite.com");
+  SchemefulSite top_level_site(GURL("https://toplevelsite.com"));
+  SchemefulSite frame_site(GURL("https://cookiesite.com"));
 
-  EXPECT_FALSE(
-      CookiePartitionKey::FromURLForTesting(frame_url, kCrossSite, std::nullopt)
-          .ForbidsUnpartitionedCookieAccess());
+  auto key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_FALSE(key->ForbidsUnpartitionedCookieAccess());
 
-  EXPECT_TRUE(CookiePartitionKey::FromURLForTesting(
-                  frame_url, kCrossSite, base::UnguessableToken::Create())
-                  .ForbidsUnpartitionedCookieAccess());
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site, nonce), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_TRUE(key->ForbidsUnpartitionedCookieAccess());
+}
+
+TEST(CookiePartitionKeyTest, Localhost) {
+  SchemefulSite top_level_site(GURL("https://localhost:8000"));
+
+  auto key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, top_level_site), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_TRUE(key.has_value());
+
+  SchemefulSite frame_site(GURL("https://cookiesite.com"));
+  key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_TRUE(key.has_value());
 }
 
 }  // namespace net

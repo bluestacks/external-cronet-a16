@@ -33,7 +33,6 @@
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
-#include "net/http/http_stream_pool.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_entry.h"
@@ -404,13 +403,6 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
   {
     net_info_dict.Set(kNetInfoSocketPool,
                       http_network_session->SocketPoolInfoToValue());
-  }
-
-  // Log HttpStreamPool info.
-  if (http_network_session->http_stream_pool()) {
-    net_info_dict.Set(
-        kNetInfoHttpStreamPool,
-        http_network_session->http_stream_pool()->GetInfoAsValue());
   }
 
   // Log SPDY Sessions.

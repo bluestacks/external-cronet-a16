@@ -21,7 +21,7 @@
 #include "gtest/gtest.h"
 #include "absl/container/flat_hash_set.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(IntUtilsTest, Hash64Bits) {
@@ -61,4 +61,4 @@ TEST(IntUtilsTest, Hash64Bits) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

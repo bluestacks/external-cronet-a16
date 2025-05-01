@@ -22,12 +22,6 @@
 extern "C" {
 #endif
 
-/*
- * Backward compatibility
- */
-#define valuePush xmlXPathValuePush
-#define valuePop xmlXPathValuePop
-
 /************************************************************************
  *									*
  *			Helpers						*
@@ -484,10 +478,11 @@ XMLPUBFUN xmlXPathParserContextPtr
 XMLPUBFUN void
 		xmlXPathFreeParserContext	(xmlXPathParserContextPtr ctxt);
 
+/* TODO: remap to xmlXPathValuePop and Push. */
 XMLPUBFUN xmlXPathObjectPtr
-		xmlXPathValuePop		(xmlXPathParserContextPtr ctxt);
+		valuePop			(xmlXPathParserContextPtr ctxt);
 XMLPUBFUN int
-		xmlXPathValuePush		(xmlXPathParserContextPtr ctxt,
+		valuePush			(xmlXPathParserContextPtr ctxt,
 						 xmlXPathObjectPtr value);
 
 XMLPUBFUN xmlXPathObjectPtr

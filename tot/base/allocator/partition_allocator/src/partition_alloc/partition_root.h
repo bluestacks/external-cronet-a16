@@ -30,10 +30,12 @@
 //   might be placed into a 4096-byte bucket. Bucket sizes are chosen to try and
 //   keep worst-case waste to ~10%.
 
+#include <algorithm>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "partition_alloc/address_pool_manager_types.h"
@@ -50,8 +52,6 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
-#include "partition_alloc/partition_alloc_base/cxx_wrapper/optional.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
@@ -1634,7 +1634,15 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   internal::DebugMemset(internal::SlotStartAddr2Ptr(slot_start),
                         internal::kFreedByte, slot_span->GetUtilizedSlotSize());
-#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+#elif PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
+  // `memset` only once in a while: we're trading off safety for time
+  // efficiency.
+  if (internal::RandomPeriod() [[unlikely]] &&
+      !IsDirectMappedBucket(slot_span->bucket)) {
+    internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start), 0,
+                           slot_span->GetUtilizedSlotSize());
+  }
+#endif  // PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
   // TODO(keishi): Create function to convert |object| to |slot_start_ptr|.
   void* slot_start_ptr = object;
   RawFreeWithThreadCache(slot_start, slot_start_ptr, slot_span);

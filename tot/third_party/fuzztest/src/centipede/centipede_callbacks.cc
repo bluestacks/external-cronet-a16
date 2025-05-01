@@ -45,7 +45,7 @@
 #include "./common/hash.h"
 #include "./common/logging.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 // When running a test binary in a subprocess, we don't want these environment
@@ -118,7 +118,6 @@ std::string CentipedeCallbacks::ConstructRunnerFlags(
       absl::StrCat("rss_limit_mb=", env_.rss_limit_mb),
       absl::StrCat("stack_limit_kb=", env_.stack_limit_kb),
       absl::StrCat("crossover_level=", env_.crossover_level),
-      absl::StrCat("max_len=", env_.max_len),
   };
   if (env_.ignore_timeout_reports) {
     flags.emplace_back("ignore_timeout_reports");
@@ -202,7 +201,8 @@ int CentipedeCallbacks::ExecuteCentipedeSancovBinaryWithShmem(
     num_inputs_written = 1;
   } else {
     // Feed the inputs to inputs_blobseq_.
-    num_inputs_written = RequestExecution(inputs, inputs_blobseq_);
+    num_inputs_written =
+        runner_request::RequestExecution(inputs, inputs_blobseq_);
   }
 
   if (num_inputs_written != inputs.size()) {
@@ -352,7 +352,7 @@ MutationResult CentipedeCallbacks::MutateViaExternalBinary(
   outputs_blobseq_.Reset();
 
   size_t num_inputs_written =
-      RequestMutation(num_mutants, inputs, inputs_blobseq_);
+      runner_request::RequestMutation(num_mutants, inputs, inputs_blobseq_);
   LOG_IF(INFO, num_inputs_written != inputs.size())
       << VV(num_inputs_written) << VV(inputs.size());
 
@@ -429,4 +429,4 @@ void CentipedeCallbacks::PrintExecutionLog() const {
   }
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

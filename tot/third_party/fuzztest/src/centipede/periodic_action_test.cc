@@ -27,7 +27,7 @@
 #include "absl/time/time.h"
 #include "./common/logging.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(PeriodicActionTest, OnlyPeriodicInvocations) {
@@ -225,4 +225,4 @@ TEST(PeriodicActionTest, ActionIsMoveable) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

@@ -80,8 +80,7 @@ class FakeProducer : public Producer {
   void StartDataSource(DataSourceInstanceID,
                        const DataSourceConfig& source_config) override {
     auto trace_writer = endpoint_->CreateTraceWriter(
-        static_cast<BufferID>(source_config.target_buffer()),
-        BufferExhaustedPolicy::kStall);
+        static_cast<BufferID>(source_config.target_buffer()));
     {
       auto packet = trace_writer->NewTracePacket();
       packet->AppendRawProtoBytes(data_, size_);

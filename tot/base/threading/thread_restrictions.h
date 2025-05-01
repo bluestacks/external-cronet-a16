@@ -281,6 +281,9 @@ namespace enterprise_connectors {
 class LinuxKeyRotationCommand;
 }  // namespace enterprise_connectors
 namespace extensions {
+// TODO(https://crbug.com/356905053): Remove DesktopAndroidExtensionSystem
+// from here once ExtensionService is enabled for desktop android.
+class DesktopAndroidExtensionSystem;
 class InstalledLoader;
 class UnpackedInstaller;
 }  // namespace extensions
@@ -610,6 +613,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class cronet::CronetPrefsManager;
   friend class crypto::ScopedAllowBlockingForNSS;  // http://crbug.com/59847
   friend class drive::FakeDriveService;
+  friend class extensions::DesktopAndroidExtensionSystem;
   friend class extensions::InstalledLoader;
   friend class extensions::UnpackedInstaller;
   friend class font_service::internal::MappedFontFile;

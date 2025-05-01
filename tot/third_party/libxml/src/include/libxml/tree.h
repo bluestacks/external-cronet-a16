@@ -33,12 +33,6 @@ extern "C" {
 #endif
 
 /*
- * Backward compatibility
- */
-#define xmlBufferAllocScheme XML_BUFFER_ALLOC_EXACT
-#define xmlDefaultBufferSize 4096
-
-/*
  * Some of the basic types pointer to structures:
  */
 /* xmlIO.h */
@@ -64,6 +58,13 @@ typedef xmlSAXHandler *xmlSAXHandlerPtr;
 /* entities.h */
 typedef struct _xmlEntity xmlEntity;
 typedef xmlEntity *xmlEntityPtr;
+
+/**
+ * BASE_BUFFER_SIZE:
+ *
+ * default buffer size 4000.
+ */
+#define BASE_BUFFER_SIZE 4096
 
 /**
  * LIBXML_NAMESPACE_DICT:
@@ -677,17 +678,34 @@ typedef void (*xmlDeregisterNodeFunc) (xmlNodePtr node);
  * Variables.
  */
 
-/** DOC_DISABLE */
 XML_DEPRECATED
-XMLPUBFUN xmlRegisterNodeFunc *__xmlRegisterNodeDefaultValue(void);
+XMLPUBVAR const xmlBufferAllocationScheme xmlBufferAllocScheme;
 XML_DEPRECATED
-XMLPUBFUN xmlDeregisterNodeFunc *__xmlDeregisterNodeDefaultValue(void);
+XMLPUBVAR const int xmlDefaultBufferSize;
 
-#ifndef XML_GLOBALS_NO_REDEFINITION
+#ifdef LIBXML_THREAD_ENABLED
+/* backward compatibility */
+XML_DEPRECATED
+XMLPUBFUN const xmlBufferAllocationScheme *__xmlBufferAllocScheme(void);
+XML_DEPRECATED
+XMLPUBFUN const int *__xmlDefaultBufferSize(void);
+#endif
+
+/** DOC_DISABLE */
+#define XML_GLOBALS_TREE \
+  XML_OP(xmlRegisterNodeDefaultValue, xmlRegisterNodeFunc, XML_DEPRECATED) \
+  XML_OP(xmlDeregisterNodeDefaultValue, xmlDeregisterNodeFunc, \
+         XML_DEPRECATED)
+
+#define XML_OP XML_DECLARE_GLOBAL
+XML_GLOBALS_TREE
+#undef XML_OP
+
+#if defined(LIBXML_THREAD_ENABLED) && !defined(XML_GLOBALS_NO_REDEFINITION)
   #define xmlRegisterNodeDefaultValue \
-    (*__xmlRegisterNodeDefaultValue())
+    XML_GLOBAL_MACRO(xmlRegisterNodeDefaultValue)
   #define xmlDeregisterNodeDefaultValue \
-    (*__xmlDeregisterNodeDefaultValue())
+    XML_GLOBAL_MACRO(xmlDeregisterNodeDefaultValue)
 #endif
 /** DOC_ENABLE */
 
@@ -1315,6 +1333,11 @@ XMLPUBFUN xmlRegisterNodeFunc
 XML_DEPRECATED
 XMLPUBFUN xmlDeregisterNodeFunc
             xmlThrDefDeregisterNodeDefault(xmlDeregisterNodeFunc func);
+
+XML_DEPRECATED XMLPUBFUN xmlBufferAllocationScheme
+            xmlThrDefBufferAllocScheme  (xmlBufferAllocationScheme v);
+XML_DEPRECATED XMLPUBFUN int
+            xmlThrDefDefaultBufferSize  (int v);
 
 #ifdef __cplusplus
 }

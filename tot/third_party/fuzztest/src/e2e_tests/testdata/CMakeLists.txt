@@ -12,8 +12,6 @@ target_link_libraries(
   fuzztest_status
   protobuf::libprotobuf
   test_protobuf
-  absl::random_bit_gen_ref
-  absl::random_distributions
   absl::str_format
   absl::string_view
 )
@@ -31,13 +29,11 @@ target_link_libraries(
   PUBLIC
   protobuf::libprotobuf
   test_protobuf
-  absl::algorithm_container
   absl::check
+  absl::algorithm_container
   absl::flat_hash_map
   absl::flat_hash_set
   absl::function_ref
-  absl::random_bit_gen_ref
-  absl::random_distributions
   absl::span
   absl::str_format
   absl::strings
@@ -76,6 +72,22 @@ add_executable(
 link_fuzztest(dynamically_registered_fuzz_tests.stripped)
 set_target_properties(
   dynamically_registered_fuzz_tests.stripped
+  PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+  "${CMAKE_BINARY_DIR}/_main/e2e_tests/testdata"
+)
+
+add_executable(
+  domain_tests.stripped
+  domain_tests.cc
+)
+target_link_libraries(
+  domain_tests.stripped
+  PUBLIC
+  absl::str_format
+)
+link_fuzztest_core(domain_tests.stripped)
+set_target_properties(
+  domain_tests.stripped
   PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   "${CMAKE_BINARY_DIR}/_main/e2e_tests/testdata"
 )

@@ -23,7 +23,7 @@
 #include "./centipede/shared_memory_blob_sequence.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 using ::testing::IsEmpty;
@@ -119,4 +119,4 @@ TEST(ExecutionMetadata, ReadAndWriteKeepsCmpEntries) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

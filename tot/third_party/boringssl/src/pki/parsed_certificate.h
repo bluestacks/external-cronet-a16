@@ -21,7 +21,6 @@
 #include <vector>
 
 #include <openssl/base.h>
-#include <openssl/span.h>
 
 #include "certificate_policies.h"
 #include "input.h"
@@ -118,7 +117,7 @@ class OPENSSL_EXPORT ParsedCertificate {
   // Sequence tag). This is guaranteed to be valid DER, though the contents of
   // unhandled string types are treated as raw bytes.
   der::Input normalized_subject() const {
-    return StringAsBytes(normalized_subject_);
+    return der::Input(normalized_subject_);
   }
   // Returns the DER-encoded raw issuer value (including the outer sequence
   // tag). This is guaranteed to be valid DER, though the contents of unhandled
@@ -128,7 +127,7 @@ class OPENSSL_EXPORT ParsedCertificate {
   // Sequence tag). This is guaranteed to be valid DER, though the contents of
   // unhandled string types are treated as raw bytes.
   der::Input normalized_issuer() const {
-    return StringAsBytes(normalized_issuer_);
+    return der::Input(normalized_issuer_);
   }
 
   // Returns true if the certificate has a BasicConstraints extension.

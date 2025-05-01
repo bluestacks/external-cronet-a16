@@ -15,21 +15,21 @@
  *
  * the version string like "1.2.3"
  */
-#define LIBXML_DOTTED_VERSION "2.14.2"
+#define LIBXML_DOTTED_VERSION "2.14.0"
 
 /**
  * LIBXML_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXML_VERSION 21402
+#define LIBXML_VERSION 21400
 
 /**
  * LIBXML_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXML_VERSION_STRING "21402"
+#define LIBXML_VERSION_STRING "21400"
 
 /**
  * LIBXML_VERSION_EXTRA:
@@ -44,7 +44,7 @@
  * Macro to check that the libxml version in use is compatible with
  * the version the software has been compiled against
  */
-#define LIBXML_TEST_VERSION xmlCheckVersion(21402);
+#define LIBXML_TEST_VERSION xmlCheckVersion(21400);
 
 /**
  * LIBXML_THREAD_ENABLED:
@@ -155,9 +155,11 @@
 /**
  * LIBXML_LEGACY_ENABLED:
  *
- * Removed in 2.14
+ * Whether the deprecated APIs are compiled in for compatibility
  */
-#undef LIBXML_LEGACY_ENABLED
+#if 0
+#define LIBXML_LEGACY_ENABLED
+#endif
 
 /**
  * LIBXML_C14N_ENABLED:
@@ -243,9 +245,11 @@
 /**
  * LIBXML_UNICODE_ENABLED:
  *
- * Removed in 2.14
+ * Whether the Unicode related interfaces are compiled in
  */
-#undef LIBXML_UNICODE_ENABLED
+#if 0
+#define LIBXML_UNICODE_ENABLED
+#endif
 
 /**
  * LIBXML_REGEXP_ENABLED:
@@ -263,15 +267,6 @@
  */
 #if 0
 #define LIBXML_AUTOMATA_ENABLED
-#endif
-
-/**
- * LIBXML_RELAXNG_ENABLED:
- *
- * Whether the RelaxNG validation interfaces are compiled in
- */
-#if 0
-#define LIBXML_RELAXNG_ENABLED
 #endif
 
 /**

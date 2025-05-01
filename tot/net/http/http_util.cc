@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // The rules for parsing content-types were borrowed from Firefox:
 // http://lxr.mozilla.org/mozilla/source/netwerk/base/src/nsURLHelper.cpp#834
 
 #include "net/http/http_util.h"
 
 #include <algorithm>
-#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -300,11 +304,11 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
 
 // static
 std::string HttpUtil::TimeFormatHTTP(base::Time time) {
-  static constexpr std::array<char[4], 7> kWeekdayName = {
-      "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-  static constexpr std::array<char[4], 12> kMonthName = {
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  static constexpr char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
+                                              "Thu", "Fri", "Sat"};
+  static constexpr char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr",
+                                             "May", "Jun", "Jul", "Aug",
+                                             "Sep", "Oct", "Nov", "Dec"};
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
   return base::StringPrintf(
@@ -701,13 +705,14 @@ std::string HttpUtil::AssembleRawHeaders(std::string_view input) {
   // line's field-value.
 
   // TODO(ericroman): is this too permissive? (delimits on [\r\n]+)
-  base::StringViewTokenizer lines(input, "\r\n");
+  base::CStringTokenizer lines(input.data(), input.data() + input.size(),
+                               "\r\n");
 
   // This variable is true when the previous line was continuable.
   bool prev_line_continuable = false;
 
   while (lines.GetNext()) {
-    std::string_view line = lines.token();
+    std::string_view line = lines.token_piece();
 
     if (prev_line_continuable && IsLWS(line[0])) {
       // Join continuation; reduce the leading LWS to a single SP.
@@ -910,21 +915,13 @@ int HttpUtil::MapStatusCodeForHistogram(int code) {
 
 HttpUtil::HeadersIterator::HeadersIterator(std::string_view headers,
                                            const std::string& line_delimiter)
-    : headers_(headers),
-      // It's important to use `headers_` here rather than `headers`, since
-      // subtracting two string_view::iterators from each other is not
-      // guaranteed to work, if they're from different string_views, even if one
-      // is a copy of the other. Note that StringViewTokenizer uses iterators to
-      // the passed in string_view, rather than a copying it.
-      lines_(headers_, line_delimiter) {}
+    : headers_(headers), lines_(headers, line_delimiter) {}
 
 HttpUtil::HeadersIterator::~HeadersIterator() = default;
 
 bool HttpUtil::HeadersIterator::GetNext() {
   while (lines_.GetNext()) {
-    // Since `tokenizer_` was constructed using `headers_`, this is subtracting
-    // iterators for the exact same string_view, rather than to two copies of
-    // the same string_view, so is safe.
+    // Calculate begin/end positions relative to entire string.
     name_begin_ = lines_.token_begin() - headers_.begin();
     values_end_ = lines_.token_end() - headers_.begin();
 
@@ -963,21 +960,14 @@ bool HttpUtil::HeadersIterator::GetNext() {
 HttpUtil::ValuesIterator::ValuesIterator(std::string_view values,
                                          char delimiter,
                                          bool ignore_empty_values)
-    : values_(values),
-      ignore_empty_values_(ignore_empty_values),
-      // It's important to use `values_` here rather than `value`, since
-      // subtracting two string_view::iterators from each other is not
-      // guaranteed to work, if they're from different string_views, even if one
-      // is a copy of the other. Note that StringViewTokenizer uses iterators to
-      // the passed in string_view, rather than a copying it.
-      tokenizer_(values_, std::string(1, delimiter)) {
-  tokenizer_.set_quote_chars("\"");
+    : values_(values, std::string(1, delimiter)),
+      ignore_empty_values_(ignore_empty_values) {
+  values_.set_quote_chars("\"");
   // Could set this unconditionally, since code below has to check for empty
   // values after trimming, anyways, but may provide a minor performance
   // improvement.
-  if (!ignore_empty_values_) {
-    tokenizer_.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
-  }
+  if (!ignore_empty_values_)
+    values_.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
 }
 
 HttpUtil::ValuesIterator::ValuesIterator(const ValuesIterator& other) = default;
@@ -985,15 +975,10 @@ HttpUtil::ValuesIterator::ValuesIterator(const ValuesIterator& other) = default;
 HttpUtil::ValuesIterator::~ValuesIterator() = default;
 
 bool HttpUtil::ValuesIterator::GetNext() {
-  while (tokenizer_.GetNext()) {
-    // Since `tokenizer_` was constructed using `values_`, this is subtracting
-    // iterators for the exact same string_view, rather than to two copies of
-    // the same string_view, so is safe.
-    value_begin_ = tokenizer_.token_begin() - values_.begin();
-    value_end_ = tokenizer_.token_end() - values_.begin();
-    TrimLWS(values_, value_begin_, value_end_);
+  while (values_.GetNext()) {
+    value_ = TrimLWS(values_.token());
 
-    if (!ignore_empty_values_ || value_begin_ != value_end_) {
+    if (!ignore_empty_values_ || !value_.empty()) {
       return true;
     }
   }

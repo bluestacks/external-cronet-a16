@@ -56,18 +56,19 @@ static int bn_gcd_consttime(BIGNUM *r, unsigned *out_shift, const BIGNUM *x,
   }
 
   // This is a constant-time implementation of Stein's algorithm (binary GCD).
-  bssl::BN_CTXScope scope(ctx);
+  int ret = 0;
+  BN_CTX_start(ctx);
   BIGNUM *u = BN_CTX_get(ctx);
   BIGNUM *v = BN_CTX_get(ctx);
   BIGNUM *tmp = BN_CTX_get(ctx);
   unsigned x_bits, y_bits, num_iters, shift;
-  if (u == nullptr || v == nullptr || tmp == nullptr ||  //
+  if (u == NULL || v == NULL || tmp == NULL ||  //
       !BN_copy(u, x) ||                         //
       !BN_copy(v, y) ||                         //
       !bn_resize_words(u, width) ||             //
       !bn_resize_words(v, width) ||             //
       !bn_resize_words(tmp, width)) {
-    return 0;
+    goto err;
   }
 
   // Each loop iteration halves at least one of |u| and |v|. Thus we need at
@@ -77,7 +78,7 @@ static int bn_gcd_consttime(BIGNUM *r, unsigned *out_shift, const BIGNUM *x,
   num_iters = x_bits + y_bits;
   if (num_iters < x_bits) {
     OPENSSL_PUT_ERROR(BN, BN_R_BIGNUM_TOO_LONG);
-    return 0;
+    goto err;
   }
 
   shift = 0;
@@ -113,7 +114,11 @@ static int bn_gcd_consttime(BIGNUM *r, unsigned *out_shift, const BIGNUM *x,
   }
 
   *out_shift = shift;
-  return bn_set_words(r, v->d, width);
+  ret = bn_set_words(r, v->d, width);
+
+err:
+  BN_CTX_end(ctx);
+  return ret;
 }
 
 int BN_gcd(BIGNUM *r, const BIGNUM *x, const BIGNUM *y, BN_CTX *ctx) {
@@ -123,11 +128,12 @@ int BN_gcd(BIGNUM *r, const BIGNUM *x, const BIGNUM *y, BN_CTX *ctx) {
 
 int bn_is_relatively_prime(int *out_relatively_prime, const BIGNUM *x,
                            const BIGNUM *y, BN_CTX *ctx) {
-  bssl::BN_CTXScope scope(ctx);
+  int ret = 0;
+  BN_CTX_start(ctx);
   unsigned shift;
   BIGNUM *gcd = BN_CTX_get(ctx);
-  if (gcd == nullptr || !bn_gcd_consttime(gcd, &shift, x, y, ctx)) {
-    return 0;
+  if (gcd == NULL || !bn_gcd_consttime(gcd, &shift, x, y, ctx)) {
+    goto err;
   }
 
   // Check that 2^|shift| * |gcd| is one.
@@ -140,20 +146,25 @@ int bn_is_relatively_prime(int *out_relatively_prime, const BIGNUM *x,
     }
     *out_relatively_prime = mask == 0;
   }
+  ret = 1;
 
-  return 1;
+err:
+  BN_CTX_end(ctx);
+  return ret;
 }
 
 int bn_lcm_consttime(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, BN_CTX *ctx) {
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   unsigned shift;
   BIGNUM *gcd = BN_CTX_get(ctx);
-  return gcd != nullptr &&  //
-         bn_mul_consttime(r, a, b, ctx) &&
-         bn_gcd_consttime(gcd, &shift, a, b, ctx) &&
-         // |gcd| has a secret bit width.
-         bn_div_consttime(r, nullptr, r, gcd, /*divisor_min_bits=*/0, ctx) &&
-         bn_rshift_secret_shift(r, r, shift, ctx);
+  int ret = gcd != NULL &&  //
+            bn_mul_consttime(r, a, b, ctx) &&
+            bn_gcd_consttime(gcd, &shift, a, b, ctx) &&
+            // |gcd| has a secret bit width.
+            bn_div_consttime(r, NULL, r, gcd, /*divisor_min_bits=*/0, ctx) &&
+            bn_rshift_secret_shift(r, r, shift, ctx);
+  BN_CTX_end(ctx);
+  return ret;
 }
 
 int bn_mod_inverse_consttime(BIGNUM *r, int *out_no_inverse, const BIGNUM *a,
@@ -196,7 +207,8 @@ int bn_mod_inverse_consttime(BIGNUM *r, int *out_no_inverse, const BIGNUM *a,
     a_width = n_width;
   }
 
-  bssl::BN_CTXScope scope(ctx);
+  int ret = 0;
+  BN_CTX_start(ctx);
   BIGNUM *u = BN_CTX_get(ctx);
   BIGNUM *v = BN_CTX_get(ctx);
   BIGNUM *A = BN_CTX_get(ctx);
@@ -206,14 +218,14 @@ int bn_mod_inverse_consttime(BIGNUM *r, int *out_no_inverse, const BIGNUM *a,
   BIGNUM *tmp = BN_CTX_get(ctx);
   BIGNUM *tmp2 = BN_CTX_get(ctx);
   size_t a_bits, num_iters, n_bits;
-  if (u == nullptr ||       //
-      v == nullptr ||       //
-      A == nullptr ||       //
-      B == nullptr ||       //
-      C == nullptr ||       //
-      D == nullptr ||       //
-      tmp == nullptr ||     //
-      tmp2 == nullptr ||    //
+  if (u == NULL ||       //
+      v == NULL ||       //
+      A == NULL ||       //
+      B == NULL ||       //
+      C == NULL ||       //
+      D == NULL ||       //
+      tmp == NULL ||     //
+      tmp2 == NULL ||    //
       !BN_copy(u, a) ||  //
       !BN_copy(v, n) ||  //
       !BN_one(A) ||      //
@@ -230,7 +242,7 @@ int bn_mod_inverse_consttime(BIGNUM *r, int *out_no_inverse, const BIGNUM *a,
       // |tmp| and |tmp2| may be used at either size.
       !bn_resize_words(tmp, n_width) ||  //
       !bn_resize_words(tmp2, n_width)) {
-    return 0;
+    goto err;
   }
 
   // Each loop iteration halves at least one of |u| and |v|. Thus we need at
@@ -242,7 +254,7 @@ int bn_mod_inverse_consttime(BIGNUM *r, int *out_no_inverse, const BIGNUM *a,
   num_iters = a_bits + n_bits;
   if (num_iters < a_bits) {
     OPENSSL_PUT_ERROR(BN, BN_R_BIGNUM_TOO_LONG);
-    return 0;
+    goto err;
   }
 
   // Before and after each loop iteration, the following hold:
@@ -316,8 +328,12 @@ int bn_mod_inverse_consttime(BIGNUM *r, int *out_no_inverse, const BIGNUM *a,
   if (constant_time_declassify_int(!BN_is_one(u))) {
     *out_no_inverse = 1;
     OPENSSL_PUT_ERROR(BN, BN_R_NO_INVERSE);
-    return 0;
+    goto err;
   }
 
-  return BN_copy(r, A) != nullptr;
+  ret = BN_copy(r, A) != NULL;
+
+err:
+  BN_CTX_end(ctx);
+  return ret;
 }

@@ -66,8 +66,7 @@
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
-#include "absl/base/port.h"  // TODO(strel): remove this include
-#include "absl/hash/internal/weakly_mixed_integer.h"
+#include "absl/base/port.h"    // TODO(strel): remove this include
 #include "absl/meta/type_traits.h"
 #include "absl/types/internal/span.h"
 
@@ -499,7 +498,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   template <typename H>
   friend H AbslHashValue(H h, Span v) {
     return H::combine(H::combine_contiguous(std::move(h), v.data(), v.size()),
-                      hash_internal::WeaklyMixedInteger{v.size()});
+                      v.size());
   }
 
  private:

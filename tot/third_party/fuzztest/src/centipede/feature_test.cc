@@ -16,7 +16,7 @@
 
 #include "gtest/gtest.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(Feature, FeatureArray) {
@@ -40,4 +40,4 @@ TEST(Feature, FeatureArray) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

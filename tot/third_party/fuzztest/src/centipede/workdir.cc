@@ -31,7 +31,7 @@
 #include "./centipede/environment.h"
 #include "./common/logging.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace {
 
@@ -121,7 +121,7 @@ WorkDir::WorkDir(                  //
       binary_hash_{binary_hash_holder_},
       my_shard_index_{my_shard_index_holder_} {}
 
-WorkDir::WorkDir(const fuzztest::internal::Environment& env)
+WorkDir::WorkDir(const centipede::Environment& env)
     : workdir_{env.workdir},
       binary_name_{env.binary_name},
       binary_hash_{env.binary_hash},
@@ -242,4 +242,5 @@ std::vector<std::string> WorkDir::EnumerateRawCoverageProfiles() const {
   return raw_profiles;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
+

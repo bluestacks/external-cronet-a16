@@ -25,7 +25,17 @@ INCLUDE PERFETTO MODULE wattson.curves.utils;
 
 INCLUDE PERFETTO MODULE wattson.device_infos;
 
-INCLUDE PERFETTO MODULE wattson.utils;
+-- Helper macro for using Perfetto table with interval intersect
+CREATE PERFETTO MACRO _ii_subquery(
+    tab TableOrSubquery
+)
+RETURNS TableOrSubquery AS
+(
+  SELECT
+    _auto_id AS id,
+    *
+  FROM $tab
+);
 
 -- Wattson estimation is valid from when first CPU0 frequency appears
 CREATE PERFETTO TABLE _valid_window AS

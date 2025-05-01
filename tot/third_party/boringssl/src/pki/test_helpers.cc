@@ -26,7 +26,6 @@
 #include <openssl/bytestring.h>
 #include <openssl/mem.h>
 #include <openssl/pool.h>
-#include <openssl/span.h>
 
 #include "../crypto/test/test_data.h"
 #include "cert_error_params.h"
@@ -124,7 +123,7 @@ void PrintTo(Input data, ::std::ostream *os) {
 }  // namespace der
 
 der::Input SequenceValueFromString(std::string_view s) {
-  der::Parser parser(StringAsBytes(s));
+  der::Parser parser((der::Input(s)));
   der::Input data;
   if (!parser.ReadTag(CBS_ASN1_SEQUENCE, &data)) {
     ADD_FAILURE();
@@ -300,7 +299,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string &file_path_ascii,
       if (value == "DEFAULT") {
         value = "211005120000Z";
       }
-      if (!der::ParseUTCTime(StringAsBytes(value), &test->time)) {
+      if (!der::ParseUTCTime(der::Input(value), &test->time)) {
         ADD_FAILURE() << "Failed parsing UTC time";
         return false;
       }

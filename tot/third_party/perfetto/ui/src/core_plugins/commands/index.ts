@@ -163,14 +163,6 @@ export default class implements PerfettoPlugin {
         icon: 'filter_none',
       });
     }
-
-    ctx.commands.registerCommand({
-      id: 'perfetto.closeTrace',
-      name: 'Close trace',
-      callback: () => {
-        ctx.closeCurrentTrace();
-      },
-    });
   }
 
   async onTraceLoad(ctx: Trace): Promise<void> {

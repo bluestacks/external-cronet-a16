@@ -39,7 +39,6 @@ mod grammar_builder;
 mod json;
 #[cfg(feature = "jsonschema_validation")]
 mod json_validation;
-mod regex_rewrite;
 pub mod substring;
 pub use grammar_builder::{GrammarBuilder, NodeRef};
 pub use json::compiler::JsonCompileOptions;
@@ -49,8 +48,6 @@ pub use tokenizer_json::token_bytes_from_tokenizer_json;
 
 #[cfg(feature = "lark")]
 mod lark;
-
-pub use regex_rewrite::regex_to_lark;
 
 #[cfg(feature = "wasm")]
 pub use instant::Instant;

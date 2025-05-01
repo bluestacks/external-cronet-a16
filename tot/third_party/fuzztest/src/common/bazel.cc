@@ -25,7 +25,7 @@
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace {
 
@@ -124,4 +124,4 @@ absl::Status VerifyBazelHasEnoughTimeToRunTest(absl::Time target_start_time,
   return absl::ResourceExhaustedError(error);
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

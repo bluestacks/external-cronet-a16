@@ -4,7 +4,6 @@
 
 #include "net/base/features.h"
 
-#include <string>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -140,6 +139,12 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPostQuantumKyber,
+             "PostQuantumKyber",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSearchEnginePreconnectInterval,
              "SearchEnginePreconnectInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -148,28 +153,10 @@ BASE_FEATURE(kSearchEnginePreconnect2,
              "SearchEnginePreconnect2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(int,
-                   kIdleTimeoutInSeconds,
-                   &kSearchEnginePreconnect2,
-                   "IdleTimeoutInSeconds",
-                   120);
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kShortSessionThreshold,
-                   &kSearchEnginePreconnect2,
-                   "MaxShortSessionThreashold",
-                   base::Seconds(30));
-
 extern const base::FeatureParam<int> kMaxPreconnectRetryInterval(
     &kSearchEnginePreconnect2,
     "MaxPreconnectRetryInterval",
     30);
-
-BASE_FEATURE_PARAM(int,
-                   kPingIntervalInSeconds,
-                   &kSearchEnginePreconnect2,
-                   "PingIntervalInSeconds",
-                   30);
 
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
@@ -178,6 +165,10 @@ BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
 BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSchemefulSameSite,
+             "SchemefulSameSite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLimitOpenUDPSockets,
              "LimitOpenUDPSockets",
@@ -353,41 +344,10 @@ const base::FeatureParam<std::string> kProbabilisticRevealTokenServerPath{
     /*name=*/"ProbabilisticRevealTokenServerPath",
     /*default_value=*/"/v1/issueprts"};
 
-const base::FeatureParam<bool> kBypassProbabilisticRevealTokenRegistry{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"BypassProbabilisticRevealTokenRegistry",
-    /*default_value=*/false};
-
-const base::FeatureParam<bool> kUseCustomProbabilisticRevealTokenRegistry{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"UseCustomProbabilisticRevealTokenRegistry",
-    /*default_value=*/false};
-
-const base::FeatureParam<std::string> kCustomProbabilisticRevealTokenRegistry{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"CustomProbabilisticRevealTokenRegistry",
-    /*default_value=*/""};
-
-const base::FeatureParam<bool> kProbabilisticRevealTokensOnlyInIncognito{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"ProbabilisticRevealTokensOnlyInIncognito",
-    /*default_value=*/false};
-
-const base::FeatureParam<bool> kProbabilisticRevealTokenFetchOnly{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"ProbabilisticRevealTokenFetchOnly",
-    /*default_value=*/false};
-
 const base::FeatureParam<bool>
-    kEnableProbabilisticRevealTokensForNonProxiedRequests{
+    kAttachProbabilisticRevealTokensOnAllProxiedRequests{
         &kEnableProbabilisticRevealTokens,
-        /*name=*/"EnableProbabilisticRevealTokensForNonProxiedRequests",
-        /*default_value=*/false};
-
-const base::FeatureParam<bool>
-    kProbabilisticRevealTokensAddHeaderToProxiedRequests{
-        &kEnableProbabilisticRevealTokens,
-        /*name=*/"ProbabilisticRevealTokensAddHeaderToProxiedRequests",
+        /*name=*/"AttachProbabilisticRevealTokensOnAllProxiedRequests",
         /*default_value=*/false};
 
 // IP protection experiment configuration settings
@@ -597,6 +557,8 @@ BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
              "SpdyHeadersToHttpResponseUseBuilder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReportEcn, "ReportEcn", base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseNewAlpsCodepointHttp2,
              "UseNewAlpsCodepointHttp2",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -754,20 +716,5 @@ BASE_FEATURE(kSelfSignedLocalNetworkInterstitial,
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 BASE_FEATURE(kVerifyQWACs, "VerifyQWACs", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kIncludeDeprecatedClientCertLookup,
-             "IncludeDeprecatedClientCertLookup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kRestrictAbusePorts,
-             "RestrictAbusePorts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kPortsToRestrictForAbuse,
-                   &kRestrictAbusePorts,
-                   "PortsToRestrictForAbuse",
-                   "");
 
 }  // namespace net::features

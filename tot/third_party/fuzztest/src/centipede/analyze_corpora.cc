@@ -38,7 +38,7 @@
 #include "./common/logging.h"
 #include "./common/remote_file.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace {
 
@@ -180,16 +180,13 @@ void DumpCoverageReport(const CoverageResults &coverage_results,
                         std::string_view coverage_report_path) {
   LOG(INFO) << "Dump coverage to file: " << coverage_report_path;
 
-  const fuzztest::internal::PCTable &pc_table =
-      coverage_results.binary_info.pc_table;
-  const fuzztest::internal::SymbolTable &symbols =
-      coverage_results.binary_info.symbols;
+  const centipede::PCTable &pc_table = coverage_results.binary_info.pc_table;
+  const centipede::SymbolTable &symbols = coverage_results.binary_info.symbols;
 
-  fuzztest::internal::SymbolTable coverage_symbol_table;
+  centipede::SymbolTable coverage_symbol_table;
   for (const PCIndex pc : coverage_results.pcs) {
     CHECK_LE(pc, symbols.size());
-    if (!pc_table[pc].has_flag(fuzztest::internal::PCInfo::kFuncEntry))
-      continue;
+    if (!pc_table[pc].has_flag(centipede::PCInfo::kFuncEntry)) continue;
     const SymbolTable::Entry entry = symbols.entry(pc);
     coverage_symbol_table.AddEntry(entry.func, entry.file_line_col());
   }
@@ -258,4 +255,4 @@ void AnalyzeCorporaToLog(std::string_view binary_name,
   }
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

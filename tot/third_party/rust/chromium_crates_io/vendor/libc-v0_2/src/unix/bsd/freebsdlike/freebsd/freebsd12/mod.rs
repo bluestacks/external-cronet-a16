@@ -59,8 +59,9 @@ s! {
         // This is normally "struct vnode".
         /// Pointer to executable file.
         pub ki_textvp: *mut c_void,
+        // This is normally "struct filedesc".
         /// Pointer to open file info.
-        pub ki_fd: *mut crate::filedesc,
+        pub ki_fd: *mut c_void,
         // This is normally "struct vmspace".
         /// Pointer to kernel vmspace struct.
         pub ki_vmspace: *mut c_void,

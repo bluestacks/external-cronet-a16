@@ -19,6 +19,8 @@
 
 namespace unexportable_keys {
 
+namespace {
+
 // Class holding either an `UnexportableKeyId` or a list of callbacks waiting
 // for the key creation.
 class MaybePendingUnexportableKeyId {
@@ -102,6 +104,8 @@ MaybePendingUnexportableKeyId::GetCallbacks() {
   CHECK(!HasKeyId());
   return std::get<std::vector<CallbackType>>(key_id_or_pending_callbacks_);
 }
+
+}  // namespace
 
 UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
     UnexportableKeyTaskManager& task_manager)

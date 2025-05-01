@@ -114,9 +114,14 @@ fn main() {
     // Statically link libraries.
     println!(
         "cargo:rustc-link-search=native={}",
-        bssl_build_dir.display()
+        bssl_build_dir.join("crypto").display()
     );
     println!("cargo:rustc-link-lib=static=crypto");
+
+    println!(
+        "cargo:rustc-link-search=native={}",
+        bssl_build_dir.join("ssl").display()
+    );
     println!("cargo:rustc-link-lib=static=ssl");
 
     println!(

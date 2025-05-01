@@ -15,11 +15,8 @@
 #include "ocsp.h"
 
 #include <gtest/gtest.h>
-
 #include <openssl/base64.h>
 #include <openssl/pool.h>
-#include <openssl/span.h>
-
 #include "encode_values.h"
 #include "string_util.h"
 #include "test_helpers.h"
@@ -185,8 +182,7 @@ TEST_P(CheckOCSPTest, FromFile) {
   std::vector<uint8_t> encoded_request;
   ASSERT_TRUE(CreateOCSPRequest(cert.get(), issuer.get(), &encoded_request));
 
-  EXPECT_EQ(der::Input(encoded_request),
-            der::Input(StringAsBytes(request_data)));
+  EXPECT_EQ(der::Input(encoded_request), der::Input(request_data));
 }
 
 std::string_view kGetURLTestParams[] = {

@@ -9,7 +9,6 @@
 
 #include "components/metrics/file_metrics_provider.h"
 
-#include <array>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -329,7 +328,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<TestFileMetricsProvider> provider_;
-  std::array<base::HistogramBase*, kMaxCreateHistograms> created_histograms_;
+  base::HistogramBase* created_histograms_[kMaxCreateHistograms];
 
   raw_ptr<const FileMetricsProvider::FilterAction, AllowPtrArithmetic>
       filter_actions_ = nullptr;

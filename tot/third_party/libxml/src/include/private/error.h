@@ -10,9 +10,6 @@
 
 struct _xmlNode;
 
-XML_HIDDEN int
-xmlIsCatastrophicError(int level, int code);
-
 XML_HIDDEN void
 xmlRaiseMemoryError(xmlStructuredErrorFunc schannel, xmlGenericErrorFunc channel,
                     void *data, int domain, xmlError *error);

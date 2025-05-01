@@ -18,22 +18,22 @@ set -euo pipefail
 
 source "$(dirname "$0")/../test_util.sh"
 
-CENTIPEDE_TEST_SRCDIR="$(fuzztest::internal::get_centipede_test_srcdir)"
+CENTIPEDE_TEST_SRCDIR="$(centipede::get_centipede_test_srcdir)"
 
-fuzztest::internal::maybe_set_var_to_executable_path \
+centipede::maybe_set_var_to_executable_path \
   CENTIPEDE_BINARY "${CENTIPEDE_TEST_SRCDIR}/centipede"
-fuzztest::internal::maybe_set_var_to_executable_path \
-  LLVM_SYMBOLIZER "$(fuzztest::internal::get_llvm_symbolizer_path)"
-fuzztest::internal::maybe_set_var_to_executable_path \
+centipede::maybe_set_var_to_executable_path \
+  LLVM_SYMBOLIZER "$(centipede::get_llvm_symbolizer_path)"
+centipede::maybe_set_var_to_executable_path \
   SERVER_BINARY "${CENTIPEDE_TEST_SRCDIR}/testing/external_target_server"
-fuzztest::internal::maybe_set_var_to_executable_path \
+centipede::maybe_set_var_to_executable_path \
   TARGET_BINARY "${CENTIPEDE_TEST_SRCDIR}/testing/external_target"
 
 readonly WD="${TEST_TMPDIR}/WD"
 readonly LOG="${TEST_TMPDIR}/log"
-fuzztest::internal::ensure_empty_dir "${WD}"
+centipede::ensure_empty_dir "${WD}"
 
-TARGET_PORT=$(fuzztest::internal::get_random_free_port)
+TARGET_PORT=$(centipede::get_random_free_port)
 readonly TARGET_PORT
 
 echo "Starting the server binary using port ${TARGET_PORT}..."
@@ -51,6 +51,6 @@ env TARGET_PORT="${TARGET_PORT}" \
   2>&1 | tee "${LOG}" || true
 
 # Check that Centipede finds the crashing input.
-fuzztest::internal::assert_regex_in_file "Input bytes.*: Secret" "${LOG}"
+centipede::assert_regex_in_file "Input bytes.*: Secret" "${LOG}"
 # Check that Centipede uses the coverage features of the external target server.
-fuzztest::internal::assert_regex_in_file "EDGE: .*external_target_server.cc:" "${LOG}"
+centipede::assert_regex_in_file "EDGE: .*external_target_server.cc:" "${LOG}"

@@ -13,8 +13,6 @@
  * ====================================================
  */
 
-use core::cmp::Ordering;
-
 use super::{fabsf, scalbnf, sqrtf};
 
 const BP: [f32; 2] = [1.0, 1.5];
@@ -117,13 +115,15 @@ pub fn powf(x: f32, y: f32) -> f32 {
     /* special value of y */
     if iy == 0x7f800000 {
         /* y is +-inf */
-        match ix.cmp(&0x3f800000) {
+        if ix == 0x3f800000 {
             /* (-1)**+-inf is 1 */
-            Ordering::Equal => return 1.0,
+            return 1.0;
+        } else if ix > 0x3f800000 {
             /* (|x|>1)**+-inf = inf,0 */
-            Ordering::Greater => return if hy >= 0 { y } else { 0.0 },
+            return if hy >= 0 { y } else { 0.0 };
+        } else {
             /* (|x|<1)**+-inf = 0,inf */
-            Ordering::Less => return if hy >= 0 { 0.0 } else { -y },
+            return if hy >= 0 { 0.0 } else { -y };
         }
     }
     if iy == 0x3f800000 {
@@ -182,19 +182,11 @@ pub fn powf(x: f32, y: f32) -> f32 {
         /* if |y| > 2**27 */
         /* over/underflow if x is not close to one */
         if ix < 0x3f7ffff8 {
-            return if hy < 0 {
-                sn * HUGE * HUGE
-            } else {
-                sn * TINY * TINY
-            };
+            return if hy < 0 { sn * HUGE * HUGE } else { sn * TINY * TINY };
         }
 
         if ix > 0x3f800007 {
-            return if hy > 0 {
-                sn * HUGE * HUGE
-            } else {
-                sn * TINY * TINY
-            };
+            return if hy > 0 { sn * HUGE * HUGE } else { sn * TINY * TINY };
         }
 
         /* now |1-x| is TINY <= 2**-20, suffice to compute

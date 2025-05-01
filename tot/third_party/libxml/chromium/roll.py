@@ -74,6 +74,7 @@ import tempfile
 PATCHES = [
     'undo-sax-deprecation.patch',
     'remove-getentropy.patch',
+    'counted_by.patch',
 ]
 
 
@@ -116,7 +117,6 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-xinclude', 'xinclude=no'),
     ('--without-xptr', 'xptr=no'),
     ('--without-zlib', 'zlib=no'),
-    ('--without-relaxng', 'relaxng=no'),
 ]
 
 

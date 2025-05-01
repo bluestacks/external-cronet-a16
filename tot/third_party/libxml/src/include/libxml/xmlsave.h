@@ -77,7 +77,7 @@ XMLPUBFUN int
 		xmlSaveFlush		(xmlSaveCtxtPtr ctxt);
 XMLPUBFUN int
 		xmlSaveClose		(xmlSaveCtxtPtr ctxt);
-XMLPUBFUN xmlParserErrors
+XMLPUBFUN int
 		xmlSaveFinish		(xmlSaveCtxtPtr ctxt);
 XMLPUBFUN int
 		xmlSaveSetIndentString	(xmlSaveCtxtPtr ctxt,

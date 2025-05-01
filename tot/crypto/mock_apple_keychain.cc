@@ -5,8 +5,6 @@
 #include "crypto/mock_apple_keychain.h"
 
 #include "base/check_op.h"
-#include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 
@@ -25,33 +23,51 @@ void IncrementKeychainAccessHistogram() {
 
 namespace crypto {
 
-MockAppleKeychain::MockAppleKeychain() = default;
-MockAppleKeychain::~MockAppleKeychain() = default;
-
-base::expected<std::vector<uint8_t>, OSStatus>
-MockAppleKeychain::FindGenericPassword(std::string_view service_name,
-                                       std::string_view account_name) const {
+OSStatus MockAppleKeychain::FindGenericPassword(
+    UInt32 serviceNameLength,
+    const char* serviceName,
+    UInt32 accountNameLength,
+    const char* accountName,
+    UInt32* passwordLength,
+    void** passwordData,
+    AppleSecKeychainItemRef* itemRef) const {
   IncrementKeychainAccessHistogram();
 
   // When simulating |noErr|, return canned |passwordData| and
   // |passwordLength|.  Otherwise, just return given code.
   if (find_generic_result_ == noErr) {
     static const char kPassword[] = "my_password";
-    return base::ToVector(base::byte_span_from_cstring(kPassword));
+    DCHECK(passwordData);
+    // The function to free this data is mocked so the cast is fine.
+    *passwordData = const_cast<char*>(kPassword);
+    DCHECK(passwordLength);
+    *passwordLength = std::size(kPassword);
+    password_data_count_++;
   }
 
-  return base::unexpected(find_generic_result_);
+  return find_generic_result_;
+}
+
+OSStatus MockAppleKeychain::ItemFreeContent(void* data) const {
+  // No-op.
+  password_data_count_--;
+  return noErr;
 }
 
 OSStatus MockAppleKeychain::AddGenericPassword(
-    std::string_view service_name,
-    std::string_view account_name,
-    base::span<const uint8_t> password) const {
+    UInt32 serviceNameLength,
+    const char* serviceName,
+    UInt32 accountNameLength,
+    const char* accountName,
+    UInt32 passwordLength,
+    const void* passwordData,
+    AppleSecKeychainItemRef* itemRef) const {
   IncrementKeychainAccessHistogram();
 
   called_add_generic_ = true;
 
-  DCHECK(!password.empty());
+  DCHECK_GT(passwordLength, 0U);
+  DCHECK(passwordData);
   return noErr;
 }
 

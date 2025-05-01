@@ -147,7 +147,7 @@ public class CronetLibraryLoader {
                             .nativeInit(CronetManifest.shouldUsePerfetto(applicationContext));
                 }
                 var initializeBuildInfoOnStartup =
-                        HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext())
+                        HttpFlagsForImpl.getHttpFlags()
                                 .flags()
                                 .get(INITIALIZE_BUILD_INFO_ON_STARTUP);
 
@@ -221,7 +221,7 @@ public class CronetLibraryLoader {
             // likely wouldn't make any difference.
             // Load and initialize httpflags in parallel with Cronet loading
             // as an attempt to alleviate the critical path blocking.
-            HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext());
+            HttpFlagsForImpl.getHttpFlags();
             sHttpFlagsLoaded.open();
             NetworkChangeNotifier.init();
             // Registers to always receive network notifications. Note
@@ -247,7 +247,7 @@ public class CronetLibraryLoader {
             // Since we would like to query the network state only once, this experiment
             // disables 2 and 3.
             var updateNetworkStateOnceFlagValue =
-                    HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext())
+                    HttpFlagsForImpl.getHttpFlags()
                             .flags()
                             .get(UPDATE_NETWORK_STATE_ONCE_ON_STARTUP_FLAG_NAME);
             var updateNetworkStateOnce =
@@ -299,9 +299,7 @@ public class CronetLibraryLoader {
      */
     @CalledByNative
     private static byte[] getBaseFeatureOverrides() {
-        return BaseFeature.getOverrides(
-                        HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext()))
-                .toByteArray();
+        return BaseFeature.getOverrides(HttpFlagsForImpl.getHttpFlags()).toByteArray();
     }
 
     /**

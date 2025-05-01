@@ -82,7 +82,6 @@ export const defaultPlugins = [
   'perfetto.ExampleTraces',
   'perfetto.FlowEvents',
   'perfetto.GlobalGroups',
-  'perfetto.Notes',
   'perfetto.SettingsPage',
   'perfetto.TrackUtils',
 ];

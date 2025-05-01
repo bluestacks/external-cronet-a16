@@ -26,13 +26,13 @@ public class ElementFactory {
      *
      * @return Newly declared elements from this factory.
      */
-    public BaseElements processDelayedDeclarations() {
+    public Elements processDelayedDeclarations() {
         assert !mIsProcessed
                 : "ElementFactory#processDelayedDeclarations should only be called once";
         mIsProcessed = true;
         Elements.Builder builder = mOwner.newBuilder();
         mDelayedDeclarations.onResult(builder);
-        BaseElements newElements = builder.consolidate();
+        Elements newElements = builder.consolidate();
         return newElements;
     }
 }

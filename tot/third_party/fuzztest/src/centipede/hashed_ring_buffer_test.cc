@@ -23,7 +23,7 @@
 #include "gtest/gtest.h"
 #include "absl/container/flat_hash_set.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(Feature, HashedRingBuffer) {
@@ -61,4 +61,4 @@ TEST(Feature, HashedRingBuffer) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

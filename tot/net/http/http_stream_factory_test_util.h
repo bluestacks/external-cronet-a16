@@ -117,7 +117,6 @@ class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {
       quic::ParsedQuicVersion quic_version,
       bool is_websocket,
       bool enable_ip_based_pooling,
-      std::optional<ConnectionManagementConfig> management_config,
       NetLog* net_log);
 
   ~MockHttpStreamFactoryJob() override;
@@ -149,8 +148,7 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
       bool enable_ip_based_pooling,
       NetLog* net_log,
       NextProto alternative_protocol,
-      quic::ParsedQuicVersion quic_version,
-      std::optional<ConnectionManagementConfig> management_config) override;
+      quic::ParsedQuicVersion quic_version) override;
 
   MockHttpStreamFactoryJob* main_job() const { return main_job_; }
   MockHttpStreamFactoryJob* alternative_job() const { return alternative_job_; }

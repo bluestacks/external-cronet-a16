@@ -24,7 +24,7 @@
 #include "absl/types/span.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // Opaque ID object to be used by Knobs.
 // Supported usage:
@@ -198,6 +198,6 @@ class Knobs {
   static std::string_view knob_names_[kNumKnobs];
   value_type knobs_[kNumKnobs] = {};
 };
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_KNOBS_H_

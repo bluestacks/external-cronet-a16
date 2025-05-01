@@ -40,9 +40,7 @@ export class BarChart implements m.ClassComponent<ChartAttrs> {
         },
         {
           name: VegaLiteSelectionTypes.POINT,
-          select: {
-            type: VegaLiteSelectionTypes.POINT,
-          },
+          select: {type: VegaLiteSelectionTypes.POINT},
         },
       ],
       encoding: {
@@ -89,26 +87,8 @@ export class BarChart implements m.ClassComponent<ChartAttrs> {
       m(VegaView, {
         spec: stringifyJsonWithBigints(this.getVegaSpec(attrs)),
         data: {},
-        eventHandlers: [
-          {
-            name: 'click',
-            handler: ({item}) => {
-              if (item && attrs.onPointSelection !== undefined) {
-                attrs.onPointSelection(item);
-              }
-            },
-          },
-        ],
-        signalHandlers: [
-          {
-            name: VegaLiteSelectionTypes.INTERVAL,
-            handler: ({value}) => {
-              if (attrs.onIntervalSelection !== undefined) {
-                attrs.onIntervalSelection(value);
-              }
-            },
-          },
-        ],
+        onPointSelection: attrs.onPointSelection,
+        onIntervalSelection: attrs.onIntervalSelection,
       }),
     );
   }

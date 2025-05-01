@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/cookies/cookie_util.h"
 
-#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -475,20 +479,9 @@ std::optional<std::string> GetCookieDomainWithString(
 // An average cookie expiration will look something like this:
 //   Sat, 15-Apr-17 21:01:22 GMT
 base::Time ParseCookieExpirationTime(const std::string& time_string) {
-  static constexpr auto kMonths = std::to_array<std::string_view>({
-      "jan",
-      "feb",
-      "mar",
-      "apr",
-      "may",
-      "jun",
-      "jul",
-      "aug",
-      "sep",
-      "oct",
-      "nov",
-      "dec",
-  });
+  static const char* const kMonths[] = {
+    "jan", "feb", "mar", "apr", "may", "jun",
+    "jul", "aug", "sep", "oct", "nov", "dec" };
   // We want to be pretty liberal, and support most non-ascii and non-digit
   // characters as a delimiter.  We can't treat : as a delimiter, because it
   // is the delimiter for hh:mm:ss, and we want to keep this field together.
@@ -517,7 +510,8 @@ base::Time ParseCookieExpirationTime(const std::string& time_string) {
       if (!found_month) {
         for (size_t i = 0; i < std::size(kMonths); ++i) {
           // Match prefix, so we could match January, etc
-          if (base::StartsWith(token, kMonths[i],
+          if (base::StartsWith(token,
+                               UNSAFE_TODO(std::string_view(kMonths[i], 3)),
                                base::CompareCase::INSENSITIVE_ASCII)) {
             exploded.month = static_cast<int>(i) + 1;
             found_month = true;
@@ -537,12 +531,12 @@ base::Time ParseCookieExpirationTime(const std::string& time_string) {
     } else if (token.find(':') != std::string::npos) {
       if (!found_time &&
 #ifdef COMPILER_MSVC
-          UNSAFE_TODO(sscanf_s(
+          sscanf_s(
 #else
-          UNSAFE_TODO(sscanf(
+          sscanf(
 #endif
-              token.c_str(), "%2u:%2u:%2u", &exploded.hour, &exploded.minute,
-              &exploded.second)) == 3) {
+                 token.c_str(), "%2u:%2u:%2u", &exploded.hour,
+                 &exploded.minute, &exploded.second) == 3) {
         found_time = true;
       } else {
         // We should only ever encounter one time-like thing.  If we're here,
@@ -1035,6 +1029,10 @@ bool IsOriginBoundCookiesPartiallyEnabled() {
 bool IsTimeLimitedInsecureCookiesEnabled() {
   return IsSchemeBoundCookiesEnabled() &&
          base::FeatureList::IsEnabled(features::kTimeLimitedInsecureCookies);
+}
+
+bool IsSchemefulSameSiteEnabled() {
+  return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }
 
 std::optional<

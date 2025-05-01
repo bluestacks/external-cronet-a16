@@ -34,7 +34,7 @@
 #include "./common/logging.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // Mock CFTable representing the following cfg:
 //    1
@@ -338,4 +338,4 @@ TEST(PCTable, GetPcTableFromBinary_And_SymbolTable_TracePC) {
 
 }  // namespace
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

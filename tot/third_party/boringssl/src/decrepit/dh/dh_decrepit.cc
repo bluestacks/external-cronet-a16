@@ -32,18 +32,20 @@ static int callback_wrapper(int event, int n, BN_GENCB *gencb) {
 DH *DH_generate_parameters(int prime_len, int generator,
                            void (*callback)(int, int, void *), void *cb_arg) {
   if (prime_len < 0 || generator < 0) {
-    return nullptr;
+      return NULL;
   }
 
-  bssl::UniquePtr<DH> ret(DH_new());
-  if (ret == nullptr) {
-    return nullptr;
+  DH *ret = DH_new();
+  if (ret == NULL) {
+      return NULL;
   }
 
   BN_GENCB gencb_storage;
-  BN_GENCB *cb = nullptr;
+  BN_GENCB *cb = NULL;
+
   struct wrapped_callback wrapped;
-  if (callback != nullptr) {
+
+  if (callback != NULL) {
     wrapped.callback = callback;
     wrapped.arg = cb_arg;
 
@@ -51,9 +53,13 @@ DH *DH_generate_parameters(int prime_len, int generator,
     BN_GENCB_set(cb, callback_wrapper, &wrapped);
   }
 
-  if (!DH_generate_parameters_ex(ret.get(), prime_len, generator, cb)) {
-    return nullptr;
+  if (!DH_generate_parameters_ex(ret, prime_len, generator, cb)) {
+    goto err;
   }
 
-  return ret.release();
+  return ret;
+
+err:
+  DH_free(ret);
+  return NULL;
 }

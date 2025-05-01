@@ -270,7 +270,6 @@ TEST_F(SessionTest, DeferredSession) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
 TEST_F(SessionTest, NotDeferredAsExcluded) {
@@ -292,7 +291,6 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
 TEST_F(SessionTest, NotDeferredSubdomain) {
@@ -311,7 +309,6 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
 TEST_F(SessionTest, NotDeferredIncludedSubdomain) {
@@ -334,9 +331,8 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomain) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  EXPECT_FALSE(
+  ASSERT_FALSE(
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
 TEST_F(SessionTest, DeferredIncludedSubdomain) {
@@ -359,9 +355,8 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
 TEST_F(SessionTest, NotDeferredWithCookieSession) {
@@ -377,7 +372,6 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 
   CookieInclusionStatus status;
   auto source = CookieSourceType::kHTTP;
@@ -389,9 +383,6 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
   EXPECT_FALSE(
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
-  // Even though the second session didn't defer, the request was
-  // deferred by the first session.
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
 TEST_F(SessionTest, NotDeferredInsecure) {
@@ -410,7 +401,6 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
 TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
@@ -431,7 +421,6 @@ TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
 TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
@@ -451,7 +440,6 @@ TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
 TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
@@ -470,7 +458,6 @@ TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
 TEST_F(SessionTest, DeferredMissingScopeOrigin) {
@@ -489,7 +476,6 @@ TEST_F(SessionTest, DeferredMissingScopeOrigin) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
 class InsecureDelegate : public CookieAccessDelegate {
@@ -534,7 +520,7 @@ class InsecureDelegate : public CookieAccessDelegate {
   }
 };
 
-TEST_F(SessionTest, NotDeferredNotSameSiteForCookies) {
+TEST_F(SessionTest, NotDeferredNotSameSite) {
   auto params = CreateValidParams();
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_TRUE(session_or_error.has_value());
@@ -547,8 +533,6 @@ TEST_F(SessionTest, NotDeferredNotSameSiteForCookies) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(),
-            SessionUsage::kInScopeNotDeferred);
 }
 
 TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
@@ -566,7 +550,6 @@ TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_TRUE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
 TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
@@ -581,7 +564,6 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   spec.domain = "test.example.test";
   spec.path = "/index.html";
   params.scope.specifications.push_back(spec);
-  params.scope.include_site = true;
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", "Secure;"}});
   params.credentials = std::move(cookie_credentials);
@@ -593,10 +575,8 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  EXPECT_FALSE(
+  ASSERT_FALSE(
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
-  EXPECT_EQ(request->device_bound_session_usage(),
-            SessionUsage::kInScopeNotDeferred);
 }
 
 TEST_F(SessionTest, CreationDate) {

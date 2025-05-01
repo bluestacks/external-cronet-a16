@@ -27,13 +27,18 @@ CookieOptions::SameSiteCookieContext::MakeInclusiveForSet() {
 CookieOptions::SameSiteCookieContext::ContextType
 CookieOptions::SameSiteCookieContext::GetContextForCookieInclusion() const {
   DCHECK_LE(schemeful_context_, context_);
-  return schemeful_context_;
+
+  if (cookie_util::IsSchemefulSameSiteEnabled())
+    return schemeful_context_;
+
+  return context_;
 }
 
 const CookieOptions::SameSiteCookieContext::ContextMetadata&
 CookieOptions::SameSiteCookieContext::GetMetadataForCurrentSchemefulMode()
     const {
-  return schemeful_metadata();
+  return cookie_util::IsSchemefulSameSiteEnabled() ? schemeful_metadata()
+                                                   : metadata();
 }
 
 void CookieOptions::SameSiteCookieContext::SetContextTypesForTesting(

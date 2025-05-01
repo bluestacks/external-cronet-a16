@@ -187,34 +187,18 @@ public class CronetTestRuleTest {
             })
     public void testHttpFlagsAreCorrectlyApplied() {
         assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
+                        HttpFlagsForImpl.getHttpFlags()
                                 .flags()
                                 .get("random_string_flag")
                                 .getStringValue())
                 .isEqualTo("some_message_value");
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_int_flag")
-                                .getIntValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_int_flag").getIntValue())
                 .isEqualTo(123456789012345L);
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_bool_flag")
-                                .getBoolValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_bool_flag").getBoolValue())
                 .isEqualTo(true);
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_float_flag")
-                                .getFloatValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_float_flag").getFloatValue())
                 .isEqualTo(0.123456f);
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_bytes_flag")
-                                .getBytesValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_bytes_flag").getBytesValue())
                 .isEqualTo(ByteString.copyFrom(new byte[] {'a', 'b', 'c'}));
     }
 }

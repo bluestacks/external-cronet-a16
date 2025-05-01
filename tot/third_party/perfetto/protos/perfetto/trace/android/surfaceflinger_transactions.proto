@@ -298,8 +298,6 @@ message LayerState {
   optional DropInputMode drop_input_mode = 42;
 
   optional TrustedOverlay trusted_overlay = 43;
-
-  optional float background_blur_scale = 44;
 }
 
 message DisplayState {

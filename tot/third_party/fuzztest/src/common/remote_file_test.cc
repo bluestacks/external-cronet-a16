@@ -30,7 +30,7 @@
 #include "./common/logging.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 namespace fs = std::filesystem;
@@ -233,4 +233,4 @@ TEST(RemoteGlobMatch, ReturnsNotFoundErrorWithEmptyVectorWhenPathDoesNotExist) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

@@ -263,8 +263,7 @@ INSTANTIATE_TEST_SUITE_P(PageSize, TraceWriterImplTest, ValuesIn(kPageSizes));
 
 TEST_P(TraceWriterImplTest, NewTracePacket) {
   const BufferID kBufId = 42;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
   const size_t kNumPackets = 32;
   for (size_t i = 0; i < kNumPackets; i++) {
     auto packet = writer->NewTracePacket();
@@ -293,8 +292,7 @@ TEST_P(TraceWriterImplTest, NewTracePacket) {
 TEST_P(TraceWriterImplTest, NewTracePacketLargePackets) {
   const BufferID kBufId = 42;
   const size_t chunk_size = page_size() / 4;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
   {
     auto packet = writer->NewTracePacket();
     packet->set_for_testing()->set_str(std::string("PACKET_1") +
@@ -333,8 +331,7 @@ constexpr char kFirstPacketOnSequenceFlagPrefix[] = {static_cast<char>(0xB8),
 
 TEST_P(TraceWriterImplTest, NewTracePacketTakeWriter) {
   const BufferID kBufId = 42;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
   const size_t kNumPackets = 32;
   for (size_t i = 0; i < kNumPackets; i++) {
     ScatteredStreamWriter* sw = writer->NewTracePacket().TakeStreamWriter();
@@ -368,8 +365,7 @@ INSTANTIATE_TEST_SUITE_P(PageSize,
 
 TEST_P(TraceWriterImplDeathTest, NewTracePacketTakeWriterNoFinish) {
   const BufferID kBufId = 42;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   TraceWriterImpl::TracePacketHandle handle = writer->NewTracePacket();
 
@@ -389,8 +385,7 @@ TEST_P(TraceWriterImplDeathTest, NewTracePacketTakeWriterNoFinish) {
 
 TEST_P(TraceWriterImplTest, AnnotatePatch) {
   const BufferID kBufId = 42;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
   ScatteredStreamWriter* sw = writer->NewTracePacket().TakeStreamWriter();
   std::string raw_proto_bytes = std::string("RAW_PROTO_BYTES");
   sw->WriteBytes(reinterpret_cast<const uint8_t*>(raw_proto_bytes.data()),
@@ -479,8 +474,7 @@ TEST_P(TraceWriterImplTest, MixManualTakeAndMessage) {
   const size_t chunk_size = page_size() / 4;
   const std::string large_string(chunk_size, 'x');
 
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   {
     ScatteredStreamWriter* sw = writer->NewTracePacket().TakeStreamWriter();
@@ -565,8 +559,7 @@ TEST_P(TraceWriterImplTest, MixManualTakeAndMessage) {
 TEST_P(TraceWriterImplTest, MessageHandleDestroyedPacketScrapable) {
   const BufferID kBufId = 42;
 
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   auto packet = writer->NewTracePacket();
   packet->set_for_testing()->set_str("packet1");
@@ -604,8 +597,7 @@ TEST_P(TraceWriterImplTest, MessageHandleDestroyedPacketScrapable) {
 TEST_P(TraceWriterImplTest, FinishTracePacketScrapable) {
   const BufferID kBufId = 42;
 
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   {
     protos::pbzero::TestEvent test_event;
@@ -666,8 +658,7 @@ TEST_P(TraceWriterImplTest,
        MessageHandleDestroyedAndFinishTracePacketScrapable) {
   const BufferID kBufId = 42;
 
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   auto packet = writer->NewTracePacket();
   packet->set_for_testing()->set_str("packet1");
@@ -713,8 +704,7 @@ TEST_P(TraceWriterImplTest,
 TEST_P(TraceWriterImplTest, MessageHandleDestroyedPacketFullChunk) {
   const BufferID kBufId = 42;
 
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   auto packet = writer->NewTracePacket();
   protos::pbzero::TestEvent* test_event = packet->set_for_testing();
@@ -752,8 +742,7 @@ TEST_P(TraceWriterImplTest, MessageHandleDestroyedPacketFullChunk) {
 TEST_P(TraceWriterImplTest, FinishTracePacketFullChunk) {
   const BufferID kBufId = 42;
 
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   {
     protos::pbzero::TestEvent test_event;
@@ -803,8 +792,7 @@ TEST_P(TraceWriterImplTest, FinishTracePacketFullChunk) {
 
 TEST_P(TraceWriterImplTest, FragmentingPacketWithProducerAndServicePatching) {
   const BufferID kBufId = 42;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   // Write a packet that's guaranteed to span more than a single chunk, but
   // less than two chunks.
@@ -895,8 +883,7 @@ TEST_P(TraceWriterImplTest, FragmentingPacketWithoutEnablingProducerPatching) {
   arbiter_->SetBatchCommitsDuration(UINT32_MAX);
 
   const BufferID kBufId = 42;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   // Write a packet that's guaranteed to span more than a single chunk.
   auto packet = writer->NewTracePacket();
@@ -1281,8 +1268,7 @@ TEST_P(TraceWriterImplTest, Flush) {
   MockFunction<void()> flush_cb;
 
   const BufferID kBufId = 42;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
   {
     auto packet = writer->NewTracePacket();
     packet->set_for_testing()->set_str("foobar");
@@ -1301,8 +1287,7 @@ TEST_P(TraceWriterImplTest, NestedMsgsPatches) {
   const uint32_t kNestedFieldId = 1;
   const uint32_t kStringFieldId = 2;
   const uint32_t kIntFieldId = 3;
-  std::unique_ptr<TraceWriter> writer =
-      arbiter_->CreateTraceWriter(kBufId, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer = arbiter_->CreateTraceWriter(kBufId);
 
   size_t chunk_size = page_size() / 4;
   std::string large_string(chunk_size, 'x');

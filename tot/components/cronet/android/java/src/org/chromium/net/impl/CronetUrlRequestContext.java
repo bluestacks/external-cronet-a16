@@ -16,7 +16,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
@@ -174,7 +173,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     @GuardedBy("mLock")
     private boolean mIsStoppingNetLog;
 
-    /** The network handle to be used for requests that do not explicitly specify one. */
+    /** The network handle to be used for requests that do not explicitly specify one. **/
     private long mNetworkHandle = DEFAULT_NETWORK_HANDLE;
 
     /** The ID of this CronetEngine for CronetLogger purposes. */
@@ -403,13 +402,11 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     private static RequestContextConfigOptions createRequestContextConfigOptions(
             CronetEngineBuilderImpl engineBuilder) {
         var networkThreadPriorityFlagValue =
-                HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext())
+                HttpFlagsForImpl.getHttpFlags()
                         .flags()
                         .get(OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME);
         var alwaysEnableBrotliFlagValue =
-                HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext())
-                        .flags()
-                        .get(ALWAYS_ENABLE_BROTLI_FLAG_NAME);
+                HttpFlagsForImpl.getHttpFlags().flags().get(ALWAYS_ENABLE_BROTLI_FLAG_NAME);
         boolean alwaysEnableBrotli =
                 alwaysEnableBrotliFlagValue != null
                         ? alwaysEnableBrotliFlagValue.getBoolValue()

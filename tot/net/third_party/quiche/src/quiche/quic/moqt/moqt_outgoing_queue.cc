@@ -62,7 +62,7 @@ void MoqtOutgoingQueue::OpenNewGroup() {
 
 void MoqtOutgoingQueue::AddRawObject(MoqtObjectStatus status,
                                      quiche::QuicheMemSlice payload) {
-  Location sequence{current_group_id_, queue_.back().size()};
+  FullSequence sequence{current_group_id_, queue_.back().size()};
   bool fin = forwarding_preference_ == MoqtForwardingPreference::kSubgroup &&
              status == MoqtObjectStatus::kEndOfGroup;
   queue_.back().push_back(
@@ -75,9 +75,9 @@ void MoqtOutgoingQueue::AddRawObject(MoqtObjectStatus status,
 }
 
 std::optional<PublishedObject> MoqtOutgoingQueue::GetCachedObject(
-    Location sequence) const {
+    FullSequence sequence) const {
   if (sequence.group < first_group_in_queue()) {
-    return PublishedObject{Location{sequence.group, sequence.object},
+    return PublishedObject{FullSequence{sequence.group, sequence.object},
                            MoqtObjectStatus::kGroupDoesNotExist,
                            publisher_priority_, quiche::QuicheMemSlice(),
                            clock_->ApproximateNow()};
@@ -94,9 +94,9 @@ std::optional<PublishedObject> MoqtOutgoingQueue::GetCachedObject(
   return CachedObjectToPublishedObject(group[sequence.object]);
 }
 
-std::vector<Location> MoqtOutgoingQueue::GetCachedObjectsInRange(
-    Location start, Location end) const {
-  std::vector<Location> sequences;
+std::vector<FullSequence> MoqtOutgoingQueue::GetCachedObjectsInRange(
+    FullSequence start, FullSequence end) const {
+  std::vector<FullSequence> sequences;
   SubscribeWindow window(start, end.group, end.object);
   for (const Group& group : queue_) {
     for (const CachedObject& object : group) {
@@ -118,28 +118,28 @@ absl::StatusOr<MoqtTrackStatusCode> MoqtOutgoingQueue::GetTrackStatus() const {
   return MoqtTrackStatusCode::kInProgress;
 }
 
-Location MoqtOutgoingQueue::GetLargestSequence() const {
+FullSequence MoqtOutgoingQueue::GetLargestSequence() const {
   if (queue_.empty()) {
     QUICHE_BUG(MoqtOutgoingQueue_GetLargestSequence_not_begun)
         << "Calling GetLargestSequence() on a track that hasn't begun";
-    return Location{0, 0};
+    return FullSequence{0, 0};
   }
-  return Location{current_group_id_, queue_.back().size() - 1};
+  return FullSequence{current_group_id_, queue_.back().size() - 1};
 }
 
 std::unique_ptr<MoqtFetchTask> MoqtOutgoingQueue::Fetch(
-    Location start, uint64_t end_group, std::optional<uint64_t> end_object,
+    FullSequence start, uint64_t end_group, std::optional<uint64_t> end_object,
     MoqtDeliveryOrder order) {
   if (queue_.empty()) {
     return std::make_unique<MoqtFailedFetch>(
         absl::NotFoundError("No objects available on the track"));
   }
 
-  Location end = Location(
+  FullSequence end = FullSequence(
       end_group, end_object.value_or(std::numeric_limits<uint64_t>::max()));
-  Location first_available_object = Location(first_group_in_queue(), 0);
-  Location last_available_object =
-      Location(current_group_id_, queue_.back().size() - 1);
+  FullSequence first_available_object = FullSequence(first_group_in_queue(), 0);
+  FullSequence last_available_object =
+      FullSequence(current_group_id_, queue_.back().size() - 1);
 
   if (end < first_available_object) {
     return std::make_unique<MoqtFailedFetch>(
@@ -150,9 +150,9 @@ std::unique_ptr<MoqtFetchTask> MoqtOutgoingQueue::Fetch(
         absl::NotFoundError("All of the requested objects are in the future"));
   }
 
-  Location adjusted_start = std::max(start, first_available_object);
-  Location adjusted_end = std::min(end, last_available_object);
-  std::vector<Location> objects =
+  FullSequence adjusted_start = std::max(start, first_available_object);
+  FullSequence adjusted_end = std::min(end, last_available_object);
+  std::vector<FullSequence> objects =
       GetCachedObjectsInRange(adjusted_start, adjusted_end);
   if (order == MoqtDeliveryOrder::kDescending) {
     absl::c_reverse(objects);

@@ -22,7 +22,7 @@
 #include "absl/base/const_init.h"
 #include "./centipede/thread_pool.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(ConcurrentBitSetTest, Set) {
@@ -121,4 +121,4 @@ TEST(ConcurrentBitSetTest, Large) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

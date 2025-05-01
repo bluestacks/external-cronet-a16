@@ -35,8 +35,6 @@ import {PivotTableState} from '../widgets/sql/pivot_table/pivot_table_state';
 import {TableColumn} from '../widgets/sql/table/table_column';
 import {PivotTable} from '../widgets/sql/pivot_table/pivot_table';
 import {pivotId} from '../widgets/sql/pivot_table/ids';
-import {SqlBarChart, SqlBarChartState} from '../widgets/charts/sql_bar_chart';
-import {sqlColumnId} from '../widgets/sql/table/sql_column';
 
 export interface AddSqlTableTabParams {
   table: SqlTableDescription;
@@ -62,28 +60,12 @@ function addSqlTableTabWithState(state: SqlTableState) {
 
 class LegacySqlTableTab implements Tab {
   constructor(private readonly state: SqlTableState) {
-    this.selected = {
-      kind: 'table',
-      state,
-    };
+    this.selected = state;
   }
 
-  private selected:
-    | {
-        kind: 'table';
-        state: SqlTableState;
-      }
-    | {
-        kind: 'pivot';
-        state: PivotTableState;
-      }
-    | {
-        kind: 'bar_chart';
-        state: SqlBarChartState;
-      };
+  private selected: SqlTableState | PivotTableState;
 
   private pivots: PivotTableState[] = [];
-  private bar_charts: SqlBarChartState[] = [];
 
   private getTableButtons() {
     const range = this.state.getDisplayedRange();
@@ -174,35 +156,14 @@ class LegacySqlTableTab implements Tab {
             trace: this.state.trace,
             filters: this.state.filters,
           });
-          this.selected = {
-            kind: 'pivot',
-            state,
-          };
+          this.selected = state;
           this.pivots.push(state);
-        },
-      }),
-      m(MenuItem, {
-        label: 'Add bar chart',
-        onclick: () => {
-          const state = new SqlBarChartState({
-            trace: this.state.trace,
-            sqlSource: this.state.config.name,
-            column: column.column,
-            filters: this.state.filters,
-          });
-          this.selected = {
-            kind: 'bar_chart',
-            state,
-          };
-          this.bar_charts.push(state);
         },
       }),
     ];
   }
 
   render() {
-    const showViewButtons =
-      this.pivots.length > 0 || this.bar_charts.length > 0;
     return m(
       DetailsShell,
       {
@@ -211,52 +172,34 @@ class LegacySqlTableTab implements Tab {
         buttons: this.getTableButtons(),
       },
       m('div', renderFilters(this.state.filters)),
-      showViewButtons &&
+      this.pivots.length > 0 &&
         m(
           ButtonBar,
           m(Button, {
             label: 'Table',
-            active: this.selected.state === this.state,
+            active: this.selected === this.state,
             onclick: () => {
-              this.selected = {
-                kind: 'table',
-                state: this.state,
-              };
+              this.selected = this.state;
             },
           }),
           this.pivots.map((pivot) =>
             m(Button, {
               label: `Pivot: ${pivot.getPivots().map(pivotId).join(', ')}`,
-              active: this.selected.state === pivot,
+              active: this.selected === pivot,
               onclick: () => {
-                this.selected = {
-                  kind: 'pivot',
-                  state: pivot,
-                };
-              },
-            }),
-          ),
-          this.bar_charts.map((chart) =>
-            m(Button, {
-              label: `Bar chart: ${sqlColumnId(chart.args.column)}`,
-              active: this.selected.state === chart,
-              onclick: () => {
-                this.selected = {
-                  kind: 'bar_chart',
-                  state: chart,
-                };
+                this.selected = pivot;
               },
             }),
           ),
         ),
-      this.selected.kind === 'table' &&
+      this.selected === this.state &&
         m(SqlTable, {
-          state: this.selected.state,
+          state: this.state,
           addColumnMenuItems: this.tableMenuItems.bind(this),
         }),
-      this.selected.kind === 'pivot' &&
+      this.selected instanceof PivotTableState &&
         m(PivotTable, {
-          state: this.selected.state,
+          state: this.selected,
           extraRowButton: (node) =>
             // Do not show any buttons for root as it doesn't have any filters anyway.
             !node.isRoot() &&
@@ -283,8 +226,6 @@ class LegacySqlTableTab implements Tab {
               }),
             ),
         }),
-      this.selected.kind === 'bar_chart' &&
-        m(SqlBarChart, {state: this.selected.state}),
     );
   }
 

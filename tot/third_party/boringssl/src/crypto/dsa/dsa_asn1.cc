@@ -136,9 +136,9 @@ int DSA_SIG_marshal(CBB *cbb, const DSA_SIG *sig) {
 }
 
 DSA *DSA_parse_public_key(CBS *cbs) {
-  bssl::UniquePtr<DSA> ret(DSA_new());
-  if (ret == nullptr) {
-    return nullptr;
+  DSA *ret = DSA_new();
+  if (ret == NULL) {
+    return NULL;
   }
   CBS child;
   if (!CBS_get_asn1(cbs, &child, CBS_ASN1_SEQUENCE) ||
@@ -148,12 +148,16 @@ DSA *DSA_parse_public_key(CBS *cbs) {
       !parse_integer(&child, &ret->g) ||
       CBS_len(&child) != 0) {
     OPENSSL_PUT_ERROR(DSA, DSA_R_DECODE_ERROR);
-    return nullptr;
+    goto err;
   }
-  if (!dsa_check_key(ret.get())) {
-    return nullptr;
+  if (!dsa_check_key(ret)) {
+    goto err;
   }
-  return ret.release();
+  return ret;
+
+err:
+  DSA_free(ret);
+  return NULL;
 }
 
 int DSA_marshal_public_key(CBB *cbb, const DSA *dsa) {
@@ -171,9 +175,9 @@ int DSA_marshal_public_key(CBB *cbb, const DSA *dsa) {
 }
 
 DSA *DSA_parse_parameters(CBS *cbs) {
-  bssl::UniquePtr<DSA> ret(DSA_new());
-  if (ret == nullptr) {
-    return nullptr;
+  DSA *ret = DSA_new();
+  if (ret == NULL) {
+    return NULL;
   }
   CBS child;
   if (!CBS_get_asn1(cbs, &child, CBS_ASN1_SEQUENCE) ||
@@ -182,12 +186,16 @@ DSA *DSA_parse_parameters(CBS *cbs) {
       !parse_integer(&child, &ret->g) ||
       CBS_len(&child) != 0) {
     OPENSSL_PUT_ERROR(DSA, DSA_R_DECODE_ERROR);
-    return nullptr;
+    goto err;
   }
-  if (!dsa_check_key(ret.get())) {
-    return nullptr;
+  if (!dsa_check_key(ret)) {
+    goto err;
   }
-  return ret.release();
+  return ret;
+
+err:
+  DSA_free(ret);
+  return NULL;
 }
 
 int DSA_marshal_parameters(CBB *cbb, const DSA *dsa) {
@@ -204,9 +212,9 @@ int DSA_marshal_parameters(CBB *cbb, const DSA *dsa) {
 }
 
 DSA *DSA_parse_private_key(CBS *cbs) {
-  bssl::UniquePtr<DSA> ret(DSA_new());
-  if (ret == nullptr) {
-    return nullptr;
+  DSA *ret = DSA_new();
+  if (ret == NULL) {
+    return NULL;
   }
 
   CBS child;
@@ -214,12 +222,12 @@ DSA *DSA_parse_private_key(CBS *cbs) {
   if (!CBS_get_asn1(cbs, &child, CBS_ASN1_SEQUENCE) ||
       !CBS_get_asn1_uint64(&child, &version)) {
     OPENSSL_PUT_ERROR(DSA, DSA_R_DECODE_ERROR);
-    return nullptr;
+    goto err;
   }
 
   if (version != 0) {
     OPENSSL_PUT_ERROR(DSA, DSA_R_BAD_VERSION);
-    return nullptr;
+    goto err;
   }
 
   if (!parse_integer(&child, &ret->p) ||
@@ -229,13 +237,17 @@ DSA *DSA_parse_private_key(CBS *cbs) {
       !parse_integer(&child, &ret->priv_key) ||
       CBS_len(&child) != 0) {
     OPENSSL_PUT_ERROR(DSA, DSA_R_DECODE_ERROR);
-    return nullptr;
+    goto err;
   }
-  if (!dsa_check_key(ret.get())) {
-    return nullptr;
+  if (!dsa_check_key(ret)) {
+    goto err;
   }
 
-  return ret.release();
+  return ret;
+
+err:
+  DSA_free(ret);
+  return NULL;
 }
 
 int DSA_marshal_private_key(CBB *cbb, const DSA *dsa) {

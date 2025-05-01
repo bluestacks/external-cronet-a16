@@ -51,7 +51,7 @@ void ValidateConnectTiming(
   EXPECT_LE(connect_timing.ssl_end, connect_timing.connect_end);
 }
 
-class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
+class TlsStreamAttemptHelper : public TlsStreamAttempt::SSLConfigProvider {
  public:
   // Pass std::nullopt to `ssl_config` to make SSLConfig not immediately
   // available.
@@ -107,10 +107,7 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
 
   std::optional<int> result() const { return result_; }
 
-  // TlsStreamAttempt::Delegate implementation:
-
-  void OnTcpHandshakeComplete() override {}
-
+  // TlsStreamAttempt::SSLConfigProvider implementation:
   int WaitForSSLConfigReady(CompletionOnceCallback callback) override {
     if (ssl_config_.has_value()) {
       return OK;

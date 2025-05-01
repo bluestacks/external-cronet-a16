@@ -305,6 +305,7 @@ f! {
 }
 
 extern "C" {
+    pub fn getauxval(type_: c_ulong) -> c_ulong;
     pub fn __system_property_wait(
         pi: *const crate::prop_info,
         __old_serial: u32,

@@ -275,7 +275,7 @@ static inline void poly3_vec_rshift1(vec_t a_s[6], vec_t a_a[6]) {
 #endif  // (ARM || AARCH64) && NEON
 
 // Polynomials in this scheme have N terms.
-#define N HRSS_N
+// #define N 701
 
 // Underlying data types and arithmetic operations.
 // ------------------------------------------------

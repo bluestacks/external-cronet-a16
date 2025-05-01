@@ -4,6 +4,7 @@
 
 #include "partition_alloc/partition_page.h"
 
+#include <algorithm>
 #include <cstdint>
 
 #include "partition_alloc/address_pool_manager.h"
@@ -14,7 +15,6 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"

@@ -313,32 +313,33 @@ static int bio_make_pair(BIO *bio1, BIO *bio2, size_t writebuf1_len,
 }
 
 static long bio_ctrl(BIO *bio, int cmd, long num, void *ptr) {
+  long ret;
   struct bio_bio_st *b = reinterpret_cast<bio_bio_st *>(bio->ptr);
-  assert(b != nullptr);
+
+  assert(b != NULL);
+
   switch (cmd) {
     // Specific control codes first:
     case BIO_C_GET_WRITE_BUF_SIZE:
-      // TODO(crbug.com/412584975): This can overflow on 64-bit Windows. Do we
-      // need it? It implements |BIO_get_write_buf_size|, but we don't have the
-      // wrapper.
-      return static_cast<long>(b->size);
+      ret = (long)b->size;
+      break;
 
     case BIO_C_GET_WRITE_GUARANTEE:
       // How many bytes can the caller feed to the next write
       // without having to keep any?
-      if (b->peer == nullptr || b->closed) {
-        return 0;
+      if (b->peer == NULL || b->closed) {
+        ret = 0;
+      } else {
+        ret = (long)b->size - b->len;
       }
-      // TODO(crbug.com/412584975): This can overflow on 64-bit Windows.
-      return static_cast<long>(b->size - b->len);
+      break;
 
     case BIO_C_GET_READ_REQUEST:
       // If the peer unsuccessfully tried to read, how many bytes
       // were requested?  (As with BIO_CTRL_PENDING, that number
       // can usually be treated as boolean.)
-      //
-      // TODO(crbug.com/412584975): This can overflow on 64-bit Windows.
-      return static_cast<long>(b->request);
+      ret = (long)b->request;
+      break;
 
     case BIO_C_RESET_READ_REQUEST:
       // Reset request.  (Can be useful after read attempts
@@ -346,52 +347,64 @@ static long bio_ctrl(BIO *bio, int cmd, long num, void *ptr) {
       // e.g. when probing SSL_read to see if any data is
       // available.)
       b->request = 0;
-      return 1;
+      ret = 1;
+      break;
 
     case BIO_C_SHUTDOWN_WR:
       // similar to shutdown(..., SHUT_WR)
       b->closed = 1;
-      return 1;
+      ret = 1;
+      break;
+
 
     // Standard control codes:
     case BIO_CTRL_GET_CLOSE:
-      return bio->shutdown;
+      ret = bio->shutdown;
+      break;
 
     case BIO_CTRL_SET_CLOSE:
-      bio->shutdown = static_cast<int>(num);
-      return 1;
+      bio->shutdown = (int)num;
+      ret = 1;
+      break;
 
     case BIO_CTRL_PENDING:
-      if (b->peer != nullptr) {
+      if (b->peer != NULL) {
         struct bio_bio_st *peer_b =
             reinterpret_cast<bio_bio_st *>(b->peer->ptr);
-        // TODO(crbug.com/412584975): This can overflow on 64-bit Windows.
-        return static_cast<long>(peer_b->len);
+        ret = (long)peer_b->len;
+      } else {
+        ret = 0;
       }
-      return 0;
+      break;
 
     case BIO_CTRL_WPENDING:
-      if (b->buf == nullptr) {
-        return 0;
+      ret = 0;
+      if (b->buf != NULL) {
+        ret = (long)b->len;
       }
-      // TODO(crbug.com/412584975): This can overflow on 64-bit Windows.
-      return static_cast<long>(b->len);
+      break;
 
     case BIO_CTRL_FLUSH:
-      return 1;
+      ret = 1;
+      break;
 
     case BIO_CTRL_EOF: {
-      if (b->peer) {
-        auto *peer_b = reinterpret_cast<bio_bio_st *>(b->peer->ptr);
-        assert(peer_b != nullptr);
-        return peer_b->len == 0 && peer_b->closed;
+      BIO *other_bio = reinterpret_cast<BIO *>(ptr);
+
+      if (other_bio) {
+        struct bio_bio_st *other_b =
+            reinterpret_cast<bio_bio_st *>(other_bio->ptr);
+        assert(other_b != NULL);
+        ret = other_b->len == 0 && other_b->closed;
+      } else {
+        ret = 1;
       }
-      return 1;
-    }
+    } break;
 
     default:
-      return 0;
+      ret = 0;
   }
+  return ret;
 }
 
 

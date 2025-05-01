@@ -47,7 +47,6 @@ XMLPUBFUN void			 xmlRegFreeRegexp(xmlRegexpPtr regexp);
 XMLPUBFUN int
 		    xmlRegexpExec	(xmlRegexpPtr comp,
 					 const xmlChar *value);
-XML_DEPRECATED
 XMLPUBFUN void
 		    xmlRegexpPrint	(FILE *output,
 					 xmlRegexpPtr regexp);

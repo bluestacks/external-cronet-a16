@@ -22,8 +22,10 @@
 #include <tuple>
 #include <vector>
 
-#include "absl/status/statusor.h"
 // IWYU pragma: begin_exports
+#include "absl/status/statusor.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/string_view.h"
 #include "./fuzztest/internal/registration.h"
 #include "./fuzztest/internal/registry.h"
 // IWYU pragma: end_exports
@@ -124,6 +126,8 @@ namespace fuzztest {
 //   FUZZ_TEST(MySuite, MyThingNeverCrashes)
 //     .WithSeeds(ReadFilesFromDirectory(kCorpusPath));
 //
+// TODO(b/380934093): Rewrite this function as ReadFilesFromDirectory(dir,
+// [](std::string_view name) { return true; });
 std::vector<std::tuple<std::string>> ReadFilesFromDirectory(
     std::string_view dir);
 
@@ -146,13 +150,11 @@ std::vector<std::tuple<std::string>> ReadFilesFromDirectory(
 // Returns parsed dictionary entries from fuzzer dictionary definition in the
 // format specified at https://llvm.org/docs/LibFuzzer.html#dictionaries.
 // If dictionary is in wrong format, return error status.
-absl::StatusOr<std::vector<std::string>> ParseDictionary(std::string_view text);
+absl::StatusOr<std::vector<std::string>> ParseDictionary(
+    absl::string_view text);
 
 // Reads entries from `dictionary_file` and returns a vector usable by
 // .WithDictionary().
-//
-// The dictionary file should be in the format specified at
-// https://llvm.org/docs/LibFuzzer.html#dictionaries.
 //
 // Example:
 //
@@ -179,7 +181,9 @@ inline std::vector<uint8_t> ToByteArray(std::string_view str) {
 // Note that this function should not be called frequently due to engine
 // limitation and efficiency reasons. Consider refining the domain definitions
 // to restrict input generation if possible.
-void SkipTestsOrCurrentInput();
+inline void SkipTestsOrCurrentInput() {
+  internal::Runtime::instance().SetSkippingRequested(true);
+}
 
 }  // namespace fuzztest
 

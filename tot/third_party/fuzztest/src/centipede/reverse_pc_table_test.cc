@@ -17,7 +17,7 @@
 #include "gtest/gtest.h"
 #include "./centipede/pc_info.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(ReversePCTable, ReversePCTable) {
@@ -56,4 +56,4 @@ TEST(ReversePCTable, ReversePCTable) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

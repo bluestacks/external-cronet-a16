@@ -122,25 +122,15 @@ HttpStreamPool::Job::~Job() {
   // result that means JobController destroyed `this` since another job
   // completed.
   if (result_.has_value()) {
-    constexpr std::string_view kCompleteTimeHistogramName =
-        "Net.HttpStreamPool.JobCompleteTime2.";
-    constexpr std::string_view kResumeTimeHistogramName =
-        "Net.HttpStreamPool.JobCreateToResumeTime2.";
+    const std::string_view suffix = *result_ == OK ? "Success" : "Failure";
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.HttpStreamPool.JobCompleteTime.", suffix}),
+        base::TimeTicks::Now() - create_time_);
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.HttpStreamPool.JobCreateToResumeTime.", suffix}),
+        CreateToResumeTime());
 
-    base::TimeDelta complete_time = base::TimeTicks::Now() - create_time_;
-    base::TimeDelta resume_time = CreateToResumeTime();
-    if (*result_ == OK) {
-      const std::string_view protocol = NegotiatedProtocolToHistogramSuffix(
-          negotiated_protocol_.value_or(NextProto::kProtoUnknown));
-      base::UmaHistogramTimes(
-          base::StrCat({kCompleteTimeHistogramName, protocol}), complete_time);
-      base::UmaHistogramTimes(
-          base::StrCat({kResumeTimeHistogramName, protocol}), resume_time);
-    } else {
-      base::UmaHistogramTimes(
-          base::StrCat({kCompleteTimeHistogramName, "Failure"}), complete_time);
-      base::UmaHistogramTimes(
-          base::StrCat({kResumeTimeHistogramName, "Failure"}), resume_time);
+    if (*result_ != OK) {
       base::UmaHistogramSparse("Net.HttpStreamPool.JobErrorCode", -*result_);
     }
   }
@@ -229,7 +219,6 @@ void HttpStreamPool::Job::Resume() {
     return;
   }
 
-  group_->EnsureAttemptManager();
   StartInternal();
 }
 

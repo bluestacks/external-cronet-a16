@@ -25,21 +25,17 @@ class NET_EXPORT CookiePartitionKeyCollection {
  public:
   // Creates an empty key collection.
   CookiePartitionKeyCollection();
+  CookiePartitionKeyCollection(const CookiePartitionKeyCollection& other);
+  CookiePartitionKeyCollection(CookiePartitionKeyCollection&& other);
   // Creates a key collection with a single element.
-  explicit CookiePartitionKeyCollection(CookiePartitionKey key);
+  explicit CookiePartitionKeyCollection(const CookiePartitionKey& key);
   // Creates a set that contains each partition key in the set.
   explicit CookiePartitionKeyCollection(
       base::flat_set<CookiePartitionKey> keys);
 
-  explicit CookiePartitionKeyCollection(
-      std::optional<CookiePartitionKey> opt_key);
-
-  CookiePartitionKeyCollection(const CookiePartitionKeyCollection& other);
-  CookiePartitionKeyCollection(CookiePartitionKeyCollection&& other);
   CookiePartitionKeyCollection& operator=(
       const CookiePartitionKeyCollection& other);
   CookiePartitionKeyCollection& operator=(CookiePartitionKeyCollection&& other);
-
   ~CookiePartitionKeyCollection();
 
   static CookiePartitionKeyCollection ContainsAll() {
@@ -52,6 +48,11 @@ class NET_EXPORT CookiePartitionKeyCollection {
   static CookiePartitionKeyCollection MatchesSite(
       const net::SchemefulSite& top_level_site);
 
+  static CookiePartitionKeyCollection FromOptional(
+      const std::optional<CookiePartitionKey>& opt_key) {
+    return opt_key ? CookiePartitionKeyCollection(opt_key.value())
+                   : CookiePartitionKeyCollection();
+  }
 
   // Temporary method used to record where we need to decide how to build the
   // CookiePartitionKeyCollection.

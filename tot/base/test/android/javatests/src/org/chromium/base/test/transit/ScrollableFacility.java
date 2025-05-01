@@ -130,17 +130,11 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                         Matcher<View> onScreenViewMatcher,
                         @Nullable Matcher<?> offScreenDataMatcher,
                         Callable<DestinationStationT> destinationStationFactory) {
-            var item =
-                    new Item<DestinationStationT>(
-                            onScreenViewMatcher,
-                            offScreenDataMatcher,
-                            Presence.PRESENT_AND_ENABLED,
-                            /* selectHandler= */ null);
-            item.setSelectHandler(
+            return declareItem(
+                    onScreenViewMatcher,
+                    offScreenDataMatcher,
                     (itemOnScreenFacility) ->
-                            travelToStation(item, itemOnScreenFacility, destinationStationFactory));
-            mItems.add(item);
-            return item;
+                            travelToStation(itemOnScreenFacility, destinationStationFactory));
         }
 
         /** Create a new item which enters a |EnteredFacilityT| when selected. */
@@ -149,17 +143,11 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                         Matcher<View> onScreenViewMatcher,
                         @Nullable Matcher<?> offScreenDataMatcher,
                         Callable<EnteredFacilityT> destinationFacilityFactory) {
-            final var item =
-                    new Item<EnteredFacilityT>(
-                            onScreenViewMatcher,
-                            offScreenDataMatcher,
-                            Presence.PRESENT_AND_ENABLED,
-                            /* selectHandler= */ null);
-            item.setSelectHandler(
+            return declareItem(
+                    onScreenViewMatcher,
+                    offScreenDataMatcher,
                     (itemOnScreenFacility) ->
-                            enterFacility(item, itemOnScreenFacility, destinationFacilityFactory));
-            mItems.add(item);
-            return item;
+                            enterFacility(itemOnScreenFacility, destinationFacilityFactory));
         }
 
         /** Create a new disabled item. */
@@ -348,17 +336,11 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             }
         }
 
-        protected void setSelectHandler(
-                Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
-            assert mSelectHandler == null;
-            mSelectHandler = selectHandler;
-        }
-
         public @Presence int getPresence() {
             return mPresence;
         }
 
-        public ViewSpec getViewSpec() {
+        public ViewSpec<View> getViewSpec() {
             assert mViewSpec != null : "Trying to get a ViewSpec for an item not present.";
             return mViewSpec;
         }
@@ -404,7 +386,6 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
     }
 
     private <EnteredFacilityT extends Facility> EnteredFacilityT enterFacility(
-            Item<EnteredFacilityT> item,
             ItemOnScreenFacility<EnteredFacilityT> itemOnScreenFacility,
             Callable<EnteredFacilityT> destinationFactory) {
         EnteredFacilityT destination;
@@ -414,12 +395,14 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             throw new RuntimeException(e);
         }
 
+        assumeNonNull(itemOnScreenFacility.viewElement);
         return mHostStation.swapFacilitySync(
-                List.of(this, itemOnScreenFacility), destination, item.getViewSpec()::click);
+                List.of(this, itemOnScreenFacility),
+                destination,
+                itemOnScreenFacility.viewElement.getClickTrigger());
     }
 
     private <DestinationStationT extends Station<?>> DestinationStationT travelToStation(
-            Item<DestinationStationT> item,
             ItemOnScreenFacility<DestinationStationT> itemOnScreenFacility,
             Callable<DestinationStationT> destinationFactory) {
         DestinationStationT destination;
@@ -429,7 +412,9 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             throw new RuntimeException(e);
         }
 
-        return mHostStation.travelToSync(destination, item.getViewSpec()::click);
+        assumeNonNull(itemOnScreenFacility.viewElement);
+        return mHostStation.travelToSync(
+                destination, itemOnScreenFacility.viewElement.getClickTrigger());
     }
 
     /** Get all {@link Item}s declared in this {@link ScrollableFacility}. */
@@ -446,7 +431,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
     public class ItemOnScreenFacility<SelectReturnT> extends Facility<HostStationT> {
 
         protected final Item<SelectReturnT> mItem;
-        private @MonotonicNonNull ViewElement mViewElement;
+        public @MonotonicNonNull ViewElement<View> viewElement;
 
         protected ItemOnScreenFacility(Item<SelectReturnT> item) {
             mItem = item;
@@ -454,7 +439,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         @Override
         public void declareElements(Elements.Builder elements) {
-            mViewElement = elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
+            viewElement = elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
         }
 
         /** Select the item and trigger its |selectHandler|. */
@@ -478,17 +463,6 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Returns the {@link Item} that is on the screen. */
         public Item<SelectReturnT> getItem() {
             return mItem;
-        }
-
-        /** Returns a {@link Transition.Trigger} to click the item. */
-        public Transition.Trigger clickTrigger() {
-            return getItem().getViewSpec()::click;
-        }
-
-        /** Returns the item rendered to an Android View. */
-        public View getView() {
-            assumeNonNull(mViewElement);
-            return mViewElement.get();
         }
     }
 

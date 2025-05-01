@@ -42,7 +42,7 @@
 #include "./centipede/runner_result.h"
 #include "./centipede/runner_sancov_object.h"
 
-namespace centipede {
+namespace fuzztest::internal {
 
 // Like std::lock_guard, but for pthread_mutex_t.
 class LockGuard {
@@ -71,6 +71,7 @@ struct RunTimeFlags {
   uint64_t crossover_level;
   uint64_t skip_seen_features : 1;
   uint64_t ignore_timeout_reports : 1;
+  uint64_t max_len;
 };
 
 // One such object is created in runner's TLS.
@@ -177,12 +178,13 @@ struct GlobalRunnerState {
       /*crossover_level=*/HasIntFlag(":crossover_level=", 50),
       /*skip_seen_features=*/HasFlag(":skip_seen_features:"),
       /*ignore_timeout_reports=*/HasFlag(":ignore_timeout_reports:"),
+      /*max_len=*/HasIntFlag(":max_len=", 4000),
   };
 
   // Returns true iff `flag` is present.
   // Typical usage: pass ":some_flag:", i.e. the flag name surrounded with ':'.
   // TODO(ussuri): Refactor `char *` into a `string_view`.
-  bool HasFlag(absl::Nonnull<const char *> flag) const {
+  bool HasFlag(const char *absl_nonnull flag) const {
     if (!centipede_runner_flags) return false;
     return strstr(centipede_runner_flags, flag) != nullptr;
   }
@@ -191,7 +193,7 @@ struct GlobalRunnerState {
   // otherwise returns `default_value`.
   // Typical usage: pass ":some_flag=".
   // TODO(ussuri): Refactor `char *` into a `string_view`.
-  uint64_t HasIntFlag(absl::Nonnull<const char *> flag,
+  uint64_t HasIntFlag(const char *absl_nonnull flag,
                       uint64_t default_value) const {
     if (!centipede_runner_flags) return default_value;
     const char *beg = strstr(centipede_runner_flags, flag);
@@ -204,8 +206,7 @@ struct GlobalRunnerState {
   // it in `this` to avoid a leak.
   // Typical usage: pass ":some_flag=".
   // TODO(ussuri): Refactor `char *` into a `string_view`.
-  absl::Nullable<const char *> GetStringFlag(
-      absl::Nonnull<const char *> flag) const {
+  const char *absl_nullable GetStringFlag(const char *absl_nonnull flag) const {
     if (!centipede_runner_flags) return nullptr;
     // Extract "value" from ":flag=value:" inside centipede_runner_flags.
     const char *beg = strstr(centipede_runner_flags, flag);
@@ -363,6 +364,6 @@ extern __thread ThreadLocalRunnerState tls;
 // Check for stack limit for the stack pointer `sp` in the current thread.
 void CheckStackLimit(uintptr_t sp);
 
-}  // namespace centipede
+}  // namespace fuzztest::internal
 
 #endif  // THIRD_PARTY_CENTIPEDE_RUNNER_H_

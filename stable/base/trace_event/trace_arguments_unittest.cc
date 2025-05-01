@@ -10,13 +10,13 @@
 #include "base/trace_event/trace_arguments.h"
 
 #include <gtest/gtest.h>
-
 #include <limits>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 
-namespace base::trace_event {
+namespace base {
+namespace trace_event {
 
 namespace {
 
@@ -24,12 +24,11 @@ namespace {
 // and can also write to a boolean flag on destruction.
 class MyConvertable : public ConvertableToTraceFormat {
  public:
-  explicit MyConvertable(const char* text, bool* destroy_flag = nullptr)
+  MyConvertable(const char* text, bool* destroy_flag = nullptr)
       : text_(text), destroy_flag_(destroy_flag) {}
   ~MyConvertable() override {
-    if (destroy_flag_) {
+    if (destroy_flag_)
       *destroy_flag_ = true;
-    }
   }
   void AppendAsTraceFormat(std::string* out) const override { *out += text_; }
   const char* text() const { return text_; }
@@ -79,6 +78,15 @@ TEST(TraceArguments, StringStorageResetWithSize) {
   EXPECT_EQ(kSize, storage.size());
   EXPECT_EQ(storage.data(), storage.begin());
   EXPECT_EQ(storage.data() + kSize, storage.end());
+}
+
+TEST(TraceArguments, StringStorageEstimateTraceMemoryOverhead) {
+  StringStorage storage;
+  EXPECT_EQ(0u, storage.EstimateTraceMemoryOverhead());
+
+  const size_t kSize = 128;
+  storage.Reset(kSize);
+  EXPECT_EQ(sizeof(size_t) + kSize, storage.EstimateTraceMemoryOverhead());
 }
 
 static void CheckJSONFor(TraceValue v, char type, const char* expected) {
@@ -207,11 +215,10 @@ TEST(TraceArguments, ConstructorSinglePointer) {
     // Simple class that can set a boolean flag on destruction.
     class Foo {
      public:
-      explicit Foo(bool* destroy_flag) : destroy_flag_(destroy_flag) {}
+      Foo(bool* destroy_flag) : destroy_flag_(destroy_flag) {}
       ~Foo() {
-        if (destroy_flag_) {
+        if (destroy_flag_)
           *destroy_flag_ = true;
-        }
       }
 
      private:
@@ -346,7 +353,7 @@ TEST(TraceArguments, MoveConstruction) {
       EXPECT_FALSE(destroy_flag);
 
       // |args1| is now empty.
-      EXPECT_EQ(0U, args1.size());  // NOLINT(bugprone-use-after-move)
+      EXPECT_EQ(0U, args1.size());
 
       // Check that everything was transferred to |args2|.
       EXPECT_EQ(2U, args2.size());
@@ -387,7 +394,7 @@ TEST(TraceArguments, MoveAssignment) {
       EXPECT_FALSE(destroy_flag);
 
       // |args1| is now empty.
-      EXPECT_EQ(0U, args1.size());  // NOLINT(bugprone-use-after-move)
+      EXPECT_EQ(0U, args1.size());
 
       // Check that everything was transferred to |args2|.
       EXPECT_EQ(2U, args2.size());
@@ -516,4 +523,5 @@ TEST(TraceArguments, CopyStringsTo_Everything) {
   EXPECT_STREQ(kExtra2, extra2);
 }
 
-}  // namespace base::trace_event
+}  // namespace trace_event
+}  // namespace base

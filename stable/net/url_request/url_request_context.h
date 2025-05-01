@@ -20,6 +20,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
@@ -86,7 +87,10 @@ class NET_EXPORT URLRequestContext final {
   // session.
   const HttpNetworkSessionContext* GetNetworkSessionContext() const;
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if !BUILDFLAG(IS_WIN) && \
+    !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // This function should not be used in Chromium, please use the version with
   // NetworkTrafficAnnotationTag in the future.
   //

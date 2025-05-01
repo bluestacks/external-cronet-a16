@@ -4,8 +4,6 @@
 
 package org.chromium.base.process_launcher;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -37,9 +35,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.annotations.Initializer;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -66,7 +61,6 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @JNINamespace("base::android")
 @SuppressWarnings("SynchronizeOnNonFinalField") // mMainThread assigned in onCreate().
-@NullMarked
 public class ChildProcessService {
     private static final String MAIN_THREAD_NAME = "ChildProcessMain";
     private static final String TAG = "ChildProcessService";
@@ -93,16 +87,16 @@ public class ChildProcessService {
     private int mBoundCallingPid;
 
     @GuardedBy("mBinderLock")
-    private @Nullable String mBoundCallingClazz;
+    private String mBoundCallingClazz;
 
     // This is the native "Main" thread for the renderer / utility process.
     private Thread mMainThread;
 
     // Parameters received via IPC, only accessed while holding the mMainThread monitor.
-    private String @Nullable [] mCommandLineParams;
+    private String[] mCommandLineParams;
 
     // File descriptors that should be registered natively.
-    private FileDescriptorInfo @Nullable [] mFdInfos;
+    private FileDescriptorInfo[] mFdInfos;
 
     @GuardedBy("mLibraryInitializedLock")
     private boolean mLibraryInitialized;
@@ -112,7 +106,7 @@ public class ChildProcessService {
     private boolean mServiceBound;
 
     // Interface to send notifications to the parent process.
-    private @Nullable IParentProcess mParentProcess;
+    private IParentProcess mParentProcess;
 
     public ChildProcessService(
             ChildProcessServiceDelegate delegate, Service service, Context applicationContext) {
@@ -258,7 +252,7 @@ public class ChildProcessService {
             };
 
     /** Loads Chrome's native libraries and initializes a ChildProcessService. */
-    @Initializer
+    // For sCreateCalled check.
     public void onCreate() {
         Log.i(TAG, "Creating new ChildProcessService pid=%d", Process.myPid());
         if (sCreateCalled) {
@@ -284,7 +278,6 @@ public class ChildProcessService {
     }
 
     private void mainThreadMain() {
-        assumeNonNull(mParentProcess);
         try {
             // CommandLine must be initialized before everything else.
             synchronized (mMainThread) {
@@ -294,11 +287,6 @@ public class ChildProcessService {
             }
             assert mServiceBound;
             CommandLine.init(mCommandLineParams);
-
-            if (CommandLine.getInstance()
-                    .hasSwitch(BaseSwitches.ANDROID_SKIP_CHILD_SERVICE_INIT_FOR_TESTING)) {
-                return;
-            }
 
             if (CommandLine.getInstance().hasSwitch(BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER)) {
                 android.os.Debug.waitForDebugger();

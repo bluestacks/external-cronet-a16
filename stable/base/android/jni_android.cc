@@ -19,8 +19,11 @@
 #include "build/robolectric_buildflags.h"
 #include "third_party/jni_zero/jni_zero.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/JniAndroid_jni.h"
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/JniAndroid_jni.h"  // nogncheck
+#else
+#include "base/base_jni/JniAndroid_jni.h"
+#endif
 
 namespace base {
 namespace android {
@@ -108,6 +111,7 @@ void InitVM(JavaVM* vm) {
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
   DCHECK(g_out_of_memory_error_class);
 }
+
 
 void CheckException(JNIEnv* env) {
   if (!jni_zero::HasException(env)) {
@@ -200,7 +204,8 @@ void CheckException(JNIEnv* env) {
   LOG(ERROR) << "Native stack trace:" << std::endl << native_stack_trace;
 
   ScopedJavaLocalRef<jthrowable> secondary_exception =
-      Java_JniAndroid_handleException(env, throwable, native_stack_trace);
+      Java_JniAndroid_handleException(
+          env, throwable, ConvertUTF8ToJavaString(env, native_stack_trace));
 
   // Ideally handleException() should have terminated the process and we should
   // not get here. This can happen in the case of OutOfMemoryError or if the
@@ -222,11 +227,11 @@ void CheckException(JNIEnv* env) {
 
 std::string GetJavaExceptionInfo(JNIEnv* env,
                                  const JavaRef<jthrowable>& throwable) {
-  std::string sanitized_exception_string =
+  ScopedJavaLocalRef<jstring> sanitized_exception_string =
       Java_JniAndroid_sanitizedStacktraceForUnhandledException(env, throwable);
   // Returns null when PiiElider results in an OutOfMemoryError.
-  return !sanitized_exception_string.empty()
-             ? sanitized_exception_string
+  return sanitized_exception_string
+             ? ConvertJavaStringToUTF8(sanitized_exception_string)
              : kOomInGetJavaExceptionInfoMessage;
 }
 
@@ -265,5 +270,3 @@ std::string GetJavaStackTraceIfPresent() {
 
 }  // namespace android
 }  // namespace base
-
-DEFINE_JNI_FOR_JniAndroid()

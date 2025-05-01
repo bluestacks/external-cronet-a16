@@ -1,16 +1,57 @@
-// Copyright 2006-2016 The OpenSSL Project Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL project
+ * 2006.
+ */
+/* ====================================================================
+ * Copyright (c) 2006 The OpenSSL Project.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. All advertising materials mentioning features or use of this
+ *    software must display the following acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/)"
+ *
+ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
+ *    endorse or promote products derived from this software without
+ *    prior written permission. For written permission, please contact
+ *    licensing@OpenSSL.org.
+ *
+ * 5. Products derived from this software may not be called "OpenSSL"
+ *    nor may "OpenSSL" appear in their names without prior written
+ *    permission of the OpenSSL Project.
+ *
+ * 6. Redistributions of any form whatsoever must retain the following
+ *    acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit (http://www.OpenSSL.org/)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This product includes cryptographic software written by Eric Young
+ * (eay@cryptsoft.com).  This product includes software written by Tim
+ * Hudson (tjh@cryptsoft.com). */
 
 #include <openssl/evp.h>
 
@@ -28,38 +69,41 @@ static int dsa_pub_decode(EVP_PKEY *out, CBS *params, CBS *key) {
   // See RFC 3279, section 2.3.2.
 
   // Parameters may or may not be present.
-  bssl::UniquePtr<DSA> dsa;
+  DSA *dsa;
   if (CBS_len(params) == 0) {
-    dsa.reset(DSA_new());
-    if (dsa == nullptr) {
+    dsa = DSA_new();
+    if (dsa == NULL) {
       return 0;
     }
   } else {
-    dsa.reset(DSA_parse_parameters(params));
-    if (dsa == nullptr || CBS_len(params) != 0) {
+    dsa = DSA_parse_parameters(params);
+    if (dsa == NULL || CBS_len(params) != 0) {
       OPENSSL_PUT_ERROR(EVP, EVP_R_DECODE_ERROR);
-      return 0;
+      goto err;
     }
   }
 
   dsa->pub_key = BN_new();
-  if (dsa->pub_key == nullptr) {
-    return 0;
+  if (dsa->pub_key == NULL) {
+    goto err;
   }
 
   if (!BN_parse_asn1_unsigned(key, dsa->pub_key) || CBS_len(key) != 0) {
     OPENSSL_PUT_ERROR(EVP, EVP_R_DECODE_ERROR);
-    return 0;
+    goto err;
   }
 
-  EVP_PKEY_assign_DSA(out, dsa.release());
+  EVP_PKEY_assign_DSA(out, dsa);
   return 1;
+
+err:
+  DSA_free(dsa);
+  return 0;
 }
 
 static int dsa_pub_encode(CBB *out, const EVP_PKEY *key) {
   const DSA *dsa = reinterpret_cast<const DSA *>(key->pkey);
-  const int has_params =
-      dsa->p != nullptr && dsa->q != nullptr && dsa->g != nullptr;
+  const int has_params = dsa->p != NULL && dsa->q != NULL && dsa->g != NULL;
 
   // See RFC 5480, section 2.
   CBB spki, algorithm, oid, key_bitstring;
@@ -82,45 +126,52 @@ static int dsa_priv_decode(EVP_PKEY *out, CBS *params, CBS *key) {
   // See PKCS#11, v2.40, section 2.5.
 
   // Decode parameters.
-  bssl::UniquePtr<DSA> dsa(DSA_parse_parameters(params));
-  if (dsa == nullptr || CBS_len(params) != 0) {
+  BN_CTX *ctx = NULL;
+  DSA *dsa = DSA_parse_parameters(params);
+  if (dsa == NULL || CBS_len(params) != 0) {
     OPENSSL_PUT_ERROR(EVP, EVP_R_DECODE_ERROR);
-    return 0;
+    goto err;
   }
 
   dsa->priv_key = BN_new();
-  if (dsa->priv_key == nullptr) {
-    return 0;
+  if (dsa->priv_key == NULL) {
+    goto err;
   }
   if (!BN_parse_asn1_unsigned(key, dsa->priv_key) || CBS_len(key) != 0) {
     OPENSSL_PUT_ERROR(EVP, EVP_R_DECODE_ERROR);
-    return 0;
+    goto err;
   }
 
   // To avoid DoS attacks when importing private keys, check bounds on |dsa|.
   // This bounds |dsa->priv_key| against |dsa->q| and bounds |dsa->q|'s bit
   // width.
-  if (!dsa_check_key(dsa.get())) {
+  if (!dsa_check_key(dsa)) {
     OPENSSL_PUT_ERROR(EVP, EVP_R_DECODE_ERROR);
-    return 0;
+    goto err;
   }
 
   // Calculate the public key.
-  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
+  ctx = BN_CTX_new();
   dsa->pub_key = BN_new();
-  if (ctx == nullptr || dsa->pub_key == nullptr ||
+  if (ctx == NULL || dsa->pub_key == NULL ||
       !BN_mod_exp_mont_consttime(dsa->pub_key, dsa->g, dsa->priv_key, dsa->p,
-                                 ctx.get(), nullptr)) {
-    return 0;
+                                 ctx, NULL)) {
+    goto err;
   }
 
-  EVP_PKEY_assign_DSA(out, dsa.release());
+  BN_CTX_free(ctx);
+  EVP_PKEY_assign_DSA(out, dsa);
   return 1;
+
+err:
+  BN_CTX_free(ctx);
+  DSA_free(dsa);
+  return 0;
 }
 
 static int dsa_priv_encode(CBB *out, const EVP_PKEY *key) {
   const DSA *dsa = reinterpret_cast<const DSA *>(key->pkey);
-  if (dsa == nullptr || dsa->priv_key == nullptr) {
+  if (dsa == NULL || dsa->priv_key == NULL) {
     OPENSSL_PUT_ERROR(EVP, EVP_R_MISSING_PARAMETERS);
     return 0;
   }
@@ -154,20 +205,23 @@ static int dsa_bits(const EVP_PKEY *pkey) {
 
 static int dsa_missing_parameters(const EVP_PKEY *pkey) {
   const DSA *dsa = reinterpret_cast<const DSA *>(pkey->pkey);
-  if (DSA_get0_p(dsa) == nullptr || DSA_get0_q(dsa) == nullptr ||
-      DSA_get0_g(dsa) == nullptr) {
+  if (DSA_get0_p(dsa) == NULL || DSA_get0_q(dsa) == NULL ||
+      DSA_get0_g(dsa) == NULL) {
     return 1;
   }
   return 0;
 }
 
 static int dup_bn_into(BIGNUM **out, BIGNUM *src) {
-  bssl::UniquePtr<BIGNUM> a(BN_dup(src));
-  if (a == nullptr) {
+  BIGNUM *a;
+
+  a = BN_dup(src);
+  if (a == NULL) {
     return 0;
   }
   BN_free(*out);
-  *out = a.release();
+  *out = a;
+
   return 1;
 }
 
@@ -199,7 +253,7 @@ static int dsa_pub_cmp(const EVP_PKEY *a, const EVP_PKEY *b) {
 
 static void int_dsa_free(EVP_PKEY *pkey) {
   DSA_free(reinterpret_cast<DSA *>(pkey->pkey));
-  pkey->pkey = nullptr;
+  pkey->pkey = NULL;
 }
 
 const EVP_PKEY_ASN1_METHOD dsa_asn1_meth = {
@@ -208,7 +262,7 @@ const EVP_PKEY_ASN1_METHOD dsa_asn1_meth = {
     {0x2a, 0x86, 0x48, 0xce, 0x38, 0x04, 0x01},
     7,
 
-    /*pkey_method=*/nullptr,
+    /*pkey_method=*/NULL,
 
     dsa_pub_decode,
     dsa_pub_encode,
@@ -217,14 +271,14 @@ const EVP_PKEY_ASN1_METHOD dsa_asn1_meth = {
     dsa_priv_decode,
     dsa_priv_encode,
 
-    /*set_priv_raw=*/nullptr,
-    /*set_pub_raw=*/nullptr,
-    /*get_priv_raw=*/nullptr,
-    /*get_pub_raw=*/nullptr,
-    /*set1_tls_encodedpoint=*/nullptr,
-    /*get1_tls_encodedpoint=*/nullptr,
+    /*set_priv_raw=*/NULL,
+    /*set_pub_raw=*/NULL,
+    /*get_priv_raw=*/NULL,
+    /*get_pub_raw=*/NULL,
+    /*set1_tls_encodedpoint=*/NULL,
+    /*get1_tls_encodedpoint=*/NULL,
 
-    /*pkey_opaque=*/nullptr,
+    /*pkey_opaque=*/NULL,
 
     int_dsa_size,
     dsa_bits,
@@ -259,20 +313,20 @@ int EVP_PKEY_set1_DSA(EVP_PKEY *pkey, DSA *key) {
 int EVP_PKEY_assign_DSA(EVP_PKEY *pkey, DSA *key) {
   evp_pkey_set_method(pkey, &dsa_asn1_meth);
   pkey->pkey = key;
-  return key != nullptr;
+  return key != NULL;
 }
 
 DSA *EVP_PKEY_get0_DSA(const EVP_PKEY *pkey) {
   if (pkey->type != EVP_PKEY_DSA) {
     OPENSSL_PUT_ERROR(EVP, EVP_R_EXPECTING_A_DSA_KEY);
-    return nullptr;
+    return NULL;
   }
   return reinterpret_cast<DSA *>(pkey->pkey);
 }
 
 DSA *EVP_PKEY_get1_DSA(const EVP_PKEY *pkey) {
   DSA *dsa = EVP_PKEY_get0_DSA(pkey);
-  if (dsa != nullptr) {
+  if (dsa != NULL) {
     DSA_up_ref(dsa);
   }
   return dsa;

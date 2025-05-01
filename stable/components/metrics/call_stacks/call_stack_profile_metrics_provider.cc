@@ -4,7 +4,6 @@
 
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -12,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -329,9 +329,10 @@ bool ReceivedProfileCounter::WasMinimallySuccessful(
   // stack has at least 2 frames. (The current instruction pointer should always
   // count as one, so two means we had some luck walking the stack.)
   const auto& stacks = profile.call_stack_profile().stack();
-  return std::ranges::find_if(stacks, [](const CallStackProfile::Stack& stack) {
-           return stack.frame_size() >= 2;
-         }) != stacks.end();
+  return base::ranges::find_if(stacks,
+                               [](const CallStackProfile::Stack& stack) {
+                                 return stack.frame_size() >= 2;
+                               }) != stacks.end();
 }
 
 void ReceivedProfileCounter::OnRetrieveProfiles(

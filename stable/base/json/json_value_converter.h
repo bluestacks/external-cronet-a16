@@ -300,9 +300,8 @@ class RepeatedMessageConverter
   bool Convert(const base::Value& value,
                std::vector<std::unique_ptr<NestedType>>* field) const override {
     const Value::List* list = value.GetIfList();
-    if (!list) {
+    if (!list)
       return false;
-    }
 
     field->reserve(list->size());
     size_t i = 0;
@@ -339,9 +338,8 @@ class RepeatedCustomValueConverter
   bool Convert(const base::Value& value,
                std::vector<std::unique_ptr<NestedType>>* field) const override {
     const Value::List* list = value.GetIfList();
-    if (!list) {
+    if (!list)
       return false;
-    }
 
     field->reserve(list->size());
     size_t i = 0;
@@ -506,9 +504,8 @@ class JSONValueConverter {
 
   bool Convert(const base::Value& value, StructType* output) const {
     const base::Value::Dict* dict = value.GetIfDict();
-    if (!dict) {
+    if (!dict)
       return false;
-    }
 
     return Convert(*dict, output);
   }

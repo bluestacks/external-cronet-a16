@@ -7,14 +7,11 @@ package org.chromium.base;
 import android.os.SystemClock;
 
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Utilities related to timestamps, including the ability to use fake time for tests via
  * FakeTimeTestRule.
  */
-@NullMarked
 public class TimeUtils {
     /**
      * Interval timer using SystemClock.uptimeMillis() (excludes deep sleep).
@@ -94,7 +91,7 @@ public class TimeUtils {
 
     // Used by FakeTimeTestRule. Visibility is restricted to ensure tests use the rule, which
     // restores the value to null in its clean-up logic.
-    static @Nullable FakeClock sFakeClock;
+    static FakeClock sFakeClock;
 
     /**
      * Wrapper for System.currentTimeMillis() (milliseconds since the epoch).

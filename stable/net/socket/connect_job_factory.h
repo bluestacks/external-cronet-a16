@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <variant>
 #include <vector>
 
 #include "net/base/host_port_pair.h"
@@ -22,6 +21,7 @@
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/ssl/ssl_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -63,7 +63,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
 
   // Representation of the endpoint of a connection. Could be schemeful or
   // schemeless.
-  using Endpoint = std::variant<url::SchemeHostPort, SchemelessEndpoint>;
+  using Endpoint = absl::variant<url::SchemeHostPort, SchemelessEndpoint>;
 
   // Default factory will be used if passed the default `nullptr`.
   explicit ConnectJobFactory(

@@ -4,10 +4,11 @@
 
 package org.chromium.base.supplier;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,6 @@ import java.util.ArrayList;
  *
  * @param <T> The type of the wrapped object.
  */
-@NullMarked
 public class SyncOneshotSupplierImpl<T> implements SyncOneshotSupplier<T> {
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
@@ -65,7 +65,7 @@ public class SyncOneshotSupplierImpl<T> implements SyncOneshotSupplier<T> {
      *
      * @param object The object to supply.
      */
-    public void set(T object) {
+    public void set(@NonNull T object) {
         mThreadChecker.assertOnValidThread();
         assert mObject == null;
         assert object != null;

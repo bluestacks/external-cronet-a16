@@ -389,7 +389,7 @@ bool TCPClientSocket::WasEverUsed() const {
 }
 
 NextProto TCPClientSocket::GetNegotiatedProtocol() const {
-  return NextProto::kProtoUnknown;
+  return kProtoUnknown;
 }
 
 bool TCPClientSocket::GetSSLInfo(SSLInfo* ssl_info) {

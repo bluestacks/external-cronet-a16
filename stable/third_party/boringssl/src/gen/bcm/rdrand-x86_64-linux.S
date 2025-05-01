@@ -17,7 +17,7 @@ CRYPTO_rdrand:
 .cfi_startproc	
 _CET_ENDBR
 	xorq	%rax,%rax
-	rdrand	%rdx
+.byte	72,15,199,242
 
 	adcq	%rax,%rax
 	movq	%rdx,0(%rdi)
@@ -40,7 +40,7 @@ _CET_ENDBR
 	jz	.Lout
 	movq	$8,%rdx
 .Lloop:
-	rdrand	%rcx
+.byte	72,15,199,241
 	jnc	.Lerr
 	movq	%rcx,0(%rdi)
 	addq	%rdx,%rdi

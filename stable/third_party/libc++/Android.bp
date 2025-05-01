@@ -93,8 +93,8 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-20-init-13894-g8cb44859-1\"",
+        "-DCR_LIBCXX_REVISION=6a91009985a46122b061d36bb27f2c94f99126df",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXX_BUILDING_LIBCXXABI",
         "-DLIBC_NAMESPACE=__llvm_libc_cr",
@@ -190,7 +190,7 @@ cc_library_static {
                 "src/src/filesystem/filesystem_clock.cpp",
             ],
             cflags: [
-                "-DCR_SYSROOT_KEY=20250129T203412Z-1",
+                "-DCR_SYSROOT_KEY=20230611T210420Z-2",
                 "-DNO_UNWIND_TABLES",
                 "-DUSE_AURA=1",
                 "-DUSE_OZONE=1",
@@ -265,8 +265,8 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-20-init-13894-g8cb44859-1\"",
+        "-DCR_LIBCXX_REVISION=6a91009985a46122b061d36bb27f2c94f99126df",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXX_BUILDING_LIBCXXABI",
         "-DLIBC_NAMESPACE=__llvm_libc_cr",
@@ -362,7 +362,7 @@ cc_library_static {
                 "src/src/filesystem/filesystem_clock.cpp",
             ],
             cflags: [
-                "-DCR_SYSROOT_KEY=20250129T203412Z-1",
+                "-DCR_SYSROOT_KEY=20230611T210420Z-2",
                 "-DNO_UNWIND_TABLES",
                 "-DUSE_AURA=1",
                 "-DUSE_OZONE=1",

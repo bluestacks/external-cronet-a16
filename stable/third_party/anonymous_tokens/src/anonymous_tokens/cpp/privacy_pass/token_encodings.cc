@@ -425,7 +425,7 @@ absl::StatusOr<DebugMode> DebugMode::FromExtension(const Extension& ext) {
     return absl::InvalidArgumentError(
         "[DebugMode] failed to read len from extension");
   }
-  if (dm.mode != kProd && dm.mode != kDebug && dm.mode != kAdmin) {
+  if (dm.mode != kProd && dm.mode != kDebug) {
     return absl::InvalidArgumentError(
         absl::StrCat("[DebugMode] invalid mode: ", dm.mode));
   }
@@ -727,10 +727,8 @@ absl::Status ValidateExtensionsValues(const Extensions& extensions,
           }
         }
         for (const char& c : geo_hint->region) {
-          if (!absl::ascii_isupper(c) && !absl::ascii_ispunct(c) &&
-              !absl::ascii_isdigit(c)) {
-            return absl::InvalidArgumentError(
-                "Region is not ascii uppercase, numerals, or punctuation");
+          if (!absl::ascii_isupper(c) && !absl::ascii_ispunct(c)) {
+            return absl::InvalidArgumentError("Region is not uppercase");
           }
         }
         break;

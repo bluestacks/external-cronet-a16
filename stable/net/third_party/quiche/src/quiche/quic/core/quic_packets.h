@@ -10,7 +10,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -306,7 +305,7 @@ class QUICHE_EXPORT QuicReceivedPacket : public QuicEncryptedPacket {
                      bool owns_buffer, int ttl, bool ttl_valid,
                      char* packet_headers, size_t headers_length,
                      bool owns_header_buffer, QuicEcnCodepoint ecn_codepoint,
-                     std::optional<uint8_t> tos, uint32_t ipv6_flow_label);
+                     uint32_t ipv6_flow_label);
   ~QuicReceivedPacket();
   QuicReceivedPacket(const QuicReceivedPacket&) = delete;
   QuicReceivedPacket& operator=(const QuicReceivedPacket&) = delete;
@@ -327,8 +326,6 @@ class QUICHE_EXPORT QuicReceivedPacket : public QuicEncryptedPacket {
   int headers_length() const { return headers_length_; }
 
   QuicEcnCodepoint ecn_codepoint() const { return ecn_codepoint_; }
-
-  std::optional<uint8_t> tos() const { return tos_; }
 
   // Returns the IPv6 flow label in host byte order if present, or 0 otherwise.
   uint32_t ipv6_flow_label() const { return ipv6_flow_label_; }
@@ -351,9 +348,6 @@ class QUICHE_EXPORT QuicReceivedPacket : public QuicEncryptedPacket {
   int headers_length_;
   // Whether owns the buffer for packet headers.
   bool owns_header_buffer_;
-  // The contents of the TOS byte in the IP header.
-  std::optional<uint8_t> tos_;
-  // The ECN code point extracted from the TOS byte.
   QuicEcnCodepoint ecn_codepoint_;
   // IPv6 flow label.
   uint32_t ipv6_flow_label_;

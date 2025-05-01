@@ -1010,9 +1010,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 quicNetworkErrorCode,
                 source,
                 failureReason,
-                mMetrics.getSocketReused(),
-                ImplVersion.getCronetVersion(),
-                mRequestContext.getCronetSource());
+                mMetrics.getSocketReused());
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {

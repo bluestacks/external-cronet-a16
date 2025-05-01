@@ -14,7 +14,8 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::debug {
+namespace base {
+namespace debug {
 
 TEST(TaskTraceTest, NoTask) {
   TaskTrace task_trace;
@@ -76,4 +77,5 @@ TEST(TaskTraceTest, ThreeTasks) {
   ThreeTasksTest().Run();
 }
 
-}  // namespace base::debug
+}  // namespace debug
+}  // namespace base

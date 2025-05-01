@@ -23,7 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -184,9 +185,8 @@ class ThreadPoolPerfTest : public testing::Test {
     tasks_run_duration_ = TimeTicks::Now() - tasks_run_start;
     ASSERT_EQ(0U, num_tasks_pending_);
 
-    for (auto& thread : threads_) {
+    for (auto& thread : threads_)
       thread->Join();
-    }
     ThreadPoolInstance::Get()->JoinForTesting();
 
     auto reporter = SetUpReporter(story_name);
@@ -268,4 +268,5 @@ TEST_F(ThreadPoolPerfTest, PostRunBusyTasksManyThreads) {
   Benchmark(kStoryPostRunBusyManyThreads, ExecutionMode::kPostAndRun);
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

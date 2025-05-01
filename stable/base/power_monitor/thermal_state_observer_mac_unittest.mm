@@ -20,9 +20,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using DeviceThermalState = base::PowerThermalObserver::DeviceThermalState;
-using ::testing::Invoke;
-using ::testing::Mock;
 using ::testing::MockFunction;
+using ::testing::Mock;
+using ::testing::Invoke;
 
 namespace base {
 void IgnoreStateChange(DeviceThermalState state) {}

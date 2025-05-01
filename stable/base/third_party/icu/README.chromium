@@ -1,7 +1,7 @@
 Name: ICU
 URL: http://site.icu-project.org/
 Version: 60
-License: Unicode-DFS-2016, ICU
+License: Unicode
 License File: LICENSE
 Security Critical: yes
 Shipped: no

@@ -103,13 +103,13 @@ void swap(TestObject& lhs, TestObject& rhs) {
 
 class NonTriviallyDestructible {
  public:
-  ~NonTriviallyDestructible() {}  // NOLINT(modernize-use-equals-default)
+  ~NonTriviallyDestructible() {}
 };
 
 class DeletedDefaultConstructor {
  public:
   DeletedDefaultConstructor() = delete;
-  explicit DeletedDefaultConstructor(int foo) : foo_(foo) {}
+  DeletedDefaultConstructor(int foo) : foo_(foo) {}
 
   int foo() const { return foo_; }
 
@@ -194,7 +194,6 @@ class TriviallyDestructibleOverloadAddressOf {
 
 class NonTriviallyDestructibleOverloadAddressOf {
  public:
-  // NOLINTNEXTLINE(modernize-use-equals-default)
   ~NonTriviallyDestructibleOverloadAddressOf() {}
   NonTriviallyDestructibleOverloadAddressOf* operator&() {
     EXPECT_TRUE(false);
@@ -562,7 +561,7 @@ TEST(OptionalTest, ForwardConstructor) {
 
   {
     struct Test {
-      Test(int a) {}  // NOLINT(google-explicit-constructor)
+      Test(int a) {}  // NOLINT(runtime/explicit)
     };
     // If T is convertible from U, it is not marked as explicit.
     static_assert(std::is_convertible_v<int, Test>,
@@ -903,9 +902,8 @@ TEST(OptionalTest, AssignOverload) {
     std::optional<Test2> b;
 
     b = std::move(a);
-    EXPECT_TRUE(!!a);  // NOLINT(bugprone-use-after-move)
+    EXPECT_TRUE(!!a);
     EXPECT_TRUE(!!b);
-    // NOLINTNEXTLINE(bugprone-use-after-move)
     EXPECT_EQ(Test1::State::MOVED, a->state);
     EXPECT_EQ(Test2::State::MOVE_CONSTRUCTED_FROM_TEST1, b->state);
   }
@@ -915,9 +913,8 @@ TEST(OptionalTest, AssignOverload) {
     std::optional<Test2> b(std::in_place);
 
     b = std::move(a);
-    EXPECT_TRUE(!!a);  // NOLINT(bugprone-use-after-move)
+    EXPECT_TRUE(!!a);
     EXPECT_TRUE(!!b);
-    // NOLINTNEXTLINE(bugprone-use-after-move)
     EXPECT_EQ(Test1::State::MOVED, a->state);
     EXPECT_EQ(Test2::State::MOVE_ASSIGNED_FROM_TEST1, b->state);
   }
@@ -1006,9 +1003,8 @@ TEST(OptionalTest, AssignOverload) {
     std::optional<Test3> b;
 
     b = std::move(a);
-    EXPECT_TRUE(!!a);  // NOLINT(bugprone-use-after-move)
+    EXPECT_TRUE(!!a);
     EXPECT_TRUE(!!b);
-    // NOLINTNEXTLINE(bugprone-use-after-move)
     EXPECT_EQ(Test1::State::MOVED, a->state);
     EXPECT_EQ(Test3::State::MOVE_CONSTRUCTED_FROM_OPTIONAL_TEST1, b->state);
   }
@@ -1018,9 +1014,8 @@ TEST(OptionalTest, AssignOverload) {
     std::optional<Test3> b(std::in_place);
 
     b = std::move(a);
-    EXPECT_TRUE(!!a);  // NOLINT(bugprone-use-after-move)
+    EXPECT_TRUE(!!a);
     EXPECT_TRUE(!!b);
-    // NOLINTNEXTLINE(bugprone-use-after-move)
     EXPECT_EQ(Test1::State::MOVED, a->state);
     EXPECT_EQ(Test3::State::MOVE_ASSIGNED_FROM_OPTIONAL_TEST1, b->state);
   }
@@ -2195,29 +2190,29 @@ TEST(OptionalTest, Noexcept) {
   // Trivial copy ctor, non-trivial move ctor, nothrow move assign.
   struct Test1 {
     Test1(const Test1&) = default;
-    Test1(Test1&&) {}  // NOLINT(modernize-use-equals-default)
+    Test1(Test1&&) {}
     Test1& operator=(Test1&&) = default;
   };
   // Non-trivial copy ctor, trivial move ctor, throw move assign.
   struct Test2 {
-    Test2(const Test2&) {}  // NOLINT(modernize-use-equals-default)
+    Test2(const Test2&) {}
     Test2(Test2&&) = default;
     Test2& operator=(Test2&&) { return *this; }
   };
   // Trivial copy ctor, non-trivial nothrow move ctor.
   struct Test3 {
     Test3(const Test3&) = default;
-    Test3(Test3&&) noexcept {}  // NOLINT(modernize-use-equals-default)
+    Test3(Test3&&) noexcept {}
   };
   // Non-trivial copy ctor, non-trivial nothrow move ctor.
   struct Test4 {
-    Test4(const Test4&) {}      // NOLINT(modernize-use-equals-default)
-    Test4(Test4&&) noexcept {}  // NOLINT(modernize-use-equals-default)
+    Test4(const Test4&) {}
+    Test4(Test4&&) noexcept {}
   };
   // Non-trivial copy ctor, non-trivial move ctor.
   struct Test5 {
-    Test5(const Test5&) {}  // NOLINT(modernize-use-equals-default)
-    Test5(Test5&&) {}       // NOLINT(modernize-use-equals-default)
+    Test5(const Test5&) {}
+    Test5(Test5&&) {}
   };
 
   static_assert(

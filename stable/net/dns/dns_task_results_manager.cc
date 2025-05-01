@@ -9,19 +9,15 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/connection_endpoint_metadata.h"
-#include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_dns_task.h"
 #include "net/dns/host_resolver_internal_result.h"
@@ -30,6 +26,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -74,13 +71,6 @@ bool CompareServiceEndpoint(const ServiceEndpoint& a,
   return CompareServiceEndpointAddresses(a, b);
 }
 
-// https://datatracker.ietf.org/doc/html/draft-pauly-v6ops-happy-eyeballs-v3-02#name-summary-of-configurable-val
-constexpr base::FeatureParam<base::TimeDelta> kResolutionDelay{
-    &features::kHappyEyeballsV3,
-    "resolution_delay",
-    base::Milliseconds(50),
-};
-
 }  // namespace
 
 // Holds service endpoint results per domain name.
@@ -98,11 +88,6 @@ struct DnsTaskResultsManager::PerDomainResult {
 
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas;
 };
-
-// static
-base::TimeDelta DnsTaskResultsManager::GetResolutionDelay() {
-  return kResolutionDelay.Get();
-}
 
 DnsTaskResultsManager::DnsTaskResultsManager(Delegate* delegate,
                                              HostResolver::Host host,
@@ -145,13 +130,8 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     }
   }
 
-  // Track whether new aliases are added.
-  bool aliases_updated = false;
-
   for (const auto& result : results) {
-    auto [unused_1_, updated_domain_name] =
-        aliases_.insert(result->domain_name());
-    aliases_updated |= updated_domain_name;
+    aliases_.insert(result->domain_name());
 
     switch (result->type()) {
       case HostResolverInternalResult::Type::kData: {
@@ -189,13 +169,10 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
 
         break;
       }
-      case net::HostResolverInternalResult::Type::kAlias: {
-        auto [unused_2_, updated_alias] =
-            aliases_.insert(result->AsAlias().alias_target());
-        aliases_updated |= updated_alias;
+      case net::HostResolverInternalResult::Type::kAlias:
+        aliases_.insert(result->AsAlias().alias_target());
 
         break;
-      }
       case net::HostResolverInternalResult::Type::kError:
         // Need to update endpoints when AAAA response is NODATA but A response
         // has at least one valid address.
@@ -219,11 +196,6 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     }
   }
 
-  // Only fix up aliases if new ones were added.
-  if (aliases_updated) {
-    aliases_ = dns_alias_utility::FixUpDnsAliases(aliases_);
-  }
-
   const bool waiting_for_aaaa_response =
       query_types_.Has(DnsQueryType::AAAA) && !aaaa_response_received_;
   if (waiting_for_aaaa_response) {
@@ -235,7 +207,7 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
           NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_RESOLUTION_DELAY);
       // Safe to unretain since `this` owns the timer.
       resolution_delay_timer_.Start(
-          FROM_HERE, GetResolutionDelay(),
+          FROM_HERE, kResolutionDelay,
           base::BindOnce(&DnsTaskResultsManager::OnAaaaResolutionTimedout,
                          base::Unretained(this)));
     }
@@ -298,7 +270,7 @@ void DnsTaskResultsManager::UpdateEndpoints() {
       endpoint.ipv6_endpoints = per_domain_result->ipv6_endpoints;
       new_endpoints.emplace_back(std::move(endpoint));
     } else {
-      for (const auto& [unused_, metadata] : per_domain_result->metadatas) {
+      for (const auto& [_, metadata] : per_domain_result->metadatas) {
         ServiceEndpoint endpoint;
         endpoint.ipv4_endpoints = per_domain_result->ipv4_endpoints;
         endpoint.ipv6_endpoints = per_domain_result->ipv6_endpoints;
@@ -348,7 +320,7 @@ void DnsTaskResultsManager::UpdateEndpoints() {
 }
 
 bool DnsTaskResultsManager::HasIpv4Addresses() {
-  for (const auto& [unused_, per_domain_result] : per_domain_results_) {
+  for (const auto& [_, per_domain_result] : per_domain_results_) {
     if (!per_domain_result->ipv4_endpoints.empty()) {
       return true;
     }

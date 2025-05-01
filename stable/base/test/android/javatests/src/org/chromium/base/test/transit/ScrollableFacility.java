@@ -425,7 +425,6 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
     public class ItemOnScreenFacility<SelectReturnT> extends Facility<HostStationT> {
 
         protected final Item<SelectReturnT> mItem;
-        private ViewElement mViewElement;
 
         protected ItemOnScreenFacility(Item<SelectReturnT> item) {
             mItem = item;
@@ -433,7 +432,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         @Override
         public void declareElements(Elements.Builder elements) {
-            mViewElement = elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
+            elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
         }
 
         /** Select the item and trigger its |selectHandler|. */
@@ -462,22 +461,6 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Returns a {@link Transition.Trigger} to click the item. */
         public Transition.Trigger clickTrigger() {
             return getItem().getViewSpec()::click;
-        }
-
-        /** Returns the item rendered to an Android View. */
-        public View getView() {
-            assertSuppliersCanBeUsed();
-            return mViewElement.get();
-        }
-    }
-
-    /** Scroll to each declared item and check they are there with the expected enabled state. */
-    public void verifyPresentItems() {
-        for (ScrollableFacility<?>.Item<?> item : getItems()) {
-            if (item.getPresence() == Presence.PRESENT_AND_ENABLED
-                    || item.getPresence() == Presence.PRESENT_AND_DISABLED) {
-                item.scrollTo();
-            }
         }
     }
 }

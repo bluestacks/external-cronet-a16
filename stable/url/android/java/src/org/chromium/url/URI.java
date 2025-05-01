@@ -4,8 +4,6 @@
 
 package org.chromium.url;
 
-import org.chromium.build.annotations.NullMarked;
-
 import java.net.URISyntaxException;
 
 /**
@@ -14,7 +12,6 @@ import java.net.URISyntaxException;
  * @deprecated Please use GURL directly in new code.
  */
 @Deprecated
-@NullMarked
 public class URI extends GURL {
     /** Create a new GURL with a java.net.URI API shim. */
     public URI(String uri) throws URISyntaxException {

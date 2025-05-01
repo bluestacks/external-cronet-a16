@@ -11,21 +11,19 @@
 #ifndef BASE_TEST_TEST_TRACE_PROCESSOR_H_
 #define BASE_TEST_TEST_TRACE_PROCESSOR_H_
 
-#include <ostream>
 #include <string_view>
 
-#include "base/run_loop.h"
 #include "base/test/test_trace_processor_impl.h"
 #include "base/test/trace_test_utils.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 #if !BUILDFLAG(IS_WIN)
 #define TEST_TRACE_PROCESSOR_ENABLED
 #endif
 
 namespace base::test {
+
 
 using perfetto::protos::gen::TraceConfig;
 
@@ -77,10 +75,7 @@ class TestTraceProcessor {
   std::unique_ptr<perfetto::TracingSession> session_;
 };
 
-}  // namespace base::test
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const base::test::TestTraceProcessor::QueryResult& result);
+}  // namespace base::test
 
 #endif  // BASE_TEST_TEST_TRACE_PROCESSOR_H_

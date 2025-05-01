@@ -17,7 +17,7 @@ _CRYPTO_rdrand:
 
 _CET_ENDBR
 	xorq	%rax,%rax
-	rdrand	%rdx
+.byte	72,15,199,242
 
 	adcq	%rax,%rax
 	movq	%rdx,0(%rdi)
@@ -40,7 +40,7 @@ _CET_ENDBR
 	jz	L$out
 	movq	$8,%rdx
 L$loop:
-	rdrand	%rcx
+.byte	72,15,199,241
 	jnc	L$err
 	movq	%rcx,0(%rdi)
 	addq	%rdx,%rdi

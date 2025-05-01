@@ -27,13 +27,7 @@ public class TrafficControl {
     }
 
     static void notifyEntryPointSentinelStationCreated(EntryPointSentinelStation sentinelStation) {
-        if (sActiveStation != null) {
-            // Happens when test is batched, but the Activity is not kept between tests; Public
-            // Transit's Station/Facility state need to reflect that and start from a new
-            // {@link EntryPointSentinelStation}.
-            sActiveStation.setStateTransitioningFrom();
-            sActiveStation.setStateFinished();
-        }
+        assert sActiveStation == null : "EntryPointSentinelStation was created twice";
         sActiveStation = sentinelStation;
     }
 

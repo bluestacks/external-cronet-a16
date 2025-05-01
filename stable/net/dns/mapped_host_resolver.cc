@@ -124,10 +124,6 @@ void MappedHostResolver::SetRequestContext(URLRequestContext* request_context) {
   impl_->SetRequestContext(request_context);
 }
 
-bool MappedHostResolver::IsHappyEyeballsV3Enabled() const {
-  return impl_->IsHappyEyeballsV3Enabled();
-}
-
 HostResolverManager* MappedHostResolver::GetManagerForTesting() {
   return impl_->GetManagerForTesting();
 }

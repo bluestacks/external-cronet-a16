@@ -73,7 +73,13 @@ You may also need to add `third_party/fuzztest` to your DEPS file.
 
 ## Adding `FUZZ_TEST` support to a target
 
-We also support adding `FUZZ_TEST`s alongside existing
+*** note
+**Note:** Currently, you must create a **new** unit test target.
+While the FuzzTest framework supports mixed unit and fuzz tests,
+we don't yet support this option in Chromium.
+***
+
+In the near future we'll support adding `FUZZ_TEST`s alongside existing
 unit tests, even in the same .cc file.
 
 ```
@@ -104,8 +110,7 @@ unit test target they may need to explicitly depend upon `//third_party/fuzztest
 too.)
 
 *** note
-**Note:** This may not yet work reliably in `browser_test`s. We're working on
-it.
+**Note:** Again, this is not yet supported!
 ***
 
 ## Adding `FUZZ_TEST`s in the code
@@ -206,7 +211,12 @@ Nothing special is required here!
 
 After a day or two, we should see [ClusterFuzz] starting to run your new fuzzer,
 and it should be visible on [ClusterFuzz Fuzzer Stats]. Look for fuzzers starting
-with `centipede_` or 'libfuzzer_' and your test target's name.
+with `centipede_` and your test target's name.
+
+*** note
+**Note:** This is all very new, and ClusterFuzz isn't reliably spotting these
+new fuzztests yet. We're working on it!
+***
 
 Thanks very much for doing your part in making Chromium more secure!
 

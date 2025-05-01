@@ -30,8 +30,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 
 import java.lang.reflect.InvocationTargetException;
@@ -48,11 +46,11 @@ import java.util.Locale;
  */
 @UsedByReflection("WebView embedders call this to override proxy settings")
 @JNINamespace("net")
-@NullMarked
 public class ProxyChangeListener {
     private static final String TAG = "ProxyChangeListener";
+    private static boolean sEnabled = true;
 
-    private final @Nullable Looper mLooper;
+    private final Looper mLooper;
     private final Handler mHandler;
 
     private long mNativePtr;
@@ -64,23 +62,23 @@ public class ProxyChangeListener {
     //
     // To avoid triggering as a result of system broadcasts, it is registered with an empty intent
     // filter on M and above.
-    private @Nullable ProxyReceiver mProxyReceiver;
+    private ProxyReceiver mProxyReceiver;
 
     // On M and above we also register |mRealProxyReceiver| with a matching intent filter, to act as
     // a trigger for fetching proxy information via ConnectionManager.
-    private @Nullable BroadcastReceiver mRealProxyReceiver;
+    private BroadcastReceiver mRealProxyReceiver;
 
-    private @Nullable Delegate mDelegate;
+    private Delegate mDelegate;
 
     private static class ProxyConfig {
-        public ProxyConfig(String host, int port, @Nullable String pacUrl, String[] exclusionList) {
+        public ProxyConfig(String host, int port, String pacUrl, String[] exclusionList) {
             mHost = host;
             mPort = port;
             mPacUrl = pacUrl;
             mExclusionList = exclusionList;
         }
 
-        private static @Nullable ProxyConfig fromProxyInfo(@Nullable ProxyInfo proxyInfo) {
+        private static ProxyConfig fromProxyInfo(ProxyInfo proxyInfo) {
             if (proxyInfo == null) {
                 return null;
             }
@@ -107,7 +105,7 @@ public class ProxyChangeListener {
 
         public final String mHost;
         public final int mPort;
-        public final @Nullable String mPacUrl;
+        public final String mPacUrl;
         public final String[] mExclusionList;
 
         public static final ProxyConfig DIRECT = new ProxyConfig("", 0, "", new String[0]);
@@ -119,10 +117,12 @@ public class ProxyChangeListener {
     }
 
     private ProxyChangeListener() {
-        Looper myLooper = Looper.myLooper();
-        assert myLooper != null;
-        mLooper = myLooper;
+        mLooper = Looper.myLooper();
         mHandler = new Handler(mLooper);
+    }
+
+    public static void setEnabled(boolean enabled) {
+        sEnabled = enabled;
     }
 
     public void setDelegateForTesting(Delegate delegate) {
@@ -163,7 +163,7 @@ public class ProxyChangeListener {
         @Override
         @UsedByReflection("WebView embedders call this to override proxy settings")
         public void onReceive(Context context, final Intent intent) {
-            if (Proxy.PROXY_CHANGE_ACTION.equals(intent.getAction())) {
+            if (intent.getAction().equals(Proxy.PROXY_CHANGE_ACTION)) {
                 runOnThread(() -> proxySettingsChanged(extractNewProxy(intent)));
             }
         }
@@ -175,7 +175,7 @@ public class ProxyChangeListener {
     // methods on it. If we fail, return an empty proxy config (meaning
     // use system properties).
     @SuppressWarnings({"PrivateApi", "ObsoleteSdkInt"})
-    private static @Nullable ProxyConfig extractNewProxy(Intent intent) {
+    private static ProxyConfig extractNewProxy(Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras == null) {
             return null;
@@ -227,9 +227,12 @@ public class ProxyChangeListener {
         }
     }
 
-    private void proxySettingsChanged(@Nullable ProxyConfig cfg) {
+    private void proxySettingsChanged(ProxyConfig cfg) {
         assertOnThread();
 
+        if (!sEnabled) {
+            return;
+        }
         if (mDelegate != null) {
             // proxySettingsChanged is called even if mNativePtr == 0, for testing purposes.
             mDelegate.proxySettingsChanged();
@@ -253,7 +256,7 @@ public class ProxyChangeListener {
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private @Nullable ProxyConfig getProxyConfig(Intent intent) {
+    private ProxyConfig getProxyConfig(Intent intent) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager)
                         ContextUtils.getApplicationContext()
@@ -369,7 +372,7 @@ public class ProxyChangeListener {
                 ProxyChangeListener caller,
                 String host,
                 int port,
-                @Nullable String pacUrl,
+                String pacUrl,
                 String[] exclusionList);
 
         @NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")

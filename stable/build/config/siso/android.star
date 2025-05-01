@@ -8,17 +8,6 @@ load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
-load("./gn_logs.star", "gn_logs")
-
-# TODO: crbug.com/323091468 - Propagate target android ABI and
-# android SDK version from GN, and remove the hardcoded filegroups.
-__archs = [
-    "aarch64-linux-android",
-    "arm-linux-androideabi",
-    "i686-linux-android",
-    "riscv64-linux-android",
-    "x86_64-linux-android",
-]
 
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
@@ -28,28 +17,10 @@ def __enabled(ctx):
     return False
 
 def __filegroups(ctx):
-    fg = {}
-    for arch in __archs:
-        api_level = gn_logs.read(ctx).get("android64_ndk_api_level")
-        if api_level:
-            group = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%s:link" % (arch, api_level)
-            fg[group] = {
-                "type": "glob",
-                "includes": ["*"],
-            }
-    return fg
+    return {}
 
 def __step_config(ctx, step_config):
     remote_run = True  # Turn this to False when you do file access trace.
-
-    # Run static analysis steps locally when build server is enabled.
-    # https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md#asynchronous-static-analysis
-    remote_run_static_analysis = True
-    if "args.gn" in ctx.metadata:
-        gn_args = gn.args(ctx)
-        if gn_args.get("android_static_analysis") == '"build_server"':
-            remote_run_static_analysis = False
-
     step_config["rules"].extend([
         # See also https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
         {
@@ -71,25 +42,6 @@ def __step_config(ctx, step_config):
             "name": "android/turbine",
             "command_prefix": "python3 ../../build/android/gyp/turbine.py",
             "handler": "android_turbine",
-            # TODO: crbug.com/396220357 - fix gn to remove unnecessary deps
-            "exclude_input_patterns": [
-                "*.a",
-                "*.cc",
-                "*.cpp",
-                "*.h",
-                "*.html",
-                "*.inc",
-                "*.info",
-                "*.js",
-                "*.map",
-                "*.o",
-                "*.pak",
-                "*.proto",
-                "*.sql",
-                "*.stamp",
-                "*.svg",
-                "*.xml",
-            ],
             "remote": remote_run,
             "platform_ref": "large",
             "canonicalize_dir": True,
@@ -133,25 +85,6 @@ def __step_config(ctx, step_config):
             "ignore_extra_input_pattern": ".*srcjars.*\\.java",
             "ignore_extra_output_pattern": ".*srcjars.*\\.java",
             "remote": remote_run,
-            "platform_ref": "large",
-            "canonicalize_dir": True,
-            "timeout": "2m",
-        },
-        {
-            "name": "android/errorprone",
-            "command_prefix": "python3 ../../build/android/gyp/errorprone.py",
-            "handler": "android_compile_java",
-            "exclude_input_patterns": [
-                "*.a",
-                "*.cc",
-                "*.h",
-                "*.inc",
-                "*.info",
-                "*.o",
-                "*.pak",
-                "*.sql",
-            ],
-            "remote": remote_run_static_analysis,
             "platform_ref": "large",
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -243,8 +176,7 @@ def __step_config(ctx, step_config):
                 "*.sql",
             ],
             "canonicalize_dir": True,
-            # Speculatively disabling for https://crbug.com/398058215
-            "remote": False,
+            "remote": remote_run,
             "platform_ref": "large",
             "timeout": "10m",
         },
@@ -385,7 +317,7 @@ def __android_proguard_handler(ctx, cmd):
     inputs = []
     outputs = []
     for i, arg in enumerate(cmd.args):
-        for k in ["--proguard-configs=", "--input-paths=", "--feature-jars="]:
+        for k in ["--proguard-configs=", "--input-paths="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 fn, v = __filearg(ctx, arg)
@@ -497,7 +429,6 @@ __handlers = {
 android = module(
     "android",
     enabled = __enabled,
-    archs = __archs,
     step_config = __step_config,
     filegroups = __filegroups,
     handlers = __handlers,

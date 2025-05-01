@@ -7,7 +7,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <array>
 #include <memory>
 #include <string>
 
@@ -653,10 +652,9 @@ TEST_F(SequencedSocketDataTest, SingleSyncWriteTooSmall) {
     AssertSyncWriteEquals(kMsg1, kLen1 - 1);
   }
 
-  static auto kExpectedFailures =
-      std::to_array<const char*>({"Value of: actual_data == expected_data\n  "
-                                  "Actual: false\nExpected: true",
-                                  "Expected equality of these values:\n  rv"});
+  static const char* kExpectedFailures[] = {
+      "Value of: actual_data == expected_data\n  Actual: false\nExpected: true",
+      "Expected equality of these values:\n  rv"};
   ASSERT_EQ(std::size(kExpectedFailures),
             static_cast<size_t>(gtest_failures.size()));
 

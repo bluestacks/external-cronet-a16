@@ -53,11 +53,11 @@ class QUICHE_EXPORT QuicSpdyClientStream : public QuicSpdyStream {
   absl::string_view data() const { return data_; }
 
   // Returns whatever headers have been received for this stream.
-  const quiche::HttpHeaderBlock& response_headers() const {
+  const quiche::HttpHeaderBlock& response_headers() {
     return response_headers_;
   }
 
-  const std::list<quiche::HttpHeaderBlock>& preliminary_headers() const {
+  const std::list<quiche::HttpHeaderBlock>& preliminary_headers() {
     return preliminary_headers_;
   }
 

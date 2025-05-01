@@ -431,14 +431,6 @@ void DedicatedWebTransportHttp3Client::Close(
   }
 }
 
-void DedicatedWebTransportHttp3Client::CloseIfNonceMatches(
-    base::UnguessableToken nonce) {
-  if (anonymization_key_.GetNonce() == nonce) {
-    SetErrorIfNecessary(ERR_NETWORK_ACCESS_REVOKED);
-    TransitionToState(WebTransportState::FAILED);
-  }
-}
-
 quic::WebTransportSession* DedicatedWebTransportHttp3Client::session() {
   if (web_transport_session_ == nullptr)
     return nullptr;

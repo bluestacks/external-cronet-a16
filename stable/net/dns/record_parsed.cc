@@ -40,35 +40,34 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
   if (!parser->ReadRecord(&record))
     return nullptr;
 
-  base::span<const uint8_t> rdata_span = base::as_byte_span(record.rdata);
   bool unrecognized_type = false;
   switch (record.type) {
     case ARecordRdata::kType:
-      rdata = ARecordRdata::Create(rdata_span, *parser);
+      rdata = ARecordRdata::Create(record.rdata, *parser);
       break;
     case AAAARecordRdata::kType:
-      rdata = AAAARecordRdata::Create(rdata_span, *parser);
+      rdata = AAAARecordRdata::Create(record.rdata, *parser);
       break;
     case CnameRecordRdata::kType:
-      rdata = CnameRecordRdata::Create(rdata_span, *parser);
+      rdata = CnameRecordRdata::Create(record.rdata, *parser);
       break;
     case PtrRecordRdata::kType:
-      rdata = PtrRecordRdata::Create(rdata_span, *parser);
+      rdata = PtrRecordRdata::Create(record.rdata, *parser);
       break;
     case SrvRecordRdata::kType:
-      rdata = SrvRecordRdata::Create(rdata_span, *parser);
+      rdata = SrvRecordRdata::Create(record.rdata, *parser);
       break;
     case TxtRecordRdata::kType:
-      rdata = TxtRecordRdata::Create(rdata_span, *parser);
+      rdata = TxtRecordRdata::Create(record.rdata, *parser);
       break;
     case NsecRecordRdata::kType:
-      rdata = NsecRecordRdata::Create(rdata_span, *parser);
+      rdata = NsecRecordRdata::Create(record.rdata, *parser);
       break;
     case OptRecordRdata::kType:
-      rdata = OptRecordRdata::Create(rdata_span);
+      rdata = OptRecordRdata::Create(record.rdata);
       break;
     case HttpsRecordRdata::kType:
-      rdata = HttpsRecordRdata::Parse(rdata_span);
+      rdata = HttpsRecordRdata::Parse(record.rdata);
       break;
     default:
       DVLOG(1) << "Unknown RData type for received record: " << record.type;

@@ -24,31 +24,12 @@ package {
 // GN: //build/android:build_java
 java_library {
     name: "stable_cronet_build_android_build_java",
-    static_libs: [
-        "stable_cronet_build_android_build_java__process_device",
-    ],
-    defaults: [
-        "stable_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //build/android:build_java__compile_java
-java_library {
-    name: "stable_cronet_build_android_build_java__compile_java",
     srcs: [
         ":stable_cronet_build_android_native_libraries_gen",
         ":stable_cronet_build_android_placeholder_build_config_srcjar",
-        "java/src/org/chromium/build/NullUtil.java",
         "java/src/org/chromium/build/annotations/AlwaysInline.java",
+        "java/src/org/chromium/build/annotations/AssumeNonNull.java",
         "java/src/org/chromium/build/annotations/CheckDiscard.java",
-        "java/src/org/chromium/build/annotations/Contract.java",
         "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
         "java/src/org/chromium/build/annotations/DoNotInline.java",
         "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
@@ -57,11 +38,9 @@ java_library {
         "java/src/org/chromium/build/annotations/IdentifierNameString.java",
         "java/src/org/chromium/build/annotations/Initializer.java",
         "java/src/org/chromium/build/annotations/MockedInTests.java",
-        "java/src/org/chromium/build/annotations/MonotonicNonNull.java",
         "java/src/org/chromium/build/annotations/NullMarked.java",
         "java/src/org/chromium/build/annotations/NullUnmarked.java",
         "java/src/org/chromium/build/annotations/Nullable.java",
-        "java/src/org/chromium/build/annotations/OptimizeAsNonNull.java",
         "java/src/org/chromium/build/annotations/RequiresNonNull.java",
         "java/src/org/chromium/build/annotations/ServiceImpl.java",
         "java/src/org/chromium/build/annotations/UsedByReflection.java",
@@ -77,51 +56,33 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-}
-
-// GN: //build/android:build_java__compile_java__testing
-java_library {
-    name: "stable_cronet_build_android_build_java__compile_java__testing",
-    srcs: [
-        ":stable_cronet_build_android_native_libraries_gen__testing",
-        ":stable_cronet_build_android_placeholder_build_config_srcjar__testing",
-        "java/src/org/chromium/build/NullUtil.java",
-        "java/src/org/chromium/build/annotations/AlwaysInline.java",
-        "java/src/org/chromium/build/annotations/CheckDiscard.java",
-        "java/src/org/chromium/build/annotations/Contract.java",
-        "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
-        "java/src/org/chromium/build/annotations/DoNotInline.java",
-        "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
-        "java/src/org/chromium/build/annotations/EnsuresNonNull.java",
-        "java/src/org/chromium/build/annotations/EnsuresNonNullIf.java",
-        "java/src/org/chromium/build/annotations/IdentifierNameString.java",
-        "java/src/org/chromium/build/annotations/Initializer.java",
-        "java/src/org/chromium/build/annotations/MockedInTests.java",
-        "java/src/org/chromium/build/annotations/MonotonicNonNull.java",
-        "java/src/org/chromium/build/annotations/NullMarked.java",
-        "java/src/org/chromium/build/annotations/NullUnmarked.java",
-        "java/src/org/chromium/build/annotations/Nullable.java",
-        "java/src/org/chromium/build/annotations/OptimizeAsNonNull.java",
-        "java/src/org/chromium/build/annotations/RequiresNonNull.java",
-        "java/src/org/chromium/build/annotations/ServiceImpl.java",
-        "java/src/org/chromium/build/annotations/UsedByReflection.java",
-        "java/src/org/chromium/build/annotations/UsedReflectively.java",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }
 
 // GN: //build/android:build_java__testing
 java_library {
     name: "stable_cronet_build_android_build_java__testing",
-    static_libs: [
-        "stable_cronet_build_android_build_java__process_device__testing",
+    srcs: [
+        ":stable_cronet_build_android_native_libraries_gen__testing",
+        ":stable_cronet_build_android_placeholder_build_config_srcjar__testing",
+        "java/src/org/chromium/build/annotations/AlwaysInline.java",
+        "java/src/org/chromium/build/annotations/AssumeNonNull.java",
+        "java/src/org/chromium/build/annotations/CheckDiscard.java",
+        "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
+        "java/src/org/chromium/build/annotations/DoNotInline.java",
+        "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
+        "java/src/org/chromium/build/annotations/EnsuresNonNull.java",
+        "java/src/org/chromium/build/annotations/EnsuresNonNullIf.java",
+        "java/src/org/chromium/build/annotations/IdentifierNameString.java",
+        "java/src/org/chromium/build/annotations/Initializer.java",
+        "java/src/org/chromium/build/annotations/MockedInTests.java",
+        "java/src/org/chromium/build/annotations/NullMarked.java",
+        "java/src/org/chromium/build/annotations/NullUnmarked.java",
+        "java/src/org/chromium/build/annotations/Nullable.java",
+        "java/src/org/chromium/build/annotations/RequiresNonNull.java",
+        "java/src/org/chromium/build/annotations/ServiceImpl.java",
+        "java/src/org/chromium/build/annotations/UsedByReflection.java",
+        "java/src/org/chromium/build/annotations/UsedReflectively.java",
     ],
     apex_available: [
         "com.android.tethering",
@@ -131,4 +92,5 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }

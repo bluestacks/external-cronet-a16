@@ -10,7 +10,6 @@
 #include <Security/SecBase.h>
 #include <Security/Security.h>
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
@@ -23,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "crypto/mac_security_services_lock.h"
@@ -230,7 +230,7 @@ void GetClientCertsImpl(
     }
 
     // Skip duplicates (a cert may be in multiple keychains).
-    if (std::ranges::any_of(
+    if (base::ranges::any_of(
             *selected_identities,
             [&cert](const std::unique_ptr<ClientCertIdentity>&
                         other_cert_identity) {

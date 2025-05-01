@@ -108,16 +108,13 @@ class DBSCSessionStorePerfTest : public testing::Test {
     SessionParams::Scope scope;
     std::vector<SessionParams::Credential> cookie_credentials(
         {SessionParams::Credential{cookie_name, cookie_attr}});
-    SessionParams params{session_str,
-                         GURL(url_str),
-                         refresh_url,
-                         std::move(scope),
-                         std::move(cookie_credentials),
-                         GenerateNewKey()};
-    auto session_or_error = Session::CreateIfValid(params);
-    ASSERT_TRUE(session_or_error.has_value());
-    std::unique_ptr<Session> session = std::move(*session_or_error);
+    SessionParams params{session_str, refresh_url, std::move(scope),
+                         std::move(cookie_credentials)};
+    std::unique_ptr<Session> session =
+        Session::CreateIfValid(params, GURL(url_str));
     ASSERT_TRUE(session);
+
+    session->set_unexportable_key_id(GenerateNewKey());
 
     store_->SaveSession(SchemefulSite(GURL(url_str)), *session);
   }

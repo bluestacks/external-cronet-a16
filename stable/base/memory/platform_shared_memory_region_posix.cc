@@ -14,7 +14,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
-namespace base::subtle {
+namespace base {
+namespace subtle {
 
 namespace {
 
@@ -22,9 +23,8 @@ struct ScopedPathUnlinkerTraits {
   static const FilePath* InvalidValue() { return nullptr; }
 
   static void Free(const FilePath* path) {
-    if (unlink(path->value().c_str())) {
+    if (unlink(path->value().c_str()))
       PLOG(WARNING) << "unlink";
-    }
   }
 };
 
@@ -60,9 +60,8 @@ bool CheckFDAccessMode(int fd, int expected_mode) {
 ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
   PlatformSharedMemoryRegion region =
       Create(Mode::kUnsafe, size, true /* executable */);
-  if (region.IsValid()) {
+  if (region.IsValid())
     return region.PassPlatformHandle().fd;
-  }
   return ScopedFD();
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -73,17 +72,14 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     Mode mode,
     size_t size,
     const UnguessableToken& guid) {
-  if (!handle.fd.is_valid()) {
+  if (!handle.fd.is_valid())
     return {};
-  }
 
-  if (size == 0) {
+  if (size == 0)
     return {};
-  }
 
-  if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
+  if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
     return {};
-  }
 
   CHECK(
       CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
@@ -129,9 +125,8 @@ bool PlatformSharedMemoryRegion::IsValid() const {
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
-  if (!IsValid()) {
+  if (!IsValid())
     return {};
-  }
 
   CHECK_NE(mode_, Mode::kWritable)
       << "Duplicating a writable shared memory region is prohibited";
@@ -147,9 +142,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
-  if (!IsValid()) {
+  if (!IsValid())
     return false;
-  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
@@ -160,9 +154,8 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
-  if (!IsValid()) {
+  if (!IsValid())
     return false;
-  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to unsafe";
@@ -285,9 +278,8 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     return false;
   }
 
-  if (mode == Mode::kWritable) {
+  if (mode == Mode::kWritable)
     return CheckFDAccessMode(handle.readonly_fd, O_RDONLY);
-  }
 
   // The second descriptor must be invalid in kReadOnly and kUnsafe modes.
   if (handle.readonly_fd != -1) {
@@ -312,4 +304,5 @@ PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
     const UnguessableToken& guid)
     : handle_(std::move(handle)), mode_(mode), size_(size), guid_(guid) {}
 
-}  // namespace base::subtle
+}  // namespace subtle
+}  // namespace base

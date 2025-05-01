@@ -102,8 +102,5 @@
 /* Version number of package */
 #define VERSION "2.14.0"
 
-/* System configuration directory (/etc) */
-#define XML_SYSCONFDIR "/usr/local/etc"
-
 /* TLS specifier */
 /* #undef XML_THREAD_LOCAL */

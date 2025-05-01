@@ -4,10 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Utilities for interacting with {@link Callback}s. */
-@NullMarked
 public class CallbackUtils {
     /**
      * @see #emptyCallback() to avoid unchecked generic checks.

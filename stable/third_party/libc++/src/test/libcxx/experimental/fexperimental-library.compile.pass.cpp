@@ -14,18 +14,16 @@
 
 // ADDITIONAL_COMPILE_FLAGS: -fexperimental-library
 
-// XFAIL: FROZEN-CXX03-HEADERS-FIXME
-
 #include <version>
 
-#if !_LIBCPP_HAS_EXPERIMENTAL_PSTL
+#ifdef _LIBCPP_HAS_NO_INCOMPLETE_PSTL
 #  error "-fexperimental-library should enable the PSTL"
 #endif
 
-#if !_LIBCPP_HAS_EXPERIMENTAL_TZDB
+#ifdef _LIBCPP_HAS_NO_EXPERIMENTAL_TZDB
 #  error "-fexperimental-library should enable the chrono TZDB"
 #endif
 
-#if !_LIBCPP_HAS_EXPERIMENTAL_SYNCSTREAM
+#ifdef _LIBCPP_HAS_NO_EXPERIMENTAL_SYNCSTREAM
 #  error "-fexperimental-library should enable the syncstream header"
 #endif

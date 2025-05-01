@@ -18,7 +18,6 @@
 #include "base/apple/mach_logging.h"
 #include "base/check.h"
 #include "base/profiler/profile_builder.h"
-#include "base/profiler/register_context_registers.h"
 #include "build/build_config.h"
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
@@ -62,9 +61,8 @@ SuspendableThreadDelegateMac::ScopedSuspendThread::ScopedSuspendThread(
 // NO HEAP ALLOCATIONS. The MACH_CHECK is OK because it provides a more noisy
 // failure mode than deadlocking.
 SuspendableThreadDelegateMac::ScopedSuspendThread::~ScopedSuspendThread() {
-  if (!WasSuccessful()) {
+  if (!WasSuccessful())
     return;
-  }
 
   kern_return_t kr = thread_resume(thread_port_);
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "thread_resume";
@@ -78,10 +76,10 @@ bool SuspendableThreadDelegateMac::ScopedSuspendThread::WasSuccessful() const {
 
 SuspendableThreadDelegateMac::SuspendableThreadDelegateMac(
     SamplingProfilerThreadToken thread_token)
-    : thread_id_(thread_token.id),
-      thread_port_(pthread_mach_thread_np(thread_token.pthread_id)),
-      thread_stack_base_address_(reinterpret_cast<uintptr_t>(
-          pthread_get_stackaddr_np(thread_token.pthread_id))) {
+    : thread_port_(thread_token.id),
+      thread_stack_base_address_(
+          reinterpret_cast<uintptr_t>(pthread_get_stackaddr_np(
+              pthread_from_mach_thread_np(thread_token.id)))) {
   // This class suspends threads, and those threads might be suspended in dyld.
   // Therefore, for all the system functions that might be linked in dynamically
   // that are used while threads are suspended, make calls to them to make sure
@@ -98,7 +96,7 @@ SuspendableThreadDelegateMac::CreateScopedSuspendThread() {
 }
 
 PlatformThreadId SuspendableThreadDelegateMac::GetThreadId() const {
-  return thread_id_;
+  return thread_port_;
 }
 
 // NO HEAP ALLOCATIONS.

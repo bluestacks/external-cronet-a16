@@ -25,10 +25,6 @@ namespace ukm {
 class UkmService;
 }
 
-namespace metrics::dwa {
-class DwaService;
-}
-
 namespace network_time {
 class NetworkTimeTracker;
 }
@@ -71,9 +67,6 @@ class MetricsServiceClient {
 
   // Returns the UkmService instance that this client is associated with.
   virtual ukm::UkmService* GetUkmService();
-
-  // Returns the DwaService instance that this client is associated with.
-  virtual metrics::dwa::DwaService* GetDwaService();
 
   // Returns the IdentifiabilityStudyState instance that this client is
   // associated with. Might be nullptr.
@@ -161,9 +154,10 @@ class MetricsServiceClient {
 
   // Whether or not the MetricsService should start up quickly and upload the
   // initial report quickly. By default, this work may be delayed by some
-  // amount. This should be overridden very sparingly in production and the
-  // default behavior should be used in most cases.
-  virtual bool ShouldStartUpFast() const;
+  // amount. Only the default behavior should be used in production, but clients
+  // can override this in tests if tests need to make assertions on the log
+  // data.
+  virtual bool ShouldStartUpFastForTesting() const;
 
   // Called when loading state changed, e.g. start/stop loading.
   virtual void LoadingStateChanged(bool is_loading) {}
@@ -181,10 +175,6 @@ class MetricsServiceClient {
   // Returns true iff UKM is allowed for all profiles.
   // See //components/ukm/observers/ukm_consent_state_observer.h for details.
   virtual bool IsUkmAllowedForAllProfiles();
-
-  // Returns true iff DWA is allowed for all profiles.
-  // DWA is allowed if all applicable UKM consents for a platform are given.
-  virtual bool IsDwaAllowedForAllProfiles();
 
   // Returns whether UKM notification listeners were attached to all profiles.
   virtual bool AreNotificationListenersEnabledOnAllProfiles();

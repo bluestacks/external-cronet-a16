@@ -55,10 +55,7 @@ HostResolverManager::RequestImpl::RequestImpl(
       priority_(parameters_.initial_priority),
       job_key_(request_host_, resolve_context_.get()),
       resolver_(std::move(resolver)),
-      tick_clock_(tick_clock) {
-  CHECK_NE(parameters_.cache_usage,
-           ResolveHostParameters::CacheUsage::STALE_ALLOWED_WHILE_REFRESHING);
-}
+      tick_clock_(tick_clock) {}
 
 HostResolverManager::RequestImpl::~RequestImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -6,8 +6,8 @@
 
 namespace net {
 
-std::optional<HttpStream::QuicConnectionDetails>
-HttpStream::GetQuicConnectionDetails() const {
+std::optional<HttpStream::QuicErrorDetails> HttpStream::GetQuicErrorDetails()
+    const {
   return std::nullopt;
 }
 

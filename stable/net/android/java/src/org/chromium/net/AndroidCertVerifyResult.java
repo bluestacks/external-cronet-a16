@@ -7,8 +7,6 @@ package org.chromium.net;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.build.annotations.NullMarked;
-
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -17,7 +15,6 @@ import java.util.List;
 
 /** The result of a certification verification. */
 @JNINamespace("net::android")
-@NullMarked
 public class AndroidCertVerifyResult {
 
     /** The verification status. One of the values in CertVerifyStatusAndroid. */

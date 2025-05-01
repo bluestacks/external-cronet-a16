@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <tuple>
 
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/build_config.h"

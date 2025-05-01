@@ -20,6 +20,9 @@ def __step_config(ctx, step_config):
         rules.append({
             "name": path.join("nasm", toolchain),
             "command_prefix": "python3 ../../build/gn_run_binary.py " + nasm_path,
+            "exclude_input_patterns": [
+                "*.stamp",
+            ],
             "remote": remote_run,
             # chromeos generates default.profraw?
             "ignore_extra_output_pattern": ".*default.profraw",

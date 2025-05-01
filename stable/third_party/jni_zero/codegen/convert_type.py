@@ -4,15 +4,10 @@
 """Codegen related to @JniType."""
 
 from codegen import header_common
-import common
 import java_types
-import common
 
 
-def to_jni_expression(sb: common.StringBuilder,
-                      rvalue: str,
-                      java_type: java_types.JavaType,
-                      clazz_snippet=None):
+def to_jni_expression(sb, rvalue, java_type, clazz_snippet=None):
   """Writes a ToJniType() expression to |sb|.
 
   Args:
@@ -20,12 +15,9 @@ def to_jni_expression(sb: common.StringBuilder,
     java_type: Type containing the @JniType annotation.
     clazz_snippet: Snippet to use as the third parameter for array conversions.
   """
-  T = java_type.converted_type
-  assert T
+  assert java_type.converted_type
   if java_type.is_primitive():
-    sb('jni_zero::internal::PrimitiveConvert'
-       f'<{T}, {java_type.to_cpp()}>::ToJniType')
-    sb.param_list(['env', rvalue])
+    sb(f'static_cast<{java_type.to_cpp()}>({rvalue})')
     return
 
   if java_type == java_types.LIST:
@@ -42,7 +34,7 @@ def to_jni_expression(sb: common.StringBuilder,
   if element_type.is_array():
     raise Exception(
         '@JniType() for multi-dimensional arrays are not yet supported. '
-        'Found ' + T)
+        'Found ' + java_type.converted_type)
   sb(f'jni_zero::ToJniArray')
   with sb.param_list() as plist:
     plist += ['env', rvalue]
@@ -55,8 +47,7 @@ def to_jni_expression(sb: common.StringBuilder,
         ]
 
 
-def to_jni_assignment(sb: common.StringBuilder, dest_var_name: str,
-                      src_var_name: str, java_type: java_types.JavaType):
+def to_jni_assignment(sb, dest_var_name, src_var_name, java_type):
   """Writes a ToJniType() assignment to |sb|."""
   with sb.statement():
     if java_type.is_primitive():
@@ -67,10 +58,7 @@ def to_jni_assignment(sb: common.StringBuilder, dest_var_name: str,
     to_jni_expression(sb, src_var_name, java_type)
 
 
-def from_jni_expression(sb: common.StringBuilder,
-                        rvalue: str,
-                        java_type: java_types.JavaType,
-                        release_ref=False):
+def from_jni_expression(sb, rvalue, java_type, release_ref=False):
   """Writes a FromJniType() expression to |sb|.
 
   Args:
@@ -81,9 +69,7 @@ def from_jni_expression(sb: common.StringBuilder,
   T = java_type.converted_type
   assert T
   if java_type.is_primitive():
-    sb('jni_zero::internal::PrimitiveConvert'
-       f'<{T}, {java_type.to_cpp()}>::FromJniType')
-    sb.param_list(['env', rvalue])
+    sb(f'static_cast<{T}>({rvalue})')
     return
 
   if java_type.is_array():

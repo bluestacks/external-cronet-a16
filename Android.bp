@@ -370,7 +370,7 @@ android_test_helper_app {
     static_libs: [
         "stable_cronet_testing_android_native_test_native_test_java__testing",
         "stable_cronet_components_cronet_android_cronet_impl_native_java__testing",
-        "stable_cronet_components_cronet_android_cronet_build_config_and_jni_registration_java__testing",
+        "stable_cronet_components_cronet_android_cronet_jni_registration_java__testing",
         "stable_cronet_components_cronet_android_cronet_tests_jni_registration_java__testing",
         "androidx.annotation_annotation",
         "junit",
@@ -408,7 +408,7 @@ android_test_helper_app {
     static_libs: [
         "stable_cronet_testing_android_native_test_native_test_java__testing",
         "stable_cronet_components_cronet_android_cronet_impl_native_java__testing",
-        "stable_cronet_components_cronet_android_cronet_build_config_and_jni_registration_java__testing",
+        "stable_cronet_components_cronet_android_cronet_jni_registration_java__testing",
         "stable_cronet_components_cronet_android_cronet_tests_jni_registration_java__testing",
         "androidx.annotation_annotation",
         "stable_cronet_for_testing_net_java",

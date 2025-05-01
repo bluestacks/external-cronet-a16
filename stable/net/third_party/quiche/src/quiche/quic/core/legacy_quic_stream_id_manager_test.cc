@@ -20,6 +20,9 @@ namespace quic {
 namespace test {
 namespace {
 
+using testing::_;
+using testing::StrictMock;
+
 struct TestParams {
   TestParams(ParsedQuicVersion version, Perspective perspective)
       : version(version), perspective(perspective) {}

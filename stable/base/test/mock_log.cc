@@ -4,13 +4,15 @@
 
 #include "base/test/mock_log.h"
 
-namespace base::test {
+namespace base {
+namespace test {
 
 // static
 MockLog* MockLog::g_instance_ = nullptr;
 Lock MockLog::g_lock;
 
-MockLog::MockLog() : is_capturing_logs_(false) {}
+MockLog::MockLog() : is_capturing_logs_(false) {
+}
 
 MockLog::~MockLog() {
   if (is_capturing_logs_) {
@@ -62,4 +64,5 @@ bool MockLog::LogMessageHandler(int severity,
   return g_instance_->Log(severity, file, line, message_start, str);
 }
 
-}  // namespace base::test
+}  // namespace test
+}  // namespace base

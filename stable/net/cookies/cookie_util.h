@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "net/base/net_export.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -26,18 +28,11 @@ class GURL;
 
 namespace net {
 
-class CanonicalCookie;
+class IsolationInfo;
+class SchemefulSite;
 class CookieAccessDelegate;
 class CookieInclusionStatus;
-class IsolationInfo;
 class ParsedCookie;
-class SchemefulSite;
-
-struct CookieAccessResult;
-struct CookieWithAccessResult;
-
-using CookieList = std::vector<CanonicalCookie>;
-using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 
 namespace cookie_util {
 
@@ -53,7 +48,7 @@ enum class StorageAccessResult {
   ACCESS_BLOCKED = 0,
   ACCESS_ALLOWED = 1,
   ACCESS_ALLOWED_STORAGE_ACCESS_GRANT = 2,
-  // OBSOLETE_ACCESS_ALLOWED_FORCED = 3 /*(DEPRECATED)*/,
+  OBSOLETE_ACCESS_ALLOWED_FORCED = 3 /*(DEPRECATED)*/,
   ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT = 4,
   ACCESS_ALLOWED_3PCD_TRIAL = 5,
   ACCESS_ALLOWED_3PCD_METADATA_GRANT = 6,
@@ -61,8 +56,7 @@ enum class StorageAccessResult {
   // ACCESS_ALLOWED_CORS_EXCEPTION = 8,  // Deprecated
   ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL = 9,
   ACCESS_ALLOWED_SCHEME = 10,
-  ACCESS_ALLOWED_SANDBOX_VALUE = 11,
-  kMaxValue = ACCESS_ALLOWED_SANDBOX_VALUE,
+  kMaxValue = ACCESS_ALLOWED_SCHEME,
 };
 
 // This enum's values correspond to the values of the HTTP request header
@@ -177,15 +171,15 @@ NET_EXPORT std::string GetEffectiveDomain(const std::string& scheme,
 
 // Determine the actual cookie domain based on the domain string passed
 // (if any) and the URL from which the cookie came.
-// On success returns either a
+// On success returns true, and sets cookie_domain to either a
 //   -host cookie domain (ex: "google.com")
 //   -domain cookie domain (ex: ".google.com")
 // On success, DomainIsHostOnly(url.host()) is DCHECKed. The URL's host must not
 // begin with a '.' character.
-NET_EXPORT std::optional<std::string> GetCookieDomainWithString(
-    const GURL& url,
-    const std::string& domain_string,
-    CookieInclusionStatus& status);
+NET_EXPORT bool GetCookieDomainWithString(const GURL& url,
+                                          const std::string& domain_string,
+                                          CookieInclusionStatus& status,
+                                          std::string* result);
 
 // Returns true if a domain string represents a host-only cookie,
 // i.e. it doesn't begin with a leading '.' character.
@@ -468,14 +462,13 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
 NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
 
-// Indicates whether the first hop in a request should have the
-// kStorageAccessGrantEligible override.
-[[nodiscard]] NET_EXPORT bool ShouldAddInitialStorageAccessApiOverride(
+// Adds or removes the kStorageAccessGrantEligible override, as appropriate.
+// Mutates `overrides` in place.
+NET_EXPORT void AddOrRemoveStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator,
-    bool emit_metrics,
-    bool credentials_mode_include);
+    CookieSettingOverrides& overrides);
 
 }  // namespace cookie_util
 

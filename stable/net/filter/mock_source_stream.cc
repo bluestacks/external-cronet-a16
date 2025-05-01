@@ -14,12 +14,11 @@
 
 #include "base/check_op.h"
 #include "net/base/io_buffer.h"
-#include "net/filter/source_stream_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
-MockSourceStream::MockSourceStream() : SourceStream(SourceStreamType::kNone) {}
+MockSourceStream::MockSourceStream() : SourceStream(SourceStream::TYPE_NONE) {}
 
 MockSourceStream::~MockSourceStream() {
   DCHECK(!awaiting_completion_);

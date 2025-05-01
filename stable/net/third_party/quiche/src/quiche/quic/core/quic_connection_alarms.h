@@ -10,9 +10,9 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <variant>
 
 #include "absl/base/nullability.h"
+#include "absl/types/variant.h"
 #include "quiche/quic/core/quic_alarm.h"
 #include "quiche/quic/core/quic_alarm_factory.h"
 #include "quiche/quic/core/quic_arena_scoped_ptr.h"
@@ -381,21 +381,21 @@ class QUICHE_EXPORT QuicConnectionAlarms {
         : alarm_(alarm) {}
 
     bool IsSet() const {
-      return std::visit([](auto& alarm) { return alarm.IsSet(); }, alarm_);
+      return absl::visit([](auto& alarm) { return alarm.IsSet(); }, alarm_);
     }
     QuicTime deadline() const {
-      return std::visit([](auto& alarm) { return alarm.deadline(); }, alarm_);
+      return absl::visit([](auto& alarm) { return alarm.deadline(); }, alarm_);
     }
     bool IsPermanentlyCancelled() const {
-      return std::visit(
+      return absl::visit(
           [](auto& alarm) { return alarm.IsPermanentlyCancelled(); }, alarm_);
     }
 
    private:
     friend class ::quic::test::QuicConnectionAlarmsPeer;
 
-    std::variant<QuicConnectionAlarmHolder::ConstAlarmProxy,
-                 QuicAlarmMultiplexer::ConstAlarmProxy>
+    absl::variant<QuicConnectionAlarmHolder::ConstAlarmProxy,
+                  QuicAlarmMultiplexer::ConstAlarmProxy>
         alarm_;
   };
 
@@ -409,35 +409,35 @@ class QUICHE_EXPORT QuicConnectionAlarms {
         : alarm_(alarm) {}
 
     bool IsSet() const {
-      return std::visit([](auto& alarm) { return alarm.IsSet(); }, alarm_);
+      return absl::visit([](auto& alarm) { return alarm.IsSet(); }, alarm_);
     }
     QuicTime deadline() const {
-      return std::visit([](auto& alarm) { return alarm.deadline(); }, alarm_);
+      return absl::visit([](auto& alarm) { return alarm.deadline(); }, alarm_);
     }
     bool IsPermanentlyCancelled() const {
-      return std::visit(
+      return absl::visit(
           [](auto& alarm) { return alarm.IsPermanentlyCancelled(); }, alarm_);
     }
 
     void Set(QuicTime new_deadline) {
-      std::visit([&](auto& alarm) { alarm.Set(new_deadline); }, alarm_);
+      absl::visit([&](auto& alarm) { alarm.Set(new_deadline); }, alarm_);
     }
     void Update(QuicTime new_deadline, QuicTime::Delta granularity) {
-      std::visit([&](auto& alarm) { alarm.Update(new_deadline, granularity); },
-                 alarm_);
+      absl::visit([&](auto& alarm) { alarm.Update(new_deadline, granularity); },
+                  alarm_);
     }
     void Cancel() {
-      std::visit([&](auto& alarm) { alarm.Cancel(); }, alarm_);
+      absl::visit([&](auto& alarm) { alarm.Cancel(); }, alarm_);
     }
     void PermanentCancel() {
-      std::visit([&](auto& alarm) { alarm.PermanentCancel(); }, alarm_);
+      absl::visit([&](auto& alarm) { alarm.PermanentCancel(); }, alarm_);
     }
 
    private:
     friend class ::quic::test::QuicConnectionAlarmsPeer;
 
-    std::variant<QuicConnectionAlarmHolder::AlarmProxy,
-                 QuicAlarmMultiplexer::AlarmProxy>
+    absl::variant<QuicConnectionAlarmHolder::AlarmProxy,
+                  QuicAlarmMultiplexer::AlarmProxy>
         alarm_;
   };
 

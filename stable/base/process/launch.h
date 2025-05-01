@@ -55,7 +55,7 @@ namespace base {
 // defined as a constant.
 
 // These constants are borrowed from glibc’s (arch)/bits/pthread_stack_min.h.
-#if defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_LOONGARCH64)
+#if defined(ARCH_CPU_ARM64)
 #define PTHREAD_STACK_MIN_CONST \
   (__builtin_constant_p(PTHREAD_STACK_MIN) ? PTHREAD_STACK_MIN : 131072)
 #else
@@ -444,8 +444,7 @@ BASE_EXPORT bool GetAppOutputAndError(const CommandLine& cl,
 // this is the case the exit code of the application is available in
 // |*exit_code|.
 BASE_EXPORT bool GetAppOutputWithExitCode(const CommandLine& cl,
-                                          std::string* output,
-                                          int* exit_code);
+                                          std::string* output, int* exit_code);
 
 #if BUILDFLAG(IS_WIN)
 // A Windows-specific version of GetAppOutput that takes a command line string
@@ -501,7 +500,7 @@ namespace internal {
 // be a friend of ScopedAllowBaseSyncPrimitives because it is in the anonymous
 // namespace.
 class [[maybe_unused, nodiscard]] GetAppOutputScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives {};
+    : public base::ScopedAllowBaseSyncPrimitives{};
 
 }  // namespace internal
 

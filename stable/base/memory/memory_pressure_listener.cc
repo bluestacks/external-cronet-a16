@@ -51,9 +51,8 @@ class MemoryPressureObserver {
     async_observers_->Notify(FROM_HERE, &MemoryPressureListener::Notify,
                              memory_pressure_level);
     AutoLock lock(sync_observers_lock_);
-    for (auto& observer : sync_observers_) {
+    for (auto& observer : sync_observers_)
       observer.SyncNotify(memory_pressure_level);
-    }
   }
 
  private:
@@ -132,9 +131,8 @@ void MemoryPressureListener::NotifyMemoryPressure(
         data->set_level(
             trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
       });
-  if (AreNotificationsSuppressed()) {
+  if (AreNotificationsSuppressed())
     return;
-  }
   DoNotifyMemoryPressure(memory_pressure_level);
 }
 

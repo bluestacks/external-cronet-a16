@@ -4,13 +4,12 @@
 
 package org.chromium.base;
 
-import org.chromium.build.annotations.EnsuresNonNull;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.build.annotations.RequiresNonNull;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -80,7 +79,6 @@ import javax.annotation.concurrent.GuardedBy;
  * mCallbackController = new CallbackController();  // Allows to start handing out new callbacks.
  * }</pre>
  */
-@NullMarked
 @SuppressWarnings({"NoSynchronizedThisCheck", "NoSynchronizedMethodCheck"})
 public final class CallbackController {
     /** Interface for cancelable objects tracked by this class. */
@@ -92,9 +90,9 @@ public final class CallbackController {
     /** Class wrapping a {@link Callback} interface with a {@link Cancelable} interface. */
     private class CancelableCallback<T> implements Cancelable, Callback<T> {
         @GuardedBy("CallbackController.this")
-        private @Nullable Callback<T> mCallback;
+        private Callback<T> mCallback;
 
-        private CancelableCallback(Callback<T> callback) {
+        private CancelableCallback(@NonNull Callback<T> callback) {
             mCallback = callback;
         }
 
@@ -117,9 +115,9 @@ public final class CallbackController {
     /** Class wrapping {@link Runnable} interface with a {@link Cancelable} interface. */
     private class CancelableRunnable implements Cancelable, Runnable {
         @GuardedBy("CallbackController.this")
-        private @Nullable Runnable mRunnable;
+        private Runnable mRunnable;
 
-        private CancelableRunnable(Runnable runnable) {
+        private CancelableRunnable(@NonNull Runnable runnable) {
             mRunnable = runnable;
         }
 
@@ -140,8 +138,9 @@ public final class CallbackController {
     }
 
     /** A list of cancelables created and cancelable by this object. */
+    @Nullable
     @GuardedBy("this")
-    private @Nullable ArrayList<WeakReference<Cancelable>> mCancelables = new ArrayList<>();
+    private ArrayList<WeakReference<Cancelable>> mCancelables = new ArrayList<>();
 
     /**
      * Wraps a provided {@link Callback} with a cancelable object that is tracked by this {@link
@@ -153,7 +152,7 @@ public final class CallbackController {
      * @param callback A callback that will be made cancelable.
      * @return A cancelable instance of the callback.
      */
-    public synchronized <T> Callback<T> makeCancelable(Callback<T> callback) {
+    public synchronized <T> Callback<T> makeCancelable(@NonNull Callback<T> callback) {
         checkNotCanceled();
         CancelableCallback<T> cancelable = new CancelableCallback<>(callback);
         addInternal(cancelable);
@@ -169,7 +168,7 @@ public final class CallbackController {
      * @param runnable A runnable that will be made cancelable.
      * @return A cancelable instance of the runnable.
      */
-    public synchronized Runnable makeCancelable(Runnable runnable) {
+    public synchronized Runnable makeCancelable(@NonNull Runnable runnable) {
         checkNotCanceled();
         CancelableRunnable cancelable = new CancelableRunnable(runnable);
         addInternal(cancelable);
@@ -177,7 +176,6 @@ public final class CallbackController {
     }
 
     @GuardedBy("this")
-    @RequiresNonNull("mCancelables")
     private void addInternal(Cancelable cancelable) {
         var cancelables = mCancelables;
         cancelables.add(new WeakReference<>(cancelable));
@@ -204,8 +202,8 @@ public final class CallbackController {
 
     /** If the cancelation already happened, throws an {@link IllegalStateException}. */
     @GuardedBy("this")
-    @EnsuresNonNull("mCancelables")
     private void checkNotCanceled() {
-        assert mCancelables != null;
+        // Use NullPointerException because it optimizes well.
+        Objects.requireNonNull(mCancelables);
     }
 }

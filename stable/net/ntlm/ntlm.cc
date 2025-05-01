@@ -11,9 +11,6 @@
 
 #include <string.h>
 
-#include <algorithm>
-#include <array>
-
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -99,11 +96,13 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
   }
 
   if (is_epa_enabled) {
-    std::array<uint8_t, kChannelBindingsHashLen> channel_bindings_hash = {};
+    std::vector<uint8_t> channel_bindings_hash(kChannelBindingsHashLen, 0);
 
     // Hash the channel bindings if they exist otherwise they remain zeros.
     if (!channel_bindings.empty()) {
-      GenerateChannelBindingHashV2(channel_bindings, channel_bindings_hash);
+      GenerateChannelBindingHashV2(
+          channel_bindings, *base::span(channel_bindings_hash)
+                                 .to_fixed_extent<kChannelBindingsHashLen>());
     }
 
     av_pairs->emplace_back(TargetInfoAvId::kChannelBindings,
@@ -323,7 +322,7 @@ void GenerateNtlmHashV2(const std::u16string& domain,
   DCHECK_EQ(sizeof(v1_hash), outlen);
 }
 
-std::array<uint8_t, kProofInputLenV2> GenerateProofInputV2(
+std::vector<uint8_t> GenerateProofInputV2(
     uint64_t timestamp,
     base::span<const uint8_t, kChallengeLen> client_challenge) {
   NtlmBufferWriter writer(kProofInputLenV2);
@@ -333,9 +332,7 @@ std::array<uint8_t, kProofInputLenV2> GenerateProofInputV2(
                 writer.IsEndOfBuffer();
 
   DCHECK(result);
-  std::array<uint8_t, kProofInputLenV2> ret;
-  std::ranges::copy(writer.Pass(), ret.begin());
-  return ret;
+  return writer.Pass();
 }
 
 void GenerateNtlmProofV2(

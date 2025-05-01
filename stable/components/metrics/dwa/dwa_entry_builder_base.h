@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/component_export.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/mojom/dwa_interface.mojom.h"
 
@@ -19,7 +20,7 @@ namespace dwa::internal {
 // DwaEntryBuilder class. DwaEntryBuilder is reserved for the case where it is
 // not appropriate to use the auto-generated class. This class should not be
 // used directly.
-class DwaEntryBuilderBase {
+class COMPONENT_EXPORT(DWA) DwaEntryBuilderBase {
  public:
   DwaEntryBuilderBase(const DwaEntryBuilderBase&) = delete;
   DwaEntryBuilderBase(DwaEntryBuilderBase&&);
@@ -35,11 +36,6 @@ class DwaEntryBuilderBase {
 
   // Return a pointer to internal DwaEntryPtr for testing.
   metrics::dwa::mojom::DwaEntryPtr* GetEntryForTesting();
-
-  // Sanitizes `content` and returns the sanitized content as a string. For
-  // contents which are URLs, the eTLD+1 domain is returned. All content URLs
-  // logged by DWA are required to be eTLD+1.
-  static std::string SanitizeContent(std::string_view content);
 
  protected:
   explicit DwaEntryBuilderBase(uint64_t event_hash);

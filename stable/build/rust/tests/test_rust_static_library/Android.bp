@@ -41,19 +41,20 @@ rust_ffi_static {
     rustlibs: [
         "libchromium__eb6193a5492aad4d",
         "libcxx__20522d26522c8543",
-        "libfoldhash__d67bdee17c8965c2",
     ],
     target: {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
+                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -64,13 +65,15 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
+                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -81,13 +84,15 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
+                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -98,13 +103,15 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
+                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -115,13 +122,15 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"f7b43542838f0a4a6cfdb17fbeadf45002042a77-1-llvmorg-21-init-5118-g52cd27e6\"",
+                "cr_rustc_revision=\"a522d78598415cdd614ccc6d961160f192f64b5c-1-llvmorg-20-init-13894-g8cb44859\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Aunused-imports",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
+                "-Coverflow-checks=on",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
@@ -154,9 +163,9 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/include/cxx.h\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-20-init-13894-g8cb44859-1\"",
+        "-DCR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-1.0.130/include/cxx.h\"",
+        "-DCR_LIBCXX_REVISION=6a91009985a46122b061d36bb27f2c94f99126df",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",

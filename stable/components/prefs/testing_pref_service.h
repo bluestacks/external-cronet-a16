@@ -97,6 +97,7 @@ class TestingPrefServiceBase : public SuperPrefService {
       scoped_refptr<TestingPrefStore> managed_prefs,
       scoped_refptr<TestingPrefStore> supervised_user_prefs,
       scoped_refptr<TestingPrefStore> extension_prefs,
+      scoped_refptr<TestingPrefStore> standalone_browser_prefs,
       scoped_refptr<TestingPrefStore> user_prefs,
       scoped_refptr<TestingPrefStore> recommended_prefs,
       scoped_refptr<ConstructionPrefRegistry> pref_registry,
@@ -121,6 +122,7 @@ class TestingPrefServiceBase : public SuperPrefService {
   scoped_refptr<TestingPrefStore> managed_prefs_;
   scoped_refptr<TestingPrefStore> supervised_user_prefs_;
   scoped_refptr<TestingPrefStore> extension_prefs_;
+  scoped_refptr<TestingPrefStore> standalone_browser_prefs_;
   scoped_refptr<TestingPrefStore> user_prefs_;
   scoped_refptr<TestingPrefStore> recommended_prefs_;
 };
@@ -149,6 +151,7 @@ TestingPrefServiceBase<PrefService, PrefRegistry>::TestingPrefServiceBase(
     scoped_refptr<TestingPrefStore> managed_prefs,
     scoped_refptr<TestingPrefStore> supervised_user_prefs,
     scoped_refptr<TestingPrefStore> extension_prefs,
+    scoped_refptr<TestingPrefStore> standalone_browser_prefs,
     scoped_refptr<TestingPrefStore> user_prefs,
     scoped_refptr<TestingPrefStore> recommended_prefs,
     scoped_refptr<PrefRegistry> pref_registry,
@@ -380,8 +383,8 @@ void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
   supervised_user_prefs_->SetInitializationCompleted();
   extension_prefs_->SetInitializationCompleted();
   recommended_prefs_->SetInitializationCompleted();
-  // |user_prefs_| is initialized in PrefService constructor so no need to set
-  // initialization status again.
+  // |user_prefs_| and |standalone_browser_prefs_| are initialized in
+  // PrefService constructor so no need to set initialization status again.
 }
 
 #endif  // COMPONENTS_PREFS_TESTING_PREF_SERVICE_H_

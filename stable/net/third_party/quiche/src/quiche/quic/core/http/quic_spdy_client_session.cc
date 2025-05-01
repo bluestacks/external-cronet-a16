@@ -25,17 +25,16 @@ namespace quic {
 QuicSpdyClientSession::QuicSpdyClientSession(
     const QuicConfig& config, const ParsedQuicVersionVector& supported_versions,
     QuicConnection* connection, const QuicServerId& server_id,
-    QuicCryptoClientConfig* crypto_config, QuicPriorityType priority_type)
+    QuicCryptoClientConfig* crypto_config)
     : QuicSpdyClientSession(config, supported_versions, connection, nullptr,
-                            server_id, crypto_config, priority_type) {}
+                            server_id, crypto_config) {}
 
 QuicSpdyClientSession::QuicSpdyClientSession(
     const QuicConfig& config, const ParsedQuicVersionVector& supported_versions,
     QuicConnection* connection, QuicSession::Visitor* visitor,
-    const QuicServerId& server_id, QuicCryptoClientConfig* crypto_config,
-    QuicPriorityType priority_type)
-    : QuicSpdyClientSessionBase(connection, visitor, config, supported_versions,
-                                priority_type),
+    const QuicServerId& server_id, QuicCryptoClientConfig* crypto_config)
+    : QuicSpdyClientSessionBase(connection, visitor, config,
+                                supported_versions),
       server_id_(server_id),
       crypto_config_(crypto_config),
       respect_goaway_(true) {}

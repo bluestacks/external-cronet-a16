@@ -3,9 +3,6 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <utility>
-
 #include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
@@ -20,7 +17,7 @@ namespace quiche {
 
 class QUICHE_EXPORT ObliviousHttpHeaderKeyConfig {
  public:
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-4.3-4.2.1
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-03.html#section-4.1-4.2
   static constexpr absl::string_view kOhttpRequestLabel =
       "message/bhttp request";
   static constexpr absl::string_view kOhttpResponseLabel =
@@ -61,7 +58,7 @@ class QUICHE_EXPORT ObliviousHttpHeaderKeyConfig {
   // Build HPKE context info [request_label, 0x00, keyID(1 byte),
   // kemID(2 bytes), kdfID(2 bytes), aeadID(2 bytes)] in network byte order and
   // return a sequence of bytes(bytestring).
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-4.3-6
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-03.html#section-4.1-10
   std::string SerializeRecipientContextInfo(
       absl::string_view request_label =
           ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel) const;
@@ -71,7 +68,7 @@ class QUICHE_EXPORT ObliviousHttpHeaderKeyConfig {
   // from the payload received in Ohttp Request, and verifies that these values
   // match with the info stored in `this` namely [key_id_, kem_id_, kdf_id_,
   // aead_id_]
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-4.3-10
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-03.html#section-4.1-7
   absl::Status ParseOhttpPayloadHeader(absl::string_view payload_bytes) const;
 
   // Parses the Oblivious HTTP header [keyID(1 byte), kemID(2 bytes), kdfID(2
@@ -89,9 +86,6 @@ class QUICHE_EXPORT ObliviousHttpHeaderKeyConfig {
   // Build Request header according to network byte order and return string.
   std::string SerializeOhttpPayloadHeader() const;
 
-  // Human-readable string suitable for logging.
-  std::string DebugString() const;
-
  private:
   // Constructor
   explicit ObliviousHttpHeaderKeyConfig(uint8_t key_id, uint16_t kem_id,
@@ -102,7 +96,7 @@ class QUICHE_EXPORT ObliviousHttpHeaderKeyConfig {
 
   // Public Key configuration hosted by Gateway to facilitate Oblivious HTTP
   // HPKE encryption.
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-3.1
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-03.html#name-key-configuration-encoding
   uint8_t key_id_;
   uint16_t kem_id_;
   uint16_t kdf_id_;
@@ -111,16 +105,17 @@ class QUICHE_EXPORT ObliviousHttpHeaderKeyConfig {
 
 // Contains multiple ObliviousHttpHeaderKeyConfig objects and associated private
 // keys.  An ObliviousHttpHeaderKeyConfigs object can be constructed from the
-// "Key Configuration" defined in the Oblivious HTTP RFC.  Multiple key
+// "Key Configuration" defined in the Oblivious HTTP spec.  Multiple key
 // configurations maybe be supported by the server.
 //
-// See https://www.rfc-editor.org/rfc/rfc9458.html#section-3
+// See https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-04.html#section-3
+// for details of the "Key Configuration" spec.
 //
 // ObliviousHttpKeyConfigs objects are immutable after construction.
 class QUICHE_EXPORT ObliviousHttpKeyConfigs {
  public:
-  // Below two structures follow the Single key configuration from the RFC.
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-3.1-2
+  // Below two structures follow the Single key configuration spec in OHTTP RFC.
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-06.html#name-a-single-key-configuration
   struct SymmetricAlgorithmsConfig {
     uint16_t kdf_id;
     uint16_t aead_id;
@@ -133,12 +128,9 @@ class QUICHE_EXPORT ObliviousHttpKeyConfigs {
     friend H AbslHashValue(H h, const SymmetricAlgorithmsConfig& sym_alg_cfg) {
       return H::combine(std::move(h), sym_alg_cfg.kdf_id, sym_alg_cfg.aead_id);
     }
-
-    // Human-readable string suitable for logging.
-    std::string DebugString() const;
   };
 
-  struct QUICHE_EXPORT OhttpKeyConfig {
+  struct OhttpKeyConfig {
     uint8_t key_id;
     uint16_t kem_id;
     std::string public_key;  // Raw byte string.
@@ -156,21 +148,18 @@ class QUICHE_EXPORT ObliviousHttpKeyConfigs {
                         ohttp_key_cfg.kem_id, ohttp_key_cfg.public_key,
                         ohttp_key_cfg.symmetric_algorithms);
     }
-
-    // Human-readable string suitable for logging.
-    std::string DebugString() const;
   };
 
   // Parses the "application/ohttp-keys" media type, which is a byte string
-  // formatted according to the RFC:
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-3
+  // formatted according to the spec:
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-04.html#section-3
   static absl::StatusOr<ObliviousHttpKeyConfigs> ParseConcatenatedKeys(
       absl::string_view key_configs);
 
   // Builds `ObliviousHttpKeyConfigs` with multiple key configurations, each
   // made up of Single Key Configuration([{key_id, kem_id, public key},
   // Set<SymmetricAlgos>]) encoding specified in section 3.
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-3.1
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-03.html#name-key-configuration-encoding
   // @params: Set<{key_id, kem_id, public key, Set<HPKE Symmetric Algorithms>>.
   // @return: When given all valid configs supported by BoringSSL, builds and
   // returns `ObliviousHttpKeyConfigs`. If any one of the input configs are
@@ -190,7 +179,7 @@ class QUICHE_EXPORT ObliviousHttpKeyConfigs {
       absl::string_view public_key);
 
   // Generates byte string corresponding to "application/ohttp-keys" media type.
-  // https://www.rfc-editor.org/rfc/rfc9458.html#section-3
+  // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-04.html#section-3
   absl::StatusOr<std::string> GenerateConcatenatedKeys() const;
 
   int NumKeys() const { return public_keys_.size(); }
@@ -204,9 +193,6 @@ class QUICHE_EXPORT ObliviousHttpKeyConfigs {
   ObliviousHttpHeaderKeyConfig PreferredConfig() const;
 
   absl::StatusOr<absl::string_view> GetPublicKeyForId(uint8_t key_id) const;
-
-  // Human-readable string suitable for logging.
-  std::string DebugString() const;
 
   // TODO(kmg): Add methods to somehow access other non-preferred key
   // configurations.
@@ -230,11 +216,6 @@ class QUICHE_EXPORT ObliviousHttpKeyConfigs {
   // A mapping from key_id to the public key for that key_id.
   const PublicKeyMap public_keys_;
 };
-
-// Human-readable strings suitable for logging.
-std::string ObliviousHttpKemIdToString(uint16_t kem_id);
-std::string ObliviousHttpKdfIdToString(uint16_t kdf_id);
-std::string ObliviousHttpAeadIdToString(uint16_t aead_id);
 
 }  // namespace quiche
 

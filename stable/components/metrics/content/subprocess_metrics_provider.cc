@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -226,9 +225,8 @@ void SubprocessMetricsProvider::RenderProcessReady(
       host->TakeMetricsAllocator();
   if (allocator) {
     RegisterSubprocessAllocator(
-        host->GetDeprecatedID(),
-        std::make_unique<base::PersistentHistogramAllocator>(
-            std::move(allocator)));
+        host->GetID(), std::make_unique<base::PersistentHistogramAllocator>(
+                           std::move(allocator)));
   }
 }
 
@@ -237,7 +235,7 @@ void SubprocessMetricsProvider::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  DeregisterSubprocessAllocator(host->GetDeprecatedID());
+  DeregisterSubprocessAllocator(host->GetID());
 }
 
 void SubprocessMetricsProvider::RenderProcessHostDestroyed(
@@ -248,7 +246,7 @@ void SubprocessMetricsProvider::RenderProcessHostDestroyed(
   // (above) being called so it's necessary to de-register also upon the
   // destruction of the host. If both get called, no harm is done.
 
-  DeregisterSubprocessAllocator(host->GetDeprecatedID());
+  DeregisterSubprocessAllocator(host->GetID());
   scoped_observations_.RemoveObservation(host);
 }
 

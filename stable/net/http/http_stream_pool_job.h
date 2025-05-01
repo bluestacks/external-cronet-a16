@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -28,8 +27,8 @@ class SSLCertRequestInfo;
 class NetLogWithSource;
 struct NetErrorDetails;
 
-// Used by a `Delegate` to handle a stream request or a preconnect for a
-// destination. The destination could be the origin or alternative services.
+// Used by a `Delegate` to handle a stream request for a destination. The
+// destination could be the origin or alternative services.
 class HttpStreamPool::Job {
  public:
   // Interface to report Job's results. JobController is the only implementation
@@ -61,8 +60,6 @@ class HttpStreamPool::Job {
     // Returns the proxy info.
     virtual const ProxyInfo& proxy_info() const = 0;
 
-    virtual const NetLogWithSource& net_log() const = 0;
-
     // Callback methods: Only one of these methods will be called.
     // Called when a stream is ready.
     virtual void OnStreamReady(Job* job,
@@ -79,19 +76,14 @@ class HttpStreamPool::Job {
                                     const SSLInfo& ssl_info) = 0;
     // Called when a stream attempt has requested a client certificate.
     virtual void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) = 0;
-
-    // Called when the preconnect has completed.
-    virtual void OnPreconnectComplete(Job* job, int status) = 0;
   };
 
-  // `delegate` must outlive `this`. For a stream request, `num_streams` must
-  // not be specified. For a preconnect, `num_streams` must be specified.
+  // `delegate` must outlive `this`.
   Job(Delegate* delegate,
-      Group* group,
+      AttemptManager* attempt_manager,
       quic::ParsedQuicVersion quic_version,
       NextProto expected_protocol,
-      const NetLogWithSource& request_net_log,
-      size_t num_streams = 0);
+      const NetLogWithSource& net_log);
 
   Job& operator=(const Job&) = delete;
 
@@ -99,10 +91,6 @@ class HttpStreamPool::Job {
 
   // Starts this job.
   void Start();
-
-  // Resumes this job. Must be called only when Group::CanStartJob() returns
-  // false.
-  void Resume();
 
   // Returns the LoadState of this job.
   LoadState GetLoadState() const;
@@ -130,9 +118,6 @@ class HttpStreamPool::Job {
   // requested a client certificate.
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info);
 
-  // Called by the associated AttemptManager when the preconnect completed.
-  void OnPreconnectComplete(int status);
-
   RequestPriority priority() const { return delegate_->priority(); }
 
   RespectLimits respect_limits() const { return delegate_->respect_limits(); }
@@ -147,49 +132,18 @@ class HttpStreamPool::Job {
 
   const ProxyInfo& proxy_info() const { return delegate_->proxy_info(); }
 
-  const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs() const {
-    return delegate_->allowed_bad_certs();
-  }
-
-  const NetLogWithSource& delegate_net_log() const {
-    return delegate_->net_log();
-  }
-
-  const NetLogWithSource& net_log() const { return job_net_log_; }
-
-  quic::ParsedQuicVersion quic_version() const { return quic_version_; }
-
   const NextProtoSet& allowed_alpns() const { return allowed_alpns_; }
-
-  size_t num_streams() const { return num_streams_; }
-
-  bool IsPreconnect() const { return num_streams_ > 0; }
 
   const ConnectionAttempts& connection_attempts() const {
     return connection_attempts_;
   }
 
-  base::TimeTicks create_time() const { return create_time_; }
-
-  base::TimeDelta CreateToResumeTime() const;
-
  private:
-  AttemptManager* attempt_manager() const;
-
-  void StartInternal();
-
   const raw_ptr<Delegate> delegate_;
-  raw_ptr<Group> group_;
+  raw_ptr<AttemptManager> attempt_manager_;
   const quic::ParsedQuicVersion quic_version_;
   const NextProtoSet allowed_alpns_;
-  const NetLogWithSource request_net_log_;
-  const NetLogWithSource job_net_log_;
-  const size_t num_streams_;
-  const base::TimeTicks create_time_;
-  base::TimeTicks resume_time_;
-
-  std::optional<int> result_;
-  std::optional<NextProto> negotiated_protocol_;
+  const NetLogWithSource net_log_;
 
   ConnectionAttempts connection_attempts_;
 

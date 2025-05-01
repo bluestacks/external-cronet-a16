@@ -4,23 +4,21 @@
 
 #include "net/dns/host_resolver.h"
 
-#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time_delta_from_string.h"
 #include "base/values.h"
-#include "mapped_host_resolver.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -34,8 +32,7 @@
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/resolve_context.h"
-#include "net/dns/stale_host_resolver.h"
-#include "stale_host_resolver.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -137,12 +134,6 @@ class FailingServiceEndpointRequestImpl
     return ResolveErrorInfo(error_);
   }
 
-  const HostCache::EntryStaleness* GetStaleInfo() const override {
-    return nullptr;
-  }
-
-  bool IsStaleWhileRefresing() const override { return false; }
-
   void ChangeRequestPriority(RequestPriority priority) override {}
 
  private:
@@ -164,14 +155,14 @@ void GetTimeDeltaFromDictString(const base::Value::Dict& args,
 
 }  // namespace
 
-HostResolver::Host::Host(std::variant<url::SchemeHostPort, HostPortPair> host)
+HostResolver::Host::Host(absl::variant<url::SchemeHostPort, HostPortPair> host)
     : host_(std::move(host)) {
 #if DCHECK_IS_ON()
-  if (std::holds_alternative<url::SchemeHostPort>(host_)) {
-    DCHECK(std::get<url::SchemeHostPort>(host_).IsValid());
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    DCHECK(absl::get<url::SchemeHostPort>(host_).IsValid());
   } else {
-    DCHECK(std::holds_alternative<HostPortPair>(host_));
-    DCHECK(!std::get<HostPortPair>(host_).IsEmpty());
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    DCHECK(!absl::get<HostPortPair>(host_).IsEmpty());
   }
 #endif  // DCHECK_IS_ON()
 }
@@ -187,26 +178,26 @@ HostResolver::Host::Host(Host&&) = default;
 HostResolver::Host& HostResolver::Host::operator=(Host&&) = default;
 
 bool HostResolver::Host::HasScheme() const {
-  return std::holds_alternative<url::SchemeHostPort>(host_);
+  return absl::holds_alternative<url::SchemeHostPort>(host_);
 }
 
 const std::string& HostResolver::Host::GetScheme() const {
-  DCHECK(std::holds_alternative<url::SchemeHostPort>(host_));
-  return std::get<url::SchemeHostPort>(host_).scheme();
+  DCHECK(absl::holds_alternative<url::SchemeHostPort>(host_));
+  return absl::get<url::SchemeHostPort>(host_).scheme();
 }
 
 std::string HostResolver::Host::GetHostname() const {
-  if (std::holds_alternative<url::SchemeHostPort>(host_)) {
-    return std::get<url::SchemeHostPort>(host_).host();
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    return absl::get<url::SchemeHostPort>(host_).host();
   } else {
-    DCHECK(std::holds_alternative<HostPortPair>(host_));
-    return std::get<HostPortPair>(host_).HostForURL();
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).HostForURL();
   }
 }
 
 std::string_view HostResolver::Host::GetHostnameWithoutBrackets() const {
-  if (std::holds_alternative<url::SchemeHostPort>(host_)) {
-    std::string_view hostname = std::get<url::SchemeHostPort>(host_).host();
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    std::string_view hostname = absl::get<url::SchemeHostPort>(host_).host();
     if (hostname.size() > 2 && hostname.front() == '[' &&
         hostname.back() == ']') {
       return hostname.substr(1, hostname.size() - 2);
@@ -214,32 +205,32 @@ std::string_view HostResolver::Host::GetHostnameWithoutBrackets() const {
       return hostname;
     }
   } else {
-    DCHECK(std::holds_alternative<HostPortPair>(host_));
-    return std::get<HostPortPair>(host_).host();
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).host();
   }
 }
 
 uint16_t HostResolver::Host::GetPort() const {
-  if (std::holds_alternative<url::SchemeHostPort>(host_)) {
-    return std::get<url::SchemeHostPort>(host_).port();
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    return absl::get<url::SchemeHostPort>(host_).port();
   } else {
-    DCHECK(std::holds_alternative<HostPortPair>(host_));
-    return std::get<HostPortPair>(host_).port();
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).port();
   }
 }
 
 std::string HostResolver::Host::ToString() const {
-  if (std::holds_alternative<url::SchemeHostPort>(host_)) {
-    return std::get<url::SchemeHostPort>(host_).Serialize();
+  if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    return absl::get<url::SchemeHostPort>(host_).Serialize();
   } else {
-    DCHECK(std::holds_alternative<HostPortPair>(host_));
-    return std::get<HostPortPair>(host_).ToString();
+    DCHECK(absl::holds_alternative<HostPortPair>(host_));
+    return absl::get<HostPortPair>(host_).ToString();
   }
 }
 
 const url::SchemeHostPort& HostResolver::Host::AsSchemeHostPort() const {
   const url::SchemeHostPort* scheme_host_port =
-      std::get_if<url::SchemeHostPort>(&host_);
+      absl::get_if<url::SchemeHostPort>(&host_);
   DCHECK(scheme_host_port);
   return *scheme_host_port;
 }
@@ -315,30 +306,21 @@ HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
     HostResolverManager* manager,
     std::string_view host_mapping_rules,
-    bool enable_caching,
-    bool enable_stale) {
+    bool enable_caching) {
   return HostResolver::CreateResolver(manager, host_mapping_rules,
-                                      enable_caching, enable_stale);
+                                      enable_caching);
 }
 
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateStandaloneResolver(
     NetLog* net_log,
     const ManagerOptions& options,
     std::string_view host_mapping_rules,
-    bool enable_caching,
-    bool enable_stale) {
+    bool enable_caching) {
   return HostResolver::CreateStandaloneResolver(
-      net_log, options, host_mapping_rules, enable_caching, enable_stale);
+      net_log, options, host_mapping_rules, enable_caching);
 }
 
 HostResolver::ResolveHostParameters::ResolveHostParameters() = default;
-
-HostResolver::ResolveHostParameters::ResolveHostParameters(
-    const ResolveHostParameters&) = default;
-
-HostResolver::ResolveHostParameters&
-HostResolver::ResolveHostParameters::operator=(const ResolveHostParameters&) =
-    default;
 
 HostResolver::~HostResolver() = default;
 
@@ -391,36 +373,21 @@ handles::NetworkHandle HostResolver::GetTargetNetworkForTesting() const {
 std::unique_ptr<HostResolver> HostResolver::CreateResolver(
     HostResolverManager* manager,
     std::string_view host_mapping_rules,
-    bool enable_caching,
-    bool enable_stale) {
+    bool enable_caching) {
   DCHECK(manager);
 
   auto resolve_context = std::make_unique<ResolveContext>(
       nullptr /* url_request_context */, enable_caching);
 
-  std::unique_ptr<ContextHostResolver> context_resolver =
-      std::make_unique<ContextHostResolver>(manager,
-                                            std::move(resolve_context));
+  auto resolver = std::make_unique<ContextHostResolver>(
+      manager, std::move(resolve_context));
 
-  std::unique_ptr<HostResolver> resolver;
-
-  // Wrap in StaleHostResolver if needed.
-  if (enable_stale) {
-    resolver = std::make_unique<StaleHostResolver>(
-        std::move(context_resolver), StaleHostResolver::StaleOptions());
-  } else {
-    resolver = std::move(context_resolver);
-  }
-
-  // Wrap in MappedHostResolver if needed.
-  if (!host_mapping_rules.empty()) {
-    auto remapped_resolver =
-        std::make_unique<MappedHostResolver>(std::move(resolver));
-    remapped_resolver->SetRulesFromString(host_mapping_rules);
-    resolver = std::move(remapped_resolver);
-  }
-
-  return resolver;
+  if (host_mapping_rules.empty())
+    return resolver;
+  auto remapped_resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver));
+  remapped_resolver->SetRulesFromString(host_mapping_rules);
+  return remapped_resolver;
 }
 
 // static
@@ -428,31 +395,17 @@ std::unique_ptr<HostResolver> HostResolver::CreateStandaloneResolver(
     NetLog* net_log,
     std::optional<ManagerOptions> options,
     std::string_view host_mapping_rules,
-    bool enable_caching,
-    bool enable_stale) {
-  std::unique_ptr<ContextHostResolver> context_resolver =
+    bool enable_caching) {
+  std::unique_ptr<ContextHostResolver> resolver =
       CreateStandaloneContextResolver(net_log, std::move(options),
                                       enable_caching);
 
-  std::unique_ptr<HostResolver> resolver;
-
-  // Wrap in StaleHostResolver if needed.
-  if (enable_stale) {
-    resolver = std::make_unique<StaleHostResolver>(
-        std::move(context_resolver), StaleHostResolver::StaleOptions());
-  } else {
-    resolver = std::move(context_resolver);
-  }
-
-  // Wrap in MappedHostResolver if needed.
-  if (!host_mapping_rules.empty()) {
-    auto remapped_resolver =
-        std::make_unique<MappedHostResolver>(std::move(resolver));
-    remapped_resolver->SetRulesFromString(host_mapping_rules);
-    resolver = std::move(remapped_resolver);
-  }
-
-  return resolver;
+  if (host_mapping_rules.empty())
+    return resolver;
+  auto remapped_resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver));
+  remapped_resolver->SetRulesFromString(host_mapping_rules);
+  return remapped_resolver;
 }
 
 // static
@@ -581,7 +534,7 @@ AddressList HostResolver::EndpointResultToAddressList(
   AddressList list;
 
   auto non_protocol_endpoint =
-      std::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
+      base::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
   if (non_protocol_endpoint == endpoints.end())
     return list;
 

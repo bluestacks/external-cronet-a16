@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/profiler/stack_copier_signal.h"
 
 #include <errno.h>
@@ -25,7 +20,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/profiler/register_context.h"
-#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/time/time_override.h"
@@ -103,8 +97,7 @@ class AsyncSafeWaitableEvent {
 // destructor.
 class ScopedEventSignaller {
  public:
-  explicit ScopedEventSignaller(AsyncSafeWaitableEvent* event)
-      : event_(event) {}
+  ScopedEventSignaller(AsyncSafeWaitableEvent* event) : event_(event) {}
   ~ScopedEventSignaller() { event_->Signal(); }
 
  private:
@@ -189,7 +182,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
 // Sets the global handler params for the signal handler function.
 class ScopedSetSignalHandlerParams {
  public:
-  explicit ScopedSetSignalHandlerParams(HandlerParams* params) {
+  ScopedSetSignalHandlerParams(HandlerParams* params) {
     g_handler_params.store(params, std::memory_order_release);
   }
 
@@ -211,9 +204,8 @@ class ScopedSigaction {
   bool succeeded() const { return succeeded_; }
 
   ~ScopedSigaction() {
-    if (!succeeded_) {
+    if (!succeeded_)
       return;
-    }
 
     bool reset_succeeded = sigaction(signal_, original_action_, action_) == 0;
     DCHECK(reset_succeeded);
@@ -262,9 +254,8 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     // SIGURG is chosen here because we observe no crashes with this signal and
     // neither Chrome or the AOSP sets up a special handler for this signal.
     ScopedSigaction scoped_sigaction(SIGURG, &action, &original_action);
-    if (!scoped_sigaction.succeeded()) {
+    if (!scoped_sigaction.succeeded())
       return false;
-    }
 
     if (syscall(SYS_tgkill, getpid(), thread_delegate_->GetThreadId(),
                 SIGURG) != 0) {
@@ -277,9 +268,9 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     // Ideally, an accurate timestamp is captured while the sampled thread is
     // paused. In rare cases, this may fail, in which case we resort to
     // capturing an delayed timestamp here instead.
-    if (maybe_timestamp.has_value()) {
+    if (maybe_timestamp.has_value())
       *timestamp = maybe_timestamp.value();
-    } else {
+    else {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
                    "Fallback on TimeTicks::Now()");
       *timestamp = TimeTicks::Now();

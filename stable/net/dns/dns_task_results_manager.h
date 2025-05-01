@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -22,6 +21,7 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -38,7 +38,7 @@ namespace net {
 class NET_EXPORT_PRIVATE DnsTaskResultsManager {
  public:
   // Time to wait for a AAAA response after receiving an A response.
-  static base::TimeDelta GetResolutionDelay();
+  static constexpr base::TimeDelta kResolutionDelay = base::Milliseconds(50);
 
   // Interface for watching for intermediate service endpoints updates.
   class Delegate {

@@ -22,6 +22,7 @@ import java.util.Collection;
  * {@link android.view.View} subclasses to wrap them in trace events.
  */
 public class TraceEventAdder extends ByteCodeRewriter {
+    private final ClassLoader mClassPathJarsClassLoader;
     private ArrayList<MethodDescription> mMethodsToTrace;
 
     /**
@@ -85,8 +86,8 @@ public class TraceEventAdder extends ByteCodeRewriter {
         }
     }
 
-    TraceEventAdder(ClassLoader classLoader) {
-        super(classLoader);
+    public TraceEventAdder(ClassLoader classPathJarsClassLoader) {
+        mClassPathJarsClassLoader = classPathJarsClassLoader;
     }
 
     @Override
@@ -130,7 +131,7 @@ public class TraceEventAdder extends ByteCodeRewriter {
         // class and which ones need to be overridden. In case the class is not an Android view
         // we'll clear the list and skip rewriting.
         MethodCheckerClassAdapter methodChecker =
-                new MethodCheckerClassAdapter(mMethodsToTrace, getClassLoader());
+                new MethodCheckerClassAdapter(mMethodsToTrace, mClassPathJarsClassLoader);
 
         classReader.accept(methodChecker, ClassReader.EXPAND_FRAMES);
 

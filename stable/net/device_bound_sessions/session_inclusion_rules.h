@@ -104,8 +104,6 @@ class NET_EXPORT SessionInclusionRules final {
   static std::unique_ptr<SessionInclusionRules> CreateFromProto(
       const proto::SessionInclusionRules& proto);
 
-  std::string DebugString() const;
-
  private:
   struct UrlRule;
 

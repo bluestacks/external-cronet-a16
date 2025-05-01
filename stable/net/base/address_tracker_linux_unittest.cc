@@ -2,18 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/base/address_tracker_linux.h"
 
 #include <linux/if.h>
 #include <linux/rtnetlink.h>
 #include <sched.h>
 
-#include <array>
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -595,7 +589,7 @@ TEST_F(AddressTrackerLinuxTest, GetInterfaceName) {
   InitializeAddressTracker(true);
 
   for (int i = 0; i < 10; i++) {
-    char buf[IFNAMSIZ] = {};
+    char buf[IFNAMSIZ] = {0};
     EXPECT_NE((const char*)nullptr, original_get_interface_name_(i, buf));
   }
 }
@@ -813,7 +807,7 @@ TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackersInPidNamespaces) {
   for (const Child& child : children) {
     ASSERT_TRUE(child.process.IsValid());
 
-    auto message = std::to_array<uint8_t>({0});
+    uint8_t message[] = {0};
     ASSERT_TRUE(parent_reader.ReadAtCurrentPosAndCheck(message));
     ASSERT_EQ(message[0], kChildInitializedAndWaiting);
   }
@@ -857,7 +851,7 @@ MULTIPROCESS_TEST_MAIN(ChildProcessInitializeTrackerForTesting) {
     return 1;
 
   // Block until the parent says all children have initialized their trackers.
-  auto message = std::to_array<uint8_t>({0});
+  uint8_t message[] = {0};
   if (!reader.ReadAtCurrentPosAndCheck(message) || message[0] != kChildMayExit)
     return 1;
   return 0;

@@ -182,9 +182,10 @@ public class SequencedTaskRunnerTaskMigrationTest {
         public void destroy(long nativeTaskRunnerAndroid) {}
 
         @Override
-        public void postDelayedTask(long nativeTaskRunnerAndroid, long delay, int taskIndex) {
+        public void postDelayedTask(
+                long nativeTaskRunnerAndroid, Runnable task, long delay, String runnableClassName) {
             mReceivedTasksCount.incrementAndGet();
-            TaskRunnerImpl.runTask(taskIndex);
+            mExecutor.execute(task);
         }
 
         public boolean hasReceivedTasks() {

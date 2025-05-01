@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/test/url_request/url_request_failed_job.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
-#include <array>
+#include "net/test/url_request/url_request_failed_job.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -25,11 +28,11 @@ namespace {
 const char kMockHostname[] = "mock.failed.request";
 
 // String names of failure phases matching FailurePhase enum.
-auto kFailurePhase = std::to_array<const char*>({
+const char* kFailurePhase[]{
     "start",      // START
     "readsync",   // READ_SYNC
     "readasync",  // READ_ASYNC
-});
+};
 
 static_assert(std::size(kFailurePhase) ==
                   URLRequestFailedJob::FailurePhase::MAX_FAILURE_PHASE,

@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "test_trace_processor_impl.h"
-
 #include <sstream>
-
 #include "third_party/perfetto/include/perfetto/trace_processor/trace_processor.h"
 
 namespace base::test {

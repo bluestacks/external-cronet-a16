@@ -1,22 +1,17 @@
 #! /usr/bin/env perl
 # Copyright 2005-2016 The OpenSSL Project Authors. All Rights Reserved.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the OpenSSL license (the "License").  You may not use
+# this file except in compliance with the License.  You can obtain a copy
+# in the file LICENSE in the source distribution or at
+# https://www.openssl.org/source/license.html
 
 
 # ====================================================================
 # Written by Andy Polyakov <appro@openssl.org> for the OpenSSL
-# project.
+# project. The module is, however, dual licensed under OpenSSL and
+# CRYPTOGAMS licenses depending on where you obtain it. For further
+# details see http://www.openssl.org/~appro/cryptogams/.
 # ====================================================================
 
 # October 2005.
@@ -70,7 +65,7 @@ open OUT,"| \"$^X\" \"$xlate\" $flavour \"$output\"";
 # output, so this isn't useful anyway.
 $addx = 1;
 
-# void bn_mul_mont_nohw(
+# int bn_mul_mont_nohw(
 $rp="%rdi";	# BN_ULONG *rp,
 $ap="%rsi";	# const BN_ULONG *ap,
 $bp="%rdx";	# const BN_ULONG *bp,
@@ -315,7 +310,7 @@ $code.=<<___;
 
 	mov	8(%rsp,$num,8),%rsi	# restore %rsp
 .cfi_def_cfa	%rsi,8
-	# No return value
+	mov	\$1,%rax
 	mov	-48(%rsi),%r15
 .cfi_restore	%r15
 	mov	-40(%rsi),%r14
@@ -762,7 +757,7 @@ ___
 $code.=<<___;
 	mov	8(%rsp,$num,8),%rsi	# restore %rsp
 .cfi_def_cfa	%rsi, 8
-	# No return value
+	mov	\$1,%rax
 	mov	-48(%rsi),%r15
 .cfi_restore	%r15
 	mov	-40(%rsi),%r14
@@ -785,7 +780,7 @@ ___
 }}}
 {{{
 ######################################################################
-# void bn_sqr8x_mont(
+# int bn_sqr8x_mont(
 my $rptr="%rdi";	# const BN_ULONG *rptr,
 my $aptr="%rsi";	# const BN_ULONG *aptr,
 my $mulx_adx_capable="%rdx"; # Different than upstream!
@@ -976,7 +971,7 @@ $code.=<<___;
 	add	\$32,$num
 	jnz	.Lsqr8x_cond_copy
 
-	# No return value
+	mov	\$1,%rax
 	mov	-48(%rsi),%r15
 .cfi_restore	%r15
 	mov	-40(%rsi),%r14
@@ -1345,7 +1340,7 @@ $code.=<<___;
 
 	mov	%rdx,($tptr)
 
-	# No return value
+	mov	\$1,%rax
 	mov	-48(%rsi),%r15
 .cfi_restore	%r15
 	mov	-40(%rsi),%r14

@@ -22,7 +22,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
-#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
@@ -51,8 +50,7 @@ class StackSamplerTest : public ::testing::Test {
 
 class TestProfileBuilder : public ProfileBuilder {
  public:
-  explicit TestProfileBuilder(ModuleCache* module_cache)
-      : module_cache_(module_cache) {}
+  TestProfileBuilder(ModuleCache* module_cache) : module_cache_(module_cache) {}
 
   TestProfileBuilder(const TestProfileBuilder&) = delete;
   TestProfileBuilder& operator=(const TestProfileBuilder&) = delete;
@@ -81,8 +79,8 @@ class TestProfileBuilder : public ProfileBuilder {
 // operating on the supplied fake stack.
 class TestStackCopier : public StackCopier {
  public:
-  explicit TestStackCopier(const std::vector<uintptr_t>& fake_stack,
-                           TimeTicks timestamp = TimeTicks())
+  TestStackCopier(const std::vector<uintptr_t>& fake_stack,
+                  TimeTicks timestamp = TimeTicks())
       : fake_stack_(fake_stack), timestamp_(timestamp) {}
 
   bool CopyStack(StackBuffer* stack_buffer,
@@ -229,7 +227,7 @@ uintptr_t GetTestInstructionPointer() {
 class FakeTestUnwinder : public Unwinder {
  public:
   struct Result {
-    explicit Result(bool can_unwind)
+    Result(bool can_unwind)
         : can_unwind(can_unwind), result(UnwindResult::kUnrecognizedFrame) {}
 
     Result(UnwindResult result, std::vector<uintptr_t> instruction_pointers)
@@ -257,9 +255,8 @@ class FakeTestUnwinder : public Unwinder {
     // NB: If CanUnwindFrom() returns false then TryUnwind() will not be
     // invoked, so current_unwind_ is guarantee to be incremented only once for
     // each result.
-    if (!can_unwind) {
+    if (!can_unwind)
       ++current_unwind_;
-    }
     return can_unwind;
   }
 
@@ -271,11 +268,10 @@ class FakeTestUnwinder : public Unwinder {
     const Result& current_result = results_[current_unwind_];
     ++current_unwind_;
     CHECK(current_result.can_unwind);
-    for (const auto instruction_pointer : current_result.instruction_pointers) {
+    for (const auto instruction_pointer : current_result.instruction_pointers)
       stack->emplace_back(
           instruction_pointer,
           module_cache()->GetModuleForAddress(instruction_pointer));
-    }
     return current_result.result;
   }
 
@@ -298,9 +294,8 @@ StackSampler::UnwindersFactory MakeUnwindersFactory(
 std::vector<UnwinderCapture> MakeUnwinderStateVector(Unwinder* native_unwinder,
                                                      Unwinder* aux_unwinder) {
   std::vector<UnwinderCapture> unwinders;
-  if (aux_unwinder) {
+  if (aux_unwinder)
     unwinders.emplace_back(aux_unwinder, nullptr);
-  }
   if (native_unwinder) {
     unwinders.emplace_back(native_unwinder, nullptr);
   }
@@ -548,9 +543,8 @@ TEST_F(StackSamplerTest, WalkStack_AuxThenNative) {
   // Inject a fake native module for the second frame.
   module_cache_.AddCustomNativeModule(std::make_unique<TestModule>(1u, 1u));
 
-  auto aux_unwinder =
-      WrapUnique(new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}},
-                                       FakeTestUnwinder::Result(false)}));
+  auto aux_unwinder = WrapUnique(
+      new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}}, false}));
   aux_unwinder->Initialize(&module_cache_);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::kCompleted, {2u}}}));
@@ -579,10 +573,8 @@ TEST_F(StackSamplerTest, WalkStack_NativeThenAux) {
   module_cache_.UpdateNonNativeModules(
       {}, ToModuleVector(std::make_unique<TestModule>(1u, 1u, false)));
 
-  auto aux_unwinder =
-      WrapUnique(new FakeTestUnwinder({FakeTestUnwinder::Result(false),
-                                       {UnwindResult::kUnrecognizedFrame, {2u}},
-                                       FakeTestUnwinder::Result(false)}));
+  auto aux_unwinder = WrapUnique(new FakeTestUnwinder(
+      {{false}, {UnwindResult::kUnrecognizedFrame, {2u}}, {false}}));
   aux_unwinder->Initialize(&module_cache_);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}},

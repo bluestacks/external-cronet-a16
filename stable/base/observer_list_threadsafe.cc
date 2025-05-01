@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/observer_list_threadsafe.h"
-
 #include "base/compiler_specific.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 constinit thread_local const ObserverListThreadSafeBase::NotificationDataBase*
     current_notification = nullptr;
@@ -24,4 +24,5 @@ ObserverListThreadSafeBase::GetCurrentNotification() {
   return current_notification;
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

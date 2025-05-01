@@ -17,12 +17,12 @@
 // -----------------------------------------------------------------------------
 //
 // This file declares `class absl::log_internal::LogMessage`. This class more or
-// less represents a particular log message. LOG/CHECK macros create a temporary
-// instance of `LogMessage` and then stream values to it.  At the end of the
-// LOG/CHECK statement, the LogMessage is voidified by operator&&, and `Flush()`
-// directs the message to the registered log sinks.  Heap-allocation of
-// `LogMessage` is unsupported.  Construction outside of a `LOG` macro is
-// unsupported.
+// less represents a particular log message. LOG/CHECK macros create a
+// temporary instance of `LogMessage` and then stream values to it.  At the end
+// of the LOG/CHECK statement, LogMessage instance goes out of scope and
+// `~LogMessage` directs the message to the registered log sinks.
+// Heap-allocation of `LogMessage` is unsupported.  Construction outside of a
+// `LOG` macro is unsupported.
 
 #ifndef ABSL_LOG_INTERNAL_LOG_MESSAGE_H_
 #define ABSL_LOG_INTERNAL_LOG_MESSAGE_H_
@@ -41,7 +41,6 @@
 #include "absl/base/log_severity.h"
 #include "absl/base/nullability.h"
 #include "absl/log/internal/nullguard.h"
-#include "absl/log/internal/structured_proto.h"
 #include "absl/log/log_entry.h"
 #include "absl/log/log_sink.h"
 #include "absl/strings/has_absl_stringify.h"
@@ -52,8 +51,6 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace log_internal {
 constexpr int kLogMessageBufferSize = 15000;
-
-enum class StructuredStringType;
 
 class LogMessage {
  public:
@@ -183,13 +180,17 @@ class LogMessage {
   LogMessage& operator<<(char (&buf)[SIZE]) ABSL_ATTRIBUTE_NOINLINE;
 
   // Types that support `AbslStringify()` are serialized that way.
-  // Types that don't support `AbslStringify()` but do support streaming into a
-  // `std::ostream&` are serialized that way.
-  template <typename T>
+  template <typename T,
+            typename std::enable_if<absl::HasAbslStringify<T>::value,
+                                    int>::type = 0>
   LogMessage& operator<<(const T& v) ABSL_ATTRIBUTE_NOINLINE;
 
-  // Dispatches the completed `absl::LogEntry` to applicable `absl::LogSink`s.
-  void Flush();
+  // Types that don't support `AbslStringify()` but do support streaming into a
+  // `std::ostream&` are serialized that way.
+  template <typename T,
+            typename std::enable_if<!absl::HasAbslStringify<T>::value,
+                                    int>::type = 0>
+  LogMessage& operator<<(const T& v) ABSL_ATTRIBUTE_NOINLINE;
 
   // Note: We explicitly do not support `operator<<` for non-const references
   // because it breaks logging of non-integer bitfield types (i.e., enums).
@@ -203,6 +204,11 @@ class LogMessage {
   // the process with an error exit code.
   [[noreturn]] static void FailQuietly();
 
+  // Dispatches the completed `absl::LogEntry` to applicable `absl::LogSink`s.
+  // This might as well be inlined into `~LogMessage` except that
+  // `~LogMessageFatal` needs to call it early.
+  void Flush();
+
   // After this is called, failures are done as quiet as possible for this log
   // message.
   void SetFailQuietly();
@@ -211,10 +217,6 @@ class LogMessage {
   struct LogMessageData;  // Opaque type containing message state
   friend class AsLiteralImpl;
   friend class StringifySink;
-  template <StructuredStringType str_type>
-  friend class AsStructuredStringTypeImpl;
-  template <typename T>
-  friend class AsStructuredValueImpl;
 
   // This streambuf writes directly into the structured logging buffer so that
   // arbitrary types can be encoded as string data (using
@@ -244,13 +246,6 @@ class LogMessage {
   void CopyToEncodedBuffer(absl::string_view str) ABSL_ATTRIBUTE_NOINLINE;
   template <StringType str_type>
   void CopyToEncodedBuffer(char ch, size_t num) ABSL_ATTRIBUTE_NOINLINE;
-
-  // Copies `field` to the encoded buffer, then appends `str` after it
-  // (truncating `str` if necessary to fit).
-  template <StringType str_type>
-  void CopyToEncodedBufferWithStructuredProtoField(StructuredProtoField field,
-                                                   absl::string_view str)
-      ABSL_ATTRIBUTE_NOINLINE;
 
   // Returns `true` if the message is fatal or enabled debug-fatal.
   bool IsFatal() const;
@@ -299,16 +294,21 @@ class StringifySink final {
 };
 
 // Note: the following is declared `ABSL_ATTRIBUTE_NOINLINE`
-template <typename T>
+template <typename T,
+          typename std::enable_if<absl::HasAbslStringify<T>::value, int>::type>
 LogMessage& LogMessage::operator<<(const T& v) {
-  if constexpr (absl::HasAbslStringify<T>::value) {
-    StringifySink sink(*this);
-    // Replace with public API.
-    AbslStringify(sink, v);
-  } else {
-    OstreamView view(*data_);
-    view.stream() << log_internal::NullGuard<T>().Guard(v);
-  }
+  StringifySink sink(*this);
+  // Replace with public API.
+  AbslStringify(sink, v);
+  return *this;
+}
+
+// Note: the following is declared `ABSL_ATTRIBUTE_NOINLINE`
+template <typename T,
+          typename std::enable_if<!absl::HasAbslStringify<T>::value, int>::type>
+LogMessage& LogMessage::operator<<(const T& v) {
+  OstreamView view(*data_);
+  view.stream() << log_internal::NullGuard<T>().Guard(v);
   return *this;
 }
 
@@ -367,7 +367,7 @@ class LogMessageFatal final : public LogMessage {
   LogMessageFatal(absl::Nonnull<const char*> file,
                   int line) ABSL_ATTRIBUTE_COLD;
   LogMessageFatal(absl::Nonnull<const char*> file, int line,
-                  absl::Nonnull<const char*> failure_msg) ABSL_ATTRIBUTE_COLD;
+                  absl::string_view failure_msg) ABSL_ATTRIBUTE_COLD;
   [[noreturn]] ~LogMessageFatal();
 };
 
@@ -397,8 +397,7 @@ class LogMessageQuietlyFatal final : public LogMessage {
   LogMessageQuietlyFatal(absl::Nonnull<const char*> file,
                          int line) ABSL_ATTRIBUTE_COLD;
   LogMessageQuietlyFatal(absl::Nonnull<const char*> file, int line,
-                         absl::Nonnull<const char*> failure_msg)
-      ABSL_ATTRIBUTE_COLD;
+                         absl::string_view failure_msg) ABSL_ATTRIBUTE_COLD;
   [[noreturn]] ~LogMessageQuietlyFatal();
 };
 

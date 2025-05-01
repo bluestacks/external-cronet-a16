@@ -67,10 +67,7 @@ class SequencedTaskSource {
   // |option| allows control on which kind of tasks can be selected.
   virtual std::optional<SelectedTask> SelectNextTask(
       LazyNow& lazy_now,
-      SelectTaskOption option) = 0;
-  std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now) {
-    return SelectNextTask(lazy_now, SelectTaskOption::kDefault);
-  }
+      SelectTaskOption option = SelectTaskOption::kDefault) = 0;
 
   // Notifies this source that the task previously obtained
   // from SelectNextTask() has been completed.
@@ -80,11 +77,9 @@ class SequencedTaskSource {
   // next task can run immediately, or nullopt if there are no more immediate or
   // delayed tasks. |option| allows control on which kind of tasks can be
   // selected. May delete canceled tasks.
-  virtual std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
-                                                 SelectTaskOption option) = 0;
-  std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now) {
-    return GetPendingWakeUp(lazy_now, SelectTaskOption::kDefault);
-  }
+  virtual std::optional<WakeUp> GetPendingWakeUp(
+      LazyNow* lazy_now,
+      SelectTaskOption option = SelectTaskOption::kDefault) = 0;
 
   // Return true if there are any pending tasks in the task source which require
   // high resolution timing.

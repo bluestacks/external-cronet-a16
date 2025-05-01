@@ -7,8 +7,6 @@ package org.chromium.base.jank_tracker;
 import android.view.Window;
 
 import org.chromium.base.Log;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * A simple holder class to enable easy starting and stopping of metric listening as well as
@@ -16,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
  * should be hooked up to some sort of listener to when to start/stop listening and periodic
  * metrics.
  */
-@NullMarked
 public class JankTrackerStateController {
     private static final String TAG = "JankTracker";
     protected final FrameMetricsListener mFrameMetricsListener;
@@ -36,7 +33,7 @@ public class JankTrackerStateController {
         mReportingScheduler.stopReportingPeriodicMetrics();
     }
 
-    public void startMetricCollection(@Nullable Window window) {
+    public void startMetricCollection(Window window) {
         mFrameMetricsListener.setIsListenerRecording(true);
         if (window != null) {
             window.addOnFrameMetricsAvailableListener(
@@ -44,7 +41,7 @@ public class JankTrackerStateController {
         }
     }
 
-    public void stopMetricCollection(@Nullable Window window) {
+    public void stopMetricCollection(Window window) {
         mFrameMetricsListener.setIsListenerRecording(false);
         if (window != null) {
             try {

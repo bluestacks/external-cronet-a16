@@ -34,9 +34,8 @@ BarrierInfo::BarrierInfo(size_t num_callbacks, OnceClosure done_closure)
 
 void BarrierInfo::Run() {
   DCHECK(!num_callbacks_left_.IsZero());
-  if (!num_callbacks_left_.Decrement()) {
+  if (!num_callbacks_left_.Decrement())
     std::move(done_closure_).Run();
-  }
 }
 
 void ShouldNeverRun() {

@@ -58,7 +58,7 @@
   #ifdef __va_copy
     #define va_copy(dest, src) __va_copy(dest, src)
   #else
-    #define va_copy(dest, src) memcpy(&(dest), &(src), sizeof(va_list))
+    #define va_copy(dest, src) memcpy(dest, src, sizeof(va_list))
   #endif
 #endif
 
@@ -1458,11 +1458,8 @@ node_found:
         if (xmlXIncludeProcessNode(reader->xincctxt, reader->node) < 0) {
             int err = xmlXIncludeGetLastError(reader->xincctxt);
 
-            if (xmlIsCatastrophicError(XML_ERR_FATAL, err)) {
-                xmlFatalErr(reader->ctxt, err, NULL);
-                reader->mode = XML_TEXTREADER_MODE_ERROR;
-                reader->state = XML_TEXTREADER_ERROR;
-            }
+            if (err == XML_ERR_NO_MEMORY)
+                xmlTextReaderErrMemory(reader);
             return(-1);
         }
     }
@@ -1756,8 +1753,7 @@ xmlTextReaderReadString(xmlTextReaderPtr reader)
         case XML_CDATA_SECTION_NODE:
             break;
         case XML_ELEMENT_NODE:
-            if ((xmlTextReaderDoExpand(reader) == -1) ||
-                (node->children == NULL))
+            if (xmlTextReaderDoExpand(reader) == -1)
                 return(NULL);
             break;
         case XML_ATTRIBUTE_NODE:
@@ -4922,7 +4918,7 @@ xmlTextReaderSetup(xmlTextReaderPtr reader,
 	    inputStream->buf = buf;
             xmlBufResetInput(buf->buffer, inputStream);
 
-            if (xmlCtxtPushInput(reader->ctxt, inputStream) < 0) {
+            if (inputPush(reader->ctxt, inputStream) < 0) {
                 xmlFreeInputStream(inputStream);
                 return(-1);
             }
@@ -5009,8 +5005,6 @@ xmlTextReaderSetup(xmlTextReaderPtr reader,
 void
 xmlTextReaderSetMaxAmplification(xmlTextReaderPtr reader, unsigned maxAmpl)
 {
-    if (reader == NULL)
-        return;
     xmlCtxtSetMaxAmplification(reader->ctxt, maxAmpl);
 }
 
@@ -5025,7 +5019,7 @@ xmlTextReaderSetMaxAmplification(xmlTextReaderPtr reader, unsigned maxAmpl)
 const xmlError *
 xmlTextReaderGetLastError(xmlTextReaderPtr reader)
 {
-    if ((reader == NULL) || (reader->ctxt == NULL))
+    if (reader == NULL)
         return(NULL);
     return(&reader->ctxt->lastError);
 }

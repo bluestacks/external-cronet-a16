@@ -10,7 +10,9 @@
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue.h"
 
-namespace base::sequence_manager::internal {
+namespace base {
+namespace sequence_manager {
+namespace internal {
 
 WorkQueueSets::WorkQueueSets(const char* name,
                              Observer* observer,
@@ -32,28 +34,24 @@ void WorkQueueSets::AddQueue(WorkQueue* work_queue, size_t set_index) {
   std::optional<TaskOrder> key = work_queue->GetFrontTaskOrder();
   work_queue->AssignToWorkQueueSets(this);
   work_queue->AssignSetIndex(set_index);
-  if (!key) {
+  if (!key)
     return;
-  }
   bool was_empty = work_queue_heaps_[set_index].empty();
   work_queue_heaps_[set_index].insert({*key, work_queue});
-  if (was_empty) {
+  if (was_empty)
     observer_->WorkQueueSetBecameNonEmpty(set_index);
-  }
 }
 
 void WorkQueueSets::RemoveQueue(WorkQueue* work_queue) {
   DCHECK_EQ(this, work_queue->work_queue_sets());
   work_queue->AssignToWorkQueueSets(nullptr);
-  if (!work_queue->heap_handle().IsValid()) {
+  if (!work_queue->heap_handle().IsValid())
     return;
-  }
   size_t set_index = work_queue->work_queue_set_index();
   DCHECK_LT(set_index, work_queue_heaps_.size());
   work_queue_heaps_[set_index].erase(work_queue->heap_handle());
-  if (work_queue_heaps_[set_index].empty()) {
+  if (work_queue_heaps_[set_index].empty())
     observer_->WorkQueueSetBecameEmpty(set_index);
-  }
   DCHECK(!work_queue->heap_handle().IsValid());
 }
 
@@ -66,18 +64,16 @@ void WorkQueueSets::ChangeSetIndex(WorkQueue* work_queue, size_t set_index) {
   DCHECK_NE(old_set, set_index);
   work_queue->AssignSetIndex(set_index);
   DCHECK_EQ(key.has_value(), work_queue->heap_handle().IsValid());
-  if (!key) {
+  if (!key)
     return;
-  }
   work_queue_heaps_[old_set].erase(work_queue->heap_handle());
   bool was_empty = work_queue_heaps_[set_index].empty();
   work_queue_heaps_[set_index].insert({*key, work_queue});
   // Invoke `WorkQueueSetBecameNonEmpty()` before `WorkQueueSetBecameEmpty()` so
   // `observer_` doesn't momentarily observe that all work queue sets are empty.
   // TaskQueueSelectorTest.TestDisableEnable will fail if the order changes.
-  if (was_empty) {
+  if (was_empty)
     observer_->WorkQueueSetBecameNonEmpty(set_index);
-  }
   if (work_queue_heaps_[old_set].empty()) {
     observer_->WorkQueueSetBecameEmpty(old_set);
   }
@@ -97,9 +93,8 @@ void WorkQueueSets::OnQueuesFrontTaskChanged(WorkQueue* work_queue) {
     // O(log n)
     work_queue_heaps_[set_index].erase(work_queue->heap_handle());
     DCHECK(!work_queue->heap_handle().IsValid());
-    if (work_queue_heaps_[set_index].empty()) {
+    if (work_queue_heaps_[set_index].empty())
       observer_->WorkQueueSetBecameEmpty(set_index);
-    }
   }
 }
 
@@ -116,9 +111,8 @@ void WorkQueueSets::OnTaskPushedToEmptyQueue(WorkQueue* work_queue) {
   DCHECK(!work_queue->heap_handle().IsValid());
   bool was_empty = work_queue_heaps_[set_index].empty();
   work_queue_heaps_[set_index].insert({*key, work_queue});
-  if (was_empty) {
+  if (was_empty)
     observer_->WorkQueueSetBecameNonEmpty(set_index);
-  }
 }
 
 void WorkQueueSets::OnPopMinQueueInSet(WorkQueue* work_queue) {
@@ -148,23 +142,20 @@ void WorkQueueSets::OnPopMinQueueInSet(WorkQueue* work_queue) {
 void WorkQueueSets::OnQueueBlocked(WorkQueue* work_queue) {
   DCHECK_EQ(this, work_queue->work_queue_sets());
   HeapHandle heap_handle = work_queue->heap_handle();
-  if (!heap_handle.IsValid()) {
+  if (!heap_handle.IsValid())
     return;
-  }
   size_t set_index = work_queue->work_queue_set_index();
   DCHECK_LT(set_index, work_queue_heaps_.size());
   work_queue_heaps_[set_index].erase(heap_handle);
-  if (work_queue_heaps_[set_index].empty()) {
+  if (work_queue_heaps_[set_index].empty())
     observer_->WorkQueueSetBecameEmpty(set_index);
-  }
 }
 
 std::optional<WorkQueueAndTaskOrder>
 WorkQueueSets::GetOldestQueueAndTaskOrderInSet(size_t set_index) const {
   DCHECK_LT(set_index, work_queue_heaps_.size());
-  if (work_queue_heaps_[set_index].empty()) {
+  if (work_queue_heaps_[set_index].empty())
     return std::nullopt;
-  }
   const OldestTaskOrder& oldest = work_queue_heaps_[set_index].top();
   DCHECK(oldest.value->heap_handle().IsValid());
 #if DCHECK_IS_ON()
@@ -178,9 +169,8 @@ WorkQueueSets::GetOldestQueueAndTaskOrderInSet(size_t set_index) const {
 std::optional<WorkQueueAndTaskOrder>
 WorkQueueSets::GetRandomQueueAndTaskOrderInSet(size_t set_index) const {
   DCHECK_LT(set_index, work_queue_heaps_.size());
-  if (work_queue_heaps_[set_index].empty()) {
+  if (work_queue_heaps_[set_index].empty())
     return std::nullopt;
-  }
   const OldestTaskOrder& chosen =
       work_queue_heaps_[set_index].begin()[static_cast<long>(
           Random() % work_queue_heaps_[set_index].size())];
@@ -237,4 +227,6 @@ void WorkQueueSets::CollectSkippedOverLowerPriorityTasks(
   }
 }
 
-}  // namespace base::sequence_manager::internal
+}  // namespace internal
+}  // namespace sequence_manager
+}  // namespace base

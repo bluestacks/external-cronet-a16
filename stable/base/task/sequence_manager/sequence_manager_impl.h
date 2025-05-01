@@ -125,9 +125,11 @@ class BASE_EXPORT SequenceManagerImpl
   bool GetAndClearSystemIsQuiescentBit() override;
   void SetWorkBatchSize(int work_batch_size) override;
   void EnableCrashKeys(const char* async_stack_crash_key) override;
+  const MetricRecordingSettings& GetMetricRecordingSettings() const override;
   size_t GetPendingTaskCountForTesting() const override;
   TaskQueue::Handle CreateTaskQueue(const TaskQueue::Spec& spec) override;
   std::string DescribeAllPendingTasks() const override;
+  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   std::optional<WakeUp> GetNextDelayedWakeUp() const override;
@@ -136,13 +138,13 @@ class BASE_EXPORT SequenceManagerImpl
   // SequencedTaskSource implementation:
   void SetRunTaskSynchronouslyAllowed(
       bool can_run_tasks_synchronously) override;
-  using internal::SequencedTaskSource::SelectNextTask;
-  std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now,
-                                             SelectTaskOption option) override;
+  std::optional<SelectedTask> SelectNextTask(
+      LazyNow& lazy_now,
+      SelectTaskOption option = SelectTaskOption::kDefault) override;
   void DidRunTask(LazyNow& lazy_now) override;
-  using internal::SequencedTaskSource::GetPendingWakeUp;
-  std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
-                                         SelectTaskOption option) override;
+  std::optional<WakeUp> GetPendingWakeUp(
+      LazyNow* lazy_now,
+      SelectTaskOption option = SelectTaskOption::kDefault) override;
   bool HasPendingHighResolutionTasks() override;
   void OnBeginWork() override;
   bool OnIdle() override;
@@ -306,6 +308,8 @@ class BASE_EXPORT SequenceManagerImpl
     std::array<char, static_cast<size_t>(debug::CrashKeySize::Size64)>
         async_stack_buffer = {};
 
+    std::optional<base::MetricsSubSampler> metrics_subsampler;
+
     internal::TaskQueueSelector selector;
     // RAW_PTR_EXCLUSION: Performance reasons(based on analysis of
     // speedometer3).
@@ -431,6 +435,7 @@ class BASE_EXPORT SequenceManagerImpl
 
   TaskQueue::TaskTiming::TimeRecordingPolicy ShouldRecordTaskTiming(
       const internal::TaskQueueImpl* task_queue);
+  bool ShouldRecordCPUTimeForTask();
 
   // Write the async stack trace onto a crash key as whitespace-delimited hex
   // addresses.
@@ -471,6 +476,8 @@ class BASE_EXPORT SequenceManagerImpl
 
   const std::unique_ptr<internal::ThreadController> controller_;
   const Settings settings_;
+
+  const MetricRecordingSettings metric_recording_settings_;
 
   WorkTracker work_tracker_;
 

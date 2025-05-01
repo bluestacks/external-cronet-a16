@@ -65,6 +65,7 @@ struct ScrollTestCase {
 }  // namespace
 
 TEST(JankMetricUMARecorder, TestUMARecording) {
+
   JNIEnv* env = AttachCurrentThread();
 
   jlongArray java_durations = GenerateJavaLongArray(env, kDurations);

@@ -12,7 +12,6 @@
 //   constexpr basic_string(from_range_t, R&& rg, const Allocator& a = Allocator());           // since C++23
 
 #include <algorithm>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -83,13 +82,6 @@ constexpr void test_with_input(std::vector<char> input) {
     assert(std::ranges::equal(input, c));
     LIBCPP_ASSERT(is_string_asan_correct(c));
   }
-
-  { // Ensure input-only sized ranges are accepted.
-    using input_iter = cpp20_input_iterator<const char*>;
-    const char in[]{'q', 'w', 'e', 'r'};
-    std::string s(std::from_range, std::views::counted(input_iter{std::ranges::begin(in)}, std::ranges::ssize(in)));
-    assert(s == "qwer");
-  }
 }
 
 void test_string_exception_safety_throwing_allocator() {
@@ -124,15 +116,6 @@ constexpr bool test_inputs() {
   return true;
 }
 
-#ifndef TEST_HAS_NO_LOCALIZATION
-void test_counted_istream_view() {
-  std::istringstream is{"qwert"};
-  auto vals = std::views::istream<char>(is);
-  std::string s(std::from_range, std::views::counted(vals.begin(), 3));
-  assert(s == "qwe");
-}
-#endif
-
 int main(int, char**) {
   test_inputs();
   static_assert(test_inputs());
@@ -141,10 +124,6 @@ int main(int, char**) {
 
   // Note: `test_exception_safety_throwing_copy` doesn't apply because copying a `char` cannot throw.
   test_string_exception_safety_throwing_allocator();
-
-#ifndef TEST_HAS_NO_LOCALIZATION
-  test_counted_istream_view();
-#endif
 
   return 0;
 }

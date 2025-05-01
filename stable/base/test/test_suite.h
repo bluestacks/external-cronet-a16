@@ -24,7 +24,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <vector>
-
 #include "base/memory/raw_ptr_exclusion.h"
 #endif
 

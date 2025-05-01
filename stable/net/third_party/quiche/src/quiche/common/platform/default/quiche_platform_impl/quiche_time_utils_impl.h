@@ -8,12 +8,12 @@
 #include <cstdint>
 #include <optional>
 
-#include "quiche/common/platform/api/quiche_export.h"
-
 namespace quiche {
 
-QUICHE_EXPORT std::optional<int64_t> QuicheUtcDateTimeToUnixSecondsImpl(
-    int year, int month, int day, int hour, int minute, int second);
+std::optional<int64_t> QuicheUtcDateTimeToUnixSecondsImpl(int year, int month,
+                                                          int day, int hour,
+                                                          int minute,
+                                                          int second);
 
 }  // namespace quiche
 

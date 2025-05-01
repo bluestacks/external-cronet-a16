@@ -4,7 +4,9 @@
 # found in the LICENSE file.
 """Siso configuration for proto/linux."""
 
+load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
+load("./config.star", "config")
 
 def __filegroups(ctx):
     return {}
@@ -21,6 +23,11 @@ def __step_config(ctx, step_config):
                 "*.h",
                 "*.cc",
                 # "*_pb2.py",
+            ],
+            # TODO(https://crrev.com/c/6057248): remove this after
+            # proto_library.gni change.
+            "inputs": [
+                "third_party/protobuf/src/google/protobuf/descriptor.proto",
             ],
             "remote": remote_run,
             # chromeos generates default.profraw?

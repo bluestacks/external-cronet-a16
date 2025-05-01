@@ -35,8 +35,6 @@ import org.jni_zero.CalledByNativeUnchecked;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -58,14 +56,13 @@ import java.util.Enumeration;
 import java.util.List;
 
 /** This class implements net utilities required by the net component. */
-@NullMarked
 class AndroidNetworkLibrary {
     private static final String TAG = "AndroidNetworkLibrary";
 
     // Cached value indicating if app has ACCESS_NETWORK_STATE permission.
-    private static @Nullable Boolean sHaveAccessNetworkState;
+    private static Boolean sHaveAccessNetworkState;
     // Cached value indicating if app has ACCESS_WIFI_STATE permission.
-    private static @Nullable Boolean sHaveAccessWifiState;
+    private static Boolean sHaveAccessWifiState;
 
     /**
      * @return the mime type (if any) that is associated with the file
@@ -104,27 +101,19 @@ class AndroidNetworkLibrary {
     }
 
     /**
-     * Validate the server's certificate chain is trusted. Note that the caller must still verify
-     * the name matches that of the leaf certificate.
+     * Validate the server's certificate chain is trusted. Note that the caller
+     * must still verify the name matches that of the leaf certificate.
      *
      * @param certChain The ASN.1 DER encoded bytes for certificates.
      * @param authType The key exchange algorithm name (e.g. RSA).
      * @param host The hostname of the server.
-     * @param If not null, ocspResponse should contain an OCSP response obtained via OCSP stapling.
-     * @param If not null, sctList should contain a SignedCertificateTimestampList from the TLS
-     *     extension as described in RFC6962 section 3.3.1.
      * @return Android certificate verification result code.
      */
     @CalledByNative
     public static AndroidCertVerifyResult verifyServerCertificates(
-            byte[][] certChain,
-            String authType,
-            String host,
-            byte @Nullable [] ocspResponse,
-            byte @Nullable [] sctList) {
+            byte[][] certChain, String authType, String host) {
         try {
-            return X509Util.verifyServerCertificates(
-                    certChain, authType, host, ocspResponse, sctList);
+            return X509Util.verifyServerCertificates(certChain, authType, host);
         } catch (KeyStoreException e) {
             return new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
         } catch (NoSuchAlgorithmException e) {
@@ -227,7 +216,7 @@ class AndroidNetworkLibrary {
      * WifiManager} for earlier versions. Otherwise, we try to get the WifiInfo via broadcast (Note
      * that this approach does not work on Android P and above).
      */
-    private static @Nullable WifiInfo getWifiInfo() {
+    private static WifiInfo getWifiInfo() {
         if (haveAccessWifiState()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 // On Android S+, need to use NetworkCapabilities to get the WifiInfo.
@@ -446,7 +435,7 @@ class AndroidNetworkLibrary {
      */
     @RequiresApi(Build.VERSION_CODES.P)
     @CalledByNative
-    public static @Nullable DnsStatus getDnsStatusForNetwork(long networkHandle) {
+    public static DnsStatus getDnsStatusForNetwork(long networkHandle) {
         // In case the network handle is invalid don't crash, instead return an empty DnsStatus and
         // let native code handle that.
         try {
@@ -463,7 +452,7 @@ class AndroidNetworkLibrary {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
-    public static @Nullable DnsStatus getCurrentDnsStatus() {
+    public static DnsStatus getCurrentDnsStatus() {
         return getDnsStatus(null);
     }
 
@@ -472,7 +461,7 @@ class AndroidNetworkLibrary {
      * network. If |network| is null, uses the active network.
      */
     @RequiresApi(Build.VERSION_CODES.M)
-    public static @Nullable DnsStatus getDnsStatus(@Nullable Network network) {
+    public static DnsStatus getDnsStatus(Network network) {
         if (!haveAccessNetworkState()) {
             return null;
         }

@@ -23,7 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "url/gurl.h"
-#include "base/test/allow_check_is_test_for_testing.h"
 
 namespace net {
 
@@ -64,9 +63,7 @@ perf_test::PerfResultReporter SetUpCookieMonsterReporter(
 
 class CookieMonsterTest : public testing::Test {
  public:
-  CookieMonsterTest(){
-    base::test::AllowCheckIsTestForTesting();
-  }
+  CookieMonsterTest() = default;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{

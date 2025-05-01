@@ -83,9 +83,8 @@ TEST(StringPrintfTest, StringPrintfBounds) {
 // Test very large sprintfs that will cause the buffer to grow.
 TEST(StringPrintfTest, Grow) {
   char src[1026];
-  for (auto& i : src) {
+  for (auto& i : src)
     i = 'A';
-  }
   src[1025] = 0;
 
   const char fmt[] = "%sB%sB%sB%sB%sB%sB%s";
@@ -117,9 +116,8 @@ TEST(StringPrintfTest, GrowBoundary) {
   // And need extra one for NULL-terminator.
   const int kBufLen = kStringUtilBufLen + 1 + 1;
   char src[kBufLen];
-  for (int i = 0; i < kBufLen - 1; ++i) {
+  for (int i = 0; i < kBufLen - 1; ++i)
     src[i] = 'a';
-  }
   src[kBufLen - 1] = 0;
 
   EXPECT_EQ(src, StringPrintf("%s", src));

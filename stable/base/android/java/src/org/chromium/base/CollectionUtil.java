@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.build.annotations.NullMarked;
+import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -13,11 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /** Helpers for working with collections that do not already exist in JDK / Guava. */
-@NullMarked
 public final class CollectionUtil {
     private CollectionUtil() {}
 
-    public static int[] integerCollectionToIntArray(Collection<Integer> collection) {
+    public static int[] integerCollectionToIntArray(@NonNull Collection<Integer> collection) {
         int[] array = new int[collection.size()];
         int index = 0;
         for (int num : collection) {

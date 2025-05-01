@@ -27,8 +27,7 @@ struct MachPortRendezvousFuzzer {
 
   void ClearClientData() EXCLUSIVE_LOCKS_REQUIRED(
       base::MachPortRendezvousServerMac::GetInstance()->GetLock()) {
-    base::MachPortRendezvousServerMac::GetInstance()
-        ->ClearClientDataForTesting();
+    base::MachPortRendezvousServerMac::GetInstance()->client_data_.clear();
   }
 
   base::apple::ScopedMachSendRight server_send_right;

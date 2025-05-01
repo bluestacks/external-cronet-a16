@@ -163,6 +163,10 @@ static absl::Nonnull<CordRep*> CordRepFromString(std::string&& src) {
 // --------------------------------------------------------------------
 // Cord::InlineRep functions
 
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
+constexpr unsigned char Cord::InlineRep::kMaxInline;
+#endif
+
 inline void Cord::InlineRep::set_data(absl::Nonnull<const char*> data,
                                       size_t n) {
   static_assert(kMaxInline == 15, "set_data is hard-coded for a length of 15");
@@ -977,9 +981,7 @@ ResultType GenericCompare(const Cord& lhs, const RHS& rhs,
 
   size_t compared_size = std::min(lhs_chunk.size(), rhs_chunk.size());
   assert(size_to_compare >= compared_size);
-  int memcmp_res = compared_size > 0 ? ::memcmp(lhs_chunk.data(),
-                                                rhs_chunk.data(), compared_size)
-                                     : 0;
+  int memcmp_res = ::memcmp(lhs_chunk.data(), rhs_chunk.data(), compared_size);
   if (compared_size == size_to_compare || memcmp_res != 0) {
     return ComputeCompareResult<ResultType>(memcmp_res);
   }
@@ -1072,7 +1074,7 @@ void AppendCordToString(const Cord& src, absl::Nonnull<std::string*> dst) {
 void Cord::CopyToArraySlowPath(absl::Nonnull<char*> dst) const {
   assert(contents_.is_tree());
   absl::string_view fragment;
-  if (GetFlatAux(contents_.tree(), &fragment) && !fragment.empty()) {
+  if (GetFlatAux(contents_.tree(), &fragment)) {
     memcpy(dst, fragment.data(), fragment.size());
     return;
   }

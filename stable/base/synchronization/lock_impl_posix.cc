@@ -13,7 +13,8 @@
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -121,4 +122,5 @@ bool LockImpl::PriorityInheritanceAvailable() {
 #endif
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

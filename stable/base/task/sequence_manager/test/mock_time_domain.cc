@@ -6,7 +6,8 @@
 
 #include <optional>
 
-namespace base::sequence_manager {
+namespace base {
+namespace sequence_manager {
 
 MockTimeDomain::MockTimeDomain(TimeTicks initial_now_ticks)
     : now_ticks_(initial_now_ticks) {}
@@ -31,4 +32,5 @@ const char* MockTimeDomain::GetName() const {
   return "MockTimeDomain";
 }
 
-}  // namespace base::sequence_manager
+}  // namespace sequence_manager
+}  // namespace base

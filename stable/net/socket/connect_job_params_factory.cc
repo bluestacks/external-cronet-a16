@@ -5,7 +5,6 @@
 #include "net/socket/connect_job_params_factory.h"
 
 #include <optional>
-#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -29,6 +28,7 @@
 #include "net/socket/transport_connect_job.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -65,21 +65,21 @@ void ConfigureAlpn(const ConnectJobFactory::Endpoint& endpoint,
     return;
   }
 
-  DCHECK(std::holds_alternative<url::SchemeHostPort>(endpoint));
+  DCHECK(absl::holds_alternative<url::SchemeHostPort>(endpoint));
 
   if (alpn_mode == ConnectJobFactory::AlpnMode::kHttp11Only) {
-    ssl_config.alpn_protos = {NextProto::kProtoHTTP11};
+    ssl_config.alpn_protos = {kProtoHTTP11};
     ssl_config.application_settings =
         *common_connect_job_params.application_settings;
   } else {
     DCHECK_EQ(alpn_mode, ConnectJobFactory::AlpnMode::kHttpAll);
-    DCHECK(std::holds_alternative<url::SchemeHostPort>(endpoint));
+    DCHECK(absl::holds_alternative<url::SchemeHostPort>(endpoint));
     ssl_config.alpn_protos = *common_connect_job_params.alpn_protos;
     ssl_config.application_settings =
         *common_connect_job_params.application_settings;
     if (common_connect_job_params.http_server_properties) {
       common_connect_job_params.http_server_properties->MaybeForceHTTP11(
-          std::get<url::SchemeHostPort>(endpoint), network_anonymization_key,
+          absl::get<url::SchemeHostPort>(endpoint), network_anonymization_key,
           &ssl_config);
     }
   }
@@ -95,7 +95,7 @@ void ConfigureAlpn(const ConnectJobFactory::Endpoint& endpoint,
   // that False Start otherwise saves.
   ssl_config.renego_allowed_default = renego_allowed;
   if (renego_allowed) {
-    ssl_config.renego_allowed_for_protos = {NextProto::kProtoHTTP11};
+    ssl_config.renego_allowed_for_protos = {kProtoHTTP11};
   }
 }
 
@@ -109,38 +109,38 @@ base::flat_set<std::string> SupportedProtocolsFromSSLConfig(
 }
 
 HostPortPair ToHostPortPair(const ConnectJobFactory::Endpoint& endpoint) {
-  if (std::holds_alternative<url::SchemeHostPort>(endpoint)) {
+  if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
     return HostPortPair::FromSchemeHostPort(
-        std::get<url::SchemeHostPort>(endpoint));
+        absl::get<url::SchemeHostPort>(endpoint));
   }
 
   DCHECK(
-      std::holds_alternative<ConnectJobFactory::SchemelessEndpoint>(endpoint));
-  return std::get<ConnectJobFactory::SchemelessEndpoint>(endpoint)
+      absl::holds_alternative<ConnectJobFactory::SchemelessEndpoint>(endpoint));
+  return absl::get<ConnectJobFactory::SchemelessEndpoint>(endpoint)
       .host_port_pair;
 }
 
 TransportSocketParams::Endpoint ToTransportEndpoint(
     const ConnectJobFactory::Endpoint& endpoint) {
-  if (std::holds_alternative<url::SchemeHostPort>(endpoint)) {
-    return std::get<url::SchemeHostPort>(endpoint);
+  if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
+    return absl::get<url::SchemeHostPort>(endpoint);
   }
 
   DCHECK(
-      std::holds_alternative<ConnectJobFactory::SchemelessEndpoint>(endpoint));
-  return std::get<ConnectJobFactory::SchemelessEndpoint>(endpoint)
+      absl::holds_alternative<ConnectJobFactory::SchemelessEndpoint>(endpoint));
+  return absl::get<ConnectJobFactory::SchemelessEndpoint>(endpoint)
       .host_port_pair;
 }
 
 bool UsingSsl(const ConnectJobFactory::Endpoint& endpoint) {
-  if (std::holds_alternative<url::SchemeHostPort>(endpoint)) {
+  if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
     return GURL::SchemeIsCryptographic(
-        base::ToLowerASCII(std::get<url::SchemeHostPort>(endpoint).scheme()));
+        base::ToLowerASCII(absl::get<url::SchemeHostPort>(endpoint).scheme()));
   }
 
   DCHECK(
-      std::holds_alternative<ConnectJobFactory::SchemelessEndpoint>(endpoint));
-  return std::get<ConnectJobFactory::SchemelessEndpoint>(endpoint).using_ssl;
+      absl::holds_alternative<ConnectJobFactory::SchemelessEndpoint>(endpoint));
+  return absl::get<ConnectJobFactory::SchemelessEndpoint>(endpoint).using_ssl;
 }
 
 ConnectJobParams MakeSSLSocketParams(

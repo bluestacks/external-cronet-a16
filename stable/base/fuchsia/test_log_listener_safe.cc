@@ -33,9 +33,8 @@ void TestLogListenerSafe::set_on_log_message(
 void TestLogListenerSafe::Log(
     TestLogListenerSafe::LogRequest& request,
     TestLogListenerSafe::LogCompleter::Sync& completer) {
-  if (on_log_message_) {
+  if (on_log_message_)
     on_log_message_.Run(request.log());
-  }
   completer.Reply();
 }
 
@@ -67,7 +66,7 @@ void SimpleTestLogListener::ListenToLog(
         ZX_LOG(ERROR, info.status()) << "LogListenerSafe disconnected";
       });
 
-  ignore_before_ = zx::clock::get_boot();
+  ignore_before_ = zx::clock::get_monotonic();
   listener_.set_on_log_message(base::BindRepeating(
       &SimpleTestLogListener::PushLoggedMessage, base::Unretained(this)));
   auto listen_safe_result =
@@ -98,7 +97,7 @@ SimpleTestLogListener::RunUntilMessageReceived(
        expected_string = std::string(expected_string),
        quit_loop =
            loop.QuitClosure()](const fuchsia_logger::LogMessage& message) {
-        if (message.time() < ignore_before) {
+        if (zx::time(message.time()) < ignore_before) {
           return;
         }
         if (message.msg().find(expected_string) == std::string::npos) {
@@ -118,7 +117,7 @@ SimpleTestLogListener::RunUntilMessageReceived(
 void SimpleTestLogListener::PushLoggedMessage(
     const fuchsia_logger::LogMessage& message) {
   DVLOG(1) << "TestLogListener received: " << message.msg();
-  if (message.time() < ignore_before_) {
+  if (zx::time(message.time()) < ignore_before_) {
     return;
   }
   if (on_log_message_) {

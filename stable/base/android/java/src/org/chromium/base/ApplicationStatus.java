@@ -4,8 +4,6 @@
 
 package org.chromium.base;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
@@ -14,14 +12,12 @@ import android.view.Window;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
-
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -44,7 +40,6 @@ import javax.annotation.concurrent.GuardedBy;
  * WebView/WebLayer, and should be moved out of base and into //chrome. It should not be relied upon
  * for //components.
  */
-@NullMarked
 @JNINamespace("base::android")
 public class ApplicationStatus {
     private static final String TOOLBAR_CALLBACK_WRAPPER_CLASS =
@@ -97,28 +92,28 @@ public class ApplicationStatus {
 
     /** Last activity that was shown (or null if none or it was destroyed). */
     @SuppressLint("StaticFieldLeak")
-    private static @Nullable Activity sActivity;
+    private static Activity sActivity;
 
     /** A lazily initialized listener that forwards application state changes to native. */
-    private static @Nullable ApplicationStateListener sNativeApplicationStateListener;
+    private static ApplicationStateListener sNativeApplicationStateListener;
 
     /** A list of observers to be notified when any {@link Activity} has a state change. */
-    private static @Nullable ObserverList<ActivityStateListener> sGeneralActivityStateListeners;
+    private static ObserverList<ActivityStateListener> sGeneralActivityStateListeners;
 
     /**
      * A list of observers to be notified when the visibility state of this {@link Application}
      * changes.  See {@link #getStateForApplication()}.
      */
-    private static @Nullable ObserverList<ApplicationStateListener> sApplicationStateListeners;
+    private static ObserverList<ApplicationStateListener> sApplicationStateListeners;
 
     /**
      * A list of observers to be notified when the window focus changes.
      * See {@link #registerWindowFocusChangedListener}.
      */
-    private static @Nullable ObserverList<WindowFocusChangedListener> sWindowFocusListeners;
+    private static ObserverList<WindowFocusChangedListener> sWindowFocusListeners;
 
     /** A list of observers to be notified when the visibility of any task changes. */
-    private static @Nullable ObserverList<TaskVisibilityListener> sTaskVisibilityListeners;
+    private static ObserverList<TaskVisibilityListener> sTaskVisibilityListeners;
 
     /** Interface to be implemented by listeners. */
     public interface ApplicationStateListener {
@@ -252,8 +247,7 @@ public class ApplicationStatus {
         }
 
         @Override
-        public @Nullable Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getName().equals("onWindowFocusChanged")
                     && args.length == 1
                     && args[0] instanceof Boolean) {
@@ -354,7 +348,7 @@ public class ApplicationStatus {
      * checking the declared fields of the given callback using reflection.
      */
     @VisibleForTesting
-    static boolean reachesWindowCallback(Window.@Nullable Callback callback) {
+    static boolean reachesWindowCallback(@Nullable Window.Callback callback) {
         if (callback == null) return false;
         if (callback.getClass().getName().equals(TOOLBAR_CALLBACK_WRAPPER_CLASS)) {
             // We're actually not going to get called, see AndroidX report here:
@@ -396,6 +390,8 @@ public class ApplicationStatus {
      * @param newState New state value.
      */
     private static void onStateChange(Activity activity, @ActivityState int newState) {
+        assert activity != null;
+
         if (sActivity == null
                 || newState == ActivityState.CREATED
                 || newState == ActivityState.RESUMED
@@ -413,7 +409,7 @@ public class ApplicationStatus {
                 sActivityInfo.put(activity, new ActivityInfo());
             }
 
-            info = assumeNonNull(sActivityInfo.get(activity));
+            info = sActivityInfo.get(activity);
             info.setStatus(newState);
 
             // Remove before calling listeners so that isEveryActivityDestroyed() returns false when
@@ -471,7 +467,7 @@ public class ApplicationStatus {
      * out of all the activities tracked here, it has most recently gained window focus.
      */
     @MainThread
-    public static @Nullable Activity getLastTrackedFocusedActivity() {
+    public static Activity getLastTrackedFocusedActivity() {
         return sActivity;
     }
 
@@ -794,10 +790,6 @@ public class ApplicationStatus {
         if (hasPausedActivity) return ApplicationState.HAS_PAUSED_ACTIVITIES;
         if (hasStoppedActivity) return ApplicationState.HAS_STOPPED_ACTIVITIES;
         return ApplicationState.HAS_DESTROYED_ACTIVITIES;
-    }
-
-    public static int getApplicationStateListenerCountForTesting() {
-        return sApplicationStateListeners == null ? 0 : sApplicationStateListeners.size();
     }
 
     @NativeMethods

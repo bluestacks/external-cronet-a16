@@ -21,13 +21,11 @@ namespace net {
 namespace {
 
 void ParseAndExercise(FuzzedDataProvider& data_provider) {
-  const size_t size = data_provider.ConsumeIntegralInRange<size_t>(
-      0u, data_provider.remaining_bytes());
-  const std::vector<uint8_t> data1 = data_provider.ConsumeBytes<uint8_t>(size);
+  std::string data1 = data_provider.ConsumeRandomLengthString();
   std::unique_ptr<HttpsRecordRdata> parsed = HttpsRecordRdata::Parse(data1);
   std::unique_ptr<HttpsRecordRdata> parsed2 = HttpsRecordRdata::Parse(data1);
   std::unique_ptr<HttpsRecordRdata> parsed3 =
-      HttpsRecordRdata::Parse(data_provider.ConsumeRemainingBytes<uint8_t>());
+      HttpsRecordRdata::Parse(data_provider.ConsumeRemainingBytesAsString());
 
   CHECK_EQ(!!parsed, !!parsed2);
 

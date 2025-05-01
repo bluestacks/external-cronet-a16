@@ -6,7 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "hdr/types/struct_timeval.h"
+#include <time.h>
+
 #include "src/time/gettimeofday.h"
 #include "test/UnitTest/Test.h"
 

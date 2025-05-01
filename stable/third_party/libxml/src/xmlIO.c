@@ -1068,13 +1068,7 @@ xmlInputDefaultOpen(xmlParserInputBufferPtr buf, const char *filename,
         if (xzStream == NULL) {
             close(fd);
         } else {
-            /*
-             * Non-regular files like pipes can't be reopened.
-             * If a file isn't seekable, we pipe uncompressed
-             * input through xzlib.
-             */
-            if ((lseek(fd, 0, SEEK_CUR) < 0) ||
-                (__libxml2_xzcompressed(xzStream) > 0)) {
+            if (__libxml2_xzcompressed(xzStream) > 0) {
                 buf->context = xzStream;
                 buf->readcallback = xmlXzfileRead;
                 buf->closecallback = xmlXzfileClose;
@@ -1101,13 +1095,12 @@ xmlInputDefaultOpen(xmlParserInputBufferPtr buf, const char *filename,
         if (gzStream == NULL) {
             close(fd);
         } else {
-            /*
-             * Non-regular files like pipes can't be reopened.
-             * If a file isn't seekable, we pipe uncompressed
-             * input through zlib.
-             */
-            if ((lseek(fd, 0, SEEK_CUR) < 0) ||
+            char buff4[4];
+
+            if ((gzread(gzStream, buff4, 4) > 0) &&
                 (gzdirect(gzStream) == 0)) {
+                gzrewind(gzStream);
+
                 buf->context = gzStream;
                 buf->readcallback = xmlGzfileRead;
                 buf->closecallback = xmlGzfileClose;

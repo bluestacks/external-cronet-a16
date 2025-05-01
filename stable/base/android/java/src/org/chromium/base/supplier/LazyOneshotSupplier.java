@@ -4,9 +4,9 @@
 
 package org.chromium.base.supplier;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Wraps a lazy-loaded nullable object, notifying observers a single time when the dependency
@@ -15,8 +15,7 @@ import org.chromium.build.annotations.Nullable;
  *
  * @param <T> The type of the wrapped object.
  */
-@NullMarked
-public interface LazyOneshotSupplier<T extends @Nullable Object> {
+public interface LazyOneshotSupplier<T> {
     /**
      * Add a callback that's called when the object owned by this supplier is available. If the
      * object is already available, the callback will be called at the end of the current message

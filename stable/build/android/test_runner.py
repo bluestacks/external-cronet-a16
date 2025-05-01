@@ -57,7 +57,6 @@ from pylib.utils import test_filter
 from py_utils import contextlib_ext
 
 from lib.proto import exception_recorder
-from lib.proto import measures
 from lib.results import result_sink
 
 _DEVIL_STATIC_CONFIG_FILE = os.path.abspath(os.path.join(
@@ -361,12 +360,6 @@ def AddDeviceOptions(parser):
       'to the id of the main user on device. Only use when the main user is a '
       'secondary user, e.g. Android Automotive OS.')
 
-  parser.add_argument(
-      '--connect-over-network',
-      action='store_true',
-      help='Connect to devices over the network using "adb connect". Must '
-      'specify device hostnames/IPs via "-d"/"--device" args.')
-
 
 def AddEmulatorOptions(parser):
   """Adds emulator-specific options to |parser|."""
@@ -429,18 +422,13 @@ def AddGTestOptions(parser):
       help="Path to executable's dist directory for native"
            " (non-apk) tests.")
   parser.add_argument(
-      '--deploy-mock-openxr-runtime',
+      '--extract-test-list-from-filter',
       action='store_true',
-      help=('Prepares the device by deploying a mock OpenXR runtime to use for '
-            'testing. Note that this *may* override a runtime specialization '
-            'already present on the device.'))
-  parser.add_argument('--extract-test-list-from-filter',
-                      action='store_true',
-                      help='When a test filter is specified, and the list of '
-                      'tests can be determined from it, skip querying the '
-                      'device for the list of all tests. Speeds up local '
-                      'development, but is not safe to use on bots ('
-                      'http://crbug.com/549214')
+      help='When a test filter is specified, and the list of '
+           'tests can be determined from it, skip querying the '
+           'device for the list of all tests. Speeds up local '
+           'development, but is not safe to use on bots ('
+           'http://crbug.com/549214')
   parser.add_argument(
       '--gs-test-artifacts-bucket',
       help=('If present, test artifacts will be uploaded to this Google '
@@ -566,11 +554,10 @@ def AddInstrumentationTestOptions(parser):
       type=os.path.realpath,
       help='Directory in which to place all generated '
       'Jacoco coverage files.')
-  parser.add_argument('--disable-dalvik-asserts',
-                      dest='set_asserts',
-                      action='store_false',
-                      default=True,
-                      help='Removes the dalvik.vm.enableassertions property')
+  parser.add_argument(
+      '--disable-dalvik-asserts',
+      dest='set_asserts', action='store_false', default=True,
+      help='Removes the dalvik.vm.enableassertions property')
   parser.add_argument(
       '--proguard-mapping-path',
       help='.mapping file to use to Deobfuscate java stack traces in test '
@@ -678,11 +665,6 @@ def AddInstrumentationTestOptions(parser):
       '-w', '--wait-for-java-debugger', action='store_true',
       help='Wait for java debugger to attach before running any application '
            'code. Also disables test timeouts and sets retries=0.')
-  parser.add_argument(
-      '--webview-rebaseline-mode',
-      action='store_true',
-      help=('Run WebView tests in rebaselining mode, updating on-device '
-            'expectation files.'))
 
   # WPR record mode.
   parser.add_argument('--wpr-enable-record',
@@ -1052,51 +1034,36 @@ _SUPPORTED_IN_PLATFORM_MODE = [
 ]
 
 
-def UploadTestScriptRecords(result_sink_client, exc_recorder, mm_recorder):
-  '''Upload test script data, i.e. exceptions and metrics to ResultDB.
-
-  Args:
-    result_sink_client: A ResultSinkClient object
-    exc_recorder: The module to create and manage exception records.
-    mm_recorder: The module to create and manage measure records.
-  '''
-  if not result_sink_client:
-    return
-  if not exc_recorder.size() and not mm_recorder.size():
+def UploadExceptions(result_sink_client, exc_recorder):
+  if not result_sink_client or not exc_recorder.size():
     return
 
   try_count_max = 3
   for try_count in range(1, try_count_max + 1):
-    logging.info('Uploading test script records to RDB. (TRY %d/%d)', try_count,
+    logging.info('Uploading exception records to RDB. (TRY %d/%d)', try_count,
                  try_count_max)
     try:
-      records = {}
-      if exc_recorder.size():
-        records[exc_recorder.EXCEPTION_OCCURRENCES_KEY] = exc_recorder.to_dict()
-      if mm_recorder.size():
-        records[mm_recorder.TEST_SCRIPT_METRICS_KEY] = mm_recorder.to_dict()
-      result_sink_client.UpdateInvocationExtendedProperties(records)
+      record_dict = exc_recorder.to_dict()
+      result_sink_client.UpdateInvocationExtendedProperties(
+          {exc_recorder.EXCEPTION_OCCURRENCES_KEY: record_dict})
       exc_recorder.clear()
-      mm_recorder.clear()
       break
     except Exception as e:  # pylint: disable=W0703
-      logging.error("Got error %s when uploading test script records.", e)
+      logging.error("Got error %s when uploading exception records.", e)
       # Upload can fail due to record size being too big.
       # In this case, let's try to reduce the size.
       if try_count == try_count_max - 2:
         # Clear all the stackstrace to reduce size.
         exc_recorder.clear_stacktrace()
       elif try_count == try_count_max - 1:
-        # For the exception recorder, clear all the records and just report
-        # the upload failure.
+        # Clear all the records and just report the upload failure.
         exc_recorder.clear()
         exc_recorder.register(e)
       elif try_count == try_count_max:
-        # Swallow all the records if the upload fails again and hit the max
+        # Swallow the exception if the upload fails again and hit the max
         # try so that it won't fail the test task (and it shouldn't).
         exc_recorder.clear()
-        mm_recorder.clear()
-        logging.error("Hit max retry. Skip uploading test script records.")
+        logging.error("Hit max retry. Skip uploading exception records.")
 
 
 def RunTestsInPlatformMode(args, result_sink_client=None):
@@ -1227,11 +1194,11 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
                            ) and not args.isolated_script_test_output
 
   @contextlib.contextmanager
-  def test_script_records_uploader():
+  def exceptions_uploader():
     try:
       yield
     finally:
-      UploadTestScriptRecords(result_sink_client, exception_recorder, measures)
+      UploadExceptions(result_sink_client, exception_recorder)
 
   ### Set up test objects.
 
@@ -1271,7 +1238,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
     # |raw_logs_fh| is only used by Robolectric tests.
     raw_logs_fh = io.StringIO() if save_detailed_results else None
 
-    with json_writer(), test_script_records_uploader(), logcats_uploader, \
+    with json_writer(), exceptions_uploader(), logcats_uploader, \
          env, test_instance, test_run:
 
       repetitions = (range(args.repeat +
@@ -1539,11 +1506,6 @@ def main():
   if (getattr(args, 'debug_socket', None)
       or getattr(args, 'wait_for_java_debugger', None)):
     args.num_retries = 0
-
-  if (getattr(args, 'connect_over_network', False)
-      and len(getattr(args, 'test_devices', [])) != 1):
-    parser.error('Need to specify a single device (via "--device") when using '
-                 '--connect-over-network.')
 
   # Result-sink may not exist in the environment if rdb stream is not enabled.
   result_sink_client = result_sink.TryInitClient()

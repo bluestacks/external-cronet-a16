@@ -96,6 +96,10 @@ absl::Nonnull<const std::string*> Status::EmptyString() {
   return kEmpty.get();
 }
 
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
+constexpr const char Status::kMovedFromString[];
+#endif
+
 absl::Nonnull<const std::string*> Status::MovedFromString() {
   static const absl::NoDestructor<std::string> kMovedFrom(kMovedFromString);
   return kMovedFrom.get();

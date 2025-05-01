@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/memory/safety_checks.h"
 
 #include <new>
@@ -210,14 +205,12 @@ TEST(MemorySafetyCheckTest, ZapOnFree) {
   }
 
   static_assert(
-      !is_memory_safety_checked<DefaultChecks,
-                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
+      !is_memory_safety_checked<DefaultChecks, MemorySafetyCheck::kZapOnFree>);
   static_assert(
-      is_memory_safety_checked<AdvancedChecks,
-                               MemorySafetyCheck::kSchedulerLoopQuarantine>);
+      is_memory_safety_checked<AdvancedChecks, MemorySafetyCheck::kZapOnFree>);
 
   {
-    // Without kSchedulerLoopQuarantine.
+    // Without kZapOnFree.
     auto* ptr = new DefaultChecks();
     EXPECT_NE(ptr, nullptr);
     delete ptr;
@@ -225,7 +218,7 @@ TEST(MemorySafetyCheckTest, ZapOnFree) {
   }
 
   {
-    // With kSchedulerLoopQuarantine.
+    // With kZapOnFree.
     auto* ptr = new AdvancedChecks();
     EXPECT_NE(ptr, nullptr);
     memset(ptr->data, 'A', sizeof(ptr->data));

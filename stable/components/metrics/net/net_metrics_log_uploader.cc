@@ -76,7 +76,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             type: BIRTH_DATE
             type: GENDER
             type: HW_OS_INFO
-            type: USAGE_AND_PERFORMANCE_METRICS
             type: OTHER
           }
           internal {
@@ -100,59 +99,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           }
         })");
   }
-
-  if (service_type == metrics::MetricsLogUploader::DWA) {
-    return net::DefineNetworkTrafficAnnotation("metrics_report_dwa", R"(
-      semantics {
-        sender: "Metrics DWA Log Uploader"
-        description:
-          "Report of usage statistics that are keyed by a third-party domain "
-          "to Google. These reports contains only DWA data. This includes "
-          "information about the web pages you visit and your usage of them, "
-          "such as API usage. The third-party domain used as a key could be, "
-          "for instance, an inline frame or script owner. Usage statistics "
-          "are sent with an ephemeral pseudonymous identifier."
-        trigger:
-          "Reports are automatically generated on startup and at intervals "
-          "while Chrome is running with usage statistics and 'Make searches "
-          "and browsing better' settings enabled."
-        data:
-          "Usage statistics and associated third-party domains are collected."
-        destination: GOOGLE_OWNED_SERVICE
-        last_reviewed: "2025-02-10"
-        user_data {
-          type: HW_OS_INFO
-          type: SENSITIVE_URL
-          type: USAGE_AND_PERFORMANCE_METRICS
-          type: OTHER
-        }
-        internal {
-          contacts {
-            owners: "//components/metrics/OWNERS"
-          }
-        }
-      }
-      policy {
-        cookies_allowed: NO
-        setting:
-          "Users can enable or disable this feature by disabling 'Make "
-          "searches and browsing better' in Chrome's settings under Advanced "
-          "Settings, Privacy. This has to be enabled for all active profiles. "
-          "This is only enabled if the user has 'Help improve Chrome's "
-          "features and performance enabled in the same settings menu."
-        chrome_policy {
-          MetricsReportingEnabled {
-            policy_options {mode: MANDATORY}
-            MetricsReportingEnabled: false
-          }
-          UrlKeyedAnonymizedDataCollectionEnabled {
-            policy_options {mode: MANDATORY}
-            UrlKeyedAnonymizedDataCollectionEnabled: false
-          }
-        }
-      })");
-  }
-
   DCHECK_EQ(service_type, metrics::MetricsLogUploader::UKM);
 
   if (log_metadata.log_source_type.has_value() &&
@@ -184,7 +130,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           type: GENDER
           type: HW_OS_INFO
           type: SENSITIVE_URL
-          type: USAGE_AND_PERFORMANCE_METRICS
           type: OTHER
         }
         internal {
@@ -248,7 +193,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           type: GENDER
           type: HW_OS_INFO
           type: SENSITIVE_URL
-          type: USAGE_AND_PERFORMANCE_METRICS
           type: OTHER
         }
         internal {
@@ -314,7 +258,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           type: GENDER
           type: HW_OS_INFO
           type: SENSITIVE_URL
-          type: USAGE_AND_PERFORMANCE_METRICS
           type: OTHER
         }
         internal {
@@ -405,7 +348,7 @@ void LogUploadingHistograms(const std::string& compressed_log_data) {
   auto get_histogram_name = [&](uint64_t name_hash) -> std::string {
     for (base::HistogramBase* histogram : histograms) {
       if (histogram->name_hash() == name_hash) {
-        return std::string(histogram->histogram_name());
+        return histogram->histogram_name();
       }
     }
     return base::StrCat({"unnamed ", base::NumberToString(name_hash)});

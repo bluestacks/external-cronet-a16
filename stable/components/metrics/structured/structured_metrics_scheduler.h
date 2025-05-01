@@ -21,7 +21,7 @@ class StructuredMetricsScheduler : public metrics::MetricsRotationScheduler {
   StructuredMetricsScheduler(
       const base::RepeatingClosure& rotation_callback,
       const base::RepeatingCallback<base::TimeDelta(void)>& interval_callback,
-      bool fast_startup);
+      bool fast_startup_for_testing);
 
   StructuredMetricsScheduler(const StructuredMetricsScheduler&) = delete;
   StructuredMetricsScheduler& operator=(const StructuredMetricsScheduler&) =

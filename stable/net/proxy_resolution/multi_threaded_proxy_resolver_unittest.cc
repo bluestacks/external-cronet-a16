@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/proxy_resolution/multi_threaded_proxy_resolver.h"
 
-#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -606,9 +610,9 @@ TEST_F(MultiThreadedProxyResolverTest, ThreeThreads_Basic) {
 
   const int kNumRequests = 8;
   int rv;
-  std::array<TestCompletionCallback, kNumRequests> callback;
-  std::array<ProxyInfo, kNumRequests> results;
-  std::array<std::unique_ptr<ProxyResolver::Request>, kNumRequests> request;
+  TestCompletionCallback callback[kNumRequests];
+  ProxyInfo results[kNumRequests];
+  std::unique_ptr<ProxyResolver::Request> request[kNumRequests];
 
   // Start request 0 -- this should run on thread 0 as there is nothing else
   // going on right now.
@@ -716,9 +720,9 @@ TEST_F(MultiThreadedProxyResolverTest, OneThreadBlocked) {
   EXPECT_EQ(u"pac script bytes", factory().script_data()[0]->utf16());
 
   const int kNumRequests = 4;
-  std::array<TestCompletionCallback, kNumRequests> callback;
-  std::array<ProxyInfo, kNumRequests> results;
-  std::array<std::unique_ptr<ProxyResolver::Request>, kNumRequests> request;
+  TestCompletionCallback callback[kNumRequests];
+  ProxyInfo results[kNumRequests];
+  std::unique_ptr<ProxyResolver::Request> request[kNumRequests];
 
   // Start a request that will block the first thread.
 

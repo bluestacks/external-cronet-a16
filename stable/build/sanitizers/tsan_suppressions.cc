@@ -97,10 +97,6 @@ char kTSanDefaultSuppressions[] =
     // and the race is therefore not present in released builds.
     "race:crash_reporter::*::OutputCrashKeysToStream\n"
 
-    // Tracing within fuzztest instrumentation, likely intentionally not
-    // synchronized for performance.
-    "race:SetIsTracing\n"
-
     // End of suppressions.
     ;  // Please keep this semicolon.
 

@@ -134,7 +134,8 @@ typedef std::vector<Pair> PairVector;
 // A class to print a table of numbers in the same style as clang-format.
 class TablePrinter {
  public:
-  explicit TablePrinter(FILE* stream) : stream_(stream) {}
+  explicit TablePrinter(FILE* stream)
+      : stream_(stream), values_on_this_line_(0), current_offset_(0) {}
 
   TablePrinter(const TablePrinter&) = delete;
   TablePrinter& operator=(const TablePrinter&) = delete;
@@ -165,10 +166,10 @@ class TablePrinter {
   raw_ptr<FILE> stream_;
 
   // Number of values so far printed on this line.
-  int values_on_this_line_ = 0;
+  int values_on_this_line_;
 
   // Total values printed so far.
-  int current_offset_ = 0;
+  int current_offset_;
 
   static const int kMaxValuesPerLine = 8;
 };
@@ -203,8 +204,8 @@ void ConstructPairAndAppend(const Character& character,
                             const StringSet& existing_set,
                             PairVector* pairs) {
   Pair new_pair = {character, StringSet(1, new_range)};
-  new_pair.set.insert(new_pair.set.end(), existing_set.begin(),
-                      existing_set.end());
+  new_pair.set.insert(
+      new_pair.set.end(), existing_set.begin(), existing_set.end());
   pairs->push_back(new_pair);
 }
 
@@ -229,7 +230,8 @@ void MoveRightMostCharToSet(PairVector* pairs) {
   while (it != pairs->end()) {
     const Pair& current_pair = *it++;
     if (current_pair.character.size() == unconverted_bytes.size() + 1 &&
-        std::equal(unconverted_bytes.begin(), unconverted_bytes.end(),
+        std::equal(unconverted_bytes.begin(),
+                   unconverted_bytes.end(),
                    current_pair.character.begin()) &&
         converted == current_pair.set) {
       // The particular set of UTF-8 codepoints we are validating guarantees
@@ -270,10 +272,11 @@ void MoveAllCharsToSets(PairVector* pairs) {
 void LogStringSets(const PairVector& pairs) {
   for (const auto& pair_it : pairs) {
     std::string set_as_string;
-    for (const auto& set_it : pair_it.set) {
+    for (auto set_it = pair_it.set.begin(); set_it != pair_it.set.end();
+         ++set_it) {
       set_as_string += base::StringPrintf("[\\x%02x-\\x%02x]",
-                                          static_cast<int>(set_it.from()),
-                                          static_cast<int>(set_it.to()));
+                                          static_cast<int>(set_it->from()),
+                                          static_cast<int>(set_it->to()));
     }
     VLOG(1) << set_as_string;
   }
@@ -320,8 +323,9 @@ uint8_t MakeState(const StringSet& set,
       {0, 1},
       {range.from(), target_state},
       {static_cast<uint8_t>(range.to() + 1), 1}};
-  states->emplace_back(std::begin(new_state_initializer),
-                       std::end(new_state_initializer));
+  states->push_back(
+      State(new_state_initializer,
+            new_state_initializer + std::size(new_state_initializer)));
   const uint8_t new_state_number =
       base::checked_cast<uint8_t>(states->size() - 1);
   CHECK(state_map->insert(std::make_pair(set, new_state_number)).second);
@@ -353,8 +357,9 @@ std::vector<State> GenerateStates(const PairVector& pairs) {
       const StateRange new_range_initializer[] = {
           {range.from(), target_state},
           {static_cast<uint8_t>(range.to() + 1), 1}};
-      states[0].insert(states[0].end(), std::begin(new_range_initializer),
-                       std::end(new_range_initializer));
+      states[0].insert(
+          states[0].end(), new_range_initializer,
+          new_range_initializer + std::size(new_range_initializer));
     }
   }
   return states;
@@ -380,8 +385,9 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
     // bits we can discard and still determine what range a byte lies in. Sadly
     // it appears that ffs() is not portable, so we do it clumsily.
     uint8_t shift = 7;
-    for (const auto& range_it : state_it) {
-      while (shift > 0 && range_it.from % (1 << shift) != 0) {
+    for (auto range_it = state_it.begin(); range_it != state_it.end();
+         ++range_it) {
+      while (shift > 0 && range_it->from % (1 << shift) != 0) {
         --shift;
       }
     }
@@ -399,7 +405,8 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
     const uint8_t shift = shifts[state_index];
     uint8_t next_range = 0;
     uint8_t target_state = 1;
-    fprintf(stream, "    // State %d, offset 0x%02x\n",
+    fprintf(stream,
+            "    // State %d, offset 0x%02x\n",
             static_cast<int>(state_index),
             static_cast<int>(state_offset[state_index]));
     table_printer.PrintValue(shift);
@@ -437,10 +444,9 @@ int main(int argc, char* argv[]) {
   FILE* output = stdout;
   if (!filename.empty()) {
     output = base::OpenFile(filename, "wb");
-    if (!output) {
+    if (!output)
       PLOG(FATAL) << "Couldn't open '" << filename.AsUTF8Unsafe()
                   << "' for writing";
-    }
   }
 
   // Step 1: Enumerate the characters
@@ -456,10 +462,9 @@ int main(int argc, char* argv[]) {
   PrintStates(states, output);
 
   if (!filename.empty()) {
-    if (!base::CloseFile(output)) {
+    if (!base::CloseFile(output))
       PLOG(FATAL) << "Couldn't finish writing '" << filename.AsUTF8Unsafe()
                   << "'";
-    }
   }
 
   return EXIT_SUCCESS;

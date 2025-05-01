@@ -54,11 +54,11 @@ namespace {
 class QpackInstructionEncoderTest : public QuicTestWithParam<bool> {
  protected:
   QpackInstructionEncoderTest()
-      : encoder_(GetHuffmanEncoding()), verified_position_(0) {}
+      : encoder_(HuffmanEncoding()), verified_position_(0) {}
   ~QpackInstructionEncoderTest() override = default;
 
   bool DisableHuffmanEncoding() { return GetParam(); }
-  HuffmanEncoding GetHuffmanEncoding() {
+  HuffmanEncoding HuffmanEncoding() {
     return DisableHuffmanEncoding() ? HuffmanEncoding::kDisabled
                                     : HuffmanEncoding::kEnabled;
   }

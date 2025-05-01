@@ -4,9 +4,10 @@
 
 #include "components/metrics/call_stacks/call_stack_profile_metadata.h"
 
-#include <algorithm>
 #include <iterator>
 #include <tuple>
+
+#include "base/ranges/algorithm.h"
 
 namespace metrics {
 
@@ -45,7 +46,7 @@ std::optional<int64_t> FindLastOpenEndedMetadataValue(
   const auto rbegin = std::make_reverse_iterator(end);
   const auto rend = std::make_reverse_iterator(begin);
   for (auto it = rbegin; it != rend; ++it) {
-    auto item = std::ranges::find_if(
+    auto item = base::ranges::find_if(
         it->metadata(), MatchesNameHashIndexAndKey(name_hash_index, key));
 
     if (item == it->metadata().end()) {

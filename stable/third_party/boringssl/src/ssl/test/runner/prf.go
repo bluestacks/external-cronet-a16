@@ -6,7 +6,6 @@ package runner
 
 import (
 	"crypto"
-	"crypto/hkdf"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
@@ -15,6 +14,7 @@ import (
 	"hash"
 
 	"golang.org/x/crypto/cryptobyte"
+	"golang.org/x/crypto/hkdf"
 )
 
 // copyHash returns a copy of |h|, which must be an instance of |hashType|.
@@ -341,11 +341,7 @@ func (h *finishedHash) zeroSecret() []byte {
 
 // addEntropy incorporates ikm into the running TLS 1.3 secret with HKDF-Expand.
 func (h *finishedHash) addEntropy(ikm []byte) {
-	var err error
-	h.secret, err = hkdf.Extract(h.suite.hash().New, ikm, h.secret)
-	if err != nil {
-		panic(err)
-	}
+	h.secret = hkdf.Extract(h.suite.hash().New, ikm, h.secret)
 }
 
 func (h *finishedHash) nextSecret() {
@@ -375,9 +371,9 @@ func hkdfExpandLabel(hash crypto.Hash, secret, label, hashValue []byte, length i
 	x = x[len(label):]
 	x[0] = byte(len(hashValue))
 	copy(x[1:], hashValue)
-	ret, err := hkdf.Expand(hash.New, secret, string(hkdfLabel), length)
-	if err != nil {
-		panic(err)
+	ret := make([]byte, length)
+	if n, err := hkdf.Expand(hash.New, secret, hkdfLabel).Read(ret); err != nil || n != length {
+		panic("hkdfExpandLabel: hkdf.Expand unexpectedly failed")
 	}
 	return ret
 }
@@ -414,14 +410,11 @@ func (h *finishedHash) deriveSecret(label []byte) []byte {
 	return hkdfExpandLabel(h.suite.hash(), h.secret, label, h.appendContextHashes(nil), h.hash.Size(), h.isDTLS)
 }
 
-// echAcceptConfirmation computes the ECH accept confirmation signal, as defined
-// in sections 7.2 and 7.2.1 of draft-ietf-tls-esni-13. The transcript hash is
+// echConfirmation computes the ECH accept confirmation signal, as defined in
+// sections 7.2 and 7.2.1 of draft-ietf-tls-esni-13. The transcript hash is
 // computed by concatenating |h| with |extraMessages|.
 func (h *finishedHash) echAcceptConfirmation(clientRandom, label, extraMessages []byte) []byte {
-	secret, err := hkdf.Extract(h.suite.hash().New, clientRandom, h.zeroSecret())
-	if err != nil {
-		panic(err)
-	}
+	secret := hkdf.Extract(h.suite.hash().New, clientRandom, h.zeroSecret())
 	hashCopy := copyHash(h.hash, h.suite.hash())
 	hashCopy.Write(extraMessages)
 	return hkdfExpandLabel(h.suite.hash(), secret, label, hashCopy.Sum(nil), echAcceptConfirmationLength, h.isDTLS)

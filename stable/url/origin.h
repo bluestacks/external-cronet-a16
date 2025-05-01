@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <compare>
 #include <memory>
 #include <optional>
 #include <string>
@@ -229,10 +228,11 @@ class COMPONENT_EXPORT(URL) Origin {
   // are exact matches. Two opaque origins are same-origin only if their
   // internal nonce values match. A non-opaque origin is never same-origin with
   // an opaque origin.
-  //
-  // If you are looking for a same _site_ check between origins, see
-  // net::SchemefulSite::IsSameSite.
   bool IsSameOriginWith(const Origin& other) const;
+  bool operator==(const Origin& other) const { return IsSameOriginWith(other); }
+  bool operator!=(const Origin& other) const {
+    return !IsSameOriginWith(other);
+  }
 
   // Non-opaque origin is "same-origin" with `url` if their schemes, hosts, and
   // ports are exact matches. Opaque origin is never "same-origin" with any
@@ -285,8 +285,7 @@ class COMPONENT_EXPORT(URL) Origin {
 
   // Allows Origin to be used as a key in STL (for example, a std::set or
   // std::map).
-  friend bool operator==(const Origin& left, const Origin& right) = default;
-  friend auto operator<=>(const Origin& left, const Origin& right) = default;
+  bool operator<(const Origin& other) const;
 
   // Creates a new opaque origin that is guaranteed to be cross-origin to all
   // currently existing origins. An origin created by this method retains its
@@ -393,10 +392,11 @@ class COMPONENT_EXPORT(URL) Origin {
     Nonce(Nonce&&) noexcept;
     Nonce& operator=(Nonce&&) noexcept;
 
-    // Note that operator<=>, used by maps type containers, will trigger
-    // |token_| lazy-initialization. Equality comparisons do not.
-    std::strong_ordering operator<=>(const Nonce& other) const;
+    // Note that operator<, used by maps type containers, will trigger |token_|
+    // lazy-initialization. Equality comparisons do not.
+    bool operator<(const Nonce& other) const;
     bool operator==(const Nonce& other) const;
+    bool operator!=(const Nonce& other) const;
 
    private:
     friend class OriginTest;

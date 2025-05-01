@@ -29,7 +29,6 @@
 #include "net/test/test_with_task_environment.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
-#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -294,7 +293,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, TestInvalidMetaTableRecovery) {
 
   // Now corrupt the meta table.
   {
-    sql::Database db(sql::test::kTestTag);
+    sql::Database db;
     ASSERT_TRUE(
         db.Open(temp_dir_.GetPath().Append(kReportingAndNELStoreFilename)));
     sql::MetaTable meta_table;

@@ -58,7 +58,7 @@ class NET_EXPORT GlobalFirstPartySets {
 
   // Returns a FirstPartySetsContextConfig that respects the overrides given by
   // `mutation`, relative to this instance's state.
-  FirstPartySetsContextConfig ComputeConfig(SetsMutation mutation) const;
+  FirstPartySetsContextConfig ComputeConfig(const SetsMutation& mutation) const;
 
   // Returns the entry corresponding to the given `site`, if one exists.
   // Respects any customization/overlay specified by `config`. This is
@@ -143,7 +143,8 @@ class NET_EXPORT GlobalFirstPartySets {
       base::Version public_sets_version,
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases,
-      FirstPartySetsContextConfig manual_config);
+      FirstPartySetsContextConfig manual_config,
+      base::flat_map<SchemefulSite, SchemefulSite> manual_aliases);
 
   // Same as the public version of FindEntry, but is allowed to omit the
   // `config` argument (i.e. pass nullptr instead of a reference).
@@ -184,20 +185,19 @@ class NET_EXPORT GlobalFirstPartySets {
   // Same as the public version of ForEachEffectiveSetEntry, but is allowed to
   // omit the `config` argument (i.e. pass nullptr instead of a reference).
   bool ForEachEffectiveSetEntry(
-      base::optional_ref<const FirstPartySetsContextConfig> config,
+      const FirstPartySetsContextConfig* config,
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
-  // Iterates over the alias mappings in `manual_config_` and `aliases_`
-  // (skipping entries of `aliases_` that are shadowed), invoking `f` for each
-  // `alias, canonical` pair.
+  // Iterates over the mappings in `manual_aliases_` and `aliases_` (skipping
+  // entries of `aliases_` that are shadowed), invoking `f` for each `alias,
+  // canonical` pair.
   void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
                                            const SchemefulSite&)> f) const;
 
   // Synchronously iterate over all the effective entries. Returns true iff all
   // the entries are valid.
-  bool IsValid(base::optional_ref<const FirstPartySetsContextConfig> config =
-                   std::nullopt) const;
+  bool IsValid(const FirstPartySetsContextConfig* config = nullptr) const;
 
   // The version associated with the component_updater-provided public sets.
   // This may be invalid if the "First-Party Sets" component has not been
@@ -216,6 +216,10 @@ class NET_EXPORT GlobalFirstPartySets {
   // Stores the customizations induced by the manually-specified set. May be
   // empty if no switch was provided.
   FirstPartySetsContextConfig manual_config_;
+
+  // Stores the aliases contained in the manually-specified set. (Note that the
+  // aliases are *also* stored in `manual_config_`.)
+  base::flat_map<SchemefulSite, SchemefulSite> manual_aliases_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

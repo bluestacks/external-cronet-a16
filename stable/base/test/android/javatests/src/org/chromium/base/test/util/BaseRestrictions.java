@@ -11,7 +11,6 @@ import android.net.NetworkInfo;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.base.SysUtils;
-import org.chromium.build.BuildConfig;
 
 /** Restriction handlers for restrictions in Restrictions. */
 public class BaseRestrictions {
@@ -47,8 +46,5 @@ public class BaseRestrictions {
                 Restriction.RESTRICTION_TYPE_INTERNET, () -> !isNetworkAvailable());
         restrictionSkipCheck.addHandler(
                 Restriction.RESTRICTION_TYPE_HAS_CAMERA, () -> !hasCamera());
-        restrictionSkipCheck.addHandler(
-                Restriction.RESTRICTION_TYPE_NON_CHROME_BRANDED,
-                () -> BuildConfig.IS_CHROME_BRANDED);
     }
 }

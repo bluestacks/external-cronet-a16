@@ -4,13 +4,12 @@
 
 #include "net/dns/dns_response_result_extractor.h"
 
-#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/test/metrics/histogram_tester.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -58,8 +57,6 @@ class DnsResponseResultExtractorTest : public ::testing::Test {
  protected:
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
-
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
@@ -81,8 +78,6 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
                   /*expiration_matcher=*/Ne(std::nullopt),
                   /*timed_expiration_matcher=*/Ne(std::nullopt),
                   ElementsAre(IPEndPoint(kExpected, /*port=*/0))))));
-  histogram_tester_.ExpectUniqueSample(
-      DnsResponseResultExtractor::kHasValidCnameRecordsHistogram, false, 1);
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
@@ -106,8 +101,6 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
                   /*expiration_matcher=*/Ne(std::nullopt),
                   /*timed_expiration_matcher=*/Ne(std::nullopt),
                   ElementsAre(IPEndPoint(expected, /*port=*/0))))));
-  histogram_tester_.ExpectUniqueSample(
-      DnsResponseResultExtractor::kHasValidCnameRecordsHistogram, false, 1);
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
@@ -137,8 +130,6 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
               kName, DnsQueryType::A, kDnsSource,
               /*expiration_matcher=*/Ne(std::nullopt),
               /*timed_expiration_matcher=*/Ne(std::nullopt), kCanonicalName))));
-  histogram_tester_.ExpectUniqueSample(
-      DnsResponseResultExtractor::kHasValidCnameRecordsHistogram, true, 1);
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
@@ -179,8 +170,6 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
               kName, DnsQueryType::A, kDnsSource,
               /*expiration_matcher=*/Ne(std::nullopt),
               /*timed_expiration_matcher=*/Ne(std::nullopt), "alias.test"))));
-  histogram_tester_.ExpectUniqueSample(
-      DnsResponseResultExtractor::kHasValidCnameRecordsHistogram, true, 1);
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
@@ -353,7 +342,7 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsMinATtl) {
 }
 
 MATCHER_P(ContainsContiguousElements, elements, "") {
-  return std::ranges::search(arg, elements).begin() != arg.end();
+  return base::ranges::search(arg, elements) != arg.end();
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsTxtResponses) {
@@ -1752,8 +1741,6 @@ TEST_F(DnsResponseResultExtractorTest, HandlesInOrderCnameChainTypeA) {
               /*expiration_matcher=*/Ne(std::nullopt),
               /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(expected_endpoint)))));
-  histogram_tester_.ExpectUniqueSample(
-      DnsResponseResultExtractor::kHasValidCnameRecordsHistogram, true, 1);
 }
 
 TEST_F(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChain) {

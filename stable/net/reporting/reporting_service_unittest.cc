@@ -239,6 +239,8 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader) {
 }
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
   ASSERT_TRUE(parsed_header.has_value());
@@ -260,8 +262,9 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
 TEST_P(ReportingServiceTest,
        ProcessReportingEndpointsHeaderNetworkIsolationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kPartitionConnectionsByNetworkIsolationKey);
+  feature_list.InitWithFeatures(
+      {net::features::kDocumentReporting},
+      {features::kPartitionConnectionsByNetworkIsolationKey});
 
   // Re-create the store, so it reads the new feature value.
   Init();
@@ -285,6 +288,8 @@ TEST_P(ReportingServiceTest,
 }
 
 TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
@@ -328,6 +333,8 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
 #endif
 TEST_P(ReportingServiceTest,
        MAYBE_SendReportsAndRemoveSourceWithPendingReports) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
@@ -372,6 +379,8 @@ TEST_P(ReportingServiceTest,
 }
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header = ParseReportingEndpoints(kGroup_ + "=\"/path-absolute\"");
   ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,

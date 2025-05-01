@@ -45,7 +45,7 @@ TEST(BarrierClosureTest, RunAfterNumClosures) {
 class DestructionIndicator {
  public:
   // Sets |*destructed| to true in destructor.
-  explicit DestructionIndicator(bool* destructed) : destructed_(destructed) {
+  DestructionIndicator(bool* destructed) : destructed_(destructed) {
     *destructed_ = false;
   }
 

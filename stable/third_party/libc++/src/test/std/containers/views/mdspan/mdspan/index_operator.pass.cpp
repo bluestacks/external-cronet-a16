@@ -39,8 +39,8 @@
 #include "../ConvertibleToIntegral.h"
 #include "../CustomTestLayouts.h"
 
-// Apple Clang does not support argument packs as input to operator []
-#ifdef TEST_COMPILER_APPLE_CLANG
+// Clang 16 does not support argument packs as input to operator []
+#if defined(__clang_major__) && __clang_major__ < 17
 template <class MDS>
 constexpr auto& access(MDS mds) {
   return mds[];
@@ -84,7 +84,7 @@ template <class MDS, class... Args>
 constexpr void iterate(MDS mds, Args... args) {
   constexpr int r = static_cast<int>(MDS::extents_type::rank()) - 1 - static_cast<int>(sizeof...(Args));
   if constexpr (-1 == r) {
-#ifdef TEST_COMPILER_APPLE_CLANG
+#if defined(__clang_major__) && __clang_major__ < 17
     int* ptr1 = &access(mds, args...);
 #else
     int* ptr1 = &mds[args...];

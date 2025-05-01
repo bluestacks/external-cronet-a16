@@ -9,10 +9,8 @@ from typing import Any, Dict, Set, Tuple
 import unittest
 from unittest import mock
 
-# vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
-# //testing imports.
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types

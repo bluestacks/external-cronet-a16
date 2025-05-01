@@ -5,7 +5,6 @@
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 
 #include <stdlib.h>
-
 #include <cinttypes>
 
 #include "base/allocator/dispatcher/dispatcher.h"
@@ -78,17 +77,15 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
                    size_t,
                    AllocationSubsystem,
                    const char*) override {
-    if (sample_added || size != watch_size_) {
+    if (sample_added || size != watch_size_)
       return;
-    }
     sample_address_ = address;
     sample_added = true;
   }
 
   void SampleRemoved(void* address) override {
-    if (address == sample_address_) {
+    if (address == sample_address_)
       sample_removed = true;
-    }
   }
 
   bool sample_added = false;
@@ -135,9 +132,8 @@ TEST_F(SamplingHeapProfilerTest, IntervalRandomizationSanity) {
   int sum = 0;
   for (int i = 0; i < iterations; ++i) {
     int samples = 0;
-    for (size_t value = 0; value < target; value += GetNextSample(10000)) {
+    for (size_t value = 0; value < target; value += GetNextSample(10000))
       ++samples;
-    }
     // There are should be ~ target/10000 = 1000 samples.
     sum += samples;
   }
@@ -172,9 +168,8 @@ class MyThread1 : public SimpleThread {
  public:
   MyThread1() : SimpleThread("MyThread1") {}
   void Run() override {
-    for (int i = 0; i < kNumberOfAllocations; ++i) {
+    for (int i = 0; i < kNumberOfAllocations; ++i)
       Allocate1();
-    }
   }
 };
 
@@ -182,9 +177,8 @@ class MyThread2 : public SimpleThread {
  public:
   MyThread2() : SimpleThread("MyThread2") {}
   void Run() override {
-    for (int i = 0; i < kNumberOfAllocations; ++i) {
+    for (int i = 0; i < kNumberOfAllocations; ++i)
       Allocate2();
-    }
   }
 };
 
@@ -206,9 +200,8 @@ void CheckAllocationPattern(void (*allocate_callback)()) {
       buckets[sample.size] += sample.total;
     }
     for (auto& it : buckets) {
-      if (it.first != 400 && it.first != 700 && it.first != 20480) {
+      if (it.first != 400 && it.first != 700 && it.first != 20480)
         continue;
-      }
       sums[it.first] += it.second;
       printf("%zu,", it.second);
     }
@@ -235,9 +228,8 @@ TEST_F(SamplingHeapProfilerTest, DISABLED_ParallelLargeSmallStats) {
     MyThread1 t2;
     t1.Start();
     t2.Start();
-    for (int i = 0; i < kNumberOfAllocations; ++i) {
+    for (int i = 0; i < kNumberOfAllocations; ++i)
       Allocate3();
-    }
     t1.Join();
     t2.Join();
   });
@@ -279,11 +271,10 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_MANUAL_SamplerMicroBenchmark) {
         nullptr, AllocationSubsystem::kAllocatorShim));
   }
   base::TimeTicks t1 = base::TimeTicks::Now();
-  for (int i = 1; i <= kNumAllocations; ++i) {
+  for (int i = 1; i <= kNumAllocations; ++i)
     sampler->OnFree(
         FreeNotificationData(reinterpret_cast<void*>(static_cast<intptr_t>(i)),
                              AllocationSubsystem::kAllocatorShim));
-  }
   base::TimeTicks t2 = base::TimeTicks::Now();
 
   printf(
@@ -300,7 +291,7 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_MANUAL_SamplerMicroBenchmark) {
 
 class StartStopThread : public SimpleThread {
  public:
-  explicit StartStopThread(WaitableEvent* event)
+  StartStopThread(WaitableEvent* event)
       : SimpleThread("MyThread2"), event_(event) {}
   void Run() override {
     auto* profiler = SamplingHeapProfiler::Get();

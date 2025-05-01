@@ -28,9 +28,8 @@ ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {
 }
 
 ScopedBoostPriority::~ScopedBoostPriority() {
-  if (original_thread_type_.has_value()) {
+  if (original_thread_type_.has_value())
     PlatformThread::SetCurrentThreadType(original_thread_type_.value());
-  }
 }
 
 namespace internal {
@@ -50,9 +49,8 @@ ScopedMayLoadLibraryAtBackgroundPriority::
       });
 
 #if BUILDFLAG(IS_WIN)
-  if (already_loaded_ && already_loaded_->load(std::memory_order_relaxed)) {
+  if (already_loaded_ && already_loaded_->load(std::memory_order_relaxed))
     return;
-  }
 
   const base::ThreadType thread_type = PlatformThread::GetCurrentThreadType();
   if (thread_type == base::ThreadType::kBackground) {
@@ -78,9 +76,8 @@ ScopedMayLoadLibraryAtBackgroundPriority::
     PlatformThread::SetCurrentThreadType(original_thread_type_.value());
   }
 
-  if (already_loaded_) {
+  if (already_loaded_)
     already_loaded_->store(true, std::memory_order_relaxed);
-  }
 #endif  // BUILDFLAG(IS_WIN)
   TRACE_EVENT_END0("base", "ScopedMayLoadLibraryAtBackgroundPriority");
 }

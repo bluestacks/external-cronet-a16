@@ -5,7 +5,6 @@
 package org.chromium.base.metrics;
 
 import org.chromium.base.TimeUtils;
-import org.chromium.build.annotations.NullMarked;
 
 /**
  * Java API for recording UMA actions.
@@ -17,7 +16,6 @@ import org.chromium.build.annotations.NullMarked;
  * We use a script ({@code extract_actions.py{}) to scan the source code and extract actions. A
  * string literal (not a variable) must be passed to {@link #record(String)}.
  */
-@NullMarked
 public class RecordUserAction {
     /**
      * Similar to {@code base::RecordAction()} in C++.

@@ -170,11 +170,6 @@ public final class ResolvedFlags {
             checkType(Type.BYTES);
             return (ByteString) mValue;
         }
-
-        @Override
-        public String toString() {
-            return mValue.toString();
-        }
     }
 
     private final Map<String, Value> mFlags;

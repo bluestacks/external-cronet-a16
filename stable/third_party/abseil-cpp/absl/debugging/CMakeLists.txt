@@ -174,7 +174,6 @@ absl_cc_library(
     debugging_internal
   HDRS
     "internal/address_is_readable.h"
-    "internal/addresses.h"
     "internal/elf_mem_image.h"
     "internal/vdso_support.h"
   SRCS

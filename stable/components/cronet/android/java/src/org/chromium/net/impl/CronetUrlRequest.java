@@ -1087,32 +1087,17 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             failureReason = CronetTrafficInfo.RequestFailureReason.OTHER;
         }
 
-        return new CronetTrafficInfo(
-                requestHeaderSizeInBytes,
-                requestBodySizeInBytes,
-                responseHeaderSizeInBytes,
-                responseBodySizeInBytes,
-                httpStatusCode,
-                headersLatency,
-                totalLatency,
-                negotiatedProtocol,
-                mQuicConnectionMigrationAttempted,
+        return new CronetTrafficInfo(requestHeaderSizeInBytes, requestBodySizeInBytes,
+                responseHeaderSizeInBytes, responseBodySizeInBytes, httpStatusCode, headersLatency,
+                totalLatency, negotiatedProtocol, mQuicConnectionMigrationAttempted,
                 mQuicConnectionMigrationSuccessful,
                 CronetRequestCommon.finishedReasonToCronetTrafficInfoRequestTerminalState(
                         mFinishedReason),
-                mNonfinalUserCallbackExceptionCount,
-                mReadCount,
+                mNonfinalUserCallbackExceptionCount, mReadCount,
                 mUploadDataStream == null ? 0 : mUploadDataStream.getReadCount(),
-                /* isBidiStream= */ false,
-                mFinalUserCallbackThrew,
-                Process.myUid(),
-                networkInternalErrorCode,
-                quicNetworkErrorCode,
-                source,
-                failureReason,
-                mMetrics.getSocketReused(),
-                ImplVersion.getCronetVersion(),
-                mRequestContext.getCronetSource());
+                /* isBidiStream= */ false, mFinalUserCallbackThrew, Process.myUid(),
+                networkInternalErrorCode, quicNetworkErrorCode, source, failureReason,
+                mMetrics.getSocketReused());
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

@@ -5,7 +5,6 @@
 package org.chromium.base.supplier;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.build.annotations.NullMarked;
 
 /**
  * An {@link ObservableSupplier} that may be destroyed by anyone with a reference to the object.
@@ -15,5 +14,4 @@ import org.chromium.build.annotations.NullMarked;
  *
  * @param <E> The type of the wrapped object.
  */
-@NullMarked
 public interface DestroyableObservableSupplier<E> extends ObservableSupplier<E>, Destroyable {}

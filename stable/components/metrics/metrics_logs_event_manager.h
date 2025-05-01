@@ -33,35 +33,28 @@ class MetricsLogsEventManager {
     kLogCreated,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(CreateReason)
   enum class CreateReason {
-    kUnknown = 0,
+    kUnknown,
     // The log is a periodic log, which are created at regular intervals.
-    kPeriodic = 1,
+    kPeriodic,
     // The log was created due to the UMA/UKM service shutting down.
-    kServiceShutdown = 2,
+    kServiceShutdown,
     // The log was loaded from a previous session.
-    kLoadFromPreviousSession = 3,
+    kLoadFromPreviousSession,
     // The log was created due to the browser being backgrounded.
-    kBackgrounded = 4,
+    kBackgrounded,
     // The log was created due to the browser being foregrounded.
-    kForegrounded = 5,
+    kForegrounded,
     // The log was created due to a new alternate ongoing log store being set.
-    kAlternateOngoingLogStoreSet = 6,
+    kAlternateOngoingLogStoreSet,
     // The log was created due to the alternate ongoing log store being unset.
-    kAlternateOngoingLogStoreUnset = 7,
+    kAlternateOngoingLogStoreUnset,
     // The log was created due to the previous session having stability metrics
     // to report.
-    kStability = 8,
+    kStability,
     // The log was fully created and provided by a metrics provider.
-    kIndependent = 9,
-    // The log was created due to a manual upload from the client.
-    kOutOfBand = 10,
-    kMaxValue = kOutOfBand,
+    kIndependent,
   };
-  // LINT.ThenChange(/tools/metrics/histograms/metadata/uma/enums.xml:MetricsLogCreateReason)
 
   class Observer : public base::CheckedObserver {
    public:

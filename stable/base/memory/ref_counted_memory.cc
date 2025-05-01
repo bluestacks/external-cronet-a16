@@ -80,9 +80,8 @@ scoped_refptr<RefCountedSharedMemoryMapping>
 RefCountedSharedMemoryMapping::CreateFromWholeRegion(
     const ReadOnlySharedMemoryRegion& region) {
   ReadOnlySharedMemoryMapping mapping = region.Map();
-  if (!mapping.IsValid()) {
+  if (!mapping.IsValid())
     return nullptr;
-  }
   return MakeRefCounted<RefCountedSharedMemoryMapping>(std::move(mapping));
 }
 

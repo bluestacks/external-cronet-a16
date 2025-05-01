@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     }
 
     const char* env = getenv(argv[2]);
-    if (env != nullptr) {
+    if (env != NULL) {
       printf("%s", env);
     }
   } else {

@@ -14,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
-#include "sql/database.h"
 #include "sql/meta_table.h"
 
 namespace base {
@@ -75,7 +74,7 @@ class SQLitePersistentStoreBackendBase
   // will be opened with exclusive flag.
   SQLitePersistentStoreBackendBase(
       const base::FilePath& path,
-      sql::Database::Tag histogram_tag,
+      const std::string& histogram_tag,
       const int current_version_number,
       const int compatible_version_number,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -171,7 +170,7 @@ class SQLitePersistentStoreBackendBase
   sql::MetaTable meta_table_;
 
   // The identifying prefix for metrics.
-  const sql::Database::Tag histogram_tag_;
+  const std::string histogram_tag_;
 
   // Whether the database has been initialized.
   bool initialized_ = false;

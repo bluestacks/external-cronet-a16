@@ -51,16 +51,19 @@ class BASE_EXPORT SamplingHeapProfiler
    private:
     friend class SamplingHeapProfiler;
 
+
     uint32_t ordinal;
   };
 
+  // On Android this is logged to UMA - keep in sync AndroidStackUnwinder in
+  // enums.xml.
   enum class StackUnwinder {
-    // Use default unwind tables.
+    DEPRECATED_kNotChecked,
     kDefault,
-    // No stack unwinder available - profiler will be disabled.
+    DEPRECATED_kCFIBacktrace,
     kUnavailable,
-    // Use frame pointers, which are faster if available.
     kFramePointers,
+    kMaxValue = kFramePointers,
   };
 
   // Starts collecting allocation samples. Returns the current profile_id.

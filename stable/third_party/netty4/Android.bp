@@ -36,11 +36,8 @@ license {
 }
 
 // GN: //third_party/netty4:netty_all_java__testing
-java_library {
+java_import {
     name: "stable_cronet_third_party_netty4_netty_all_java__testing",
-    static_libs: [
-        "stable_cronet_third_party_netty4_netty_all_java__process_device__testing",
-    ],
     apex_available: [
         "com.android.tethering",
     ],
@@ -49,5 +46,8 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
+    ],
+    jars: [
+        "src/jar/all-in-one/netty-all-4.1.9.Final.jar",
     ],
 }

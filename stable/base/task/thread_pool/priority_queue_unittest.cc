@@ -18,7 +18,8 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -252,4 +253,5 @@ TEST_F(PriorityQueueWithSequencesTest, UpdateSortKey) {
   }
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

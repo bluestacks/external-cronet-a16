@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <compare>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -167,7 +166,7 @@ const base::UnguessableToken* Origin::GetNonceForSerialization() const {
 bool Origin::IsSameOriginWith(const Origin& other) const {
   // scheme/host/port must match, even for opaque origins where |tuple_| holds
   // the precursor origin.
-  return *this == other;
+  return std::tie(tuple_, nonce_) == std::tie(other.tuple_, other.nonce_);
 }
 
 bool Origin::IsSameOriginWith(const GURL& url) const {
@@ -264,6 +263,10 @@ bool Origin::CanBeDerivedFrom(const GURL& url) const {
 
 bool Origin::DomainIs(std::string_view canonical_domain) const {
   return !opaque() && url::DomainIs(tuple_.host(), canonical_domain);
+}
+
+bool Origin::operator<(const Origin& other) const {
+  return std::tie(tuple_, nonce_) < std::tie(other.tuple_, other.nonce_);
 }
 
 Origin Origin::DeriveNewOpaqueOrigin() const {
@@ -468,11 +471,10 @@ Origin::Nonce& Origin::Nonce::operator=(Origin::Nonce&& other) noexcept {
   return *this;
 }
 
-std::strong_ordering Origin::Nonce::operator<=>(
-    const Origin::Nonce& other) const {
+bool Origin::Nonce::operator<(const Origin::Nonce& other) const {
   // When comparing, lazy-generation is required of both tokens, so that an
   // ordering is established.
-  return token() <=> other.token();
+  return token() < other.token();
 }
 
 bool Origin::Nonce::operator==(const Origin::Nonce& other) const {
@@ -480,6 +482,10 @@ bool Origin::Nonce::operator==(const Origin::Nonce& other) const {
   // If the tokens are both zero, equality only holds if they're the same
   // object.
   return (other.token_ == token_) && !(token_.is_empty() && (&other != this));
+}
+
+bool Origin::Nonce::operator!=(const Origin::Nonce& other) const {
+  return !(*this == other);
 }
 
 namespace debug {

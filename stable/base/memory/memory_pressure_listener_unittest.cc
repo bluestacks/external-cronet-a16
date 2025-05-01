@@ -24,18 +24,22 @@ class MemoryPressureListenerTest : public testing::Test {
                                  Unretained(this)));
   }
 
-  void TearDown() override { listener_.reset(); }
+  void TearDown() override {
+    listener_.reset();
+  }
 
  protected:
-  void ExpectNotification(void (*notification_function)(MemoryPressureLevel),
-                          MemoryPressureLevel level) {
+  void ExpectNotification(
+      void (*notification_function)(MemoryPressureLevel),
+      MemoryPressureLevel level) {
     EXPECT_CALL(*this, OnMemoryPressure(level)).Times(1);
     notification_function(level);
     RunLoop().RunUntilIdle();
   }
 
-  void ExpectNoNotification(void (*notification_function)(MemoryPressureLevel),
-                            MemoryPressureLevel level) {
+  void ExpectNoNotification(
+      void (*notification_function)(MemoryPressureLevel),
+      MemoryPressureLevel level) {
     EXPECT_CALL(*this, OnMemoryPressure(testing::_)).Times(0);
     notification_function(level);
     RunLoop().RunUntilIdle();

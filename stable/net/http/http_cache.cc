@@ -9,7 +9,6 @@
 
 #include "net/http/http_cache.h"
 
-#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -33,13 +32,13 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "http_request_info.h"
 #include "net/base/cache_type.h"
@@ -82,7 +81,6 @@ bool g_enable_split_cache = false;
 const char HttpCache::kDoubleKeyPrefix[] = "_dk_";
 const char HttpCache::kDoubleKeySeparator[] = " ";
 const char HttpCache::kSubframeDocumentResourcePrefix[] = "s_";
-const char HttpCache::kCrossSiteMainFrameNavigationPrefix[] = "cn_";
 
 HttpCache::DefaultBackend::DefaultBackend(
     CacheType type,
@@ -411,12 +409,6 @@ HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
       keys_marked_no_store_(
           features::kAvoidEntryCreationForNoStoreCacheSize.Get()) {
   g_init_cache = true;
-  if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
-    size_t max_entries = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
-    if (max_entries) {
-      no_vary_search_cache_.emplace(static_cast<size_t>(max_entries));
-    }
-  }
   HttpNetworkSession* session = network_layer_->GetSession();
   // Session may be NULL in unittests.
   // TODO(mmenke): Seems like tests could be changed to provide a session,
@@ -543,25 +535,6 @@ void HttpCache::OnExternalCacheHit(
   disk_cache_->OnExternalCacheHit(*key);
 }
 
-void HttpCache::ClearNoVarySearchCache(
-    UrlFilterType filter_type,
-    const base::flat_set<url::Origin>& origins,
-    const base::flat_set<std::string>& domains,
-    base::Time delete_begin,
-    base::Time delete_end) {
-  if (!no_vary_search_cache_) {
-    return;
-  }
-
-  const bool cleared = no_vary_search_cache_->ClearData(
-      filter_type, origins, domains, delete_begin, delete_end);
-
-  if (cleared) {
-    // TODO(https://crbug.com/399562754): Re-write the on-disk store to erase
-    // the removed entries.
-  }
-}
-
 int HttpCache::CreateTransaction(
     RequestPriority priority,
     std::unique_ptr<HttpTransaction>* transaction) {
@@ -640,12 +613,32 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
 
 // static
 bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo* request) {
-  // WARNING: If this function is changed to look at `request->url` in future,
-  // it will break GenerateCacheKeyForRequestWithAlternateURL(). Add an extra
-  // `url` parameter instead.
   if (IsSplitCacheEnabled()) {
     if (request->network_isolation_key.IsTransient()) {
       return false;
+    }
+    // If the initiator is opaque, it would serialize to 'null' if used, which
+    // would mean that navigations initiated from all opaque origins would share
+    // a cache partition. To avoid this, we won't cache navigations where the
+    // initiator is an opaque origin if the initiator would be used as part of
+    // the cache key.
+    if (request->initiator.has_value() && request->initiator->opaque()) {
+      switch (HttpCache::GetExperimentMode()) {
+        case HttpCache::ExperimentMode::kStandard:
+        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
+          break;
+        case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
+          if (request->is_main_frame_navigation) {
+            return false;
+          }
+          break;
+        case HttpCache::ExperimentMode::kNavigationInitiator:
+          if (request->is_main_frame_navigation ||
+              request->is_subframe_document_resource) {
+            return false;
+          }
+          break;
+      }
     }
   }
   return true;
@@ -678,25 +671,58 @@ std::string HttpCache::GenerateCacheKey(
     // with invalid whitespace character |kDoubleKeySeparator|.
     CHECK(!network_isolation_key.IsTransient());
 
+    const ExperimentMode experiment_mode = HttpCache::GetExperimentMode();
     std::string_view subframe_document_resource_prefix;
     if (is_subframe_document_resource) {
-      subframe_document_resource_prefix = kSubframeDocumentResourcePrefix;
+      switch (experiment_mode) {
+        case HttpCache::ExperimentMode::kStandard:
+        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
+        case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
+          subframe_document_resource_prefix = kSubframeDocumentResourcePrefix;
+          break;
+        case HttpCache::ExperimentMode::kNavigationInitiator:
+          // No need to set `subframe_document_resource_prefix` if we are
+          // keying all cross-site navigations on initiator below.
+          break;
+      }
     }
 
-    std::string_view is_cross_site_main_frame_navigation_prefix;
-    if (initiator.has_value() && is_mainframe_navigation &&
-        base::FeatureList::IsEnabled(
-            net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean)) {
+    std::string navigation_experiment_prefix;
+    if (initiator.has_value() &&
+        (is_mainframe_navigation || is_subframe_document_resource)) {
+      const auto initiator_site = net::SchemefulSite(*initiator);
       const bool is_initiator_cross_site =
-          !net::SchemefulSite::IsSameSite(*initiator, url::Origin::Create(url));
+          initiator_site != net::SchemefulSite(url);
+
       if (is_initiator_cross_site) {
-        is_cross_site_main_frame_navigation_prefix =
-            kCrossSiteMainFrameNavigationPrefix;
+        switch (experiment_mode) {
+          case HttpCache::ExperimentMode::kStandard:
+            break;
+          case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
+            if (is_mainframe_navigation) {
+              navigation_experiment_prefix = "csnb_ ";
+            }
+            break;
+          case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
+            if (is_mainframe_navigation) {
+              CHECK(!initiator_site.opaque());
+              navigation_experiment_prefix =
+                  base::StrCat({"mfni_", initiator_site.Serialize(), " "});
+            }
+            break;
+          case HttpCache::ExperimentMode::kNavigationInitiator:
+            if (is_mainframe_navigation || is_subframe_document_resource) {
+              CHECK(!initiator_site.opaque());
+              navigation_experiment_prefix =
+                  base::StrCat({"ni_", initiator_site.Serialize(), " "});
+            }
+            break;
+        }
       }
     }
     isolation_key = base::StrCat(
         {kDoubleKeyPrefix, subframe_document_resource_prefix,
-         is_cross_site_main_frame_navigation_prefix,
+         navigation_experiment_prefix,
          *network_isolation_key.ToCacheKeyString(), kDoubleKeySeparator});
   }
 
@@ -712,16 +738,35 @@ std::string HttpCache::GenerateCacheKey(
 }
 
 // static
-std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
-    const HttpRequestInfo* request) {
-  return GenerateCacheKeyForRequestWithAlternateURL(request, request->url);
+HttpCache::ExperimentMode HttpCache::GetExperimentMode() {
+  bool cross_site_main_frame_navigation_boolean_enabled =
+      base::FeatureList::IsEnabled(
+          net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean);
+  bool main_frame_navigation_initiator_enabled = base::FeatureList::IsEnabled(
+      net::features::kSplitCacheByMainFrameNavigationInitiator);
+  bool navigation_initiator_enabled = base::FeatureList::IsEnabled(
+      net::features::kSplitCacheByNavigationInitiator);
+
+  if (cross_site_main_frame_navigation_boolean_enabled) {
+    if (main_frame_navigation_initiator_enabled ||
+        navigation_initiator_enabled) {
+      return ExperimentMode::kStandard;
+    }
+    return ExperimentMode::kCrossSiteInitiatorBoolean;
+  } else if (main_frame_navigation_initiator_enabled) {
+    if (navigation_initiator_enabled) {
+      return ExperimentMode::kStandard;
+    }
+    return ExperimentMode::kMainFrameNavigationInitiator;
+  } else if (navigation_initiator_enabled) {
+    return ExperimentMode::kNavigationInitiator;
+  }
+  return ExperimentMode::kStandard;
 }
 
 // static
-std::optional<std::string>
-HttpCache::GenerateCacheKeyForRequestWithAlternateURL(
-    const HttpRequestInfo* request,
-    const GURL& url) {
+std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
+    const HttpRequestInfo* request) {
   CHECK(request);
 
   if (!CanGenerateCacheKeyForRequest(request)) {
@@ -732,7 +777,7 @@ HttpCache::GenerateCacheKeyForRequestWithAlternateURL(
       request->upload_data_stream ? request->upload_data_stream->identifier()
                                   : int64_t(0);
   return GenerateCacheKey(
-      url, request->load_flags, request->network_isolation_key,
+      request->url, request->load_flags, request->network_isolation_key,
       upload_data_identifier, request->is_subframe_document_resource,
       request->is_main_frame_navigation, request->initiator);
 }
@@ -1128,7 +1173,7 @@ void HttpCache::DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
   }
 
   // Transaction is waiting in the done_headers_queue.
-  auto it = std::ranges::find(entry->done_headers_queue(), transaction);
+  auto it = base::ranges::find(entry->done_headers_queue(), transaction);
   if (it != entry->done_headers_queue().end()) {
     entry->done_headers_queue().erase(it);
 

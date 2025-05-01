@@ -26,7 +26,7 @@ check_PROGRAMS = \
 	testparser \
 	testrecurse
 
-bin_PROGRAMS = xmllint
+bin_PROGRAMS = xmllint xmlcatalog
 
 bin_SCRIPTS = xml2-config
 
@@ -48,15 +48,6 @@ if WITH_C14N_SOURCES
 libxml2_la_SOURCES += c14n.c
 endif
 if WITH_CATALOG_SOURCES
-if WITH_OUTPUT_SOURCES
-bin_PROGRAMS += xmlcatalog
-
-xmlcatalog_SOURCES = xmlcatalog.c
-xmlcatalog_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS) $(ICONV_CFLAGS)
-xmlcatalog_DEPENDENCIES = $(DEPS)
-xmlcatalog_LDADD = $(RDL_LIBS) $(LDADDS)
-endif
-
 libxml2_la_SOURCES += catalog.c
 endif
 if WITH_DEBUG_SOURCES
@@ -91,6 +82,9 @@ libxml2_la_SOURCES += xmlregexp.c xmlunicode.c
 endif
 if WITH_SCHEMAS_SOURCES
 libxml2_la_SOURCES += relaxng.c xmlschemas.c xmlschemastypes.c
+if !WITH_XPATH_SOURCES
+libxml2_la_SOURCES += xpath.c
+endif
 endif
 if WITH_SCHEMATRON_SOURCES
 libxml2_la_SOURCES += schematron.c
@@ -143,6 +137,11 @@ xmllint_SOURCES = xmllint.c shell.c
 xmllint_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS) $(ICONV_CFLAGS)
 xmllint_DEPENDENCIES = $(DEPS)
 xmllint_LDADD=  $(RDL_LIBS) $(LDADDS)
+
+xmlcatalog_SOURCES=xmlcatalog.c
+xmlcatalog_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS) $(ICONV_CFLAGS)
+xmlcatalog_DEPENDENCIES = $(DEPS)
+xmlcatalog_LDADD = $(RDL_LIBS) $(LDADDS)
 
 testModule_SOURCES=testModule.c
 testModule_DEPENDENCIES = $(DEPS)
@@ -209,8 +208,7 @@ CLEANFILES = runsuite.log runxmlconf.log test.out *.gcda *.gcno *.res
 DISTCLEANFILES = COPYING missing.lst
 
 EXTRA_DIST = Copyright libxml2-config.cmake.in autogen.sh \
-	     libxml.h \
-	     html5ent.inc iso8859x.inc \
+	     libxml.h iso8859x.inc \
 	     tools/gentest.py \
 	     tools/genChRanges.py tools/genEscape.py tools/genUnicode.py \
 	     libxml2.syms timsort.h \

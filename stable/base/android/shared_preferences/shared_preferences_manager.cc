@@ -25,41 +25,55 @@ SharedPreferencesManager::~SharedPreferencesManager() = default;
 
 void SharedPreferencesManager::RemoveKey(
     const std::string& shared_preference_key) {
-  Java_SharedPreferencesManager_removeKey(env_, java_obj_,
-                                          shared_preference_key);
+  ScopedJavaLocalRef<jstring> jkey =
+      ConvertUTF8ToJavaString(env_, shared_preference_key);
+  Java_SharedPreferencesManager_removeKey(env_, java_obj_, jkey);
 }
 
 bool SharedPreferencesManager::ContainsKey(
     const std::string& shared_preference_key) {
-  return Java_SharedPreferencesManager_contains(env_, java_obj_,
-                                                shared_preference_key);
+  ScopedJavaLocalRef<jstring> jkey =
+      ConvertUTF8ToJavaString(env_, shared_preference_key);
+  return Java_SharedPreferencesManager_contains(env_, java_obj_, jkey);
 }
 
 bool SharedPreferencesManager::ReadBoolean(
     const std::string& shared_preference_key,
     bool default_value) {
-  return Java_SharedPreferencesManager_readBoolean(
-      env_, java_obj_, shared_preference_key, default_value);
+  ScopedJavaLocalRef<jstring> jkey =
+      ConvertUTF8ToJavaString(env_, shared_preference_key);
+  return Java_SharedPreferencesManager_readBoolean(env_, java_obj_, jkey,
+                                                   default_value);
 }
 
 int SharedPreferencesManager::ReadInt(const std::string& shared_preference_key,
                                       int default_value) {
-  return Java_SharedPreferencesManager_readInt(
-      env_, java_obj_, shared_preference_key, default_value);
+  ScopedJavaLocalRef<jstring> jkey =
+      ConvertUTF8ToJavaString(env_, shared_preference_key);
+  return Java_SharedPreferencesManager_readInt(env_, java_obj_, jkey,
+                                               default_value);
 }
 
 std::string SharedPreferencesManager::ReadString(
     const std::string& shared_preference_key,
     const std::string& default_value) {
-  return Java_SharedPreferencesManager_readString(
-      env_, java_obj_, shared_preference_key, default_value);
+  ScopedJavaLocalRef<jstring> jkey =
+      ConvertUTF8ToJavaString(env_, shared_preference_key);
+  ScopedJavaLocalRef<jstring> jdefault_value =
+      ConvertUTF8ToJavaString(env_, default_value);
+  ScopedJavaLocalRef<jstring> java_result =
+      Java_SharedPreferencesManager_readString(env_, java_obj_, jkey,
+                                               jdefault_value);
+  return ConvertJavaStringToUTF8(java_result);
 }
 
 void SharedPreferencesManager::WriteString(
     const std::string& shared_preference_key,
     const std::string& value) {
-  Java_SharedPreferencesManager_writeString(env_, java_obj_,
-                                            shared_preference_key, value);
+  ScopedJavaLocalRef<jstring> jkey =
+      ConvertUTF8ToJavaString(env_, shared_preference_key);
+  ScopedJavaLocalRef<jstring> jvalue = ConvertUTF8ToJavaString(env_, value);
+  Java_SharedPreferencesManager_writeString(env_, java_obj_, jkey, jvalue);
 }
 
 }  // namespace base::android

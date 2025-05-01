@@ -124,9 +124,8 @@ PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow() {
 
 PowerMonitorDeviceSource::PowerMessageWindow::~PowerMessageWindow() {
   if (message_hwnd_) {
-    if (power_notify_handle_) {
+    if (power_notify_handle_)
       ::UnregisterSuspendResumeNotification(power_notify_handle_);
-    }
 
     ::DestroyWindow(message_hwnd_);
     ::UnregisterClass(kWindowClassName, instance_);
@@ -134,11 +133,11 @@ PowerMonitorDeviceSource::PowerMessageWindow::~PowerMessageWindow() {
 }
 
 // static
-LRESULT CALLBACK
-PowerMonitorDeviceSource::PowerMessageWindow::WndProcThunk(HWND hwnd,
-                                                           UINT message,
-                                                           WPARAM wparam,
-                                                           LPARAM lparam) {
+LRESULT CALLBACK PowerMonitorDeviceSource::PowerMessageWindow::WndProcThunk(
+    HWND hwnd,
+    UINT message,
+    WPARAM wparam,
+    LPARAM lparam) {
   switch (message) {
     case WM_POWERBROADCAST:
       ProcessWmPowerBroadcastMessage(wparam);

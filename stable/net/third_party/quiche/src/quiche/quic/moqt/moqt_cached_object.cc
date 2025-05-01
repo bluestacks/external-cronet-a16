@@ -4,7 +4,6 @@
 
 #include "quiche/quic/moqt/moqt_cached_object.h"
 
-#include "absl/strings/string_view.h"
 #include "quiche/quic/moqt/moqt_publisher.h"
 #include "quiche/common/platform/api/quiche_mem_slice.h"
 
@@ -19,9 +18,8 @@ moqt::PublishedObject CachedObjectToPublishedObject(
   if (object.payload != nullptr && !object.payload->empty()) {
     result.payload = quiche::QuicheMemSlice(
         object.payload->data(), object.payload->length(),
-        [retained_pointer = object.payload](absl::string_view) {});
+        [retained_pointer = object.payload](const char*) {});
   }
-  result.arrival_time = object.arrival_time;
   result.fin_after_this = object.fin_after_this;
   return result;
 }

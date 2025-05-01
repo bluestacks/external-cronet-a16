@@ -38,7 +38,10 @@
 #include "quiche/quic/tools/quic_simple_server_stream.h"
 
 using testing::_;
+using testing::AtLeast;
+using testing::InSequence;
 using testing::Invoke;
+using testing::Return;
 using testing::StrictMock;
 
 namespace quic {

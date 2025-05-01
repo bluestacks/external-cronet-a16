@@ -4,7 +4,6 @@
 
 #include "net/dns/public/doh_provider_entry.h"
 
-#include <algorithm>
 #include <string_view>
 #include <utility>
 
@@ -12,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/util.h"
 

@@ -25,36 +25,6 @@ base::LazyInstance<TestRootCerts>::Leaky
 
 }  // namespace
 
-bool ThreadSafeTrustStoreInMemory::IsEmpty() const {
-  base::AutoLock lock(lock_);
-  return impl_.IsEmpty();
-}
-
-void ThreadSafeTrustStoreInMemory::Clear() {
-  base::AutoLock lock(lock_);
-  impl_.Clear();
-}
-
-void ThreadSafeTrustStoreInMemory::AddCertificate(
-    std::shared_ptr<const bssl::ParsedCertificate> cert,
-    const bssl::CertificateTrust& trust) {
-  base::AutoLock lock(lock_);
-  impl_.AddCertificate(std::move(cert), trust);
-}
-
-void ThreadSafeTrustStoreInMemory::SyncGetIssuersOf(
-    const bssl::ParsedCertificate* cert,
-    bssl::ParsedCertificateList* issuers) {
-  base::AutoLock lock(lock_);
-  impl_.SyncGetIssuersOf(cert, issuers);
-}
-
-bssl::CertificateTrust ThreadSafeTrustStoreInMemory::GetTrust(
-    const bssl::ParsedCertificate* cert) {
-  base::AutoLock lock(lock_);
-  return impl_.GetTrust(cert);
-}
-
 // static
 TestRootCerts* TestRootCerts::GetInstance() {
   return g_test_root_certs.Pointer();
@@ -66,8 +36,6 @@ bool TestRootCerts::HasInstance() {
 
 bool TestRootCerts::Add(X509Certificate* certificate,
                         bssl::CertificateTrust trust) {
-  base::AutoLock lock(lock_);
-
   bssl::CertErrors errors;
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       bssl::ParsedCertificate::Create(
@@ -89,14 +57,11 @@ bool TestRootCerts::Add(X509Certificate* certificate,
 }
 
 void TestRootCerts::AddKnownRoot(base::span<const uint8_t> der_cert) {
-  base::AutoLock lock(lock_);
   test_known_roots_.insert(std::string(
       reinterpret_cast<const char*>(der_cert.data()), der_cert.size()));
 }
 
 void TestRootCerts::Clear() {
-  base::AutoLock lock(lock_);
-
   ClearImpl();
   test_trust_store_.Clear();
   test_known_roots_.clear();
@@ -107,8 +72,6 @@ bool TestRootCerts::IsEmpty() const {
 }
 
 bool TestRootCerts::IsKnownRoot(base::span<const uint8_t> der_cert) const {
-  base::AutoLock lock(lock_);
-
   return test_known_roots_.find(
              std::string_view(reinterpret_cast<const char*>(der_cert.data()),
                               der_cert.size())) != test_known_roots_.end();

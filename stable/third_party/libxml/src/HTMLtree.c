@@ -311,8 +311,6 @@ static const char* const htmlBooleanAttrs[] = {
  * htmlIsBooleanAttr:
  * @name:  the name of the attribute to check
  *
- * DEPRECATED: Internal function, don't use.
- *
  * Determine if a given attribute is a boolean attribute.
  *
  * returns: false if the attribute is not boolean, true otherwise.

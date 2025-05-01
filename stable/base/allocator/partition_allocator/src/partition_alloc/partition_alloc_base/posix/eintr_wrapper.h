@@ -18,7 +18,6 @@
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_POSIX_EINTR_WRAPPER_H_
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(IS_POSIX)
 #include <cerrno>
@@ -32,7 +31,7 @@ template <typename Fn>
 inline auto WrapEINTR(Fn fn) {
   return [fn](auto&&... args) {
     int out = -1;
-#if !PA_BUILDFLAG(IS_DEBUG)
+#if defined(NDEBUG)
     while (true)
 #else
     for (int retry_count = 0; retry_count < 100; ++retry_count)

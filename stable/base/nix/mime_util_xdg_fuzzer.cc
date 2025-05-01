@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/nix/mime_util_xdg.h"
-
 #include <stdlib.h>
-
 #include <string>
 
 #include "base/containers/span.h"
@@ -13,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/nix/mime_util_xdg.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {

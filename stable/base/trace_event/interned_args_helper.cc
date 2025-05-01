@@ -11,7 +11,8 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/task_execution.pbzero.h"
 
-namespace base::trace_event {
+namespace base {
+namespace trace_event {
 
 namespace {
 
@@ -37,12 +38,10 @@ void InternedSourceLocation::Add(
     const TraceSourceLocation& location) {
   auto* msg = interned_data->add_source_locations();
   msg->set_iid(iid);
-  if (location.file_name != nullptr) {
+  if (location.file_name != nullptr)
     msg->set_file_name(location.file_name);
-  }
-  if (location.function_name != nullptr) {
+  if (location.function_name != nullptr)
     msg->set_function_name(location.function_name);
-  }
   // TODO(ssid): Add line number once it is allowed in internal proto.
   // TODO(ssid): Add program counter to the proto fields when
   // !BUILDFLAG(ENABLE_LOCATION_SOURCE).
@@ -152,4 +151,5 @@ void InternedUnsymbolizedSourceLocation::Add(
   msg->set_rel_pc(location.rel_pc);
 }
 
-}  // namespace base::trace_event
+}  // namespace trace_event
+}  // namespace base

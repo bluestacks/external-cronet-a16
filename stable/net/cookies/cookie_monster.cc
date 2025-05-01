@@ -42,24 +42,22 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/cookies/cookie_monster.h"
 
-#include <algorithm>
 #include <functional>
 #include <list>
-#include <map>
-#include <memory>
 #include <numeric>
 #include <optional>
 #include <set>
 #include <string_view>
-#include <tuple>
 #include <utility>
-#include <vector>
 
-#include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -69,21 +67,18 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_access_params.h"
-#include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_monster_netlog_params.h"
@@ -91,7 +86,6 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
-#include "net/cookies/unique_cookie_key.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_values.h"
@@ -125,7 +119,8 @@ using TimeRange = net::CookieDeletionInfo::TimeRange;
 // notification of key load completion triggered by the first request for the
 // same eTLD+1.
 
-static const int kMinutesIn400Days = 60 * 24 * 400;
+static const int kDaysInTenYears = 10 * 365;
+static const int kMinutesInTenYears = kDaysInTenYears * 24 * 60;
 
 namespace {
 
@@ -209,12 +204,11 @@ void LogStoredCookieToUMA(const net::CanonicalCookie& cc,
   type_sample |= cc.IsHttpOnly() ? 1 << COOKIE_TYPE_HTTPONLY : 0;
   type_sample |= cc.SecureAttribute() ? 1 << COOKIE_TYPE_SECURE : 0;
   type_sample |= cc.IsPersistent() ? 1 << COOKIE_TYPE_PERSISTENT : 0;
-  base::UmaHistogramExactLinear("Cookie.Type2.Subsampled", type_sample,
-                                (1 << COOKIE_TYPE_LAST_ENTRY));
+  UMA_HISTOGRAM_EXACT_LINEAR("Cookie.Type2", type_sample,
+                             (1 << COOKIE_TYPE_LAST_ENTRY));
 
   // Cookie.SourceType collects the CookieSourceType of the stored cookie.
-  base::UmaHistogramEnumeration("Cookie.SourceType.Subsampled",
-                                cc.SourceType());
+  UMA_HISTOGRAM_ENUMERATION("Cookie.SourceType", cc.SourceType());
 }
 
 }  // namespace
@@ -244,7 +238,7 @@ const int CookieMonster::kSafeFromGlobalPurgeDays = 30;
 namespace {
 
 bool ContainsControlCharacter(const std::string& s) {
-  return std::ranges::any_of(s, &HttpUtil::IsControlChar);
+  return base::ranges::any_of(s, &HttpUtil::IsControlChar);
 }
 
 typedef std::vector<CanonicalCookie*> CanonicalCookieVector;
@@ -351,8 +345,6 @@ const ChangeCausePair kChangeCauseMapping[] = {
     {CookieChangeCause::EVICTED, true},
     // DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN
     {CookieChangeCause::EVICTED, true},
-    // DELETE_COOKIE_ALIAS
-    {CookieChangeCause::EVICTED, false},
     // DELETE_COOKIE_LAST_ENTRY
     {CookieChangeCause::EXPLICIT, false}};
 
@@ -424,70 +416,58 @@ size_t CountCookiesAndGenerateListsForPossibleDeletion(
   return total_cookies_at_priority;
 }
 
-// Fills in the host & domain lists for `could_be_deleted` with every cookie
-// in `cookies`.
-DeletionCookieLists
-CountCookiesAndGenerateListsForPossibleDeletionPartitionedCookies(
-    const CookieMonster::CookieItList& cookies) {
-  DeletionCookieLists could_be_deleted;
-  for (auto list_it = cookies.begin(); list_it != cookies.end(); list_it++) {
-    const auto cookiemap_it = *list_it;
-    const auto& cookie = cookiemap_it->second;
-
-    if (cookie->IsHostCookie()) {
-      could_be_deleted.host_cookies.push_back(list_it);
-    } else {  // Is a domain cookie.
-      could_be_deleted.domain_cookies.push_back(list_it);
-    }
-  }
-  return could_be_deleted;
-}
-
-// Records whether the cookie being set is persistent. If so, this also records
-// minutes until the expiration date of a cookie to the appropriate histogram.
-void RecordPersistanceHistograms(const CanonicalCookie& cookie,
+// Records minutes until the expiration date of a cookie to the appropriate
+// histogram. Only histograms cookies that have an expiration date (i.e. are
+// persistent).
+void HistogramExpirationDuration(const CanonicalCookie& cookie,
                                  base::Time creation_time) {
-  base::UmaHistogramBoolean("Cookie.IsPersistentWhenSet.Subsampled",
-                            cookie.IsPersistent());
   if (!cookie.IsPersistent())
     return;
 
   int expiration_duration_minutes =
       (cookie.ExpiryDate() - creation_time).InMinutes();
   if (cookie.SecureAttribute()) {
-    base::UmaHistogramCustomCounts(
-        "Cookie.ExpirationDurationMinutesSecure.Subsampled2",
-        expiration_duration_minutes, 1, kMinutesIn400Days, 100);
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDurationMinutesSecure",
+                                expiration_duration_minutes, 1,
+                                kMinutesInTenYears, 50);
   } else {
-    base::UmaHistogramCustomCounts(
-        "Cookie.ExpirationDurationMinutesNonSecure.Subsampled2",
-        expiration_duration_minutes, 1, kMinutesIn400Days, 100);
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDurationMinutesNonSecure",
+                                expiration_duration_minutes, 1,
+                                kMinutesInTenYears, 50);
+  }
+  // The proposed rfc6265bis sets an upper limit on Expires/Max-Age attribute
+  // values of 400 days. We need to study the impact this change would have:
+  // https://httpwg.org/http-extensions/draft-ietf-httpbis-rfc6265bis.html
+  int expiration_duration_days = (cookie.ExpiryDate() - creation_time).InDays();
+  if (expiration_duration_days > 400) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDuration400DaysGT",
+                                expiration_duration_days, 401, kDaysInTenYears,
+                                100);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDuration400DaysLTE",
+                                expiration_duration_days, 1, 400, 50);
   }
 }
 
 }  // namespace
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
-                             NetLog* net_log,
-                             std::unique_ptr<PrefDelegate> pref_delegate)
+                             NetLog* net_log)
     : CookieMonster(std::move(store),
                     base::Seconds(kDefaultAccessUpdateThresholdSeconds),
-                    net_log,
-                    std::move(pref_delegate)) {}
+                    net_log) {}
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              base::TimeDelta last_access_threshold,
-                             NetLog* net_log,
-                             std::unique_ptr<PrefDelegate> pref_delegate)
+                             NetLog* net_log)
     : change_dispatcher_(this),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::COOKIE_STORE)),
-      pref_delegate_(std::move(pref_delegate)),
       store_(std::move(store)),
       last_access_threshold_(last_access_threshold),
       last_statistic_record_time_(base::Time::Now()) {
   cookieable_schemes_.insert(
       cookieable_schemes_.begin(), kDefaultCookieableSchemes,
-      UNSAFE_TODO(kDefaultCookieableSchemes + kDefaultCookieableSchemesCount));
+      kDefaultCookieableSchemes + kDefaultCookieableSchemesCount);
   net_log_.BeginEvent(NetLogEventType::COOKIE_STORE_ALIVE, [&] {
     return NetLogCookieMonsterConstructorParams(store_ != nullptr);
   });
@@ -540,22 +520,6 @@ void CookieMonster::SetCanonicalCookieAsync(
           &CookieMonster::SetCanonicalCookie, base::Unretained(this),
           std::move(cookie), source_url, options, std::move(callback),
           std::move(cookie_access_result)),
-      domain);
-}
-
-void CookieMonster::SetUnsafeCanonicalCookieForTestAsync(
-    std::unique_ptr<CanonicalCookie> cookie,
-    SetCookiesCallback callback) {
-  CHECK(cookie->IsCanonical());
-
-  std::string domain = cookie->Domain();
-  DoCookieCallbackForHostOrDomain(
-      base::BindOnce(
-          // base::Unretained is safe as DoCookieCallbackForHostOrDomain stores
-          // the callback on |*this|, so the callback will not outlive
-          // the object.
-          &CookieMonster::SetUnsafeCanonicalCookieForTest,
-          base::Unretained(this), std::move(cookie), std::move(callback)),
       domain);
 }
 
@@ -761,18 +725,9 @@ void CookieMonster::GetCookieListWithOptions(
     GetCookieListCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::optional<base::ElapsedTimer> timer;
-  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
-    timer.emplace();
-  }
-
   CookieAccessResultList included_cookies;
   CookieAccessResultList excluded_cookies;
   if (HasCookieableScheme(url)) {
-    // Retrieve the domain, check this domain to see if this is the first
-    // time it is entering legacy mode, if it is delete all aliasing cookies
-    // within this domain.
-    CheckAndActivateLegacyScopeBehavior(url.host_piece());
     std::vector<CanonicalCookie*> cookie_ptrs;
     if (IncludeUnpartitionedCookies(cookie_partition_key_collection)) {
       cookie_ptrs = FindCookiesForRegistryControlledHost(url);
@@ -813,14 +768,8 @@ void CookieMonster::GetCookieListWithOptions(
                              &excluded_cookies);
   }
 
-  MaybeRunCookieCallback(std::move(callback), std::move(included_cookies),
-                         std::move(excluded_cookies));
-
-  if (timer) {
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Cookie.GetCookieListWithOptions.Duration.Subsampled", timer->Elapsed(),
-        base::Microseconds(1), base::Milliseconds(128), 100);
-  }
+  MaybeRunCookieCallback(std::move(callback), included_cookies,
+                         excluded_cookies);
 }
 
 void CookieMonster::DeleteAllCreatedInTimeRange(const TimeRange& creation_range,
@@ -882,10 +831,8 @@ bool CookieMonster::MatchCookieDeletionInfo(
   }
 
   return delete_info.Matches(
-      cookie,
-      CookieAccessParams{GetAccessSemanticsForCookie(cookie),
-                         GetScopeSemanticsForCookieDomain(cookie.Domain()),
-                         delegate_treats_url_as_trustworthy});
+      cookie, CookieAccessParams{GetAccessSemanticsForCookie(cookie),
+                                 delegate_treats_url_as_trustworthy});
 }
 
 void CookieMonster::DeleteCanonicalCookie(const CanonicalCookie& cookie,
@@ -1068,15 +1015,17 @@ void CookieMonster::StoreLoadedCookies(
     if (cookie_ptr->IsPartitioned()) {
       auto inserted = InternalInsertPartitionedCookie(
           GetKey(cookie_ptr->Domain()), std::move(cookie),
-          /*sync_to_store=*/false, access_result, /*dispatch_change=*/false);
+          false /* sync_to_store */, access_result,
+          false /* dispatch_change */);
       if (ContainsControlCharacter(cookie_ptr->Name()) ||
           ContainsControlCharacter(cookie_ptr->Value())) {
         partitioned_cookies_with_control_chars.push_back(inserted);
       }
     } else {
-      auto inserted = InternalInsertCookie(
-          GetKey(cookie_ptr->Domain()), std::move(cookie),
-          /*sync_to_store=*/false, access_result, /*dispatch_change=*/false);
+      auto inserted =
+          InternalInsertCookie(GetKey(cookie_ptr->Domain()), std::move(cookie),
+                               false /* sync_to_store */, access_result,
+                               false /* dispatch_change */);
 
       if (ContainsControlCharacter(cookie_ptr->Name()) ||
           ContainsControlCharacter(cookie_ptr->Value())) {
@@ -1201,10 +1150,15 @@ void CookieMonster::TrimDuplicateCookiesForKey(
   typedef std::multiset<CookieMap::iterator, OrderByCreationTimeDesc> CookieSet;
 
   // Helper map we populate to find the duplicates.
-  std::map<UniqueCookieKey, CookieSet> equivalent_cookies;
+  typedef std::map<CanonicalCookie::UniqueCookieKey, CookieSet> EquivalenceMap;
+  typedef std::map<CanonicalCookie::UniqueDomainCookieKey, CookieSet>
+      DomainEquivalenceMap;
+  EquivalenceMap equivalent_cookies;
+  DomainEquivalenceMap equivalent_domain_cookies;
 
   // The number of duplicate cookies that have been found.
   int num_duplicates = 0;
+  int num_domain_duplicates = 0;
 
   // Iterate through all of the cookies in our range, and insert them into
   // the equivalence map.
@@ -1212,31 +1166,49 @@ void CookieMonster::TrimDuplicateCookiesForKey(
     DCHECK_EQ(key, it->first);
     CanonicalCookie* cookie = it->second.get();
 
-    UniqueCookieKey signature(cookie->UniqueKey());
-    CookieSet& set = equivalent_cookies[signature];
+    if (cookie->IsHostCookie()) {
+      CanonicalCookie::UniqueCookieKey signature(cookie->UniqueKey());
+      CookieSet& set = equivalent_cookies[signature];
 
-    // We found a duplicate!
-    if (!set.empty()) {
-      num_duplicates++;
+      // We found a duplicate!
+      if (!set.empty()) {
+        num_duplicates++;
+      }
+
+      // We save the iterator into |cookies_| rather than the actual cookie
+      // pointer, since we may need to delete it later.
+      set.insert(it);
     }
+    // Is a domain cookie.
+    else {
+      CanonicalCookie::UniqueDomainCookieKey signature(
+          cookie->UniqueDomainKey());
+      CookieSet& domain_set = equivalent_domain_cookies[signature];
 
-    // We save the iterator into |cookies_| rather than the actual cookie
-    // pointer, since we may need to delete it later.
-    set.insert(it);
+      // We found a duplicate!
+      if (!domain_set.empty()) {
+        num_domain_duplicates++;
+      }
+
+      // We save the iterator into |cookies_| rather than the actual cookie
+      // pointer, since we may need to delete it later.
+      domain_set.insert(it);
+    }
   }
 
   // If there were no duplicates, we are done!
-  if (num_duplicates == 0) {
+  if (num_duplicates == 0 && num_domain_duplicates == 0) {
     return;
   }
 
   // Make sure we find everything below that we did above.
   int num_duplicates_found = 0;
 
-  // Otherwise, delete all the duplicate cookies, both from our in-memory
+  // Otherwise, delete all the duplicate host cookies, both from our in-memory
   // store and from the backing store.
-  for (auto& equivalent_cookie : equivalent_cookies) {
-    const UniqueCookieKey& signature = equivalent_cookie.first;
+  for (std::pair<const CanonicalCookie::UniqueCookieKey, CookieSet>&
+           equivalent_cookie : equivalent_cookies) {
+    const CanonicalCookie::UniqueCookieKey& signature = equivalent_cookie.first;
     CookieSet& dupes = equivalent_cookie.second;
 
     if (dupes.size() <= 1) {
@@ -1256,8 +1228,9 @@ void CookieMonster::TrimDuplicateCookiesForKey(
     LOG(ERROR) << base::StringPrintf(
         "Found %d duplicate cookies for key='%s', "
         "with {name='%s', domain='%s', path='%s'}",
-        static_cast<int>(dupes.size()), key.c_str(), signature.name().c_str(),
-        signature.domain().c_str(), signature.path().c_str());
+        static_cast<int>(dupes.size()), key.c_str(),
+        std::get<1>(signature).c_str(), std::get<2>(signature).c_str(),
+        std::get<3>(signature).c_str());
 
     // Remove all the cookies identified by |dupes|. It is valid to delete our
     // list of iterators one at a time, since |cookies_| is a multimap (they
@@ -1274,6 +1247,58 @@ void CookieMonster::TrimDuplicateCookiesForKey(
     }
   }
   CHECK_EQ(num_duplicates, num_duplicates_found);
+
+  // Do the same again for domain cookies.
+
+  if (num_domain_duplicates == 0) {
+    return;
+  }
+
+  int num_domain_duplicates_found = 0;
+
+  for (std::pair<const CanonicalCookie::UniqueDomainCookieKey, CookieSet>&
+           equivalent_domain_cookie : equivalent_domain_cookies) {
+    const CanonicalCookie::UniqueDomainCookieKey& signature =
+        equivalent_domain_cookie.first;
+    CookieSet& dupes = equivalent_domain_cookie.second;
+
+    if (dupes.size() <= 1) {
+      continue;
+    }
+
+    num_domain_duplicates_found += dupes.size() - 1;
+
+    // Since |dupes| is sorted by creation time (descending), the first cookie
+    // is the most recent one (or tied for it), so we will keep it. The rest are
+    // duplicates.
+    dupes.erase(dupes.begin());
+
+    // TODO(crbug.com/40188414) Include cookie partition key in this log
+    // statement as well if needed.
+    // TODO(crbug.com/40165805): Include source scheme and source port.
+    LOG(ERROR) << base::StringPrintf(
+        "Found %d duplicate domain cookies for key='%s', "
+        "with {name='%s', domain='%s', path='%s'}",
+        static_cast<int>(dupes.size()), key.c_str(),
+        std::get<1>(signature).c_str(), std::get<2>(signature).c_str(),
+        std::get<3>(signature).c_str());
+
+    // Remove all the cookies identified by |dupes|. It is valid to delete our
+    // list of iterators one at a time, since |cookies_| is a multimap (they
+    // don't invalidate existing iterators following deletion).
+    for (const CookieMap::iterator& dupe : dupes) {
+      if (cookie_partition_it) {
+        InternalDeletePartitionedCookie(
+            cookie_partition_it.value(), dupe, true,
+            DELETE_COOKIE_DUPLICATE_IN_BACKING_STORE);
+      } else {
+        InternalDeleteCookie(dupe, true,
+                             DELETE_COOKIE_DUPLICATE_IN_BACKING_STORE);
+      }
+    }
+  }
+
+  CHECK_EQ(num_domain_duplicates, num_domain_duplicates_found);
 }
 
 std::vector<CanonicalCookie*>
@@ -1358,10 +1383,8 @@ void CookieMonster::FilterCookiesWithOptions(
     // cookie |options|.
     CookieAccessResult access_result = cookie_ptr->IncludeForRequestURL(
         url, options,
-        CookieAccessParams{
-            GetAccessSemanticsForCookie(*cookie_ptr),
-            GetScopeSemanticsForCookieDomain(cookie_ptr->Domain()),
-            delegate_treats_url_as_trustworthy});
+        CookieAccessParams{GetAccessSemanticsForCookie(*cookie_ptr),
+                           delegate_treats_url_as_trustworthy});
     cookies_and_access_results.emplace_back(cookie_ptr, access_result);
 
     // Record the names of all origin cookies that would be included if both
@@ -1371,14 +1394,13 @@ void CookieMonster::FilterCookiesWithOptions(
     // reasons, so we'll remove any potential path exclusions.
     CookieInclusionStatus status_copy = access_result.status;
     status_copy.RemoveExclusionReason(
-        CookieInclusionStatus::ExclusionReason::EXCLUDE_NOT_ON_PATH);
+        CookieInclusionStatus::EXCLUDE_NOT_ON_PATH);
 
     bool exclusion_or_warning =
         !status_copy.IsInclude() ||
         status_copy.HasWarningReason(
-            CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH) ||
-        status_copy.HasWarningReason(
-            CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH);
+            CookieInclusionStatus::WARN_SCHEME_MISMATCH) ||
+        status_copy.HasWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
 
     if (!exclusion_or_warning && cookie_ptr->IsHostCookie()) {
       origin_cookie_names.insert(cookie_ptr->Name());
@@ -1390,34 +1412,31 @@ void CookieMonster::FilterCookiesWithOptions(
     CookieAccessResult& access_result = cookie_result.second;
 
     // We want to collect these metrics for cookies that would be included
-    // without considering shadowing domain cookies. Recording them on every
-    // resource sequest results in unnecessarily large amounts of samples
-    // and has a non-zero runtime cost, so only collect 1/1000 times.
-    if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability) &&
-        access_result.status.IsInclude()) {
+    // without considering shadowing domain cookies.
+    if (access_result.status.IsInclude()) {
       int destination_port = url.EffectiveIntPort();
 
       if (IsLocalhost(url)) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.Read.Localhost.Subsampled",
+            "Cookie.Port.Read.Localhost",
             ReducePortRangeForCookieHistogram(destination_port));
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.ReadDiffersFromSet.Localhost.Subsampled",
+            "Cookie.Port.ReadDiffersFromSet.Localhost",
             IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
                                             cookie_ptr->SourceScheme()));
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.Read.RemoteHost.Subsampled",
+            "Cookie.Port.Read.RemoteHost",
             ReducePortRangeForCookieHistogram(destination_port));
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.ReadDiffersFromSet.RemoteHost.Subsampled",
+            "Cookie.Port.ReadDiffersFromSet.RemoteHost",
             IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
                                             cookie_ptr->SourceScheme()));
       }
 
       if (cookie_ptr->IsDomainCookie()) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Cookie.Port.ReadDiffersFromSet.DomainSet.Subsampled",
+            "Cookie.Port.ReadDiffersFromSet.DomainSet",
             IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
                                             cookie_ptr->SourceScheme()));
       }
@@ -1430,18 +1449,18 @@ void CookieMonster::FilterCookiesWithOptions(
     // reasons).
     bool scheme_mismatch =
         access_result.status.HasExclusionReason(
-            CookieInclusionStatus::ExclusionReason::EXCLUDE_SCHEME_MISMATCH) ||
+            CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH) ||
         access_result.status.HasWarningReason(
-            CookieInclusionStatus::WarningReason::WARN_SCHEME_MISMATCH);
+            CookieInclusionStatus::WARN_SCHEME_MISMATCH);
 
     if (cookie_ptr->IsDomainCookie() && !scheme_mismatch &&
         origin_cookie_names.count(cookie_ptr->Name())) {
       if (cookie_util::IsSchemeBoundCookiesEnabled()) {
         access_result.status.AddExclusionReason(
-            CookieInclusionStatus::ExclusionReason::EXCLUDE_SHADOWING_DOMAIN);
+            CookieInclusionStatus::EXCLUDE_SHADOWING_DOMAIN);
       } else {
         access_result.status.AddWarningReason(
-            CookieInclusionStatus::WarningReason::WARN_SHADOWING_DOMAIN);
+            CookieInclusionStatus::WARN_SHADOWING_DOMAIN);
       }
     }
 
@@ -1471,9 +1490,9 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     std::optional<PartitionedCookieMap::iterator> cookie_partition_it) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!status->HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE));
+      CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE));
   DCHECK(!status->HasExclusionReason(
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_HTTP_ONLY));
+      CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY));
 
   CookieMap* cookie_map = &cookies_;
   if (cookie_partition_it) {
@@ -1486,9 +1505,6 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
 
   // Check every cookie matching this domain key for equivalence.
   CookieMapItPair range_its = cookie_map->equal_range(key);
-  const auto cookie_being_set_key = cookie_being_set.UniqueKey();
-  const auto cookie_being_set_scope_semantics =
-      GetScopeSemanticsForCookieDomain(cookie_being_set.Domain());
   for (auto cur_it = range_its.first; cur_it != range_its.second; ++cur_it) {
     CanonicalCookie* cur_existing_cookie = cur_it->second.get();
 
@@ -1517,15 +1533,10 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
                               capture_mode);
                         });
       status->AddExclusionReason(
-          CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE);
+          CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE);
     }
-    // If cookie's domain is in legacy mode, check to make sure we are not
-    // setting an aliasing cookie.
-    if (cookie_being_set.IsEquivalent(cookie_being_set_key,
-                                      *cur_existing_cookie) ||
-        (cookie_being_set_scope_semantics == CookieScopeSemantics::LEGACY &&
-         cookie_being_set.LegacyUniqueKey() ==
-             cur_existing_cookie->LegacyUniqueKey())) {
+
+    if (cookie_being_set.IsEquivalent(*cur_existing_cookie)) {
       // We should never have more than one equivalent cookie, since they should
       // overwrite each other.
       CHECK(!found_equivalent_cookie)
@@ -1542,8 +1553,8 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
               return NetLogCookieMonsterCookieRejectedHttponly(
                   cur_existing_cookie, &cookie_being_set, capture_mode);
             });
-        status->AddExclusionReason(CookieInclusionStatus::ExclusionReason::
-                                       EXCLUDE_OVERWRITE_HTTP_ONLY);
+        status->AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY);
       } else {
         deletion_candidate_it = cur_it;
       }
@@ -1567,8 +1578,7 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
                                              : DELETE_COOKIE_OVERWRITE);
       }
     } else if (status->HasExclusionReason(
-                   CookieInclusionStatus::ExclusionReason::
-                       EXCLUDE_OVERWRITE_SECURE)) {
+                   CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE)) {
       // Log that we preserved a cookie that would have been deleted due to
       // Leave Secure Cookies Alone. This arbitrarily only logs the last
       // |skipped_secure_cookie| that we were left with after the for loop, even
@@ -1604,9 +1614,7 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
 
   auto inserted = cookies_.insert(CookieMap::value_type(key, std::move(cc)));
 
-  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
-    LogStoredCookieToUMA(*cc_ptr, access_result);
-  }
+  LogStoredCookieToUMA(*cc_ptr, access_result);
 
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {
@@ -1682,9 +1690,7 @@ CookieMonster::InternalInsertPartitionedCookie(
   }
   CHECK_GE(num_partitioned_cookies_, num_nonced_partitioned_cookies_);
 
-  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
-    LogStoredCookieToUMA(*cc_ptr, access_result);
-  }
+  LogStoredCookieToUMA(*cc_ptr, access_result);
 
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {
@@ -1703,8 +1709,6 @@ void CookieMonster::SetCanonicalCookie(
     SetCookiesCallback callback,
     std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  bool collect_metrics =
-      metrics_subsampler_.ShouldSample(kHistogramSampleProbability);
 // TODO(crbug.com/40281870): Fix macos specific issue with CHECK_IS_TEST
 // crashing network service process.
 #if !BUILDFLAG(IS_MAC)
@@ -1721,11 +1725,9 @@ void CookieMonster::SetCanonicalCookie(
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url);
 
-  CheckAndActivateLegacyScopeBehavior(cc->Domain());
   CookieAccessResult access_result = cc->IsSetPermittedInContext(
       source_url, options,
       CookieAccessParams(GetAccessSemanticsForCookie(*cc),
-                         GetScopeSemanticsForCookieDomain(cc->Domain()),
                          delegate_treats_url_as_trustworthy),
       cookieable_schemes_, cookie_access_result);
 
@@ -1765,10 +1767,9 @@ void CookieMonster::SetCanonicalCookie(
   }
 
   if (access_result.status.HasExclusionReason(
-          CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE) ||
+          CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE) ||
       access_result.status.HasExclusionReason(
-          CookieInclusionStatus::ExclusionReason::
-              EXCLUDE_OVERWRITE_HTTP_ONLY)) {
+          CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY)) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() not clobbering httponly cookie or secure cookie for "
            "insecure scheme";
@@ -1778,17 +1779,15 @@ void CookieMonster::SetCanonicalCookie(
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() key: " << key << " cc: " << cc->DebugString();
 
-    if (cc->IsEffectivelySameSiteNone() && collect_metrics) {
+    if (cc->IsEffectivelySameSiteNone()) {
       size_t cookie_size = NameValueSizeBytes(*cc);
-      base::UmaHistogramCounts10000("Cookie.SameSiteNoneSizeBytes.Subsampled",
-                                    cookie_size);
+      UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes", cookie_size);
       if (cc->IsPartitioned()) {
-        base::UmaHistogramCounts10000(
-            "Cookie.SameSiteNoneSizeBytes.Partitioned.Subsampled", cookie_size);
+        UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes.Partitioned",
+                                   cookie_size);
       } else {
-        base::UmaHistogramCounts10000(
-            "Cookie.SameSiteNoneSizeBytes.Unpartitioned.Subsampled",
-            cookie_size);
+        UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes.Unpartitioned",
+                                   cookie_size);
       }
     }
 
@@ -1798,12 +1797,9 @@ void CookieMonster::SetCanonicalCookie(
     // Realize that we might be setting an expired cookie, and the only point
     // was to delete the cookie which we've already done.
     if (!already_expired) {
-      if (collect_metrics) {
-        RecordPersistanceHistograms(*cc, creation_date);
+      HistogramExpirationDuration(*cc, creation_date);
 
-        base::UmaHistogramBoolean("Cookie.DomainSet.Subsampled",
-                                  cc->IsDomainCookie());
-      }
+      UMA_HISTOGRAM_BOOLEAN("Cookie.DomainSet", cc->IsDomainCookie());
 
       if (!creation_date_to_inherit.is_null()) {
         cc->SetCreationDate(creation_date_to_inherit);
@@ -1832,25 +1828,23 @@ void CookieMonster::SetCanonicalCookie(
       GarbageCollect(creation_date, key);
     }
 
-    if (collect_metrics) {
-      if (IsLocalhost(source_url)) {
-        base::UmaHistogramEnumeration(
-            "Cookie.Port.Set.Localhost.Subsampled",
-            ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
-      } else {
-        base::UmaHistogramEnumeration(
-            "Cookie.Port.Set.RemoteHost.Subsampled",
-            ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
-      }
-
-      base::UmaHistogramEnumeration("Cookie.CookieSourceSchemeName.Subsampled",
-                                    GetSchemeNameEnum(source_url));
+    if (IsLocalhost(source_url)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.Set.Localhost",
+          ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.Set.RemoteHost",
+          ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
     }
+
+    UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceSchemeName",
+                              GetSchemeNameEnum(source_url));
   } else {
     // If the cookie would be excluded, don't bother warning about the 3p cookie
     // phaseout.
     access_result.status.RemoveWarningReason(
-        net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
+        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
   }
 
   // TODO(chlily): Log metrics.
@@ -1874,9 +1868,7 @@ void CookieMonster::SetAllCookies(CookieList list,
     if (cookie.IsExpired(creation_time))
       continue;
 
-    if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
-      RecordPersistanceHistograms(cookie, creation_time);
-    }
+    HistogramExpirationDuration(cookie, creation_time);
 
     CookieAccessResult access_result;
     access_result.access_semantics = GetAccessSemanticsForCookie(cookie);
@@ -1898,32 +1890,6 @@ void CookieMonster::SetAllCookies(CookieList list,
   // https://codereview.chromium.org/2882063002/#msg64), which would
   // solve the return value problem.
   MaybeRunCookieCallback(std::move(callback), CookieAccessResult());
-}
-
-void CookieMonster::SetUnsafeCanonicalCookieForTest(
-    std::unique_ptr<CanonicalCookie> cc,
-    SetCookiesCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  CookieAccessResult access_result;
-  const std::string key(GetKey(cc->Domain()));
-
-  base::Time creation_date = cc->CreationDate();
-  if (creation_date.is_null()) {
-    creation_date = Time::Now();
-    cc->SetCreationDate(creation_date);
-  }
-
-  std::optional<CookiePartitionKey> cookie_partition_key = cc->PartitionKey();
-  CHECK_EQ(cc->IsPartitioned(), cookie_partition_key.has_value());
-
-  // Set cookie based on if its partitioned or not.
-  if (cookie_partition_key.has_value()) {
-    InternalInsertPartitionedCookie(key, std::move(cc), true, access_result);
-  } else {
-    InternalInsertCookie(key, std::move(cc), true, access_result);
-  }
-  MaybeRunCookieCallback(std::move(callback), access_result);
 }
 
 void CookieMonster::InternalUpdateCookieAccessTime(CanonicalCookie* cc,
@@ -1960,7 +1926,7 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
       << "InternalDeleteCookie()"
       << ", cause:" << deletion_cause << ", cc: " << cc->DebugString();
 
-  ChangeCausePair mapping = UNSAFE_TODO(kChangeCauseMapping[deletion_cause]);
+  ChangeCausePair mapping = kChangeCauseMapping[deletion_cause];
   if (deletion_cause != DELETE_COOKIE_DONT_RECORD) {
     net_log_.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_DELETED,
                       [&](NetLogCaptureMode capture_mode) {
@@ -1978,7 +1944,6 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
           CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
                              CookieInclusionStatus(),
                              GetAccessSemanticsForCookie(*cc),
-                             GetScopeSemanticsForCookieDomain(cc->Domain()),
                              true /* is_allowed_to_access_secure_cookies */),
           mapping.cause),
       mapping.notify);
@@ -2016,7 +1981,7 @@ void CookieMonster::InternalDeletePartitionedCookie(
       << "InternalDeletePartitionedCookie()"
       << ", cause:" << deletion_cause << ", cc: " << cc->DebugString();
 
-  ChangeCausePair mapping = UNSAFE_TODO(kChangeCauseMapping[deletion_cause]);
+  ChangeCausePair mapping = kChangeCauseMapping[deletion_cause];
   if (deletion_cause != DELETE_COOKIE_DONT_RECORD) {
     net_log_.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_DELETED,
                       [&](NetLogCaptureMode capture_mode) {
@@ -2034,7 +1999,6 @@ void CookieMonster::InternalDeletePartitionedCookie(
           CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
                              CookieInclusionStatus(),
                              GetAccessSemanticsForCookie(*cc),
-                             GetScopeSemanticsForCookieDomain(cc->Domain()),
                              true /* is_allowed_to_access_secure_cookies */),
           mapping.cause),
       mapping.notify);
@@ -2069,10 +2033,8 @@ size_t CookieMonster::GarbageCollect(const Time& current,
   size_t num_deleted = 0;
   const Time safe_date(Time::Now() - base::Days(kSafeFromGlobalPurgeDays));
 
-  // For the domain check if legacy mode is active or not.
   const bool obc_behavior_enabled =
-      cookie_util::IsOriginBoundCookiesPartiallyEnabled() &&
-      CheckAndActivateLegacyScopeBehavior(key) != CookieScopeSemantics::LEGACY;
+      cookie_util::IsOriginBoundCookiesPartiallyEnabled();
 
   // Collect garbage for this key, minding cookie priorities.
   if (cookies_.count(key) > kDomainMaxCookies) {
@@ -2271,92 +2233,20 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
 
     if (bytes_used > kPerPartitionDomainMaxCookieBytes ||
         non_expired_cookie_its.size() > kPerPartitionDomainMaxCookies) {
-      // For the domain check if legacy mode is active or not.
-      const bool obc_behavior_enabled =
-          cookie_util::IsOriginBoundCookiesPartiallyEnabled() &&
-          GetScopeSemanticsForCookieDomain(key) != CookieScopeSemantics::LEGACY;
-
       // TODO(crbug.com/40188414): Log deep garbage collection for partitioned
       // cookies.
       std::sort(non_expired_cookie_its.begin(), non_expired_cookie_its.end(),
                 LRACookieSorter);
 
-      // When OBC behavior is enabled, we need to consider the partitioned
-      // cookies that are domain cookies first and delete those, and then we
-      // want to delete host cookies.
-      if (obc_behavior_enabled) {
-        CookieItList cookie_it_list = CookieItList(
-            non_expired_cookie_its.begin(), non_expired_cookie_its.end());
-        DeletionCookieLists could_be_deleted =
-            CountCookiesAndGenerateListsForPossibleDeletionPartitionedCookies(
-                cookie_it_list);
-
-        // Delete domain cookies first.
-        // We have 3 layers of iterators to consider:
-        // The `could_be_deleted` list's iterator, which points to...
-        // The `cookies` list's iterator, which points to...
-        // The CookieMap's iterator which is used to delete the actual cookie
-        // from the backend. For each cookie deleted all three of these will
-        // need to erased, in a bottom up approach.
-        size_t num_cookies_deleted = 0;
-        for (auto domain_list_it = could_be_deleted.domain_cookies.begin();
-             domain_list_it != could_be_deleted.domain_cookies.end() &&
-             (bytes_used > kPerPartitionDomainMaxCookieBytes ||
-              non_expired_cookie_its.size() - num_cookies_deleted >
-                  kPerPartitionDomainMaxCookies);
-             ++num_cookies_deleted) {
-          auto cookies_list_it = *domain_list_it;
-          auto cookie_map_it = *cookies_list_it;
-
-          bytes_used -= NameValueSizeBytes(*cookie_map_it->second);
-
-          // Delete from the cookie store.
-          InternalDeletePartitionedCookie(
-              cookie_partition_it, cookie_map_it, /*sync_to_store=*/true,
-              DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
-
-          // Delete from `cookie_it_list`.
-          cookie_it_list.erase(cookies_list_it);
-          // Delete from `could_be_deleted`.
-          domain_list_it =
-              could_be_deleted.domain_cookies.erase(domain_list_it);
-          ++num_deleted;
-        }
-
-        // Now do the same for host cookies.
-        for (auto host_list_it = could_be_deleted.host_cookies.begin();
-             host_list_it != could_be_deleted.host_cookies.end() &&
-             (bytes_used > kPerPartitionDomainMaxCookieBytes ||
-              non_expired_cookie_its.size() - num_cookies_deleted >
-                  kPerPartitionDomainMaxCookies);
-             ++num_cookies_deleted) {
-          auto cookies_list_it = *host_list_it;
-          auto cookie_map_it = *cookies_list_it;
-
-          bytes_used -= NameValueSizeBytes(*cookie_map_it->second);
-
-          // Delete from the cookie store.
-          InternalDeletePartitionedCookie(
-              cookie_partition_it, cookie_map_it, /*sync_to_store=*/true,
-              DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
-
-          // Delete from `cookie_it_list`.
-          cookie_it_list.erase(cookies_list_it);
-          // Delete from `could_be_deleted`.
-          host_list_it = could_be_deleted.host_cookies.erase(host_list_it);
-          ++num_deleted;
-        }
-      } else {
-        for (size_t i = 0;
-             bytes_used > kPerPartitionDomainMaxCookieBytes ||
-             non_expired_cookie_its.size() - i > kPerPartitionDomainMaxCookies;
-             ++i) {
-          bytes_used -= NameValueSizeBytes(*non_expired_cookie_its[i]->second);
-          InternalDeletePartitionedCookie(
-              cookie_partition_it, non_expired_cookie_its[i], true,
-              DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
-          ++num_deleted;
-        }
+      for (size_t i = 0;
+           bytes_used > kPerPartitionDomainMaxCookieBytes ||
+           non_expired_cookie_its.size() - i > kPerPartitionDomainMaxCookies;
+           ++i) {
+        bytes_used -= NameValueSizeBytes(*non_expired_cookie_its[i]->second);
+        InternalDeletePartitionedCookie(
+            cookie_partition_it, non_expired_cookie_its[i], true,
+            DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
+        ++num_deleted;
       }
     }
   }
@@ -2638,7 +2528,7 @@ bool CookieMonster::HasCookieableScheme(const GURL& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Make sure the request is on a cookie-able url scheme.
-  bool is_cookieable = std::ranges::any_of(
+  bool is_cookieable = base::ranges::any_of(
       cookieable_schemes_, [&url](const std::string& cookieable_scheme) {
         return url.SchemeIs(cookieable_scheme.c_str());
       });
@@ -2656,120 +2546,6 @@ CookieAccessSemantics CookieMonster::GetAccessSemanticsForCookie(
   if (cookie_access_delegate())
     return cookie_access_delegate()->GetAccessSemantics(cookie);
   return CookieAccessSemantics::UNKNOWN;
-}
-
-CookieScopeSemantics CookieMonster::GetScopeSemanticsForCookieDomain(
-    const std::string_view domain) const {
-  if (cookie_access_delegate()) {
-    return cookie_access_delegate()->GetScopeSemantics(domain);
-  }
-  return CookieScopeSemantics::UNKNOWN;
-}
-
-CookieScopeSemantics CookieMonster::CheckAndActivateLegacyScopeBehavior(
-    const std::string_view domain) {
-  const std::string cookie_key = GetKey(domain);
-  CookieScopeSemantics cookie_scope_semantic =
-      GetScopeSemanticsForCookieDomain(domain);
-  if (!pref_delegate_dict_) {
-    // TODO(crbug.com/378827534) Add CHECK once callbacks are supported.
-    if (pref_delegate_ && pref_delegate_->IsPrefReady()) {
-      pref_delegate_dict_ = std::make_unique<base::Value::Dict>(
-          pref_delegate_->GetLegacyDomains().Clone());
-    } else {
-      pref_delegate_dict_ = std::make_unique<base::Value::Dict>();
-    }
-  }
-  bool is_in_pref = pref_delegate_dict_->Find(cookie_key);
-
-  if (!is_in_pref && cookie_scope_semantic == CookieScopeSemantics::LEGACY) {
-    // Delete all aliasing cookies for this domain.
-    DeleteAllAliasingCookies(cookie_key);
-    // This is the first time this domain is entering legacy mode so add it to
-    // pref.
-    pref_delegate_dict_->Set(cookie_key, base::Value(true));
-    // Only set to pref_delegate if it is valid.
-    if (pref_delegate_) {
-      pref_delegate_->SetLegacyDomains(pref_delegate_dict_->Clone());
-    }
-  } else if (is_in_pref &&
-             cookie_scope_semantic != CookieScopeSemantics::LEGACY) {
-    pref_delegate_dict_->Remove(cookie_key);
-    // Only set pref if it is valid.
-    if (pref_delegate_) {
-      pref_delegate_->SetLegacyDomains(pref_delegate_dict_->Clone());
-    }
-  }
-
-  return cookie_scope_semantic;
-}
-
-void CookieMonster::DeleteAllAliasingCookies(const std::string& domain) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::map<UniqueCookieKey, std::pair<base::Time, UniqueCookieKey>>
-      most_recent_cookies;
-  CookieMapItPair cookie_map_its = cookies_.equal_range(domain);
-
-  UpdateMostRecentCookie(cookie_map_its, most_recent_cookies);
-
-  // Delete all non-partitioned cookie aliases from cookie map.
-  for (auto it = cookie_map_its.first; it != cookie_map_its.second;) {
-    auto curit = it;
-    CanonicalCookie* cc = curit->second.get();
-    ++it;
-    // Cookie is not most recently created of its alias so delete it.
-    if (cc->StrictlyUniqueKey() !=
-        most_recent_cookies.find(cc->LegacyUniqueKey())->second.second) {
-      InternalDeleteCookie(curit, true, DELETE_COOKIE_ALIAS);
-    }
-  }
-
-  // Delete all partitioned cookie aliases for this domain as well.
-  for (auto it = partitioned_cookies_.begin();
-       it != partitioned_cookies_.end();) {
-    CookieMapItPair itpair = it->second->equal_range(domain);
-    auto cookie_partition_it = it;
-    it++;
-    // most_recent_cookie map is only scoped to the current
-    // cookie_partition_key.
-    std::map<UniqueCookieKey, std::pair<base::Time, UniqueCookieKey>>
-        most_recent_partitioned_cookies;
-    UpdateMostRecentCookie(itpair, most_recent_partitioned_cookies);
-    for (auto inner_it = itpair.first; inner_it != itpair.second;) {
-      auto curit = inner_it;
-      CanonicalCookie* cc = curit->second.get();
-      ++inner_it;
-      if (cc->StrictlyUniqueKey() !=
-          most_recent_partitioned_cookies.find(cc->LegacyUniqueKey())
-              ->second.second) {
-        // Cookie is not most recently created for its alias so delete.
-        InternalDeletePartitionedCookie(cookie_partition_it, curit, true,
-                                        DELETE_COOKIE_ALIAS);
-      }
-    }
-  }
-}
-
-void CookieMonster::UpdateMostRecentCookie(
-    const CookieMapItPair& itpair,
-    std::map<UniqueCookieKey, std::pair<base::Time, UniqueCookieKey>>&
-        most_recent_cookies) {
-  for (CookieMap::iterator it = itpair.first, end = itpair.second; it != end;
-       ++it) {
-    CanonicalCookie* cc = it->second.get();
-    // Find the iterator for the LegacyUniqueKey in the most recent cookies
-    // map.
-    auto most_recent_it = most_recent_cookies.find(cc->LegacyUniqueKey());
-
-    // Update the most recent cookie if it is not found or if the current
-    // cookie is more recent.
-    if (most_recent_it == most_recent_cookies.end() ||
-        cc->CreationDate() > most_recent_it->second.first) {
-      most_recent_cookies.insert_or_assign(
-          most_recent_it, cc->LegacyUniqueKey(),
-          std::make_pair(cc->CreationDate(), cc->StrictlyUniqueKey()));
-    }
-  }
 }
 
 // Test to see if stats should be recorded, and record them if so.

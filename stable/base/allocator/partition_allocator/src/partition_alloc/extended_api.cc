@@ -77,17 +77,7 @@ ThreadCacheProcessScopeForTesting::ThreadCacheProcessScopeForTesting(
     // Replace ThreadCache's PartitionRoot.
     ThreadCache::SwapForTesting(root_);
   } else {
-    bool regular_was_disabled = !regular_was_enabled_;
-#if PA_BUILDFLAG(IS_WIN)
-    // ThreadCache may be tombstone because of the previous test. In the
-    // case, we have to remove tombstone and re-create ThreadCache for
-    // a new test.
-    if (ThreadCache::IsTombstone(ThreadCache::Get())) {
-      ThreadCache::RemoveTombstoneForTesting();
-      regular_was_disabled = true;
-    }
-#endif
-    if (regular_was_disabled) {
+    if (!regular_was_enabled_) {
       EnablePartitionAllocThreadCacheForRootIfDisabled(root_);
       ThreadCache::SwapForTesting(root_);
     }
@@ -99,7 +89,6 @@ ThreadCacheProcessScopeForTesting::ThreadCacheProcessScopeForTesting(
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   PA_CHECK(ThreadCache::Get());
-  PA_CHECK(!ThreadCache::IsTombstone(ThreadCache::Get()));
 }
 
 ThreadCacheProcessScopeForTesting::~ThreadCacheProcessScopeForTesting() {

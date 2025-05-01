@@ -9,8 +9,6 @@
 #include <limits>
 #include <type_traits>
 
-#include "partition_alloc/buildflags.h"
-
 namespace partition_alloc::internal::base::internal {
 
 // The std library doesn't provide a binary max_exponent for integers, however
@@ -85,10 +83,10 @@ constexpr typename std::make_unsigned<T>::type SafeUnsignedAbs(T value) {
 // TODO(jschuh): Debug builds don't reliably propagate constants, so we restrict
 // some accelerated runtime paths to release builds until this can be forced
 // with consteval support in C++20 or C++23.
-#if PA_BUILDFLAG(IS_DEBUG)
-inline constexpr bool kEnableAsmCode = false;
+#if defined(NDEBUG)
+constexpr bool kEnableAsmCode = true;
 #else
-inline constexpr bool kEnableAsmCode = true;
+constexpr bool kEnableAsmCode = false;
 #endif
 
 // Forces a crash, like a NOTREACHED(). Used for numeric boundary errors.

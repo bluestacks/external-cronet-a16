@@ -26,7 +26,6 @@ import org.chromium.net.ThreadStatsUid;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlResponseInfo;
-import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
 import org.chromium.net.impl.JavaUrlRequestUtils.DirectPreventingExecutor;
@@ -1044,9 +1043,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     /* quicErrorCode */ 0,
                     /* connectionCloseSource */ ConnectionCloseSource.UNKNOWN,
                     /* failureReason */ CronetTrafficInfo.RequestFailureReason.UNKNOWN,
-                    /* socketReused */ false,
-                    ImplVersion.getCronetVersion(),
-                    CronetSource.CRONET_SOURCE_FALLBACK);
+                    /* socketReused */ false);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and

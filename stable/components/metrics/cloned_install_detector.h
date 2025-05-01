@@ -81,7 +81,7 @@ class ClonedInstallDetector {
   FRIEND_TEST_ALL_PREFIXES(ClonedInstallDetectorTest,
                            ClonedInstallDetectedCallback);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, CheckProviderResetIds);
-  FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest,
+  FRIEND_TEST_ALL_PREFIXES(MetricsServiceTestWithFeatures,
                            PurgeLogsOnClonedInstallDetected);
 
   // Converts raw_id into a 24-bit hash and stores the hash in |local_state|.

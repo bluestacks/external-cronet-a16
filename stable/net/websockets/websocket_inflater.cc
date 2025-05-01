@@ -16,7 +16,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/numerics/checked_math.h"
 #include "net/base/io_buffer.h"
 #include "third_party/zlib/zlib.h"
 
@@ -29,9 +28,9 @@ class ShrinkableIOBufferWithSize : public IOBufferWithSize {
   explicit ShrinkableIOBufferWithSize(size_t size) : IOBufferWithSize(size) {}
 
   void Shrink(int new_size) {
-    // The `checked_cast` addresses the < 0 case.
-    CHECK_LE(new_size, size());
-    SetSpan(first(base::checked_cast<size_t>(new_size)));
+    CHECK_GE(new_size, 0);
+    CHECK_LE(new_size, size_);
+    size_ = new_size;
   }
 
  private:

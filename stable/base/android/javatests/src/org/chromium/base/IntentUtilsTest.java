@@ -7,13 +7,20 @@ package org.chromium.base;
 import static org.junit.Assert.assertEquals;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -23,10 +30,14 @@ import org.chromium.build.BuildConfig;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class IntentUtilsTest {
+    @Mock private Context mContext;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     private void assertTargetsSelf(boolean targetsSelf, Intent intent, boolean expectAssertion) {
         boolean asserted = false;
         try {
-            assertEquals(targetsSelf, IntentUtils.intentTargetsSelf(intent));
+            assertEquals(targetsSelf, IntentUtils.intentTargetsSelf(mContext, intent));
         } catch (AssertionError e) {
             asserted = true;
             if (!expectAssertion) throw e;
@@ -37,12 +48,10 @@ public class IntentUtilsTest {
     @Test
     @SmallTest
     public void testIntentTargetsSelf() {
-        String packageName = BuildInfo.getInstance().hostPackageName;
+        String packageName = "package.name";
+        Mockito.when(mContext.getPackageName()).thenReturn(packageName);
         assertTargetsSelf(false, new Intent(), false);
-        assertTargetsSelf(
-                true,
-                new Intent(ContextUtils.getApplicationContext(), IntentUtilsTest.class),
-                false);
+        assertTargetsSelf(true, new Intent(mContext, IntentUtilsTest.class), false);
 
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(packageName, ""));

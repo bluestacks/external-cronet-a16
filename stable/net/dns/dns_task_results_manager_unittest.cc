@@ -243,7 +243,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv6Timedout) {
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is timed out. Service endpoints should be available after timeout.
-  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
                 base::Milliseconds(1));
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
@@ -354,7 +354,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6AfterResolutionDelay) {
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // The resolution delay passed. Service endpoints should not be available yet.
-  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
                 base::Milliseconds(1));
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
@@ -482,7 +482,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is timed out. Service endpoints should be available with metadatas.
-  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
                 base::Milliseconds(1));
 
   ASSERT_TRUE(manager->IsMetadataReady());
@@ -518,7 +518,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6TimedoutAfterMetadata) {
 
   // AAAA is timed out. Service endpoints should not be available since there
   // are no addresses.
-  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
                 base::Milliseconds(1));
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
@@ -645,42 +645,6 @@ TEST_F(DnsTaskResultsManagerTest, Ipv4MappedIpv6) {
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
                   ElementsAre(MakeIPEndPoint("192.0.2.1", 443)), IsEmpty())));
-}
-
-TEST_F(DnsTaskResultsManagerTest,
-       AliasesAreFixedUpWhenProcessingDnsTransactionResults) {
-  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
-  std::string_view bad_alias = "bad_alias.1";
-  std::string_view good_alias = "good_alias";
-  std::string_view funky_alias = "GOOGLE.TeSt";
-
-  // AAAA is responded with aliases.
-  std::unique_ptr<HostResolverInternalResult> result1 =
-      CreateAlias(kHostName, DnsQueryType::AAAA, kAliasTarget1);
-  std::unique_ptr<HostResolverInternalResult> result2 =
-      CreateAlias(kAliasTarget1, DnsQueryType::AAAA, kAliasTarget2);
-  std::unique_ptr<HostResolverInternalResult> result3 =
-      CreateAlias(kAliasTarget2, DnsQueryType::AAAA, bad_alias);
-  std::unique_ptr<HostResolverInternalResult> result4 =
-      CreateAlias(bad_alias, DnsQueryType::AAAA, good_alias);
-  std::unique_ptr<HostResolverInternalResult> result5 =
-      CreateAlias(good_alias, DnsQueryType::AAAA, funky_alias);
-  std::unique_ptr<HostResolverInternalResult> result6 = CreateDataResult(
-      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
-  manager->ProcessDnsTransactionResults(
-      DnsQueryType::AAAA, {result1.get(), result2.get(), result3.get(),
-                           result4.get(), result5.get(), result6.get()});
-
-  // Ensure bad_alias is removed, good_alias remains in the set, and funky_alias
-  // capitalization changes due to URL canonicalization.
-  EXPECT_THAT(manager->GetCurrentEndpoints(),
-              ElementsAre(ExpectServiceEndpoint(
-                  IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
-  EXPECT_THAT(manager->GetAliases(),
-              UnorderedElementsAre(kHostName, kAliasTarget1, kAliasTarget2,
-                                   good_alias, "google.test"));
-  EXPECT_TRUE(manager->GetAliases().find(std::string(bad_alias)) ==
-              manager->GetAliases().end());
 }
 
 }  // namespace net

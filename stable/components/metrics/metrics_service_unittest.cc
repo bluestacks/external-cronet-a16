@@ -23,9 +23,10 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/log_decoder.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_scheduler.h"
@@ -55,11 +57,6 @@ namespace metrics {
 namespace {
 
 const char kTestPrefName[] = "TestPref";
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-const char kBeforeBackgroundHistogram[] = "Test.BeforeBackground";
-const char kBeforeForegroundHistogram[] = "Test.BeforeForeground";
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 class TestUnsentLogStore : public UnsentLogStore {
  public:
@@ -335,46 +332,48 @@ class MetricsServiceTest : public testing::Test {
     return log.user_action_event_size();
   }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Returns the value of `fg_bg_id` in the the currently staged log in
-  // `test_log_store`.
-  int GetFgBgId(MetricsLogStore* test_log_store) {
-    ChromeUserMetricsExtension log;
-    EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &log));
-    EXPECT_TRUE(log.system_profile().has_fg_bg_id());
-    return log.system_profile().fg_bg_id();
-  }
-
-  // Returns the sample count of the `kBeforeBackgroundHistogram` histogram in
-  // the currently staged log in `test_log_store`.
-  int GetSampleCountOfBeforeBackgroundHistogram(
-      MetricsLogStore* test_log_store) {
-    ChromeUserMetricsExtension log;
-    EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &log));
-    return GetHistogramSampleCount(log, kBeforeBackgroundHistogram);
-  }
-
-  // Returns the sample count of the `kBeforeForegroundHistogram` histogram in
-  // the currently staged log in `test_log_store`.
-  int GetSampleCountOfBeforeForegroundHistogram(
-      MetricsLogStore* test_log_store) {
-    ChromeUserMetricsExtension log;
-    EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &log));
-    return GetHistogramSampleCount(log, kBeforeForegroundHistogram);
-  }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
   const base::FilePath user_data_dir_path() { return temp_dir_.GetPath(); }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   std::unique_ptr<TestEnabledStateProvider> enabled_state_provider_;
   TestingPrefServiceSimple testing_local_state_;
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
   base::ScopedTempDir temp_dir_;
+};
+
+class MetricsServiceTestWithFeatures
+    : public MetricsServiceTest,
+      public ::testing::WithParamInterface<std::tuple<bool>> {
+ public:
+  MetricsServiceTestWithFeatures() = default;
+  ~MetricsServiceTestWithFeatures() override = default;
+
+  bool ShouldSnapshotInBg() { return std::get<0>(GetParam()); }
+
+  void SetUp() override {
+    MetricsServiceTest::SetUp();
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (ShouldSnapshotInBg()) {
+      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          features::kMetricsServiceDeltaSnapshotInBg);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 struct StartupVisibilityTestParams {
@@ -384,7 +383,34 @@ struct StartupVisibilityTestParams {
 
 class MetricsServiceTestWithStartupVisibility
     : public MetricsServiceTest,
-      public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
+      public ::testing::WithParamInterface<
+          std::tuple<StartupVisibilityTestParams, bool>> {
+ public:
+  MetricsServiceTestWithStartupVisibility() = default;
+  ~MetricsServiceTestWithStartupVisibility() override = default;
+
+  bool ShouldSnapshotInBg() { return std::get<1>(GetParam()); }
+
+  void SetUp() override {
+    MetricsServiceTest::SetUp();
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (ShouldSnapshotInBg()) {
+      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          features::kMetricsServiceDeltaSnapshotInBg);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 class ExperimentTestMetricsProvider : public TestMetricsProvider {
  public:
@@ -417,8 +443,7 @@ bool HistogramExists(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name) != nullptr;
 }
 
-base::HistogramBase::Count32 GetHistogramDeltaTotalCount(
-    std::string_view name) {
+base::HistogramBase::Count GetHistogramDeltaTotalCount(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name)
       ->SnapshotDelta()
       ->TotalCount();
@@ -426,7 +451,11 @@ base::HistogramBase::Count32 GetHistogramDeltaTotalCount(
 
 }  // namespace
 
-TEST_F(MetricsServiceTest, RecordId) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         MetricsServiceTestWithFeatures,
+                         ::testing::Combine(::testing::Bool()));
+
+TEST_P(MetricsServiceTestWithFeatures, RecordId) {
   EnableMetricsReporting();
   GetMetricsStateManager(user_data_dir_path())->ForceClientIdCreation();
 
@@ -446,7 +475,7 @@ TEST_F(MetricsServiceTest, RecordId) {
   EXPECT_EQ(1003, log3->uma_proto()->record_id());
 }
 
-TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
+TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAfterCleanShutDown) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   // Write a beacon file indicating that Chrome exited cleanly. Note that the
@@ -485,7 +514,7 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
                                      StabilityEventType::kBrowserCrash, 0);
 }
 
-TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
+TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
 
@@ -566,7 +595,7 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
                                      StabilityEventType::kBrowserCrash, 0);
 }
 
-TEST_F(MetricsServiceTest, IndependentLogAtProviderRequest) {
+TEST_P(MetricsServiceTestWithFeatures, IndependentLogAtProviderRequest) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -636,7 +665,7 @@ TEST_F(MetricsServiceTest, IndependentLogAtProviderRequest) {
   EXPECT_EQ(GetHistogramSampleCount(uma_log, test_histogram), 1);
 }
 
-TEST_F(MetricsServiceTest, OnDidCreateMetricsLogAtShutdown) {
+TEST_P(MetricsServiceTestWithFeatures, OnDidCreateMetricsLogAtShutdown) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -669,7 +698,7 @@ TEST_F(MetricsServiceTest, OnDidCreateMetricsLogAtShutdown) {
       kOnDidCreateMetricsLogHistogramName);
 }
 
-TEST_F(MetricsServiceTest, ProvideHistograms) {
+TEST_P(MetricsServiceTestWithFeatures, ProvideHistograms) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -701,7 +730,7 @@ TEST_F(MetricsServiceTest, ProvideHistograms) {
       kProvideHistogramsHistogramName);
 }
 
-TEST_F(MetricsServiceTest, ProvideHistogramsEarlyReturn) {
+TEST_P(MetricsServiceTestWithFeatures, ProvideHistogramsEarlyReturn) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -740,292 +769,21 @@ TEST_F(MetricsServiceTest, ProvideHistogramsEarlyReturn) {
       kProvideHistogramsHistogramName);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// Verifies that logs contain a proper `fg_bg_id`, which changes upon
-// backgrounding or foregrounding.
-TEST_F(MetricsServiceTest, FgBgId) {
-  EnableMetricsReporting();
-  TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
-
-  service.InitializeMetricsRecordingState();
-  // Start() will create the first ongoing log.
-  service.Start();
-  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
-
-  // Immediately send a foreground notification to simulate the application
-  // being launched. This should not close the current log (since it is too
-  // early to do so), and it should not cause it to have its `fg_bg_id` cleared
-  // (verified below by the first "ongoing log").
-  service.OnAppEnterForeground(/*force_open_new_log=*/true);
-  MetricsLogStore* test_log_store = service.LogStoreForTest();
-  EXPECT_FALSE(test_log_store->has_unsent_logs());
-
-  // Fast forward the time until the MetricsRotationScheduler first runs, which
-  // should complete the first ongoing log.
-  task_environment_.FastForwardBy(
-      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
-  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-
-  // Stage the next log, which should be the first ongoing log. Check that the
-  // log has a `fg_bg_id` value set, and remember it to compare with follow up
-  // logs.
-  test_log_store->StageNextLog();
-  int fg_bg_id1 = GetFgBgId(test_log_store);
-
-  // Send another foreground notification, which will create a second "ongoing
-  // log". Since we are already foregrounded (see above), this should not result
-  // in a new `fg_bg_id` (verified by the third "ongoing log" below). These
-  // duplicate notifications can often happen on platforms like iOS.
-  test_log_store->DiscardStagedLog();
-  service.OnAppEnterForeground(/*force_open_new_log=*/true);
-  test_log_store->StageNextLog();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id1);
-
-  // Close and stage the next log, which is the third "ongoing log". Check that
-  // it has the same `fg_bg_id` as the last two logs.
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id1);
-
-  // Simulate backgrounding. The act of backgrounding will create a fourth
-  // "ongoing log" -- which should contain the last metrics from when the
-  // browser was in the foreground, and hence should have the same `fg_bg_id`
-  // as the previous two logs.
-  test_log_store->DiscardStagedLog();
-  base::UmaHistogramBoolean(kBeforeBackgroundHistogram, true);
-  service.OnAppEnterBackground(/*keep_recording_in_background=*/true);
-  test_log_store->StageNextLog();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id1);
-  EXPECT_EQ(GetSampleCountOfBeforeBackgroundHistogram(test_log_store), 1);
-
-  // Create a fifth then sixth "ongoing log". These logs should only contain
-  // metrics from after the browser was backgrounded, and hence have the same
-  // `fg_bg_id`, but it should be different than all the previous logs.
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  int fg_bg_id2 = GetFgBgId(test_log_store);
-  EXPECT_NE(fg_bg_id2, fg_bg_id1);
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id2);
-
-  // Simulate foregrounding. The act of foregrounding will create a seventh
-  // "ongoing log" -- which should contain the last metrics from when the
-  // browser was in the background, and hence should have the same `fg_bg_id`
-  // as the previous two logs.
-  test_log_store->DiscardStagedLog();
-  base::UmaHistogramBoolean(kBeforeForegroundHistogram, true);
-  service.OnAppEnterForeground(/*force_open_new_log=*/true);
-  test_log_store->StageNextLog();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id2);
-  EXPECT_EQ(GetSampleCountOfBeforeForegroundHistogram(test_log_store), 1);
-
-  // Lastly, for good measure, create an eight then ninth "ongoing log". These
-  // logs should only contain metrics from after the browser was foregrounded,
-  // and hence have the same `fg_bg_id`, but it should be different than all the
-  // previous logs.
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  int fg_bg_id3 = GetFgBgId(test_log_store);
-  EXPECT_NE(fg_bg_id3, fg_bg_id2);
-  EXPECT_NE(fg_bg_id3, fg_bg_id1);
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id3);
-
-  // End test and clean up histograms.
-  service.Stop();
-  base::StatisticsRecorder::ForgetHistogramForTesting(
-      kBeforeBackgroundHistogram);
-  base::StatisticsRecorder::ForgetHistogramForTesting(
-      kBeforeForegroundHistogram);
-}
-
-// Verifies that if backgrounding and/or foregrounding happens too early, the
-// first log will contain metrics from both background and foreground periods,
-// in which case its `fg_bg_id` should be unset.
-TEST_F(MetricsServiceTest, FgBgId_BackgroundForegroundBeforeFirstLog) {
-  EnableMetricsReporting();
-  TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
-  MetricsLogStore* test_log_store = service.LogStoreForTest();
-
-  service.InitializeMetricsRecordingState();
-  // Start() will create the first ongoing log.
-  service.Start();
-  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
-
-  // Immediately send a foreground notification to simulate the application
-  // being launched. This should not close the current log (since it is too
-  // early to do so), and it should not cause it to have its `fg_bg_id` cleared
-  // (verified below).
-  service.OnAppEnterForeground(/*force_open_new_log=*/true);
-  EXPECT_FALSE(test_log_store->has_unsent_logs());
-
-  // Fast forward the time by |initialization_delay|, which is when the pending
-  // init tasks will run.
-  base::TimeDelta initialization_delay = service.GetInitializationDelay();
-  task_environment_.FastForwardBy(initialization_delay);
-  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
-
-  // At this stage, the first log has not been closed yet. Perform background
-  // and foreground actions. Since it is too early, these actions should not
-  // close a log.
-  base::UmaHistogramBoolean(kBeforeBackgroundHistogram, true);
-  service.OnAppEnterBackground(/*keep_recording_in_background=*/true);
-  base::UmaHistogramBoolean(kBeforeForegroundHistogram, true);
-  service.OnAppEnterForeground(/*force_open_new_log=*/true);
-  ASSERT_FALSE(test_log_store->has_unsent_logs());
-
-  // Fast forward the time until the MetricsRotationScheduler first runs, which
-  // should complete the first ongoing log.
-  // Note: The first log is only created after N = GetInitialIntervalSeconds()
-  // seconds since the start, and since we already fast forwarded by
-  // |initialization_delay| once, we only need to fast forward by
-  // N - |initialization_delay|.
-  task_environment_.FastForwardBy(
-      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
-      initialization_delay);
-  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-  test_log_store->StageNextLog();
-
-  // The log should contain both histograms, despite being emitted in different
-  // background/foreground "periods". For that same reason, the log should not
-  // have a `fg_bg_id`.
-  EXPECT_EQ(GetSampleCountOfBeforeBackgroundHistogram(test_log_store), 1);
-  EXPECT_EQ(GetSampleCountOfBeforeForegroundHistogram(test_log_store), 1);
-  ChromeUserMetricsExtension log;
-  EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &log));
-  EXPECT_FALSE(log.system_profile().has_fg_bg_id());
-
-  // Logs created after this should have `fg_bg_id` set like usual. Create a
-  // second then third "ongoing log" to verify this. These logs should contain
-  // metrics from the same foreground "period", and hence have the same
-  // `fg_bg_id`.
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  int fg_bg_id = GetFgBgId(test_log_store);
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id);
-
-  // End test and clean up histograms.
-  service.Stop();
-  base::StatisticsRecorder::ForgetHistogramForTesting(
-      kBeforeBackgroundHistogram);
-  base::StatisticsRecorder::ForgetHistogramForTesting(
-      kBeforeForegroundHistogram);
-}
-
-// Certain platforms (iOS, WebView) do not record while in the background, and
-// do not close a log when foregrounding. In those cases, logs may contain data
-// that were emitted while the browser was in the background and foreground.
-// This test verifies that in those scenarios, `fg_bg_id` is unset.
-TEST_F(MetricsServiceTest, FgBgId_NoRecordingInBackground) {
-  EnableMetricsReporting();
-  TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
-
-  service.InitializeMetricsRecordingState();
-  // Start() will create the first ongoing log.
-  service.Start();
-  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
-
-  // Immediately send a foreground notification to simulate the application
-  // being launched. This should not close the current log (since it is too
-  // early to do so, and `force_open_new_log` is set to false), and it should
-  // not cause it to have its `fg_bg_id` cleared (verified below).
-  service.OnAppEnterForeground(/*force_open_new_log=*/false);
-  MetricsLogStore* test_log_store = service.LogStoreForTest();
-  EXPECT_FALSE(test_log_store->has_unsent_logs());
-
-  // Fast forward the time until the MetricsRotationScheduler first runs, which
-  // should complete the first ongoing log.
-  task_environment_.FastForwardBy(
-      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
-  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-
-  // Stage the next log, which should be the first ongoing log. Check that the
-  // log has a `fg_bg_id` value set, and remember it to compare with follow up
-  // logs.
-  test_log_store->StageNextLog();
-  int fg_bg_id1 = GetFgBgId(test_log_store);
-
-  // Send another foreground notification. Since we are already foregrounded
-  // (see above), this should not result in a new `fg_bg_id` (verified by the
-  // second "ongoing log" below). These duplicate notifications can often happen
-  // on platforms like iOS.
-  test_log_store->DiscardStagedLog();
-  service.OnAppEnterForeground(/*force_open_new_log=*/false);
-  EXPECT_FALSE(test_log_store->has_unsent_logs());
-
-  // Simulate backgrounding. The act of backgrounding will create a second
-  // "ongoing log" -- which should contain the last metrics from when the
-  // browser was in the foreground, and hence should have the same `fg_bg_id`
-  // as the previous log.
-  base::UmaHistogramBoolean(kBeforeBackgroundHistogram, true);
-  service.OnAppEnterBackground(/*keep_recording_in_background=*/false);
-  test_log_store->StageNextLog();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id1);
-  EXPECT_EQ(GetSampleCountOfBeforeBackgroundHistogram(test_log_store), 1);
-  test_log_store->DiscardStagedLog();
-
-  // Because `keep_recording_in_background` was set to false, logs will not be
-  // periodically be created/closed while in the background.
-
-  // Simulate foregrounding. Because `force_open_new_log` is set to false, the
-  // act of foregrounding will not create an "ongoing log".
-  EXPECT_FALSE(test_log_store->has_unsent_logs());
-  base::UmaHistogramBoolean(kBeforeForegroundHistogram, true);
-  service.OnAppEnterForeground(/*force_open_new_log=*/false);
-  EXPECT_FALSE(test_log_store->has_unsent_logs());
-
-  // Now that the browser is in the foreground, logs will start periodically
-  // being created/closed again. However, the next one may contain metrics from
-  // before and after the foreground, and so should not have a `fg_bg_id` value
-  // set.
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(GetSampleCountOfBeforeForegroundHistogram(test_log_store), 1);
-  ChromeUserMetricsExtension log;
-  EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &log));
-  EXPECT_FALSE(log.system_profile().has_fg_bg_id());
-
-  // For good measure, verify that the logs created after this have a proper
-  // `fg_bg_id` value set, but it should be different than the first one.
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  int fg_bg_id2 = GetFgBgId(test_log_store);
-  EXPECT_NE(fg_bg_id2, fg_bg_id1);
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(GetFgBgId(test_log_store), fg_bg_id2);
-
-  // End test and clean up histograms.
-  service.Stop();
-  base::StatisticsRecorder::ForgetHistogramForTesting(
-      kBeforeBackgroundHistogram);
-  base::StatisticsRecorder::ForgetHistogramForTesting(
-      kBeforeForegroundHistogram);
-}
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     MetricsServiceTestWithStartupVisibility,
-    ::testing::Values(
-        StartupVisibilityTestParams{
-            .startup_visibility = StartupVisibility::kUnknown,
-            .expected_beacon_value = true},
-        StartupVisibilityTestParams{
-            .startup_visibility = StartupVisibility::kBackground,
-            .expected_beacon_value = true},
-        StartupVisibilityTestParams{
-            .startup_visibility = StartupVisibility::kForeground,
-            .expected_beacon_value = false}));
+    ::testing::Combine(
+        ::testing::Values(
+            StartupVisibilityTestParams{
+                .startup_visibility = StartupVisibility::kUnknown,
+                .expected_beacon_value = true},
+            StartupVisibilityTestParams{
+                .startup_visibility = StartupVisibility::kBackground,
+                .expected_beacon_value = true},
+            StartupVisibilityTestParams{
+                .startup_visibility = StartupVisibility::kForeground,
+                .expected_beacon_value = false}),
+        ::testing::Bool()));
 
 TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   base::HistogramTester histogram_tester;
@@ -1061,7 +819,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   const std::string kCurrentVersion = "5.0.322.0-64-devel";
   client.set_version_string(kCurrentVersion);
 
-  StartupVisibilityTestParams params = GetParam();
+  StartupVisibilityTestParams params = std::get<0>(GetParam());
   TestMetricsService service(
       GetMetricsStateManager(user_data_dir_path(), params.startup_visibility),
       &client, local_state);
@@ -1081,7 +839,8 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   // InitializeMetricsRecordingState() depends on the type of Android Chrome
   // session. See the comments in MetricsService::InitializeMetricsState() for
   // more details.
-  const std::string beacon_value = base::ToString(params.expected_beacon_value);
+  const std::string beacon_value =
+      params.expected_beacon_value ? "true" : "false";
   partial_expected_contents = "exited_cleanly\":" + beacon_value;
 #else
   partial_expected_contents = "exited_cleanly\":false";
@@ -1135,7 +894,8 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
                                      StabilityEventType::kBrowserCrash, 1);
 }
 
-TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
+TEST_P(MetricsServiceTestWithFeatures,
+       InitialLogsHaveOnDidCreateMetricsLogHistograms) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1202,7 +962,7 @@ TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
       kOnDidCreateMetricsLogHistogramName);
 }
 
-TEST_F(MetricsServiceTest, MarkCurrentHistogramsAsReported) {
+TEST_P(MetricsServiceTestWithFeatures, MarkCurrentHistogramsAsReported) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1234,7 +994,7 @@ TEST_F(MetricsServiceTest, MarkCurrentHistogramsAsReported) {
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.After.Histogram");
 }
 
-TEST_F(MetricsServiceTest, LogHasUserActions) {
+TEST_P(MetricsServiceTestWithFeatures, LogHasUserActions) {
   // This test verifies that user actions are properly captured in UMA logs.
   // In particular, it checks that the first log has actions, a behavior that
   // was buggy in the past, plus additional checks for subsequent logs with
@@ -1296,7 +1056,7 @@ TEST_F(MetricsServiceTest, LogHasUserActions) {
   EXPECT_EQ(2, GetNumberOfUserActions(test_log_store));
 }
 
-TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
+TEST_P(MetricsServiceTestWithFeatures, FirstLogCreatedBeforeUnsentLogsSent) {
   // This test checks that we will create and serialize the first ongoing log
   // before starting to send unsent logs from the past session. The latter is
   // simulated by injecting some fake ongoing logs into the MetricsLogStore.
@@ -1345,51 +1105,7 @@ TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
   EXPECT_EQ(2u, test_log_store->ongoing_log_count());
 }
 
-// Verify that calling StartOutOfBandUploadIfPossible() triggers an upload when
-// called after the initial ongoing logs have been uploaded.
-TEST_F(MetricsServiceTest, OutOfBandLogUpload) {
-  // Initial set-up.
-  EnableMetricsReporting();
-  TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
-  service.InitializeMetricsRecordingState();
-  service.Start();
-  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
-
-  // Fast forward the time by `initialization_delay`, which is when the pending
-  // init tasks will run.
-  base::TimeDelta initialization_delay = service.GetInitializationDelay();
-  task_environment_.FastForwardBy(initialization_delay);
-  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
-
-  // Fast forward the time until the MetricsRotationScheduler first runs, which
-  // should complete the first ongoing log.
-  task_environment_.FastForwardBy(
-      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
-      initialization_delay);
-  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-
-  // Fast forward the time so that the upload loop starts uploading logs.
-  base::TimeDelta unsent_log_interval =
-      MetricsUploadScheduler::GetUnsentLogsInterval();
-  task_environment_.FastForwardBy(unsent_log_interval);
-  EXPECT_TRUE(client.uploader()->is_uploading());
-  client.uploader()->CompleteUpload(200);
-
-  // Assert that the uploader is no longer uploading, and then trigger an
-  // upload.
-  EXPECT_FALSE(client.uploader()->is_uploading());
-  service.StartOutOfBandUploadIfPossible(
-      MetricsService::OutOfBandUploadPasskey());
-
-  // Fast forward the time so that the upload loop starts uploading logs.
-  task_environment_.FastForwardBy(unsent_log_interval);
-  EXPECT_TRUE(client.uploader()->is_uploading());
-  client.uploader()->CompleteUpload(200);
-}
-
-TEST_F(MetricsServiceTest,
+TEST_P(MetricsServiceTestWithFeatures,
        MetricsProviderOnRecordingDisabledCalledOnInitialStop) {
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1405,7 +1121,7 @@ TEST_F(MetricsServiceTest,
   EXPECT_TRUE(test_provider->on_recording_disabled_called());
 }
 
-TEST_F(MetricsServiceTest, MetricsProvidersInitialized) {
+TEST_P(MetricsServiceTestWithFeatures, MetricsProvidersInitialized) {
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
                              GetLocalState());
@@ -1421,7 +1137,7 @@ TEST_F(MetricsServiceTest, MetricsProvidersInitialized) {
 
 // Verify that FieldTrials activated by a MetricsProvider are reported by the
 // FieldTrialsProvider.
-TEST_F(MetricsServiceTest, ActiveFieldTrialsReported) {
+TEST_P(MetricsServiceTestWithFeatures, ActiveFieldTrialsReported) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1457,7 +1173,8 @@ TEST_F(MetricsServiceTest, ActiveFieldTrialsReported) {
       IsFieldTrialPresent(uma_log.system_profile(), trial_name2, group_name2));
 }
 
-TEST_F(MetricsServiceTest, SystemProfileDataProvidedOnEnableRecording) {
+TEST_P(MetricsServiceTestWithFeatures,
+       SystemProfileDataProvidedOnEnableRecording) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1483,7 +1200,7 @@ TEST_F(MetricsServiceTest, SystemProfileDataProvidedOnEnableRecording) {
 
 // Verify that the two separate MetricsSchedulers (MetricsRotationScheduler and
 // MetricsUploadScheduler) function together properly.
-TEST_F(MetricsServiceTest, SplitRotation) {
+TEST_P(MetricsServiceTestWithFeatures, SplitRotation) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1646,7 +1363,7 @@ TEST_F(MetricsServiceTest, SplitRotation) {
   EXPECT_EQ(1U, task_environment_.GetPendingMainThreadTaskCount());
 }
 
-TEST_F(MetricsServiceTest, LastLiveTimestamp) {
+TEST_P(MetricsServiceTestWithFeatures, LastLiveTimestamp) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1704,8 +1421,32 @@ TEST_F(MetricsServiceTest, LastLiveTimestamp) {
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp));
 }
 
+TEST_P(MetricsServiceTestWithFeatures, EnablementObserverNotification) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+  service.InitializeMetricsRecordingState();
+
+  std::optional<bool> enabled;
+  auto observer = [&enabled](bool notification) { enabled = notification; };
+
+  auto subscription =
+      service.AddEnablementObserver(base::BindLambdaForTesting(observer));
+
+  service.Start();
+  ASSERT_TRUE(enabled.has_value());
+  EXPECT_TRUE(enabled.value());
+
+  enabled.reset();
+
+  service.Stop();
+  ASSERT_TRUE(enabled.has_value());
+  EXPECT_FALSE(enabled.value());
+}
+
 // Verifies that when a cloned install is detected, logs are purged.
-TEST_F(MetricsServiceTest, PurgeLogsOnClonedInstallDetected) {
+TEST_P(MetricsServiceTestWithFeatures, PurgeLogsOnClonedInstallDetected) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1753,8 +1494,29 @@ TEST_F(MetricsServiceTest, PurgeLogsOnClonedInstallDetected) {
   EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(MetricsServiceTest,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// ResetClientId is only enabled on certain targets.
+TEST_P(MetricsServiceTestWithFeatures, SetClientIdToExternalId) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+
+  const std::string client_id = "d92ad666-a420-4c73-8718-94311ae2ff5f";
+
+  EXPECT_NE(service.GetClientId(), client_id);
+
+  service.SetExternalClientId(client_id);
+  // Reset will cause the client id to be regenerated. If an external client id
+  // is provided, it should defer to using that id instead of creating its own.
+  service.ResetClientId();
+
+  EXPECT_EQ(service.GetClientId(), client_id);
+}
+#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(MetricsServiceTestWithFeatures,
        OngoingLogNotFlushedBeforeInitialLogWhenUserLogStoreSet) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -1805,7 +1567,7 @@ TEST_F(MetricsServiceTest,
   EXPECT_EQ(1u, alternate_ongoing_log_store_ptr->size());
 }
 
-TEST_F(MetricsServiceTest,
+TEST_P(MetricsServiceTestWithFeatures,
        OngoingLogFlushedAfterInitialLogWhenUserLogStoreSet) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -1852,7 +1614,8 @@ TEST_F(MetricsServiceTest,
   ASSERT_EQ(2u, test_log_store->ongoing_log_count());
 }
 
-TEST_F(MetricsServiceTest, OngoingLogDiscardedAfterEarlyUnsetUserLogStore) {
+TEST_P(MetricsServiceTestWithFeatures,
+       OngoingLogDiscardedAfterEarlyUnsetUserLogStore) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1890,7 +1653,8 @@ TEST_F(MetricsServiceTest, OngoingLogDiscardedAfterEarlyUnsetUserLogStore) {
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.After.Histogram");
 }
 
-TEST_F(MetricsServiceTest, UnsettingLogStoreShouldDisableRecording) {
+TEST_P(MetricsServiceTestWithFeatures,
+       UnsettingLogStoreShouldDisableRecording) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1913,6 +1677,6 @@ TEST_F(MetricsServiceTest, UnsettingLogStoreShouldDisableRecording) {
   base::RecordAction(base::UserMetricsAction("TestAction"));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace metrics

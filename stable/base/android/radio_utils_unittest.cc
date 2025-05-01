@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/android/radio_utils.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

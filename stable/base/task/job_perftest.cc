@@ -68,7 +68,7 @@ class IndexGenerator {
   explicit IndexGenerator(size_t size) : size_(size) {
     AutoLock auto_lock(lock_);
     pending_indices_.push(0);
-    ranges_to_split_.emplace(0, size_);
+    ranges_to_split_.push({0, size_});
   }
 
   IndexGenerator(const IndexGenerator&) = delete;
@@ -82,9 +82,8 @@ class IndexGenerator {
       pending_indices_.pop();
       return index;
     }
-    if (ranges_to_split_.empty()) {
+    if (ranges_to_split_.empty())
       return std::nullopt;
-    }
 
     // Split the oldest running range in 2 and return the middle index as
     // starting point.
@@ -94,12 +93,10 @@ class IndexGenerator {
     size_t mid = range.first + size / 2;
     // Both sides of the range are added to |ranges_to_split_| so they may be
     // further split if possible.
-    if (mid - range.first > 1) {
-      ranges_to_split_.emplace(range.first, mid);
-    }
-    if (range.second - mid > 1) {
-      ranges_to_split_.emplace(mid, range.second);
-    }
+    if (mid - range.first > 1)
+      ranges_to_split_.push({range.first, mid});
+    if (range.second - mid > 1)
+      ranges_to_split_.push({mid, range.second});
     return mid;
   }
 
@@ -213,9 +210,8 @@ class JobPerfTest : public testing::Test {
                                  work_list->NumIncompleteWorkItems(0) != 0 &&
                                  !delegate->ShouldYield();
                    ++i) {
-                if (!work_list->TryAcquire(i)) {
+                if (!work_list->TryAcquire(i))
                   continue;
-                }
                 if (!work_list->ProcessWorkItem(i)) {
                   complete->Signal();
                   return;
@@ -247,9 +243,8 @@ class JobPerfTest : public testing::Test {
     std::atomic_size_t index{0};
 
     // Post extra tasks to disrupt Job execution and cause workers to yield.
-    if (disruptive_post_tasks) {
+    if (disruptive_post_tasks)
       DisruptivePostTasks(10, Milliseconds(1));
-    }
 
     const TimeTicks job_run_start = TimeTicks::Now();
 
@@ -294,9 +289,8 @@ class JobPerfTest : public testing::Test {
     IndexGenerator generator(num_work_items);
 
     // Post extra tasks to disrupt Job execution and cause workers to yield.
-    if (disruptive_post_tasks) {
+    if (disruptive_post_tasks)
       DisruptivePostTasks(10, Milliseconds(1));
-    }
 
     const TimeTicks job_run_start = TimeTicks::Now();
 
@@ -309,9 +303,8 @@ class JobPerfTest : public testing::Test {
               while (work_list->NumIncompleteWorkItems(0) != 0 &&
                      !delegate->ShouldYield()) {
                 std::optional<size_t> index = generator->GetNext();
-                if (!index) {
+                if (!index)
                   return;
-                }
                 for (size_t i = *index; i < work_list->NumWorkItems(); ++i) {
                   if (delegate->ShouldYield()) {
                     generator->GiveBack(i);
@@ -355,9 +348,8 @@ class JobPerfTest : public testing::Test {
     IndexGenerator generator(num_work_items);
 
     // Post extra tasks to disrupt Job execution and cause workers to yield.
-    if (disruptive_post_tasks) {
+    if (disruptive_post_tasks)
       DisruptivePostTasks(10, Milliseconds(1));
-    }
 
     const TimeTicks job_run_start = TimeTicks::Now();
 
@@ -368,9 +360,8 @@ class JobPerfTest : public testing::Test {
                     [](IndexGenerator* generator, WorkList* work_list,
                        WaitableEvent* complete, JobDelegate* delegate) {
                       std::optional<size_t> index = generator->GetNext();
-                      if (!index) {
+                      if (!index)
                         return;
-                      }
                       size_t i = *index;
                       while (true) {
                         if (delegate->ShouldYield()) {
@@ -388,9 +379,8 @@ class JobPerfTest : public testing::Test {
                           return;
                         }
                         ++i;
-                        if (i == work_list->NumWorkItems()) {
+                        if (i == work_list->NumWorkItems())
                           i = 0;
-                        }
                       }
                     },
                     Unretained(&generator), Unretained(&work_list),

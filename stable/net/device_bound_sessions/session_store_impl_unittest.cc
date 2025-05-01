@@ -56,7 +56,7 @@ std::vector<uint8_t> GetWrappedKey(
 
 bool SessionMapsAreEqual(const SessionStore::SessionsMap& lhs,
                          const SessionStore::SessionsMap& rhs) {
-  return std::ranges::is_permutation(
+  return base::ranges::is_permutation(
       lhs, rhs, [&](const auto& pair1, const auto& pair2) {
         return pair1.first == pair2.first &&
                pair1.second->IsEqualForTesting(*pair2.second);
@@ -66,29 +66,25 @@ bool SessionMapsAreEqual(const SessionStore::SessionsMap& lhs,
 std::unique_ptr<Session> CreateSessionHelper(
     unexportable_keys::UnexportableKeyService& key_service,
     const std::string& url_string,
-    const std::string& session_id,
-    const std::string& origin = "https://foo.test") {
+    const std::string& session_id) {
   SessionParams::Scope scope;
-  scope.origin = origin;
   std::string cookie_attr = "Secure; Domain=" + GURL(url_string).host();
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", cookie_attr}});
-  SessionParams params{session_id,
-                       GURL(url_string),
-                       url_string,
-                       std::move(scope),
-                       std::move(cookie_credentials),
-                       GenerateNewKey(key_service)};
-  return *Session::CreateIfValid(params);
+  SessionParams params{session_id, url_string, std::move(scope),
+                       std::move(cookie_credentials)};
+  std::unique_ptr<Session> session =
+      Session::CreateIfValid(params, GURL(url_string));
+  session->set_unexportable_key_id(GenerateNewKey(key_service));
+  return session;
 }
 
 proto::Session CreateSessionProto(
     unexportable_keys::UnexportableKeyService& key_service,
     const std::string& url_string,
-    const std::string& session_id,
-    const std::string& origin) {
+    const std::string& session_id) {
   std::unique_ptr<Session> session =
-      CreateSessionHelper(key_service, url_string, session_id, origin);
+      CreateSessionHelper(key_service, url_string, session_id);
   proto::Session sproto = session->ToProto();
   unexportable_keys::UnexportableKeyId key_id =
       session->unexportable_key_id().value();
@@ -100,7 +96,6 @@ proto::Session CreateSessionProto(
 struct SessionCfg {
   std::string url;
   std::string session_id;
-  std::string origin;
 };
 using SessionCfgList = std::vector<SessionCfg>;
 SessionStore::SessionsMap CreateAndSaveSessions(
@@ -111,7 +106,7 @@ SessionStore::SessionsMap CreateAndSaveSessions(
   for (auto& cfg : cfgs) {
     auto site = net::SchemefulSite(GURL(cfg.url));
     std::unique_ptr<Session> session =
-        CreateSessionHelper(key_service, cfg.url, cfg.session_id, cfg.origin);
+        CreateSessionHelper(key_service, cfg.url, cfg.session_id);
     EXPECT_TRUE(session);
     store.SaveSession(site, *session);
     session_map.emplace(std::move(site), std::move(session));
@@ -253,12 +248,9 @@ TEST_F(SessionStoreImplTest, RequireValidBindingKeyForSave) {
 TEST_F(SessionStoreImplTest, SaveNewSessions) {
   CreateStoreAndLoadSessions();
   SessionCfgList cfgs = {
-      {"https://a.foo.test/index.html", "session0",
-       "https://foo.test"},  // schemeful site 1
-      {"https://b.foo.test/index.html", "session1",
-       "https://foo.test"},  // schemeful site 1
-      {"https://c.bar.test/index.html", "session2",
-       "https://bar.test"},  // schemeful site 2
+      {"https://a.foo.test/index.html", "session0"},  // schemeful site 1
+      {"https://b.foo.test/index.html", "session1"},  // ""
+      {"https://c.bar.test/index.html", "session2"},  // schemeful site 2
   };
   SessionStore::SessionsMap expected_sessions =
       CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
@@ -353,12 +345,9 @@ TEST_F(SessionStoreImplTest, DeleteSessions) {
 
   // Create and save some sessions.
   SessionCfgList cfgs = {
-      {"https://a.foo.test/index.html", "session0",
-       "https://foo.test"},  // schemeful site 1
-      {"https://b.foo.test/index.html", "session1",
-       "https://foo.test"},  // schemeful site 1
-      {"https://c.bar.test/index.html", "session2",
-       "https://bar.test"},  // schemeful site 2
+      {"https://a.foo.test/index.html", "session0"},  // schemeful site 1
+      {"https://b.foo.test/index.html", "session1"},  // ""
+      {"https://c.bar.test/index.html", "session2"},  // schemeful site 2
   };
   SessionStore::SessionsMap expected_sessions =
       CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
@@ -390,9 +379,9 @@ TEST_F(SessionStoreImplTest, DeleteSessions) {
 TEST_F(SessionStoreImplTest, LoadSavedSessions) {
   CreateStoreAndLoadSessions();
   SessionCfgList cfgs = {
-      {"https://a.foo.test/index.html", "session0", "https://foo.test"},
-      {"https://b.foo.test/index.html", "session1", "https://foo.test"},
-      {"https://c.bar.test/index.html", "session2", "https://bar.test"},
+      {"https://a.foo.test/index.html", "session0"},
+      {"https://b.foo.test/index.html", "session1"},
+      {"https://c.bar.test/index.html", "session2"},
   };
 
   SessionStore::SessionsMap saved_sessions =
@@ -411,16 +400,14 @@ TEST_F(SessionStoreImplTest, LoadSavedSessions) {
 
 TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidSite) {
   // Create an entry with an invalid site.
-  proto::Session sproto =
-      CreateSessionProto(unexportable_key_service(), "https://foo.test",
-                         "session_id", "https://foo.test");
+  proto::Session sproto = CreateSessionProto(unexportable_key_service(),
+                                             "https://foo.test", "session_id");
   proto::SiteSessions site_proto;
   (*site_proto.mutable_sessions())["session_id"] = std::move(sproto);
 
   // Create an entry with a valid site.
-  proto::Session sproto2 =
-      CreateSessionProto(unexportable_key_service(), "https://bar.test",
-                         "session_id", "https://bar.test");
+  proto::Session sproto2 = CreateSessionProto(unexportable_key_service(),
+                                              "https://bar.test", "session_id");
   proto::SiteSessions site2_proto;
   (*site2_proto.mutable_sessions())["session_id"] = std::move(sproto2);
   auto site2 = net::SchemefulSite(GURL("https://bar.test)"));
@@ -452,13 +439,11 @@ TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidSite) {
 // in file session_unittest.cc
 TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidSession) {
   // Create an entry with 1 valid and 1 invalid session.
-  proto::Session sproto1 =
-      CreateSessionProto(unexportable_key_service(), "https://foo.example.test",
-                         "session_1", "https://foo.example.test");
+  proto::Session sproto1 = CreateSessionProto(
+      unexportable_key_service(), "https://foo.example.test", "session_1");
   // Create an invalid session.
-  proto::Session sproto2 =
-      CreateSessionProto(unexportable_key_service(), "https://bar.example.test",
-                         "session_2", "https://bar.example.test");
+  proto::Session sproto2 = CreateSessionProto(
+      unexportable_key_service(), "https://bar.example.test", "session_2");
   sproto2.set_refresh_url("invalid_url");
 
   // Create a site proto (proto table's value field) consisting of the above 2
@@ -487,9 +472,8 @@ TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidSession) {
 
 TEST_F(SessionStoreImplTest, PruneLoadedEntryWithSessionMissingWrappedKey) {
   // Create a Session proto with missing wrapped key field.
-  proto::Session sproto =
-      CreateSessionProto(unexportable_key_service(), "https://foo.example.test",
-                         "session_id", "https://foo.example.test");
+  proto::Session sproto = CreateSessionProto(
+      unexportable_key_service(), "https://foo.example.test", "session_id");
   sproto.clear_wrapped_key();
 
   // Create a single entry table with the above session data.

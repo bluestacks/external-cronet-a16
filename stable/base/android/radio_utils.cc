@@ -42,9 +42,8 @@ RadioConnectionType RadioUtils::GetConnectionType() {
     // If GetConnectionType is being used in tests
     return g_overrider_for_tests->GetConnectionType();
   }
-  if (!IsSupported()) {
+  if (!IsSupported())
     return RadioConnectionType::kUnknown;
-  }
 
   JNIEnv* env = AttachCurrentThread();
   if (Java_RadioUtils_isWifiConnected(env)) {
@@ -55,9 +54,8 @@ RadioConnectionType RadioUtils::GetConnectionType() {
 }
 
 std::optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
-  if (!IsSupported()) {
+  if (!IsSupported())
     return std::nullopt;
-  }
 
   JNIEnv* env = AttachCurrentThread();
   int signal_level = Java_RadioUtils_getCellSignalLevel(env);
@@ -69,9 +67,8 @@ std::optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
 }
 
 std::optional<RadioDataActivity> RadioUtils::GetCellDataActivity() {
-  if (!IsSupported()) {
+  if (!IsSupported())
     return std::nullopt;
-  }
 
   JNIEnv* env = AttachCurrentThread();
   return static_cast<RadioDataActivity>(

@@ -34,14 +34,6 @@ class WorkQueueSets;
 // throttling mechanisms.
 class BASE_EXPORT WorkQueue {
  public:
-  enum class RemoveCancelledTasksPolicy {
-    // Removes cancelled tasks at the front of the queue. This is most efficient
-    // as it doesn't traverse all tasks in the queue.
-    kFront,
-    // Removes all cancelled tasks. This requires traversing all the queue.
-    kAll
-  };
-
   using QueueType = internal::TaskQueueImpl::WorkQueueType;
 
   // Note |task_queue| can be null if queue_type is kNonNestable.
@@ -114,14 +106,16 @@ class BASE_EXPORT WorkQueue {
 
   size_t Size() const { return tasks_.size(); }
 
+  size_t Capacity() const { return tasks_.capacity(); }
+
   // Pulls a task off the |tasks_| and informs the WorkQueueSets.  If the
   // task removed had an enqueue order >= the current fence then WorkQueue
   // pretends to be empty as far as the WorkQueueSets is concerned.
   Task TakeTaskFromWorkQueue();
 
-  // Removes cancelled tasks from the queue. Returns true if any tasks were
-  // removed.
-  bool RemoveCancelledTasks(RemoveCancelledTasksPolicy policy);
+  // Removes all canceled tasks from the head of the list. Returns true if any
+  // tasks were removed.
+  bool RemoveAllCanceledTasksFromFront();
 
   const char* name() const { return name_; }
 
@@ -158,6 +152,9 @@ class BASE_EXPORT WorkQueue {
   // queue is empty and fence has been set (i.e. future tasks would be blocked).
   // Otherwise returns false.
   bool BlockedByFence() const;
+
+  // Shrinks |tasks_| if it's wasting memory.
+  void MaybeShrinkQueue();
 
   // Test support function. This should not be used in production code.
   void PopTaskForTesting();

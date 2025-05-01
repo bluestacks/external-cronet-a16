@@ -7,15 +7,11 @@ package org.chromium.net;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 import java.net.InetAddress;
 import java.util.List;
 
 /** Class to access DNS server configuration. */
 @JNINamespace("net::android")
-@NullMarked
 public class DnsStatus {
     private final List<InetAddress> mDnsServers;
 
@@ -28,8 +24,8 @@ public class DnsStatus {
     public DnsStatus(
             List<InetAddress> dnsServers,
             boolean privateDnsActive,
-            @Nullable String privateDnsServerName,
-            @Nullable String searchDomains) {
+            String privateDnsServerName,
+            String searchDomains) {
         mDnsServers = dnsServers;
         mPrivateDnsActive = privateDnsActive;
         mPrivateDnsServerName = (privateDnsServerName != null) ? privateDnsServerName : "";

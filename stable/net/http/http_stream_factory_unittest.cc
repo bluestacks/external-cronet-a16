@@ -569,7 +569,6 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
-      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) override {
     ADD_FAILURE();
     return ERR_UNEXPECTED;
@@ -580,7 +579,6 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
-      bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override {
     last_num_streams_ = num_sockets;
@@ -1290,8 +1288,8 @@ TEST_P(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
 
     // Set up QUIC as alternative_service.
     HttpServerProperties http_server_properties;
-    const AlternativeService alternative_service(
-        NextProto::kProtoQUIC, url.host().c_str(), url.IntPort());
+    const AlternativeService alternative_service(kProtoQUIC, url.host().c_str(),
+                                                 url.IntPort());
     base::Time expiration = base::Time::Now() + base::Days(1);
     HostPortPair host_port_pair(alternative_service.GetHostPortPair());
     url::SchemeHostPort server("https", host_port_pair.host(),
@@ -1633,7 +1631,7 @@ TEST_P(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
 
   SSLSocketDataProvider ssl_socket_data(SYNCHRONOUS, OK);
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -1908,7 +1906,7 @@ TEST_P(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
 
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   HostPortPair host_port_pair("www.google.com", 443);
@@ -1955,7 +1953,7 @@ TEST_P(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
   session_deps->socket_factory->AddSocketDataProvider(&socket_data);
 
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps->socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
   session_deps->proxy_resolution_service = std::move(proxy_resolution_service);
 
@@ -2026,7 +2024,7 @@ TEST_P(HttpStreamFactoryTest,
   session_deps->socket_factory->AddSocketDataProvider(&socket_data);
 
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps->socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
   session_deps->proxy_resolution_service = std::move(proxy_resolution_service);
 
@@ -2088,7 +2086,7 @@ TEST_P(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
   std::vector<std::unique_ptr<SequencedSocketData>> providers;
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   for (int i = 0; i < kNumIdleSockets; i++) {
     auto provider =
         std::make_unique<SequencedSocketData>(reads, base::span<MockWrite>());
@@ -2119,7 +2117,6 @@ TEST_P(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
         group_id, socket_params, std::nullopt /* proxy_annotation_tag */,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-        /*fail_if_alias_requires_proxy_override=*/false,
         session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                ProxyChain::Direct()),
         NetLogWithSource());
@@ -2173,7 +2170,7 @@ TEST_P(HttpStreamFactoryTest, TwoSpdyConnects) {
       ConfiguredProxyResolutionService::CreateDirect());
 
   SSLSocketDataProvider ssl_socket_data0(ASYNC, OK);
-  ssl_socket_data0.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data0.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data0);
 
   MockRead reads0[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
@@ -2182,7 +2179,7 @@ TEST_P(HttpStreamFactoryTest, TwoSpdyConnects) {
   session_deps.socket_factory->AddSocketDataProvider(&data0);
 
   SSLSocketDataProvider ssl_socket_data1(ASYNC, OK);
-  ssl_socket_data1.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data1.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data1);
 
   SequencedSocketData data1;
@@ -2245,7 +2242,7 @@ TEST_P(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
 
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -2767,7 +2764,7 @@ class HttpStreamFactoryBidirectionalQuicTest
 
   void AddQuicAlternativeService(const url::SchemeHostPort& request_url,
                                  const std::string& alternative_destination) {
-    const AlternativeService alternative_service(NextProto::kProtoQUIC,
+    const AlternativeService alternative_service(kProtoQUIC,
                                                  alternative_destination, 443);
     base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_.SetQuicAlternativeService(
@@ -2916,7 +2913,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
 
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(1);
   EXPECT_THAT(stream_impl->ReadData(buffer.get(), 1), IsOk());
-  EXPECT_EQ(NextProto::kProtoQUIC, stream_impl->GetProtocol());
+  EXPECT_EQ(kProtoQUIC, stream_impl->GetProtocol());
   EXPECT_EQ("200", delegate.response_headers().find(":status")->second);
   EXPECT_EQ(0,
             GetPoolGroupCount(session(), HttpNetworkSession::NORMAL_SOCKET_POOL,
@@ -3015,7 +3012,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   // Make sure the BidirectionalStream negotiated goes through QUIC.
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(1);
   EXPECT_THAT(stream_impl->ReadData(buffer.get(), 1), IsOk());
-  EXPECT_EQ(NextProto::kProtoQUIC, stream_impl->GetProtocol());
+  EXPECT_EQ(kProtoQUIC, stream_impl->GetProtocol());
   EXPECT_EQ("200", delegate.response_headers().find(":status")->second);
   // There is no Http2 socket pool.
   EXPECT_EQ(0,
@@ -3044,7 +3041,7 @@ TEST_P(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
 
   // If HTTP/1 is used, BidirectionalStreamImpl should not be obtained.
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP11;
+  ssl_socket_data.next_proto = kProtoHTTP11;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -3104,12 +3101,12 @@ TEST_P(HttpStreamFactoryTest, Tag) {
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
   SSLSocketDataProvider ssl_socket_data2(ASYNC, OK);
   ssl_socket_data2.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data2.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data2);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -3289,7 +3286,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   EXPECT_TRUE(requester1.stream_done());
   EXPECT_TRUE(nullptr == requester1.websocket_stream());
   ASSERT_TRUE(nullptr != requester1.stream());
-  EXPECT_EQ(NextProto::kProtoQUIC, requester1.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester1.request()->negotiated_protocol());
   EXPECT_EQ(1, GetQuicSessionCount(session()));
 
   // Verify socket tagged appropriately.
@@ -3309,7 +3306,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   EXPECT_TRUE(requester2.stream_done());
   EXPECT_TRUE(nullptr == requester2.websocket_stream());
   ASSERT_TRUE(nullptr != requester2.stream());
-  EXPECT_EQ(NextProto::kProtoQUIC, requester2.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester2.request()->negotiated_protocol());
   EXPECT_EQ(2, GetQuicSessionCount(session()));
 
   // Verify socket tagged appropriately.
@@ -3328,7 +3325,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_TRUE(nullptr == requester3.websocket_stream());
   ASSERT_TRUE(nullptr != requester3.stream());
-  EXPECT_EQ(NextProto::kProtoQUIC, requester3.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester3.request()->negotiated_protocol());
   EXPECT_EQ(2, GetQuicSessionCount(session()));
 }
 
@@ -3358,13 +3355,13 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTag) {
   // Use cert for *.example.org
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
   SSLSocketDataProvider ssl_socket_data2(ASYNC, OK);
   // Use cert for *.example.org
   ssl_socket_data2.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data2.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data2);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -3537,13 +3534,13 @@ TEST_P(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   // Use cert for *.example.org
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
   SSLSocketDataProvider ssl_socket_data2(ASYNC, OK);
   // Use cert for *.example.org
   ssl_socket_data2.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data2.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data2);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -3705,13 +3702,13 @@ TEST_P(HttpStreamFactoryTest, MultiIPAliases) {
   // Load cert for *.example.org
   ssl_socket_data1.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data1.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data1.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data1);
   SSLSocketDataProvider ssl_socket_data2(ASYNC, OK);
   // Load cert for *.example.org
   ssl_socket_data2.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data2.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data2);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -3852,7 +3849,7 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // Load cert for *.example.org
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  ssl_socket_data.next_proto = kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   std::unique_ptr<HttpNetworkSession> session(
@@ -4112,7 +4109,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
 
   // Verify just one session created.
   EXPECT_EQ(1, GetQuicSessionCount(session()));
-  EXPECT_EQ(NextProto::kProtoQUIC, requester1.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester1.request()->negotiated_protocol());
 
   // Create a request that will alias and reuse the first session.
   StreamRequester requester2(session());
@@ -4130,7 +4127,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetQuicSessionCount(session()));
-  EXPECT_EQ(NextProto::kProtoQUIC, requester2.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester2.request()->negotiated_protocol());
 
   // Create another request that will alias and reuse the first session.
   StreamRequester requester3(session());
@@ -4151,7 +4148,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetQuicSessionCount(session()));
-  EXPECT_EQ(NextProto::kProtoQUIC, requester3.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester3.request()->negotiated_protocol());
 
   // Create a request that will reuse the first session.
   StreamRequester requester4(session());
@@ -4168,7 +4165,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // Verify the session pool reused the first session and no new session is
   // created.
   EXPECT_EQ(1, GetQuicSessionCount(session()));
-  EXPECT_EQ(NextProto::kProtoQUIC, requester4.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester4.request()->negotiated_protocol());
 
   // Create another request that will alias and reuse the first session.
   StreamRequester requester5(session());
@@ -4186,7 +4183,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetQuicSessionCount(session()));
-  EXPECT_EQ(NextProto::kProtoQUIC, requester5.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester5.request()->negotiated_protocol());
 
   // Create another request that will alias and reuse the first session.
   StreamRequester requester6(session());
@@ -4204,7 +4201,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // created. This will fail unless the session pool supports multiple
   // sessions aliasing a single IP.
   EXPECT_EQ(1, GetQuicSessionCount(session()));
-  EXPECT_EQ(NextProto::kProtoQUIC, requester6.request()->negotiated_protocol());
+  EXPECT_EQ(kProtoQUIC, requester6.request()->negotiated_protocol());
 }
 
 class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
@@ -4271,8 +4268,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcClear) {
   http_server_properties_.SetAlternativeServices(
       origin, network_anonymization_key,
       {AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
-          {NextProto::kProtoQUIC, "", 443},
-          base::Time::Now() + base::Seconds(30),
+          {kProtoQUIC, "", 443}, base::Time::Now() + base::Seconds(30),
           quic::AllSupportedVersions())});
 
   EXPECT_FALSE(
@@ -4318,7 +4314,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
           origin, network_anonymization_key);
   ASSERT_EQ(versions.size(), alternatives.size());
   for (size_t i = 0; i < alternatives.size(); ++i) {
-    EXPECT_EQ(NextProto::kProtoQUIC, alternatives[i].protocol());
+    EXPECT_EQ(kProtoQUIC, alternatives[i].protocol());
     EXPECT_EQ(HostPortPair("example.com", 443),
               alternatives[i].GetHostPortPair());
     EXPECT_EQ(1u, alternatives[i].advertised_versions().size());
@@ -4345,7 +4341,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcHttp2) {
       http_server_properties_.GetAlternativeServiceInfos(
           origin, network_anonymization_key);
   ASSERT_EQ(1u, alternatives.size());
-  EXPECT_EQ(NextProto::kProtoHTTP2, alternatives[0].protocol());
+  EXPECT_EQ(kProtoHTTP2, alternatives[0].protocol());
   EXPECT_EQ(HostPortPair("other.example.com", 443),
             alternatives[0].GetHostPortPair());
   EXPECT_EQ(0u, alternatives[0].advertised_versions().size());

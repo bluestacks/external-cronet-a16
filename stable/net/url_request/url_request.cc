@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -28,7 +28,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
-#include "net/base/network_isolation_partition.h"
 #include "net/base/upload_data_stream.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -46,7 +45,6 @@
 #include "net/storage_access_api/status.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
-#include "net/url_request/storage_access_status_cache.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_error_job.h"
 #include "net/url_request/url_request_job.h"
@@ -417,10 +415,6 @@ void URLRequest::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   *load_timing_info = load_timing_info_;
 }
 
-LoadTimingInternalInfo URLRequest::GetLoadTimingInternalInfo() const {
-  return load_timing_internal_info_;
-}
-
 void URLRequest::PopulateNetErrorDetails(NetErrorDetails* details) const {
   if (!job_)
     return;
@@ -579,12 +573,6 @@ void URLRequest::set_allow_credentials(bool allow_credentials) {
 
 void URLRequest::Start() {
   DCHECK(delegate_);
-
-  // We do not support credentials with a non-general
-  // NetworkIsolationPartition.
-  CHECK(isolation_info_.GetNetworkIsolationPartition() ==
-            NetworkIsolationPartition::kGeneral ||
-        !allow_credentials());
 
   if (status_ != OK)
     return;
@@ -1027,8 +1015,6 @@ void URLRequest::PrepareToRestart() {
   load_timing_info_.request_start_time = response_info_.request_time;
   load_timing_info_.request_start = base::TimeTicks::Now();
 
-  load_timing_internal_info_ = LoadTimingInternalInfo();
-
   status_ = OK;
   is_pending_ = false;
   proxy_chain_ = ProxyChain();
@@ -1106,9 +1092,8 @@ void URLRequest::RetryWithStorageAccess() {
   // implies that the URL is "potentially trustworthy" and that adding the
   // `kStorageAccessGrantEligibleViaHeader` override is sufficient to make the
   // status "active".
-  CHECK(storage_access_status().GetStatusForThirdPartyContext());
-  CHECK_EQ(static_cast<int>(
-               storage_access_status().GetStatusForThirdPartyContext().value()),
+  CHECK(storage_access_status());
+  CHECK_EQ(static_cast<int>(storage_access_status().value()),
            static_cast<int>(cookie_util::StorageAccessStatus::kActive));
   extra_request_headers_.SetHeader("Sec-Fetch-Storage-Access", "active");
   base::UmaHistogramEnumeration(
@@ -1260,8 +1245,6 @@ void URLRequest::OnHeadersComplete() {
     load_timing_info_.request_start_time = request_start_time;
 
     ConvertRealLoadTimesToBlockingTimes(&load_timing_info_);
-
-    job_->PopulateLoadTimingInternalInfo(&load_timing_internal_info_);
   }
 }
 
@@ -1384,7 +1367,7 @@ void URLRequest::SetIsSharedDictionaryReadAllowedCallback(
 }
 
 void URLRequest::SetDeviceBoundSessionAccessCallback(
-    base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
+    base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
         callback) {
   device_bound_session_access_callback_ = std::move(callback);
 }
@@ -1394,17 +1377,11 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
   DCHECK(url().SchemeIsHTTPOrHTTPS());
   socket_tag_ = socket_tag;
 }
-
-StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
-  CHECK_EQ(is_redirecting(), deferred_redirect_info_.has_value());
-
-  // `Delegate::OnReceivedRedirect` may set `defer_redirect` inside of
-  // `URLRequest::ReceivedRedirect` to true, which in turn sets the
-  // `deferred_redirect_info_` that has to be used when calculating new storage
-  // access status.
+std::optional<net::cookie_util::StorageAccessStatus>
+URLRequest::CalculateStorageAccessStatus(
+    base::optional_ref<const RedirectInfo> redirect_info) const {
   std::optional<net::cookie_util::StorageAccessStatus> storage_access_status =
-      network_delegate()->GetStorageAccessStatus(*this,
-                                                 deferred_redirect_info_);
+      network_delegate()->GetStorageAccessStatus(*this, redirect_info);
 
   auto get_storage_access_value_outcome_if_omitted =
       [&]() -> std::optional<net::cookie_util::StorageAccessStatusOutcome> {
@@ -1433,7 +1410,7 @@ StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
       "API.StorageAccessHeader.StorageAccessStatusOutcome",
       storage_access_value_outcome.value());
 
-  return StorageAccessStatusCache(storage_access_status);
+  return storage_access_status;
 }
 
 void URLRequest::SetSharedDictionaryGetter(

@@ -26,11 +26,6 @@ class NET_EXPORT NetworkChangeNotifierFactoryAndroid :
   // Must be called on the JNI thread.
   NetworkChangeNotifierFactoryAndroid();
 
-  // Must be called on the JNI thread.
-  explicit NetworkChangeNotifierFactoryAndroid(
-      NetworkChangeNotifierDelegateAndroid::ForceUpdateNetworkState
-          force_update_network_state);
-
   NetworkChangeNotifierFactoryAndroid(
       const NetworkChangeNotifierFactoryAndroid&) = delete;
   NetworkChangeNotifierFactoryAndroid& operator=(

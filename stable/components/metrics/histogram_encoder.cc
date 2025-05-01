@@ -5,7 +5,7 @@
 #include "components/metrics/histogram_encoder.h"
 
 #include <memory>
-#include <string_view>
+#include <string>
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
@@ -15,7 +15,7 @@ using base::SampleCountIterator;
 
 namespace metrics {
 
-void EncodeHistogramDelta(std::string_view histogram_name,
+void EncodeHistogramDelta(const std::string& histogram_name,
                           const base::HistogramSamples& snapshot,
                           ChromeUserMetricsExtension* uma_proto) {
   DCHECK_NE(0, snapshot.TotalCount());
@@ -30,9 +30,9 @@ void EncodeHistogramDelta(std::string_view histogram_name,
 
   for (std::unique_ptr<SampleCountIterator> it = snapshot.Iterator();
        !it->Done(); it->Next()) {
-    base::Histogram::Sample32 min;
+    base::Histogram::Sample min;
     int64_t max;
-    base::Histogram::Count32 count;
+    base::Histogram::Count count;
     it->Get(&min, &max, &count);
     HistogramEventProto::Bucket* bucket = histogram_proto->add_bucket();
     bucket->set_min(min);

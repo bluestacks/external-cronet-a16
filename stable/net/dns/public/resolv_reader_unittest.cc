@@ -12,7 +12,6 @@
 #include <arpa/inet.h>
 #include <resolv.h>
 
-#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -36,20 +35,20 @@ namespace net {
 namespace {
 
 // MAXNS is normally 3, but let's test 4 if possible.
-constexpr auto kNameserversIPv4 = std::to_array<const char*>({
+const char* const kNameserversIPv4[] = {
     "8.8.8.8",
     "192.168.1.1",
     "63.1.2.4",
     "1.0.0.1",
-});
+};
 
 #if BUILDFLAG(IS_LINUX)
-constexpr auto kNameserversIPv6 = std::to_array<const char*>({
+const char* const kNameserversIPv6[] = {
     nullptr,
     "2001:db8::42",
     nullptr,
     "::FFFF:129.144.52.38",
-});
+};
 #endif
 
 // Fills in |res| with sane configuration.

@@ -64,15 +64,13 @@ void FunctionThatBoostsPriorityOnEveryInvoke() {
 
 TEST_F(ScopedThreadPriorityTest, BasicTest) {
   for (auto from : kAllThreadTypes) {
-    if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault, from)) {
+    if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault, from))
       continue;
-    }
     for (auto to : kAllThreadTypes) {
       // ThreadType::kRealtimeAudio is not a valid |target_thread_type| for
       // ScopedBoostPriority.
-      if (to == ThreadType::kRealtimeAudio) {
+      if (to == ThreadType::kRealtimeAudio)
         continue;
-      }
       Thread thread("ScopedThreadPriorityTest");
       thread.StartWithOptions(Thread::Options(from));
       thread.WaitUntilThreadStarted();
@@ -98,7 +96,7 @@ TEST_F(ScopedThreadPriorityTest, BasicTest) {
 }
 
 TEST_F(ScopedThreadPriorityDeathTest, NoRealTime) {
-  EXPECT_CHECK_DEATH({
+  EXPECT_DCHECK_DEATH({
     ScopedBoostPriority scoped_boost_priority(ThreadType::kRealtimeAudio);
   });
 }

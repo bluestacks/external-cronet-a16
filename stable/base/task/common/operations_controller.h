@@ -66,9 +66,8 @@ class BASE_EXPORT OperationsController {
 
    public:
     ~OperationToken() {
-      if (outer_) {
+      if (outer_)
         outer_->DecrementBy(1);
-      }
     }
     OperationToken(const OperationToken&) = delete;
     OperationToken(OperationToken&& other) {

@@ -10,3 +10,4 @@ const char kCodepageLatin1[] = "ISO-8859-1";
 const char kCodepageUTF8[] = "UTF-8";
 
 }  // namespace base
+

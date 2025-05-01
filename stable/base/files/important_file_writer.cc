@@ -17,7 +17,6 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <variant>
 
 #include "base/check_op.h"
 #include "base/critical_closure.h"
@@ -41,6 +40,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base {
 
@@ -136,9 +136,8 @@ void DeleteTmpFileWithRetry(File tmp_file,
 #if BUILDFLAG(IS_WIN)
   // Mark the file for deletion when it is closed and then close it implicitly.
   if (tmp_file.IsValid()) {
-    if (tmp_file.DeleteOnClose(true)) {
+    if (tmp_file.DeleteOnClose(true))
       return;
-    }
     // The file was opened with exclusive r/w access, so failures are primarily
     // due to I/O errors or other phenomena out of the process's control. Go
     // ahead and close the file. The call to DeleteFile below will basically
@@ -193,9 +192,8 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
     return;
   }
 
-  if (!before_write_callback.is_null()) {
+  if (!before_write_callback.is_null())
     std::move(before_write_callback).Run();
-  }
 
   // Calling the impl by way of the private
   // ProduceAndWriteStringToFileAtomically, which originated from an
@@ -204,9 +202,8 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
                                               /*from_instance=*/true,
                                               std::move(replace_file_callback));
 
-  if (!after_write_callback.is_null()) {
+  if (!after_write_callback.is_null())
     std::move(after_write_callback).Run(result);
-  }
 }
 
 // static
@@ -217,9 +214,8 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
     bool from_instance,
     ReplaceFileCallback replace_file_callback) {
   const TimeTicks write_start = TimeTicks::Now();
-  if (!from_instance) {
+  if (!from_instance)
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
-  }
 
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
   // In https://crbug.com/920174, we have cases where CreateTemporaryFileInDir
@@ -230,7 +226,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
   base::debug::Alias(path_copy);
 #endif  // BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, chrome gets killed when it cannot finish shutdown quickly,
   // and this function seems to be one of the slowest shutdown steps.
   // Include some info to the report for investigation. crbug.com/418627
@@ -446,14 +442,14 @@ void ImportantFileWriter::ScheduleWriteWithBackgroundDataSerializer(
 
 void ImportantFileWriter::DoScheduledWrite() {
   // One of the serializers should be set.
-  DCHECK(!std::holds_alternative<std::monostate>(serializer_));
+  DCHECK(!absl::holds_alternative<absl::monostate>(serializer_));
 
   const TimeTicks serialization_start = TimeTicks::Now();
   BackgroundDataProducerCallback data_producer_for_background_sequence;
 
-  if (std::holds_alternative<DataSerializer*>(serializer_)) {
+  if (absl::holds_alternative<DataSerializer*>(serializer_)) {
     std::optional<std::string> data;
-    data = std::get<DataSerializer*>(serializer_)->SerializeData();
+    data = absl::get<DataSerializer*>(serializer_)->SerializeData();
     if (!data) {
       DLOG(WARNING) << "Failed to serialize data to be saved in "
                     << path_.value();
@@ -467,7 +463,7 @@ void ImportantFileWriter::DoScheduledWrite() {
         std::move(data).value());
   } else {
     data_producer_for_background_sequence =
-        std::get<BackgroundDataSerializer*>(serializer_)
+        absl::get<BackgroundDataSerializer*>(serializer_)
             ->GetSerializedDataProducerForBackgroundSequence();
 
     DCHECK(data_producer_for_background_sequence);
@@ -493,7 +489,7 @@ void ImportantFileWriter::RegisterOnNextWriteCallbacks(
 
 void ImportantFileWriter::ClearPendingWrite() {
   timer().Stop();
-  serializer_.emplace<std::monostate>();
+  serializer_.emplace<absl::monostate>();
 }
 
 void ImportantFileWriter::SetTimerForTesting(OneShotTimer* timer_override) {

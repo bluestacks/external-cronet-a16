@@ -7,8 +7,7 @@ package org.chromium.net;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -23,7 +22,6 @@ import java.util.Locale;
  *  https://wicg.github.io/web-share-target/level-2/#determining-if-a-file-is-accepted
  *  It is also used inside chrome/android/java/src/org/chromium/chrome/browser/photo_picker.
  */
-@NullMarked
 public class MimeTypeFilter implements FileFilter {
     private HashSet<String> mExtensions = new HashSet<>();
     private HashSet<String> mMimeTypes = new HashSet<>();
@@ -37,7 +35,7 @@ public class MimeTypeFilter implements FileFilter {
      * @param mimeTypes A list of MIME types this filter accepts.
      *                  For example: images/gif, video/*.
      */
-    public MimeTypeFilter(List<String> mimeTypes, boolean acceptDirectory) {
+    public MimeTypeFilter(@NonNull List<String> mimeTypes, boolean acceptDirectory) {
         for (String field : mimeTypes) {
             field = field.trim().toLowerCase(Locale.US);
             if (field.startsWith(".")) {
@@ -56,7 +54,7 @@ public class MimeTypeFilter implements FileFilter {
     }
 
     /** Returns true if either the uri or the mimeType is accepted by the MimeTypeFilter */
-    public boolean accept(@Nullable Uri uri, @Nullable String mimeType) {
+    public boolean accept(Uri uri, String mimeType) {
         if (uri != null) {
             String fileExtension =
                     MimeTypeMap.getFileExtensionFromUrl(uri.toString()).toLowerCase(Locale.US);
@@ -79,19 +77,20 @@ public class MimeTypeFilter implements FileFilter {
     }
 
     @Override
-    public boolean accept(File file) {
+    public boolean accept(@NonNull File file) {
         if (file.isDirectory()) {
             return mAcceptDirectory;
         }
         return accept(Uri.fromFile(file), null);
     }
 
-    private @Nullable String getMimeTypeFromExtension(String ext) {
+    private String getMimeTypeFromExtension(@NonNull String ext) {
         String mimeType = mMimeTypeMap.getMimeTypeFromExtension(ext);
         return (mimeType != null) ? mimeType.toLowerCase(Locale.US) : null;
     }
 
-    private static String getMimeSupertype(String mimeType) {
+    @NonNull
+    private static String getMimeSupertype(@NonNull String mimeType) {
         return mimeType.split("/", 2)[0];
     }
 }

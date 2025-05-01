@@ -42,14 +42,12 @@ std::optional<int64_t> ValueToInt64(const Value* value) {
 }
 
 std::optional<int64_t> ValueToInt64(const Value& value) {
-  if (!value.is_string()) {
+  if (!value.is_string())
     return std::nullopt;
-  }
 
   int64_t integer;
-  if (!StringToInt64(value.GetString(), &integer)) {
+  if (!StringToInt64(value.GetString(), &integer))
     return std::nullopt;
-  }
 
   return integer;
 }
@@ -64,9 +62,8 @@ std::optional<TimeDelta> ValueToTimeDelta(const Value* value) {
 
 std::optional<TimeDelta> ValueToTimeDelta(const Value& value) {
   std::optional<int64_t> integer = ValueToInt64(value);
-  if (!integer) {
+  if (!integer)
     return std::nullopt;
-  }
   return Microseconds(*integer);
 }
 
@@ -80,9 +77,8 @@ std::optional<Time> ValueToTime(const Value* value) {
 
 std::optional<Time> ValueToTime(const Value& value) {
   std::optional<TimeDelta> time_delta = ValueToTimeDelta(value);
-  if (!time_delta) {
+  if (!time_delta)
     return std::nullopt;
-  }
   return Time::FromDeltaSinceWindowsEpoch(*time_delta);
 }
 
@@ -95,9 +91,8 @@ std::optional<FilePath> ValueToFilePath(const Value* value) {
 }
 
 std::optional<FilePath> ValueToFilePath(const Value& value) {
-  if (!value.is_string()) {
+  if (!value.is_string())
     return std::nullopt;
-  }
   return FilePath::FromUTF8Unsafe(value.GetString());
 }
 
@@ -113,13 +108,11 @@ std::optional<UnguessableToken> ValueToUnguessableToken(const Value* value) {
 }
 
 std::optional<UnguessableToken> ValueToUnguessableToken(const Value& value) {
-  if (!value.is_string()) {
+  if (!value.is_string())
     return std::nullopt;
-  }
   UnguessableTokenRepresentation repr;
-  if (!HexStringToSpan(value.GetString(), repr.buffer)) {
+  if (!HexStringToSpan(value.GetString(), repr.buffer))
     return std::nullopt;
-  }
   std::optional<base::UnguessableToken> token =
       UnguessableToken::Deserialize(repr.field.high, repr.field.low);
   if (!token.has_value()) {

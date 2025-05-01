@@ -4,7 +4,9 @@
 
 #include "base/task/sequence_manager/sequenced_task_source.h"
 
-namespace base::sequence_manager::internal {
+namespace base {
+namespace sequence_manager {
+namespace internal {
 
 SequencedTaskSource::SelectedTask::SelectedTask(const SelectedTask&) = default;
 
@@ -20,4 +22,6 @@ SequencedTaskSource::SelectedTask::SelectedTask(
 
 SequencedTaskSource::SelectedTask::~SelectedTask() = default;
 
-}  // namespace base::sequence_manager::internal
+}  // namespace internal
+}  // namespace sequence_manager
+}  // namespace base

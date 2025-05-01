@@ -46,7 +46,7 @@ namespace {
 // GLib source runs at the same priority).
 class EventInjector {
  public:
-  EventInjector() {
+  EventInjector() : processed_events_(0) {
     source_ = static_cast<Source*>(g_source_new(&SourceFuncs, sizeof(Source)));
     source_->injector = this;
     g_source_attach(source_, nullptr);
@@ -63,32 +63,28 @@ class EventInjector {
 
   int HandlePrepare() {
     // If the queue is empty, block.
-    if (events_.empty()) {
+    if (events_.empty())
       return -1;
-    }
     TimeDelta delta = events_[0].time - Time::NowFromSystemTime();
     return std::max(0, static_cast<int>(ceil(delta.InMillisecondsF())));
   }
 
   bool HandleCheck() {
-    if (events_.empty()) {
+    if (events_.empty())
       return false;
-    }
     return events_[0].time <= Time::NowFromSystemTime();
   }
 
   void HandleDispatch() {
-    if (events_.empty()) {
+    if (events_.empty())
       return;
-    }
     Event event = std::move(events_[0]);
     events_.erase(events_.begin());
     ++processed_events_;
-    if (!event.callback.is_null()) {
+    if (!event.callback.is_null())
       std::move(event.callback).Run();
-    } else if (!event.task.is_null()) {
+    else if (!event.task.is_null())
       std::move(event.task).Run();
-    }
   }
 
   // Adds an event to the queue. When "handled", executes |callback|.
@@ -125,11 +121,10 @@ class EventInjector {
 
   void AddEventHelper(int delay_ms, OnceClosure callback, OnceClosure task) {
     Time last_time;
-    if (!events_.empty()) {
-      last_time = (events_.end() - 1)->time;
-    } else {
+    if (!events_.empty())
+      last_time = (events_.end()-1)->time;
+    else
       last_time = Time::NowFromSystemTime();
-    }
 
     Time future = last_time + Milliseconds(delay_ms);
     EventInjector::Event event = {future, std::move(callback), std::move(task)};
@@ -162,7 +157,7 @@ class EventInjector {
 
   raw_ptr<Source> source_;
   std::vector<Event> events_;
-  int processed_events_ = 0;
+  int processed_events_;
   static GSourceFuncs SourceFuncs;
 };
 
@@ -173,7 +168,7 @@ GSourceFuncs EventInjector::SourceFuncs = {
     EventInjector::Finalize,
 };
 
-void IncrementInt(int* value) {
+void IncrementInt(int *value) {
   ++*value;
 }
 
@@ -330,7 +325,7 @@ namespace {
 // This class is a helper for the concurrent events / posted tasks test below.
 // It will quit the main loop once enough tasks and events have been processed,
 // while making sure there is always work to do and events in the queue.
-class ConcurrentHelper : public RefCounted<ConcurrentHelper> {
+class ConcurrentHelper : public RefCounted<ConcurrentHelper>  {
  public:
   ConcurrentHelper(EventInjector* injector, OnceClosure done_closure)
       : injector_(injector),
@@ -444,7 +439,7 @@ namespace {
 // Helper class that lets us run the GLib message loop.
 class GLibLoopRunner : public RefCounted<GLibLoopRunner> {
  public:
-  GLibLoopRunner() = default;
+  GLibLoopRunner() : quit_(false) { }
 
   void RunGLib() {
     while (!quit_) {
@@ -458,16 +453,20 @@ class GLibLoopRunner : public RefCounted<GLibLoopRunner> {
     }
   }
 
-  void Quit() { quit_ = true; }
+  void Quit() {
+    quit_ = true;
+  }
 
-  void Reset() { quit_ = false; }
+  void Reset() {
+    quit_ = false;
+  }
 
  private:
   friend class RefCounted<GLibLoopRunner>;
 
   ~GLibLoopRunner() = default;
 
-  bool quit_ = false;
+  bool quit_;
 };
 
 void TestGLibLoopInternal(EventInjector* injector, OnceClosure done) {
@@ -639,12 +638,10 @@ class MessagePumpGLibFdWatchTest : public testing::Test {
     // Wait for the IO thread to exit before closing FDs which may have been
     // passed to it.
     io_thread_.Stop();
-    if (IGNORE_EINTR(close(pipefds_[0])) < 0) {
+    if (IGNORE_EINTR(close(pipefds_[0])) < 0)
       PLOG(ERROR) << "close";
-    }
-    if (IGNORE_EINTR(close(pipefds_[1])) < 0) {
+    if (IGNORE_EINTR(close(pipefds_[1])) < 0)
       PLOG(ERROR) << "close";
-    }
   }
 
   void WaitUntilIoThreadStarted() {
@@ -757,9 +754,8 @@ class QuitWatcher : public DeleteWatcher {
 
   void OnFileCanReadWithoutBlocking(int fd) override {
     ClearController();
-    if (quit_closure_) {
+    if (quit_closure_)
       std::move(quit_closure_).Run();
-    }
   }
 
  private:

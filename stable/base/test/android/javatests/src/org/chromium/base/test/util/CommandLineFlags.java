@@ -10,7 +10,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
-import org.chromium.base.FeatureOverrides;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -128,14 +129,14 @@ public final class CommandLineFlags {
         // Apply changes to the CommandLine.
         boolean anyChanges = applyChanges(newFlags);
 
-        // Apply changes to FeatureOverrides.
-        FeatureOverrides.Builder overrides = fieldTrials.createTestOverrides();
+        // Apply changes to FeatureList.
+        TestValues testValues = fieldTrials.createTestValues();
         // If flags did not change, and no feature-related flags are present, then do not clobber
         // flag values so that a test can use FeatureList.setTestValues() in @BeforeClass.
-        if (anyChanges || !overrides.isEmpty()) {
+        if (anyChanges || !testValues.isEmpty()) {
             // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
             //     native feature list has been initialized.
-            overrides.applyNoResetForTesting();
+            FeatureList.setTestValuesNoResetForTesting(testValues);
         }
     }
 
@@ -178,7 +179,7 @@ public final class CommandLineFlags {
         Log.i(
                 TAG,
                 "Java %scommand line set to: %s",
-                CommandLine.hasSwitchedToNative() ? "(and native) " : "",
+                CommandLine.isNativeImplementationForTesting() ? "(and native) " : "",
                 serializeCommandLine());
         return anyChanges;
     }

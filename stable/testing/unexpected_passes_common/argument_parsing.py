@@ -7,7 +7,6 @@ import argparse
 import logging
 import os
 
-# //testing imports.
 from unexpected_passes_common import constants
 
 
@@ -80,6 +79,11 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                             'intended for use in CL descriptions. If not '
                             'specified, will be printed to the terminal '
                             'instead.'))
+  parser.add_argument('--jobs',
+                      '-j',
+                      type=int,
+                      help=('DEPRECATED/NO-OP. Will be removed once all uses '
+                            'are removed.'))
   parser.add_argument('--keep-unmatched-results',
                       action='store_true',
                       default=False,

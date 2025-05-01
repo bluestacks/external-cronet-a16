@@ -7,7 +7,6 @@ from typing import Iterable, Optional
 import unittest
 from unittest import mock
 
-# //testing imports.
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
@@ -264,8 +263,7 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
                                 True),
     ]
 
-    expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure',
-                                         data_types.WildcardType.NON_WILDCARD)
+    expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure')
     expectation_map = data_types.TestExpectationMap({
         'foo':
         data_types.ExpectationBuilderMap({

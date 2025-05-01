@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <variant>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -20,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 
@@ -142,7 +142,9 @@ class BASE_EXPORT ImportantFileWriter {
       OnceClosure before_next_write_callback,
       OnceCallback<void(bool success)> after_next_write_callback);
 
-  TimeDelta commit_interval() const { return commit_interval_; }
+  TimeDelta commit_interval() const {
+    return commit_interval_;
+  }
 
   // Overrides the timer to use for scheduling writes with |timer_override|.
   void SetTimerForTesting(OneShotTimer* timer_override);
@@ -213,7 +215,7 @@ class BASE_EXPORT ImportantFileWriter {
   raw_ptr<OneShotTimer> timer_override_ = nullptr;
 
   // Serializer which will provide the data to be saved.
-  std::variant<std::monostate, DataSerializer*, BackgroundDataSerializer*>
+  absl::variant<absl::monostate, DataSerializer*, BackgroundDataSerializer*>
       serializer_;
 
   // Time delta after which scheduled data will be written to disk.

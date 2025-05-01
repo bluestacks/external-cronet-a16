@@ -144,8 +144,8 @@ TEST_F(ReportingUploaderTest, Upload) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 }
 
@@ -156,8 +156,8 @@ TEST_F(ReportingUploaderTest, Success) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
@@ -169,8 +169,7 @@ TEST_F(ReportingUploaderTest, NetworkError1) {
   ASSERT_TRUE(server_.ShutdownAndWaitUntilComplete());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, url,
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+  uploader_->StartUpload(kOrigin, url, IsolationInfo::CreateTransient(),
                          kUploadBody, 0, false, callback.callback());
   callback.WaitForCall();
 
@@ -184,8 +183,8 @@ TEST_F(ReportingUploaderTest, NetworkError2) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -199,8 +198,8 @@ TEST_F(ReportingUploaderTest, ServerError) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -225,8 +224,8 @@ TEST_F(ReportingUploaderTest, VerifyPreflight) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_TRUE(preflight_received);
@@ -243,8 +242,8 @@ TEST_F(ReportingUploaderTest, SkipPreflightForSameOrigin) {
   TestUploadCallback callback;
   auto server_origin = url::Origin::Create(server_.base_url());
   uploader_->StartUpload(server_origin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_FALSE(preflight_received);
@@ -270,8 +269,8 @@ TEST_F(ReportingUploaderTest, FailedCorsPreflight) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -301,8 +300,8 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutOrigin) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -332,8 +331,8 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutMethods) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
@@ -364,8 +363,8 @@ TEST_F(ReportingUploaderTest, CorsPreflightWildcardMethods) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
@@ -395,8 +394,8 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutHeaders) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -427,8 +426,8 @@ TEST_F(ReportingUploaderTest, CorsPreflightWildcardHeaders) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
@@ -442,8 +441,8 @@ TEST_F(ReportingUploaderTest, RemoveEndpoint) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::REMOVE_ENDPOINT, callback.outcome());
@@ -487,8 +486,8 @@ TEST_F(ReportingUploaderTest, FollowHttpsRedirect) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_TRUE(followed);
@@ -511,8 +510,8 @@ TEST_F(ReportingUploaderTest, DontFollowHttpRedirect) {
 
   TestUploadCallback callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_FALSE(followed);
@@ -542,8 +541,8 @@ TEST_F(ReportingUploaderTest, DontSendCookies) {
 
   TestUploadCallback upload_callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, upload_callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, upload_callback.callback());
   upload_callback.WaitForCall();
 }
 
@@ -564,8 +563,8 @@ TEST_F(ReportingUploaderTest, DontSaveCookies) {
 
   TestUploadCallback upload_callback;
   uploader_->StartUpload(kOrigin, server_.GetURL("/"),
-                         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-                         kUploadBody, 0, false, upload_callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, upload_callback.callback());
   upload_callback.WaitForCall();
 
   GetCookieListCallback cookie_callback;
@@ -604,20 +603,18 @@ TEST_F(ReportingUploaderTest, DontCacheResponse) {
 
   {
     TestUploadCallback callback;
-    uploader_->StartUpload(
-        kOrigin, server_.GetURL("/"),
-        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), kUploadBody, 0,
-        false, callback.callback());
+    uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                           IsolationInfo::CreateTransient(), kUploadBody, 0,
+                           false, callback.callback());
     callback.WaitForCall();
   }
   EXPECT_EQ(1, request_count);
 
   {
     TestUploadCallback callback;
-    uploader_->StartUpload(
-        kOrigin, server_.GetURL("/"),
-        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), kUploadBody, 0,
-        false, callback.callback());
+    uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                           IsolationInfo::CreateTransient(), kUploadBody, 0,
+                           false, callback.callback());
     callback.WaitForCall();
   }
   EXPECT_EQ(2, request_count);
@@ -661,7 +658,6 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
                 "Connection: keep-alive\r\n"
                 "Content-Length: 2\r\n"
                 "Content-Type: application/reports+json\r\n"
-                "Origin: https://origin\r\n"
                 "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n"),
@@ -672,7 +668,6 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
                 "Connection: keep-alive\r\n"
                 "Content-Length: 2\r\n"
                 "Content-Type: application/reports+json\r\n"
-                "Origin: https://origin\r\n"
                 "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n"),
@@ -701,7 +696,6 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
                 "Connection: keep-alive\r\n"
                 "Content-Length: 2\r\n"
                 "Content-Type: application/reports+json\r\n"
-                "Origin: https://origin\r\n"
                 "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n"),

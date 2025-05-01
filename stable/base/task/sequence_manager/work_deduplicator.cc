@@ -6,10 +6,11 @@
 
 #include <ostream>
 #include <utility>
-
 #include "base/check_op.h"
 
-namespace base::sequence_manager::internal {
+namespace base {
+namespace sequence_manager {
+namespace internal {
 
 WorkDeduplicator::WorkDeduplicator(
     scoped_refptr<const AssociatedThreadId> associated_thread)
@@ -72,4 +73,6 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::DidCheckForMoreWork(
              : ShouldScheduleWork::kNotNeeded;
 }
 
-}  // namespace base::sequence_manager::internal
+}  // namespace internal
+}  // namespace sequence_manager
+}  // namespace base

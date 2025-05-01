@@ -12,7 +12,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -127,8 +126,6 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   std::optional<SSLConfig> ssl_config_;
   std::optional<std::vector<uint8_t>> ech_retry_configs_;
-
-  base::WeakPtrFactory<TlsStreamAttempt> weak_ptr_factory_{this};
 };
 
 }  // namespace net

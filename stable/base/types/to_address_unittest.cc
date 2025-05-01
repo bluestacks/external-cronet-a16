@@ -7,7 +7,6 @@
 #include <array>
 #include <memory>
 #include <type_traits>
-#include <utility>
 
 namespace base {
 namespace {

@@ -40,9 +40,8 @@ TEST(ElapsedTimerTest, Mocked) {
 class ElapsedThreadTimerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    if (ThreadTicks::IsSupported()) {
+    if (ThreadTicks::IsSupported())
       ThreadTicks::WaitUntilInitialized();
-    }
   }
 };
 
@@ -57,9 +56,8 @@ TEST_F(ElapsedThreadTimerTest, IsSupported) {
 }
 
 TEST_F(ElapsedThreadTimerTest, Simple) {
-  if (!ThreadTicks::IsSupported()) {
+  if (!ThreadTicks::IsSupported())
     return;
-  }
 
   ElapsedThreadTimer timer;
   EXPECT_TRUE(timer.is_supported());
@@ -74,9 +72,8 @@ TEST_F(ElapsedThreadTimerTest, Simple) {
 }
 
 TEST_F(ElapsedThreadTimerTest, DoesNotCountSleep) {
-  if (!ThreadTicks::IsSupported()) {
+  if (!ThreadTicks::IsSupported())
     return;
-  }
 
   ElapsedThreadTimer timer;
   EXPECT_TRUE(timer.is_supported());
@@ -87,9 +84,8 @@ TEST_F(ElapsedThreadTimerTest, DoesNotCountSleep) {
 }
 
 TEST_F(ElapsedThreadTimerTest, Mocked) {
-  if (!ThreadTicks::IsSupported()) {
+  if (!ThreadTicks::IsSupported())
     return;
-  }
 
   ScopedMockElapsedTimersForTest mock_elapsed_timer;
 

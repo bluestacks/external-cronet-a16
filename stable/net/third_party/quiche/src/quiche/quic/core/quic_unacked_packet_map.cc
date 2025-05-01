@@ -57,7 +57,6 @@ enum QuicFrameTypeBitfield : uint32_t {
   kRetireConnectionIdFrameBitfield = 1 << 21,
   kAckFrequencyFrameBitfield = 1 << 22,
   kResetStreamAtFrameBitfield = 1 << 23,
-  kImmediateAckFrameBitfield = 1 << 24,
 };
 
 QuicFrameTypeBitfield GetFrameTypeBitfield(QuicFrameType type) {
@@ -108,8 +107,6 @@ QuicFrameTypeBitfield GetFrameTypeBitfield(QuicFrameType type) {
       return kRetireConnectionIdFrameBitfield;
     case ACK_FREQUENCY_FRAME:
       return kAckFrequencyFrameBitfield;
-    case IMMEDIATE_ACK_FRAME:
-      return kImmediateAckFrameBitfield;
     case RESET_STREAM_AT_FRAME:
       return kResetStreamAtFrameBitfield;
     case NUM_FRAME_TYPES:
@@ -500,13 +497,15 @@ bool QuicUnackedPacketMap::NotifyFramesAcked(QuicPacketNumber packet_number,
     return false;
   }
   bool new_data_acked = false;
-  const bool is_retransmission = info->transmission_type != NOT_RETRANSMISSION;
   const QuicFrames* frames = &info->retransmittable_frames;
   quiche::SimpleBufferAllocator allocator;
   std::optional<QuicFrames> frames_copy;
-  const bool use_copied_frames = !HasMessageFrame(info->retransmittable_frames);
+  const bool use_copied_frames = update_transmission_info_on_frame_acked_ &&
+                                 !HasMessageFrame(info->retransmittable_frames);
 
   if (use_copied_frames) {
+    QUIC_RELOADABLE_FLAG_COUNT_N(quic_update_transmission_info_on_frame_acked,
+                                 2, 3);
     frames = &frames_copy.emplace(
         CopyQuicFrames(&allocator, info->retransmittable_frames));
   }
@@ -519,8 +518,7 @@ bool QuicUnackedPacketMap::NotifyFramesAcked(QuicPacketNumber packet_number,
   };
 
   for (const QuicFrame& frame : *frames) {
-    if (session_notifier_->OnFrameAcked(frame, ack_delay, receive_timestamp,
-                                        is_retransmission)) {
+    if (session_notifier_->OnFrameAcked(frame, ack_delay, receive_timestamp)) {
       new_data_acked = true;
     }
   }
@@ -548,9 +546,12 @@ void QuicUnackedPacketMap::MaybeAggregateAckedStreamFrame(
   const QuicFrames* frames = &info->retransmittable_frames;
   quiche::SimpleBufferAllocator allocator;
   std::optional<QuicFrames> frames_copy;
-  const bool use_copied_frames = !HasMessageFrame(info->retransmittable_frames);
+  const bool use_copied_frames = update_transmission_info_on_frame_acked_ &&
+                                 !HasMessageFrame(info->retransmittable_frames);
 
   if (use_copied_frames) {
+    QUIC_RELOADABLE_FLAG_COUNT_N(quic_update_transmission_info_on_frame_acked,
+                                 3, 3);
     frames = &frames_copy.emplace(
         CopyQuicFrames(&allocator, info->retransmittable_frames));
   }
@@ -590,8 +591,7 @@ void QuicUnackedPacketMap::MaybeAggregateAckedStreamFrame(
 
     NotifyAggregatedStreamFrameAcked(ack_delay);
     if (frame.type != STREAM_FRAME || frame.stream_frame.fin) {
-      session_notifier_->OnFrameAcked(frame, ack_delay, receive_timestamp,
-                                      /*is_retransmission=*/false);
+      session_notifier_->OnFrameAcked(frame, ack_delay, receive_timestamp);
       continue;
     }
 
@@ -613,10 +613,9 @@ void QuicUnackedPacketMap::NotifyAggregatedStreamFrameAcked(
   }
   // Note: there is no receive_timestamp for an aggregated stream frame.  The
   // frames that are aggregated may not have been received at the same time.
-  // We only aggregate stream frames that are not retransmissions.
-  session_notifier_->OnFrameAcked(
-      QuicFrame(aggregated_stream_frame_), ack_delay,
-      /*receive_timestamp=*/QuicTime::Zero(), /*is_retransmission=*/false);
+  session_notifier_->OnFrameAcked(QuicFrame(aggregated_stream_frame_),
+                                  ack_delay,
+                                  /*receive_timestamp=*/QuicTime::Zero());
   // Clear aggregated stream frame.
   aggregated_stream_frame_.stream_id = -1;
 }

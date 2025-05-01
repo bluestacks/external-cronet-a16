@@ -5,10 +5,9 @@
 #ifndef NET_QUIC_QUIC_TEST_PACKET_PRINTER_H_
 #define NET_QUIC_QUIC_TEST_PACKET_PRINTER_H_
 
-#include <string_view>
+#include <string>
 
 #include "net/socket/socket_test_util.h"
-#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_session.h"
 
 namespace net {
 
@@ -21,13 +20,7 @@ class QuicPacketPrinter : public SocketDataPrinter {
 
   ~QuicPacketPrinter() = default;
 
-  std::string PrintWrite(std::string_view data) override;
-
-  // Print HTTP packet with a `QuicSimpleServerSession`.
-  // The session could accumulate frames from multiple packets to decrypt.
-  std::string PrintWithQuicSession(std::string_view data,
-                                   std::ostringstream& stream,
-                                   quic::QuicSimpleServerSession* session);
+  std::string PrintWrite(const std::string& data) override;
 
  private:
   quic::ParsedQuicVersion version_;

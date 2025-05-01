@@ -15,7 +15,6 @@
 #include <set>
 #include <string>
 #include <string_view>
-#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -45,6 +44,7 @@
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -56,7 +56,6 @@ namespace net {
 
 class DnsClient;
 class DnsProbeRunner;
-class HostResolverInternalResult;
 class IPAddress;
 class MDnsClient;
 class ClientSocketFactory;
@@ -153,7 +152,7 @@ class NET_EXPORT HostResolverManager
   // `host_cache()` coming from a ContextHostResolver that owns
   // `resolve_context`.
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
-      std::variant<url::SchemeHostPort, HostPortPair> host,
+      absl::variant<url::SchemeHostPort, HostPortPair> host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       std::optional<ResolveHostParameters> optional_parameters,
@@ -198,9 +197,6 @@ class NET_EXPORT HostResolverManager
   void SetDnsConfigOverrides(DnsConfigOverrides overrides);
 
   void SetIPv6ReachabilityOverride(bool reachability_override);
-
-  void SetIsHappyEyeballsV3Enabled(bool enabled);
-  bool IsHappyEyeballsV3Enabled() const;
 
   // Support for invalidating cached per-context data on changes to network or
   // DNS configuration. ContextHostResolvers should register/deregister
@@ -400,8 +396,8 @@ class NET_EXPORT HostResolverManager
 
   // Iff we have a DnsClient with a valid DnsConfig and we're not about to
   // attempt a system lookup, then try to resolve the query using the HOSTS
-  // file. Returns empty set if HOSTS lookup not attempted.
-  std::set<std::unique_ptr<HostResolverInternalResult>> ServeFromHosts(
+  // file.
+  std::optional<HostCache::Entry> ServeFromHosts(
       std::string_view hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,
@@ -577,9 +573,6 @@ class NET_EXPORT HostResolverManager
 
   // When true, query AAAA even when the globally reachable check failed.
   bool ipv6_reachability_override_ = false;
-
-  // Enables or disables the HappyEyeballsV3 feature.
-  bool is_happy_eyeballs_v3_enabled_;
 
   // Any resolver flags that should be added to a request by default.
   HostResolverFlags additional_resolver_flags_ = 0;

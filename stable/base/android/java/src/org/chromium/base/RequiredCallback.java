@@ -4,8 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.NonNull;
 
 /**
  * A simple single-argument callback to handle the result of a computation that must be called
@@ -13,13 +12,12 @@ import org.chromium.build.annotations.Nullable;
  *
  * @param <T> The type of the computation's result.
  */
-@NullMarked
-public class RequiredCallback<T extends @Nullable Object> implements Callback<T> {
+public class RequiredCallback<T> implements Callback<T> {
     // Enforces (under test) that this callback is invoked before it is GC'd.
-    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private @Nullable Callback<T> mCallback;
+    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+    private Callback<T> mCallback;
 
-    public RequiredCallback(Callback<T> callback) {
+    public RequiredCallback(@NonNull Callback<T> callback) {
         mCallback = callback;
     }
 

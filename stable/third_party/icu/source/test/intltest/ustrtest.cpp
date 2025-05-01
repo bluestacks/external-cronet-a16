@@ -68,7 +68,6 @@ void UnicodeStringTest::runIndexedTest( int32_t index, UBool exec, const char* &
     TESTCASE_AUTO(TestNullPointers);
     TESTCASE_AUTO(TestUnicodeStringInsertAppendToSelf);
     TESTCASE_AUTO(TestLargeAppend);
-    TESTCASE_AUTO(TestLargeMemory);
     TESTCASE_AUTO_END;
 }
 
@@ -2329,18 +2328,6 @@ void UnicodeStringTest::TestUnicodeStringInsertAppendToSelf() {
     assertEquals("", u"abbcdcde", str);
 }
 
-void UnicodeStringTest::TestLargeMemory() {
-#if U_PLATFORM_IS_LINUX_BASED || U_PLATFORM_IS_DARWIN_BASED
-    if(quick) { return; }
-    IcuTestErrorCode status(*this, "TestLargeMemory");
-    constexpr uint32_t len = 2147483643;
-    char16_t *buf = new char16_t[len];
-    if (buf == nullptr) { return; }
-    uprv_memset(buf, 0x4e, len * 2);
-    icu::UnicodeString test(buf, len);
-    delete [] buf;
-#endif
-}
 void UnicodeStringTest::TestLargeAppend() {
     if(quick) return;
 
@@ -2369,17 +2356,15 @@ void UnicodeStringTest::TestLargeAppend() {
     }
     dest.remove();
     total = 0;
-    // Copy kMaxCapacity from common/unistr.cpp
-    const int32_t kMaxCapacity = 0x7ffffff5;
     for (int32_t i = 0; i < 16; i++) {
         dest.append(str);
         total += len;
-        if (total + len <= kMaxCapacity) {
+        if (total + len <= INT32_MAX) {
             assertFalse("dest is not bogus", dest.isBogus());
-        } else if (total <= kMaxCapacity) {
+        } else if (total <= INT32_MAX) {
             // Check that a string of exactly the maximum size works
             UnicodeString str2;
-            int32_t remain = static_cast<int32_t>(kMaxCapacity - total);
+            int32_t remain = static_cast<int32_t>(INT32_MAX - total);
             char16_t *buf2 = str2.getBuffer(remain);
             if (buf2 == nullptr) {
                 // if somehow memory allocation fail, return the test
@@ -2389,17 +2374,12 @@ void UnicodeStringTest::TestLargeAppend() {
             str2.releaseBuffer(remain);
             dest.append(str2);
             total += remain;
-            assertEquals("When a string of exactly the maximum size works", static_cast<int64_t>(kMaxCapacity), total);
-            assertEquals("When a string of exactly the maximum size works", kMaxCapacity, dest.length());
+            assertEquals("When a string of exactly the maximum size works", (int64_t)INT32_MAX, total);
+            assertEquals("When a string of exactly the maximum size works", INT32_MAX, dest.length());
             assertFalse("dest is not bogus", dest.isBogus());
 
-            // Check that a string size+1 does not go bogus (one more byte reserved for NUL)
+            // Check that a string size+1 goes bogus
             str2.truncate(1);
-            dest.append(str2);
-            total++;
-            assertFalse("dest should be not bogus", dest.isBogus());
-            // Check that a string size+2 goes bogus (beyond the byte reserved
-            // for NUL)
             dest.append(str2);
             total++;
             assertTrue("dest should be bogus", dest.isBogus());

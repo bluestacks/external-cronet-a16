@@ -20,7 +20,6 @@
 #endif
 #include <stdio.h>
 
-#include <algorithm>
 #include <fstream>
 #include <limits>
 #include <memory>
@@ -36,8 +35,9 @@
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -504,17 +504,15 @@ FilePath GetUniquePath(const FilePath& path) {
 FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
                                        base::cstring_view suffix_format) {
   DCHECK(!path.empty());
-  DCHECK_EQ(std::ranges::count(suffix_format, '%'), 1);
+  DCHECK_EQ(base::ranges::count(suffix_format, '%'), 1);
   DCHECK(base::Contains(suffix_format, "%d"));
 
   if (!PathExists(path)) {
     return path;
   }
   for (int count = 1; count <= kMaxUniqueFiles; ++count) {
-    std::string suffix(suffix_format);
-    base::ReplaceFirstSubstringAfterOffset(&suffix, 0, "%d",
-                                           base::NumberToString(count));
-    FilePath candidate_path = path.InsertBeforeExtensionASCII(suffix);
+    FilePath candidate_path = path.InsertBeforeExtensionASCII(
+        StringPrintfNonConstexpr(suffix_format.data(), count));
     if (!PathExists(candidate_path)) {
       return candidate_path;
     }

@@ -13,13 +13,10 @@ import android.os.IBinder;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 
 /** Implementation of ChildServiceConnection that does connect to a service. */
-@NullMarked
 /* package */ class ChildServiceConnectionImpl
         implements ChildServiceConnection, ServiceConnection {
     private static final String TAG = "ChildServiceConn";
@@ -29,8 +26,8 @@ import java.util.concurrent.Executor;
     private final int mBindFlags;
     private final Handler mHandler;
     private final Executor mExecutor;
-    private @Nullable ChildServiceConnectionDelegate mDelegate;
-    private final @Nullable String mInstanceName;
+    private ChildServiceConnectionDelegate mDelegate;
+    private final String mInstanceName;
     private boolean mBound;
 
     /* package */ ChildServiceConnectionImpl(
@@ -40,7 +37,7 @@ import java.util.concurrent.Executor;
             Handler handler,
             Executor executor,
             ChildServiceConnectionDelegate delegate,
-            @Nullable String instanceName) {
+            String instanceName) {
         mContext = context;
         mBindIntent = bindIntent;
         mBindFlags = bindFlags;

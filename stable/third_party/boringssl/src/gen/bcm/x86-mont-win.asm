@@ -21,7 +21,10 @@ L$_bn_mul_mont_begin:
 	push	ebx
 	push	esi
 	push	edi
+	xor	eax,eax
 	mov	edi,DWORD [40+esp]
+	cmp	edi,4
+	jl	NEAR L$000just_leave
 	lea	esi,[20+esp]
 	lea	edx,[24+esp]
 	add	edi,2
@@ -44,15 +47,15 @@ L$_bn_mul_mont_begin:
 	lea	esp,[eax*1+ebp]
 	mov	eax,DWORD [esp]
 	cmp	esp,ebp
-	ja	NEAR L$000page_walk
-	jmp	NEAR L$001page_walk_done
+	ja	NEAR L$001page_walk
+	jmp	NEAR L$002page_walk_done
 align	16
-L$000page_walk:
+L$001page_walk:
 	lea	esp,[esp-4096]
 	mov	eax,DWORD [esp]
 	cmp	esp,ebp
-	ja	NEAR L$000page_walk
-L$001page_walk_done:
+	ja	NEAR L$001page_walk
+L$002page_walk_done:
 	mov	eax,DWORD [esi]
 	mov	ebx,DWORD [4+esi]
 	mov	ecx,DWORD [8+esi]
@@ -89,7 +92,7 @@ L$001page_walk_done:
 	psrlq	mm3,32
 	inc	ecx
 align	16
-L$0021st:
+L$0031st:
 	pmuludq	mm0,mm4
 	pmuludq	mm1,mm5
 	paddq	mm2,mm0
@@ -104,7 +107,7 @@ L$0021st:
 	psrlq	mm3,32
 	lea	ecx,[1+ecx]
 	cmp	ecx,ebx
-	jl	NEAR L$0021st
+	jl	NEAR L$0031st
 	pmuludq	mm0,mm4
 	pmuludq	mm1,mm5
 	paddq	mm2,mm0
@@ -118,7 +121,7 @@ L$0021st:
 	paddq	mm3,mm2
 	movq	[32+ebx*4+esp],mm3
 	inc	edx
-L$003outer:
+L$004outer:
 	xor	ecx,ecx
 	movd	mm4,DWORD [edx*4+edi]
 	movd	mm5,DWORD [esi]
@@ -140,7 +143,7 @@ L$003outer:
 	paddq	mm2,mm6
 	inc	ecx
 	dec	ebx
-L$004inner:
+L$005inner:
 	pmuludq	mm0,mm4
 	pmuludq	mm1,mm5
 	paddq	mm2,mm0
@@ -157,7 +160,7 @@ L$004inner:
 	paddq	mm2,mm6
 	dec	ebx
 	lea	ecx,[1+ecx]
-	jnz	NEAR L$004inner
+	jnz	NEAR L$005inner
 	mov	ebx,ecx
 	pmuludq	mm0,mm4
 	pmuludq	mm1,mm5
@@ -175,11 +178,11 @@ L$004inner:
 	movq	[32+ebx*4+esp],mm3
 	lea	edx,[1+edx]
 	cmp	edx,ebx
-	jle	NEAR L$003outer
+	jle	NEAR L$004outer
 	emms
-	jmp	NEAR L$005common_tail
+	jmp	NEAR L$006common_tail
 align	16
-L$005common_tail:
+L$006common_tail:
 	mov	ebp,DWORD [16+esp]
 	mov	edi,DWORD [4+esp]
 	lea	esi,[32+esp]
@@ -187,19 +190,19 @@ L$005common_tail:
 	mov	ecx,ebx
 	xor	edx,edx
 align	16
-L$006sub:
+L$007sub:
 	sbb	eax,DWORD [edx*4+ebp]
 	mov	DWORD [edx*4+edi],eax
 	dec	ecx
 	mov	eax,DWORD [4+edx*4+esi]
 	lea	edx,[1+edx]
-	jge	NEAR L$006sub
+	jge	NEAR L$007sub
 	sbb	eax,0
 	mov	edx,-1
 	xor	edx,eax
-	jmp	NEAR L$007copy
+	jmp	NEAR L$008copy
 align	16
-L$007copy:
+L$008copy:
 	mov	esi,DWORD [32+ebx*4+esp]
 	mov	ebp,DWORD [ebx*4+edi]
 	mov	DWORD [32+ebx*4+esp],ecx
@@ -208,8 +211,10 @@ L$007copy:
 	or	ebp,esi
 	mov	DWORD [ebx*4+edi],ebp
 	dec	ebx
-	jge	NEAR L$007copy
+	jge	NEAR L$008copy
 	mov	esp,DWORD [24+esp]
+	mov	eax,1
+L$000just_leave:
 	pop	edi
 	pop	esi
 	pop	ebx

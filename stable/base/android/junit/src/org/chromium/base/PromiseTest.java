@@ -52,10 +52,10 @@ public class PromiseTest {
         Promise<Integer> promise = new Promise<>();
         promise.then(PromiseTest.setValue(value, 1));
 
-        assertEquals(0, value.get());
+        assertEquals(value.get(), 0);
 
         promise.fulfill(1);
-        assertEquals(1, value.get());
+        assertEquals(value.get(), 1);
     }
 
     /** Tests that multiple callbacks are called. */
@@ -71,10 +71,10 @@ public class PromiseTest {
         promise.then(callback);
         promise.then(callback);
 
-        assertEquals(0, value.get());
+        assertEquals(value.get(), 0);
 
         promise.fulfill(0);
-        assertEquals(2, value.get());
+        assertEquals(value.get(), 2);
     }
 
     /** Tests that a callback is called immediately when given to a fulfilled Promise. */
@@ -83,11 +83,11 @@ public class PromiseTest {
         final Value value = new Value();
 
         Promise<Integer> promise = Promise.fulfilled(0);
-        assertEquals(0, value.get());
+        assertEquals(value.get(), 0);
 
         promise.then(PromiseTest.setValue(value, 1));
 
-        assertEquals(1, value.get());
+        assertEquals(value.get(), 1);
     }
 
     /** Tests that promises can chain synchronous functions correctly. */
@@ -210,7 +210,7 @@ public class PromiseTest {
         promise.reject(new Exception());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        assertEquals(5, value.get());
+        assertEquals(value.get(), 5);
         assertTrue(result.isRejected());
     }
 
@@ -229,7 +229,7 @@ public class PromiseTest {
         promise.fulfill(0);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(5, value.get());
+        assertEquals(value.get(), 5);
     }
 
     /** Tests that Promises get rejected if an AsyncFunction throws. */
@@ -248,7 +248,7 @@ public class PromiseTest {
         promise.fulfill(0);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(5, value.get());
+        assertEquals(value.get(), 5);
     }
 
     /** Tests that Promises get rejected if an AsyncFunction rejects. */
@@ -263,12 +263,12 @@ public class PromiseTest {
         promise.fulfill(0);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(0, value.get());
+        assertEquals(value.get(), 0);
 
         inner.reject();
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(5, value.get());
+        assertEquals(value.get(), 5);
     }
 
     @Test

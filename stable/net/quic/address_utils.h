@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef NET_QUIC_ADDRESS_UTILS_H_
 #define NET_QUIC_ADDRESS_UTILS_H_
 
@@ -34,7 +29,7 @@ inline IPEndPoint ToIPEndPoint(quic::QuicSocketAddress address) {
   return result;
 }
 
-inline IPAddress ToIPAddress(quiche::QuicheIpAddress address) {
+inline IPAddress ToIPAddress(quic::QuicIpAddress address) {
   if (!address.IsInitialized()) {
     return IPAddress();
   }
@@ -68,24 +63,24 @@ inline quic::QuicSocketAddress ToQuicSocketAddress(IPEndPoint address) {
   return quic::QuicSocketAddress(result);
 }
 
-inline quiche::QuicheIpAddress ToQuicheIpAddress(net::IPAddress address) {
+inline quic::QuicIpAddress ToQuicIpAddress(net::IPAddress address) {
   if (address.IsIPv4()) {
     in_addr result;
     static_assert(sizeof(result) == IPAddress::kIPv4AddressSize,
                   "Address size mismatch");
     memcpy(&result, address.bytes().data(), IPAddress::kIPv4AddressSize);
-    return quiche::QuicheIpAddress(result);
+    return quic::QuicIpAddress(result);
   }
   if (address.IsIPv6()) {
     in6_addr result;
     static_assert(sizeof(result) == IPAddress::kIPv6AddressSize,
                   "Address size mismatch");
     memcpy(&result, address.bytes().data(), IPAddress::kIPv6AddressSize);
-    return quiche::QuicheIpAddress(result);
+    return quic::QuicIpAddress(result);
   }
 
   DCHECK(address.empty());
-  return quiche::QuicheIpAddress();
+  return quic::QuicIpAddress();
 }
 
 }  // namespace net

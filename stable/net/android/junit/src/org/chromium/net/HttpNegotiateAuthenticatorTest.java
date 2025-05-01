@@ -62,12 +62,9 @@ import java.util.List;
         manifest = Config.NONE,
         shadows = {HttpNegotiateAuthenticatorTest.ExtendedShadowAccountManager.class})
 public class HttpNegotiateAuthenticatorTest {
-    private static final long MOCK_NATIVE_POINTER = 42;
-    private static final String MOCK_TOKEN_TYPE = "foo";
-
     /**
-     * User the AccountManager to inject a mock instance. Note: Shadow classes need to be public and
-     * static.
+     * User the AccountManager to inject a mock instance.
+     * Note: Shadow classes need to be public and static.
      */
     @Implements(AccountManager.class)
     public static class ExtendedShadowAccountManager extends ShadowAccountManager {
@@ -179,9 +176,9 @@ public class HttpNegotiateAuthenticatorTest {
     public void testGetAccountCallback() {
         String type = "Dummy_Account";
         HttpNegotiateAuthenticator authenticator = createAuthenticator(type);
-        Bundle options = new Bundle();
-        RequestData requestData =
-                new RequestData(MOCK_NATIVE_POINTER, sMockAccountManager, options, MOCK_TOKEN_TYPE);
+        RequestData requestData = new RequestData();
+        requestData.nativeResultObject = 42;
+        requestData.accountManager = sMockAccountManager;
         GetAccountsCallback callback = authenticator.new GetAccountsCallback(requestData);
 
         // Should fail because there are no accounts
@@ -199,8 +196,8 @@ public class HttpNegotiateAuthenticatorTest {
         verify(sMockAccountManager)
                 .getAuthToken(
                         eq(testAccount),
-                        eq(MOCK_TOKEN_TYPE),
-                        eq(options),
+                        (String) isNull(),
+                        (Bundle) isNull(),
                         eq(true),
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         any(Handler.class));
@@ -223,13 +220,15 @@ public class HttpNegotiateAuthenticatorTest {
     public void testGetTokenCallbackWithIntent() {
         String type = "Dummy_Account";
         HttpNegotiateAuthenticator authenticator = createAuthenticator(type);
-        Bundle options = new Bundle();
-        options.putParcelable(AccountManager.KEY_INTENT, new Intent());
-        RequestData requestData =
-                new RequestData(MOCK_NATIVE_POINTER, sMockAccountManager, options, MOCK_TOKEN_TYPE);
+        RequestData requestData = new RequestData();
+        requestData.nativeResultObject = 42;
+        requestData.authTokenType = "foo";
         requestData.account = new Account("a", type);
+        requestData.accountManager = sMockAccountManager;
+        Bundle b = new Bundle();
+        b.putParcelable(AccountManager.KEY_INTENT, new Intent());
 
-        authenticator.new GetTokenCallback(requestData).run(makeFuture(options));
+        authenticator.new GetTokenCallback(requestData).run(makeFuture(b));
         verifyNoMoreInteractions(sMockAccountManager);
 
         // Verify that the broadcast receiver is registered
@@ -246,8 +245,8 @@ public class HttpNegotiateAuthenticatorTest {
         verify(sMockAccountManager)
                 .getAuthToken(
                         eq(new Account("a", type)),
-                        eq(MOCK_TOKEN_TYPE),
-                        eq(options),
+                        eq("foo"),
+                        (Bundle) isNull(),
                         eq(true),
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         (Handler) isNull());

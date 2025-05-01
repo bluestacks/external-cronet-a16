@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -26,23 +25,20 @@ namespace base::win {
 namespace {
 template <typename T>
 std::optional<T> CloneValue(const std::optional<T>& value) {
-  if (!value) {
+  if (!value)
     return std::nullopt;
-  }
   return value->Clone();
 }
 
 PSID UnwrapSid(const std::optional<Sid>& sid) {
-  if (!sid) {
+  if (!sid)
     return nullptr;
-  }
   return sid->GetPSID();
 }
 
 PACL UnwrapAcl(std::optional<AccessControlList>& acl) {
-  if (!acl) {
+  if (!acl)
     return nullptr;
-  }
   return acl->get();
 }
 
@@ -316,7 +312,7 @@ std::optional<std::wstring> SecurityDescriptor::ToSddl(
 }
 
 void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) {
-  UNSAFE_TODO(memset(&sd, 0, sizeof(sd)));
+  memset(&sd, 0, sizeof(sd));
   sd.Revision = SECURITY_DESCRIPTOR_REVISION;
   sd.Owner = owner_ ? owner_->GetPSID() : nullptr;
   sd.Group = group_ ? group_->GetPSID() : nullptr;

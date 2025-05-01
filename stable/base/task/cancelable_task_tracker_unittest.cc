@@ -88,9 +88,11 @@ TEST_F(CancelableTaskTrackerTest, CancelPostedTaskAndReply) {
   scoped_refptr<TestSimpleTaskRunner> test_task_runner(
       new TestSimpleTaskRunner());
 
-  CancelableTaskTracker::TaskId task_id = task_tracker_.PostTaskAndReply(
-      test_task_runner.get(), FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE),
-      MakeExpectedNotRunClosure(FROM_HERE));
+  CancelableTaskTracker::TaskId task_id =
+      task_tracker_.PostTaskAndReply(test_task_runner.get(),
+                                     FROM_HERE,
+                                     MakeExpectedNotRunClosure(FROM_HERE),
+                                     MakeExpectedNotRunClosure(FROM_HERE));
   EXPECT_NE(CancelableTaskTracker::kBadTaskId, task_id);
 
   task_tracker_.TryCancel(task_id);
@@ -105,9 +107,11 @@ TEST_F(CancelableTaskTrackerTest, CancelReply) {
   scoped_refptr<TestSimpleTaskRunner> test_task_runner(
       new TestSimpleTaskRunner());
 
-  CancelableTaskTracker::TaskId task_id = task_tracker_.PostTaskAndReply(
-      test_task_runner.get(), FROM_HERE, MakeExpectedRunClosure(FROM_HERE),
-      MakeExpectedNotRunClosure(FROM_HERE));
+  CancelableTaskTracker::TaskId task_id =
+      task_tracker_.PostTaskAndReply(test_task_runner.get(),
+                                     FROM_HERE,
+                                     MakeExpectedRunClosure(FROM_HERE),
+                                     MakeExpectedNotRunClosure(FROM_HERE));
   EXPECT_NE(CancelableTaskTracker::kBadTaskId, task_id);
 
   test_task_runner->RunUntilIdle();

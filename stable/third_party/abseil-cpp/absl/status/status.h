@@ -68,6 +68,10 @@
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 
+// TODO: crbug.com/1491724 - Remove include below when other third_party
+// libraries stop silently rely on it.
+#include "absl/strings/str_cat.h"
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 

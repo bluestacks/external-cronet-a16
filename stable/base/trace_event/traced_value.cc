@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
+#include "base/trace_event/trace_event_memory_overhead.h"
 #include "base/trace_event/trace_log.h"
 #include "base/values.h"
 
@@ -322,6 +323,15 @@ class PickleWriter final : public TracedValue::Writer {
     state_stack.pop_back();
 
     DCHECK(state_stack.empty());
+  }
+
+  void EstimateTraceMemoryOverhead(
+      TraceEventMemoryOverhead* overhead) override {
+    overhead->Add(TraceEventMemoryOverhead::kTracedValue,
+                  /* allocated size */
+                  pickle_.GetTotalAllocatedSize(),
+                  /* resident size */
+                  pickle_.size());
   }
 
   std::unique_ptr<base::Value> ToBaseValue() const {
@@ -638,6 +648,11 @@ void TracedValue::AppendAsTraceFormat(std::string* out) const {
 
 bool TracedValue::AppendToProto(ProtoAppender* appender) const {
   return writer_->AppendToProto(appender);
+}
+
+void TracedValue::EstimateTraceMemoryOverhead(
+    TraceEventMemoryOverhead* overhead) {
+  writer_->EstimateTraceMemoryOverhead(overhead);
 }
 
 TracedValue::Array::Array(const std::initializer_list<ArrayItem> items) {

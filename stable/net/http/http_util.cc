@@ -1047,7 +1047,7 @@ bool HttpUtil::NameValuePairsIterator::ParseNameValuePair(
   // If there is a value, do additional checking and calculate the value.
   if (has_value) {
     // Check that no quote appears before the equals sign.
-    if (std::ranges::any_of(name_, IsQuote)) {
+    if (base::ranges::any_of(name_, IsQuote)) {
       return false;
     }
 

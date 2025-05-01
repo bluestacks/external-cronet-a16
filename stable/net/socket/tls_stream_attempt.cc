@@ -166,8 +166,8 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
     return OK;
   }
 
-  return ssl_config_provider_->WaitForSSLConfigReady(base::BindOnce(
-      &TlsStreamAttempt::OnIOComplete, weak_ptr_factory_.GetWeakPtr()));
+  return ssl_config_provider_->WaitForSSLConfigReady(
+      base::BindOnce(&TlsStreamAttempt::OnIOComplete, base::Unretained(this)));
 }
 
 int TlsStreamAttempt::DoTlsAttempt(int rv) {

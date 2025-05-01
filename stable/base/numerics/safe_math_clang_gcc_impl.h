@@ -8,7 +8,6 @@
 // IWYU pragma: private
 
 #include <stdint.h>
-
 #include <limits>
 #include <type_traits>
 

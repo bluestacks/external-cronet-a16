@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/process/environment_internal.h"
 
 #include <stddef.h>
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -19,7 +23,8 @@
 #include "base/check_op.h"
 #endif
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -31,15 +36,13 @@ size_t ParseEnvLine(const NativeEnvironmentString::value_type* input,
                     NativeEnvironmentString* key) {
   // Skip to the equals or end of the string, this is the key.
   size_t cur = 0;
-  while (UNSAFE_TODO(input[cur] && input[cur] != '=')) {
+  while (input[cur] && input[cur] != '=')
     cur++;
-  }
   *key = NativeEnvironmentString(&input[0], cur);
 
   // Now just skip to the end of the string.
-  while (UNSAFE_TODO(input[cur])) {
+  while (input[cur])
     cur++;
-  }
   return cur + 1;
 }
 #endif
@@ -56,14 +59,14 @@ base::HeapArray<char*> AlterEnvironment(const char* const* const env,
   // First build up all of the unchanged environment strings. These are
   // null-terminated of the form "key=value".
   std::string key;
-  for (size_t i = 0; UNSAFE_TODO(env[i]); i++) {
-    size_t line_length = ParseEnvLine(UNSAFE_TODO(env[i]), &key);
+  for (size_t i = 0; env[i]; i++) {
+    size_t line_length = ParseEnvLine(env[i], &key);
 
     // Keep only values not specified in the change vector.
     auto found_change = changes.find(key);
     if (found_change == changes.end()) {
       result_indices.push_back(value_storage.size());
-      value_storage.append(UNSAFE_TODO(env[i]), line_length);
+      value_storage.append(env[i], line_length);
     }
   }
 
@@ -87,12 +90,11 @@ base::HeapArray<char*> AlterEnvironment(const char* const* const env,
     // The string storage goes after the array of pointers.
     char* storage_data =
         reinterpret_cast<char*>(&result[result_indices.size() + 1]);
-    UNSAFE_TODO(
-        memcpy(storage_data, value_storage.data(), value_storage.size()));
+    memcpy(storage_data, value_storage.data(), value_storage.size());
 
     // Fill array of pointers at the beginning of the result.
     for (size_t i = 0; i < result_indices.size(); i++) {
-      result[i] = UNSAFE_TODO(&storage_data[result_indices[i]]);
+      result[i] = &storage_data[result_indices[i]];
     }
   }
   result[result_indices.size()] = 0;  // Null terminator.
@@ -116,7 +118,7 @@ NativeEnvironmentString AlterEnvironment(const wchar_t* env,
     if (changes.find(key) == changes.end()) {
       result.append(ptr, line_length);
     }
-    UNSAFE_TODO(ptr += line_length);
+    ptr += line_length;
   }
 
   // Now append all modified and new values.
@@ -139,4 +141,5 @@ NativeEnvironmentString AlterEnvironment(const wchar_t* env,
 
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

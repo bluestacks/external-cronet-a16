@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -131,7 +132,7 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
   // histograms.xml.
   static constexpr std::array<const char*, 4> kAllowList{
       "Secure_Preferences", "Preferences", "Local_State", "AccountPreferences"};
-  auto it = std::ranges::find(kAllowList, spaceless_basename);
+  auto it = base::ranges::find(kAllowList, spaceless_basename);
   return it != kAllowList.end() ? *it : "";
 }
 

@@ -1,16 +1,6 @@
 // Copyright 2015 The Chromium Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "test_helpers.h"
 
@@ -319,12 +309,6 @@ bool ReadVerifyCertChainTestFromFile(const std::string &file_path_ascii,
         test->key_purpose = KeyPurpose::SERVER_AUTH_STRICT_LEAF;
       } else if (value == "CLIENT_AUTH_STRICT_LEAF") {
         test->key_purpose = KeyPurpose::CLIENT_AUTH_STRICT_LEAF;
-      } else if (value == "MLS_CLIENT_AUTH") {
-        test->key_purpose = KeyPurpose::RCS_MLS_CLIENT_AUTH;
-      } else if (value == "C2PA_TIMESTAMPING") {
-        test->key_purpose = KeyPurpose::C2PA_TIMESTAMPING;
-      } else if (value == "C2PA_MANIFEST") {
-        test->key_purpose = KeyPurpose::C2PA_MANIFEST;
       } else {
         ADD_FAILURE() << "Unrecognized key_purpose: " << value;
         return false;

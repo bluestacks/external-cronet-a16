@@ -9,9 +9,11 @@
 
 namespace base {
 
-void EnableTerminationOnOutOfMemory() {}
+void EnableTerminationOnOutOfMemory() {
+}
 
-void EnableTerminationOnHeapCorruption() {}
+void EnableTerminationOnHeapCorruption() {
+}
 
 bool AdjustOOMScore(ProcessId process, int score) {
   return false;

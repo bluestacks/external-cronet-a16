@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/containers/id_map.h"
 
 #include <stdint.h>
 
-#include <array>
 #include <functional>
 #include <memory>
 
@@ -140,8 +144,8 @@ TEST(IDMapTest, IteratorRemainsValidWhenRemovingOtherElements) {
   }
 
   // IDMap has no predictable iteration order.
-  std::array<int32_t, kCount> ids_in_iteration_order;
-  std::array<const TestObject*, kCount> objs_in_iteration_order;
+  int32_t ids_in_iteration_order[kCount];
+  const TestObject* objs_in_iteration_order[kCount];
   int counter = 0;
   for (IDMap<TestObject*>::const_iterator iter(&map); !iter.IsAtEnd();
        iter.Advance()) {
@@ -250,8 +254,8 @@ TEST(IDMapTest, IteratorRemainsValidWhenClearing) {
   }
 
   // IDMap has no predictable iteration order.
-  std::array<int32_t, kCount> ids_in_iteration_order;
-  std::array<const TestObject*, kCount> objs_in_iteration_order;
+  int32_t ids_in_iteration_order[kCount];
+  const TestObject* objs_in_iteration_order[kCount];
   int counter = 0;
   for (IDMap<TestObject*>::const_iterator iter(&map); !iter.IsAtEnd();
        iter.Advance()) {
@@ -289,11 +293,11 @@ TEST(IDMapTest, OwningPointersDeletesThemOnRemove) {
   const int kCount = 3;
 
   int external_del_count = 0;
-  std::array<DestructorCounter*, kCount> external_obj;
-  std::array<int, kCount> map_external_ids;
+  DestructorCounter* external_obj[kCount];
+  int map_external_ids[kCount];
 
   int owned_del_count = 0;
-  std::array<int, kCount> map_owned_ids;
+  int map_owned_ids[kCount];
 
   IDMap<DestructorCounter*> map_external;
   IDMap<std::unique_ptr<DestructorCounter>> map_owned;

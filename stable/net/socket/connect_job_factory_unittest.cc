@@ -172,10 +172,8 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
            transport_job_factory_->params().size();
   }
 
-  const NextProtoVector alpn_protos_{NextProto::kProtoHTTP2,
-                                     NextProto::kProtoHTTP11};
-  const SSLConfig::ApplicationSettings application_settings_{
-      {NextProto::kProtoHTTP2, {}}};
+  const NextProtoVector alpn_protos_{kProtoHTTP2, kProtoHTTP11};
+  const SSLConfig::ApplicationSettings application_settings_{{kProtoHTTP2, {}}};
   bool early_data_enabled_ = true;
   const StaticHttpUserAgentSettings http_user_agent_settings_ = {"*",
                                                                  "test-ua"};
@@ -271,7 +269,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   EXPECT_EQ(params.ssl_config().application_settings, application_settings_);
   EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
-              testing::ElementsAre(NextProto::kProtoHTTP11));
+              testing::ElementsAre(kProtoHTTP11));
   EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
@@ -303,11 +301,11 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobForHttp11) {
   EXPECT_FALSE(params.ssl_config().disable_cert_verification_network_fetches);
   EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
   EXPECT_THAT(params.ssl_config().alpn_protos,
-              testing::ElementsAre(NextProto::kProtoHTTP11));
+              testing::ElementsAre(kProtoHTTP11));
   EXPECT_EQ(params.ssl_config().application_settings, application_settings_);
   EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
-              testing::ElementsAre(NextProto::kProtoHTTP11));
+              testing::ElementsAre(kProtoHTTP11));
   EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
@@ -425,7 +423,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
   EXPECT_EQ(params.ssl_config().application_settings, application_settings_);
   EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
-              testing::ElementsAre(NextProto::kProtoHTTP11));
+              testing::ElementsAre(kProtoHTTP11));
   EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::HTTP_PROXY);
@@ -757,7 +755,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
             application_settings_);
   EXPECT_EQ(endpoint_ssl_params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(endpoint_ssl_params.ssl_config().renego_allowed_for_protos,
-              testing::ElementsAre(NextProto::kProtoHTTP11));
+              testing::ElementsAre(kProtoHTTP11));
   EXPECT_TRUE(endpoint_ssl_params.ssl_config().early_data_enabled);
 
   // The SSLSocketParams for the destination should be configured to go through

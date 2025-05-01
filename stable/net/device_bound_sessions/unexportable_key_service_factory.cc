@@ -13,7 +13,8 @@
 namespace {
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/384055845): Use the correct value for Secure Enclave
+constexpr char kKeychainAccessGroup[] = MAC_TEAM_IDENTIFIER_STRING
+    "." MAC_BUNDLE_IDENTIFIER_STRING ".unexportable-keys";
 constexpr char kKeychainAccessGroup[] =
     ".org.chromium.Chromium.unexportable-keys";
 #endif  // BUILDFLAG(IS_MAC)

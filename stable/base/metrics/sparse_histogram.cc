@@ -23,7 +23,8 @@
 
 namespace base {
 
-typedef HistogramBase::Count32 Count32;
+typedef HistogramBase::Count Count;
+typedef HistogramBase::Sample Sample;
 
 // static
 HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
@@ -79,7 +80,7 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
     // Note: Theoretically the below line could be re-entrant if something has
     // gone very wrong, but crashing w/ an infinite recursion seems OK then.
     UmaHistogramSparse("Histogram.MismatchedConstructionArguments",
-                       static_cast<Sample32>(HashMetricName(name)));
+                       static_cast<Sample>(HashMetricName(name)));
     DLOG(ERROR) << "Histogram " << name << " has a mismatched type";
     return DummyHistogram::GetInstance();
   }
@@ -89,11 +90,10 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
 // static
 std::unique_ptr<HistogramBase> SparseHistogram::PersistentCreate(
     PersistentHistogramAllocator* allocator,
-    DurableStringView durable_name,
+    const char* name,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta) {
-  return WrapUnique(
-      new SparseHistogram(allocator, durable_name, meta, logged_meta));
+  return WrapUnique(new SparseHistogram(allocator, name, meta, logged_meta));
 }
 
 SparseHistogram::~SparseHistogram() = default;
@@ -107,18 +107,18 @@ HistogramType SparseHistogram::GetHistogramType() const {
 }
 
 bool SparseHistogram::HasConstructionArguments(
-    Sample32 expected_minimum,
-    Sample32 expected_maximum,
+    Sample expected_minimum,
+    Sample expected_maximum,
     size_t expected_bucket_count) const {
   // SparseHistogram never has min/max/bucket_count limit.
   return false;
 }
 
-void SparseHistogram::Add(Sample32 value) {
+void SparseHistogram::Add(Sample value) {
   AddCount(value, 1);
 }
 
-void SparseHistogram::AddCount(Sample32 value, int count) {
+void SparseHistogram::AddCount(Sample value, int count) {
   if (count <= 0) {
     NOTREACHED();
   }
@@ -201,29 +201,28 @@ void SparseHistogram::SerializeInfoImpl(Pickle* pickle) const {
   pickle->WriteInt(flags());
 }
 
-SparseHistogram::SparseHistogram(DurableStringView durable_name)
-    : HistogramBase(durable_name),
-      unlogged_samples_(new SampleMap(HashMetricName(*durable_name))),
+SparseHistogram::SparseHistogram(const char* name)
+    : HistogramBase(name),
+      unlogged_samples_(new SampleMap(HashMetricName(name))),
       logged_samples_(new SampleMap(unlogged_samples_->id())) {}
 
 SparseHistogram::SparseHistogram(PersistentHistogramAllocator* allocator,
-                                 DurableStringView durable_name,
+                                 const char* name,
                                  HistogramSamples::Metadata* meta,
                                  HistogramSamples::Metadata* logged_meta)
-    : HistogramBase(durable_name),
+    : HistogramBase(name),
       // While other histogram types maintain a static vector of values with
       // sufficient space for both "active" and "logged" samples, with each
       // SampleVector being given the appropriate half, sparse histograms
       // have no such initial allocation. Each sample has its own record
       // attached to a single PersistentSampleMap by a common 64-bit identifier.
       // Since a sparse histogram has two sample maps (active and logged),
-      // there must be two sets of sample records with different IDs. The
+      // there must be two sets of sample records with diffent IDs. The
       // "active" samples use, for convenience purposes, an ID matching
       // that of the histogram while the "logged" samples use that number
       // plus 1.
-      unlogged_samples_(new PersistentSampleMap(HashMetricName(*durable_name),
-                                                allocator,
-                                                meta)),
+      unlogged_samples_(
+          new PersistentSampleMap(HashMetricName(name), allocator, meta)),
       logged_samples_(new PersistentSampleMap(unlogged_samples_->id() + 1,
                                               allocator,
                                               logged_meta)) {}

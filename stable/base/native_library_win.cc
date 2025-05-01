@@ -74,9 +74,8 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
     error->code = ::GetLastError();
   }
 
-  if (restore_directory) {
+  if (restore_directory)
     SetCurrentDirectory(current_directory);
-  }
 
   return module_handle;
 }
@@ -93,20 +92,18 @@ NativeLibrary LoadSystemLibraryHelper(const FilePath& library_path,
     module = ::LoadLibraryExW(library_path.value().c_str(), nullptr,
                               LOAD_LIBRARY_SEARCH_SYSTEM32);
 
-    if (!module && error) {
+    if (!module && error)
       error->code = ::GetLastError();
-    }
   }
 
   return module;
 }
 
-FilePath GetSystemLibraryName(FilePath::StringViewType name) {
+FilePath GetSystemLibraryName(FilePath::StringPieceType name) {
   FilePath library_path;
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
-  if (PathService::Get(DIR_SYSTEM, &library_path)) {
+  if (PathService::Get(DIR_SYSTEM, &library_path))
     library_path = library_path.Append(name);
-  }
   return library_path;
 }
 
@@ -140,25 +137,23 @@ std::string GetLoadableModuleName(std::string_view name) {
   return GetNativeLibraryName(name);
 }
 
-NativeLibrary LoadSystemLibrary(FilePath::StringViewType name,
+NativeLibrary LoadSystemLibrary(FilePath::StringPieceType name,
                                 NativeLibraryLoadError* error) {
   FilePath library_path = GetSystemLibraryName(name);
   if (library_path.empty()) {
-    if (error) {
+    if (error)
       error->code = ERROR_NOT_FOUND;
-    }
     return nullptr;
   }
   return LoadSystemLibraryHelper(library_path, error);
 }
 
-NativeLibrary PinSystemLibrary(FilePath::StringViewType name,
+NativeLibrary PinSystemLibrary(FilePath::StringPieceType name,
                                NativeLibraryLoadError* error) {
   FilePath library_path = GetSystemLibraryName(name);
   if (library_path.empty()) {
-    if (error) {
+    if (error)
       error->code = ERROR_NOT_FOUND;
-    }
     return nullptr;
   }
 
@@ -174,9 +169,8 @@ NativeLibrary PinSystemLibrary(FilePath::StringViewType name,
 
   // Load and pin the library since it wasn't already loaded.
   module = ScopedNativeLibrary(LoadSystemLibraryHelper(library_path, error));
-  if (!module.is_valid()) {
+  if (!module.is_valid())
     return nullptr;
-  }
 
   ScopedNativeLibrary temp;
   if (::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN,
@@ -185,9 +179,8 @@ NativeLibrary PinSystemLibrary(FilePath::StringViewType name,
     return module.release();
   }
 
-  if (error) {
+  if (error)
     error->code = ::GetLastError();
-  }
   // Return nullptr since we failed to pin the module.
   return nullptr;
 }

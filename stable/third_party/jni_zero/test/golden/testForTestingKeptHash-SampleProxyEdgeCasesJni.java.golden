@@ -7,22 +7,21 @@ import java.util.Map;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
+import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForTests;
 import org.jni_zero.SampleProxyEdgeCases;
 import org.jni_zero.internal.Boolean;
-import org.jni_zero.internal.NullUnmarked;
-import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
-@NullUnmarked
 class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
-  private static @Nullable JniTestInstanceHolder sOverride;
+  private static JniTestInstanceHolder sOverride;
 
   public static SampleProxyEdgeCases.Natives get() {
     JniTestInstanceHolder holder = sOverride;
     if (holder != null && holder.value != null) {
       return (SampleProxyEdgeCases.Natives) holder.value;
     }
+    NativeLibraryLoadedStatus.checkLoaded();
     return new SampleProxyEdgeCasesJni();
   }
 

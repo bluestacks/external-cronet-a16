@@ -38,7 +38,6 @@ def run_jdeps(filepath: pathlib.Path,
   cmd = [
       str(jdeps_path),
       '-verbose:class',
-      '-filter:none',  # Necessary to include intra-package deps.
       '--multi-release',  # Some jars support multiple JDK releases.
       'base',
       str(filepath),

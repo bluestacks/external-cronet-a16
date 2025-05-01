@@ -19,7 +19,6 @@ class TestSamplingEventSource : public SamplingEventSource {
   ~TestSamplingEventSource() override;
 
   bool Start(SamplingEventCallback callback) override;
-  TimeDelta GetSampleInterval() override;
 
   void SimulateEvent();
 

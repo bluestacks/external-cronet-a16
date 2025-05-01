@@ -11,7 +11,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 
-namespace base::sequence_manager::internal {
+namespace base {
+namespace sequence_manager {
+namespace internal {
 
 Fence::Fence(const TaskOrder& task_order) : task_order_(task_order) {
   DCHECK_NE(task_order_.enqueue_order(), EnqueueOrder::none());
@@ -38,4 +40,6 @@ Fence Fence::CreateWithEnqueueOrder(EnqueueOrder enqueue_order) {
   return Fence(enqueue_order, TimeTicks(), 0);
 }
 
-}  // namespace base::sequence_manager::internal
+}  // namespace internal
+}  // namespace sequence_manager
+}  // namespace base

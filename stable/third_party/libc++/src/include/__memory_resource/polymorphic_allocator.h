@@ -15,10 +15,9 @@
 #include <__cstddef/max_align_t.h>
 #include <__fwd/pair.h>
 #include <__memory_resource/memory_resource.h>
-#include <__new/exceptions.h>
-#include <__new/placement_new_delete.h>
 #include <__utility/exception_guard.h>
 #include <limits>
+#include <new>
 #include <tuple>
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
@@ -64,7 +63,7 @@ public:
 
   [[nodiscard]] _LIBCPP_HIDE_FROM_ABI _ValueType* allocate(size_t __n) {
     if (__n > __max_size()) {
-      std::__throw_bad_array_new_length();
+      __throw_bad_array_new_length();
     }
     return static_cast<_ValueType*>(__res_->allocate(__n * sizeof(_ValueType), alignof(_ValueType)));
   }

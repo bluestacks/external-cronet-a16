@@ -1765,8 +1765,12 @@ class ReportingHeaderParserStructuredHeaderTest
     : public ReportingHeaderParserTestBase {
  protected:
   ReportingHeaderParserStructuredHeaderTest() {
+    // Enable kDocumentReporting to support new StructuredHeader-based
+    // Reporting-Endpoints header.
     feature_list_.InitWithFeatures(
-        {features::kPartitionConnectionsByNetworkIsolationKey}, {});
+        {features::kPartitionConnectionsByNetworkIsolationKey,
+         features::kDocumentReporting},
+        {});
   }
 
   ~ReportingHeaderParserStructuredHeaderTest() override = default;

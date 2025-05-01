@@ -8,7 +8,6 @@
 
 // UNSUPPORTED: c++03, c++11, c++14, c++17, c++20
 
-#include <sstream>
 #include <vector>
 
 #include "../from_range_sequence_containers.h"
@@ -25,24 +24,8 @@ constexpr bool test() {
     });
   });
 
-  { // Ensure input-only sized ranges are accepted.
-    using input_iter = cpp20_input_iterator<const bool*>;
-    const bool in[]{true, true, false, true};
-    std::vector v(std::from_range, std::views::counted(input_iter{std::ranges::begin(in)}, std::ranges::ssize(in)));
-    assert(std::ranges::equal(v, std::vector<bool>{true, true, false, true}));
-  }
-
   return true;
 }
-
-#ifndef TEST_HAS_NO_LOCALIZATION
-void test_counted_istream_view() {
-  std::istringstream is{"1 1 0 1"};
-  auto vals = std::views::istream<bool>(is);
-  std::vector v(std::from_range, std::views::counted(vals.begin(), 3));
-  assert(v == (std::vector{true, true, false}));
-}
-#endif
 
 int main(int, char**) {
   test();
@@ -52,10 +35,6 @@ int main(int, char**) {
 
   // Note: test_exception_safety_throwing_copy doesn't apply because copying a boolean cannot throw.
   test_exception_safety_throwing_allocator<std::vector, bool>();
-
-#ifndef TEST_HAS_NO_LOCALIZATION
-  test_counted_istream_view();
-#endif
 
   return 0;
 }

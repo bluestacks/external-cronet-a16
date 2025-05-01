@@ -22,6 +22,7 @@ struct unique_ptr;
 
 #include "test_macros.h"
 
+
 namespace __gnu_cxx {
 template class hash_map<int, int>;
 }

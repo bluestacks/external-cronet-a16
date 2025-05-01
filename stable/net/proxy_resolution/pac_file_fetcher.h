@@ -76,8 +76,7 @@ class NET_EXPORT_PRIVATE PacFileFetcher {
   // Safe to reuse because delays for WPAD fetches don't provide information
   // to the web platform useful to attackers, and WPAD fetches uniformly
   // block all network requests.
-  const IsolationInfo isolation_info_ =
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  const IsolationInfo isolation_info_ = IsolationInfo::CreateTransient();
 };
 
 }  // namespace net

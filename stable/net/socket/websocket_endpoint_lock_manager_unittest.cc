@@ -4,8 +4,6 @@
 
 #include "net/socket/websocket_endpoint_lock_manager.h"
 
-#include <array>
-
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -89,7 +87,7 @@ class WebSocketEndpointLockManagerTest : public TestWithTaskEnvironment {
 };
 
 TEST_F(WebSocketEndpointLockManagerTest, LockEndpointReturnsOkOnce) {
-  std::array<FakeWaiter, 2> waiters;
+  FakeWaiter waiters[2];
   EXPECT_THAT(websocket_endpoint_lock_manager_.LockEndpoint(DummyEndpoint(),
                                                             &waiters[0]),
               IsOk());
@@ -111,7 +109,7 @@ TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockNotCalledOnOk) {
 }
 
 TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockNotCalledImmediately) {
-  std::array<FakeWaiter, 2> waiters;
+  FakeWaiter waiters[2];
   EXPECT_THAT(websocket_endpoint_lock_manager_.LockEndpoint(DummyEndpoint(),
                                                             &waiters[0]),
               IsOk());
@@ -124,7 +122,7 @@ TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockNotCalledImmediately) {
 }
 
 TEST_F(WebSocketEndpointLockManagerTest, GotEndpointLockCalledWhenUnlocked) {
-  std::array<FakeWaiter, 2> waiters;
+  FakeWaiter waiters[2];
   EXPECT_THAT(websocket_endpoint_lock_manager_.LockEndpoint(DummyEndpoint(),
                                                             &waiters[0]),
               IsOk());
@@ -162,7 +160,7 @@ TEST_F(WebSocketEndpointLockManagerTest,
 }
 
 TEST_F(WebSocketEndpointLockManagerTest, LockReleaserWorks) {
-  std::array<FakeWaiter, 2> waiters;
+  FakeWaiter waiters[2];
   EXPECT_THAT(websocket_endpoint_lock_manager_.LockEndpoint(DummyEndpoint(),
                                                             &waiters[0]),
               IsOk());
@@ -197,7 +195,7 @@ TEST_F(WebSocketEndpointLockManagerTest, LockReleaserForgottenOnUnlock) {
 // When ownership of the endpoint is passed to a new waiter, the new waiter can
 // construct another LockReleaser.
 TEST_F(WebSocketEndpointLockManagerTest, NextWaiterCanCreateLockReleaserAgain) {
-  std::array<FakeWaiter, 2> waiters;
+  FakeWaiter waiters[2];
   EXPECT_THAT(websocket_endpoint_lock_manager_.LockEndpoint(DummyEndpoint(),
                                                             &waiters[0]),
               IsOk());
@@ -218,7 +216,7 @@ TEST_F(WebSocketEndpointLockManagerTest, NextWaiterCanCreateLockReleaserAgain) {
 // Destroying LockReleaser after UnlockEndpoint() does nothing.
 TEST_F(WebSocketEndpointLockManagerTest,
        DestroyLockReleaserAfterUnlockEndpointDoesNothing) {
-  std::array<FakeWaiter, 3> waiters;
+  FakeWaiter waiters[3];
 
   EXPECT_THAT(websocket_endpoint_lock_manager_.LockEndpoint(DummyEndpoint(),
                                                             &waiters[0]),
@@ -241,7 +239,7 @@ TEST_F(WebSocketEndpointLockManagerTest,
 
 // UnlockEndpoint() should always be asynchronous.
 TEST_F(WebSocketEndpointLockManagerTest, UnlockEndpointIsAsynchronous) {
-  std::array<FakeWaiter, 2> waiters;
+  FakeWaiter waiters[2];
   EXPECT_THAT(websocket_endpoint_lock_manager_.LockEndpoint(DummyEndpoint(),
                                                             &waiters[0]),
               IsOk());

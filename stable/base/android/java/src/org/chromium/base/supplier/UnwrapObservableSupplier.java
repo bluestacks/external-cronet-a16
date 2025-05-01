@@ -4,9 +4,10 @@
 
 package org.chromium.base.supplier;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -42,20 +43,20 @@ import java.util.function.Function;
  * @param <P> The parent object that's holding the target value somehow.
  * @param <T> The target type that the client wants to observe.
  */
-@NullMarked
-public class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
-        implements ObservableSupplier<T> {
-    private final ObservableSupplierImpl<T> mDelegateSupplier = new ObservableSupplierImpl<>();
-    private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
-    private final ObservableSupplier<P> mParentSupplier;
-    private final Function<@Nullable P, T> mUnwrapFunction;
+public class UnwrapObservableSupplier<P, T> implements ObservableSupplier<T> {
+    private final @NonNull ObservableSupplierImpl<T> mDelegateSupplier =
+            new ObservableSupplierImpl<>();
+    private final @NonNull Callback<P> mOnParentSupplierChangeCallback =
+            this::onParentSupplierChange;
+    private final @NonNull ObservableSupplier<P> mParentSupplier;
+    private final @NonNull Function<P, T> mUnwrapFunction;
 
     /**
      * @param parentSupplier The parent observable supplier.
      * @param unwrapFunction Converts the parent value to target value. Should handle null values.
      */
     public UnwrapObservableSupplier(
-            ObservableSupplier<P> parentSupplier, Function<@Nullable P, T> unwrapFunction) {
+            @NonNull ObservableSupplier<P> parentSupplier, @NonNull Function<P, T> unwrapFunction) {
         mParentSupplier = parentSupplier;
         mUnwrapFunction = unwrapFunction;
     }
@@ -66,16 +67,16 @@ public class UnwrapObservableSupplier<P extends @Nullable Object, T extends @Nul
     }
 
     @Override
-    public @Nullable T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
+    public T addObserver(Callback<T> obs) {
         // Can use mDelegateSupplier.hasObservers() to tell if we are subscribed or not to
         // mParentSupplier. This is safe because we never expose outside callers, and completely
         // control when we add/remove observers to it.
         if (!mDelegateSupplier.hasObservers()) {
             // The value in mDelegateSupplier is stale or has never been set, and so we update it
             // by passing through the current parent value to our on change method.
-            mParentSupplier.addSyncObserverAndCallIfNonNull(mOnParentSupplierChangeCallback);
+            onParentSupplierChange(mParentSupplier.addObserver(mOnParentSupplierChangeCallback));
         }
-        return mDelegateSupplier.addObserver(obs, behavior);
+        return mDelegateSupplier.addObserver(obs);
     }
 
     @Override

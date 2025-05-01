@@ -26,9 +26,6 @@ class FailedWebTransportClient : public WebTransportClient {
   void Close(const std::optional<WebTransportCloseInfo>& close_info) override {
     NOTREACHED();
   }
-  void CloseIfNonceMatches(base::UnguessableToken nonce) override {
-    NOTREACHED();
-  }
 
   quic::WebTransportSession* session() override { return nullptr; }
 

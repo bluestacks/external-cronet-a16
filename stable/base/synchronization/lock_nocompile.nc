@@ -21,12 +21,4 @@ private:
   int value GUARDED_BY(lock) = 0;
 };
 
-struct StructWithLock {
-  Lock lock;
-};
-
-void AutoLockAsTemporary(StructWithLock* s) {
-  AutoLock(s->lock); // expected-error {{ignoring temporary of type 'BasicAutoLock<base::Lock>' declared with 'nodiscard' attribute}}
-}
-
 }  // namespace base

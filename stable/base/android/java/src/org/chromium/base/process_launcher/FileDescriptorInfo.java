@@ -8,18 +8,16 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.UsedByReflection;
 
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Parcelable class that contains file descriptor and file region information to be passed to child
- * processes.
+ * Parcelable class that contains file descriptor and file region information to
+ * be passed to child processes.
  */
 @Immutable
 @UsedByReflection("child_process_launcher_helper_android.cc")
-@NullMarked
 public final class FileDescriptorInfo implements Parcelable {
     public final int id;
     public final ParcelFileDescriptor fd;
@@ -35,9 +33,7 @@ public final class FileDescriptorInfo implements Parcelable {
 
     FileDescriptorInfo(Parcel in) {
         id = in.readInt();
-        ParcelFileDescriptor gotFd = in.readParcelable(ParcelFileDescriptor.class.getClassLoader());
-        assert gotFd != null;
-        fd = gotFd;
+        fd = in.readParcelable(ParcelFileDescriptor.class.getClassLoader());
         offset = in.readLong();
         size = in.readLong();
     }

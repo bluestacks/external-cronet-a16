@@ -15,8 +15,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -31,7 +29,6 @@ import java.util.ArrayList;
  * WARNING: This class is not thread-safe.
  */
 @JNINamespace("net")
-@NullMarked
 public class NetworkChangeNotifier {
     /**
      * Alerted when the connection type of the network changes.
@@ -43,14 +40,14 @@ public class NetworkChangeNotifier {
 
     private final ArrayList<Long> mNativeChangeNotifiers;
     private final ObserverList<ConnectionTypeObserver> mConnectionTypeObservers;
-    private @Nullable NetworkChangeNotifierAutoDetect mAutoDetector;
+    private NetworkChangeNotifierAutoDetect mAutoDetector;
     // Last value broadcast via ConnectionTypeChange signal.
     private int mCurrentConnectionType = ConnectionType.CONNECTION_UNKNOWN;
     // Last value broadcast via ConnectionCostChange signal.
     private int mCurrentConnectionCost = ConnectionCost.UNKNOWN;
 
     @SuppressLint("StaticFieldLeak")
-    private static @Nullable NetworkChangeNotifier sInstance;
+    private static NetworkChangeNotifier sInstance;
 
     @VisibleForTesting
     protected NetworkChangeNotifier() {
@@ -85,14 +82,12 @@ public class NetworkChangeNotifier {
     }
 
     @CalledByNative
-    public int getCurrentConnectionSubtype(boolean forceUpdateNetworkState) {
+    public int getCurrentConnectionSubtype() {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("NetworkChangeNotifier.getCurrentConnectionSubtype")) {
             if (mAutoDetector == null) return ConnectionSubtype.SUBTYPE_UNKNOWN;
 
-            if (forceUpdateNetworkState) {
-                mAutoDetector.updateCurrentNetworkState();
-            }
+            mAutoDetector.updateCurrentNetworkState();
             return mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
         }
     }
@@ -263,8 +258,6 @@ public class NetworkChangeNotifier {
                                         }
                                     },
                                     policy);
-                    // TODO(crbug.com/376646498): Remove this once we have finished
-                    // the experiment as its definitely a redundant call.
                     if (forceUpdateNetworkState) mAutoDetector.updateCurrentNetworkState();
 
                     final NetworkChangeNotifierAutoDetect.NetworkState networkState =
@@ -468,7 +461,7 @@ public class NetworkChangeNotifier {
     }
 
     // For testing only.
-    public static @Nullable NetworkChangeNotifierAutoDetect getAutoDetectorForTest() {
+    public static NetworkChangeNotifierAutoDetect getAutoDetectorForTest() {
         return getInstance().mAutoDetector;
     }
 

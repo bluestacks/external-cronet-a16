@@ -6,18 +6,19 @@ package org.jni_zero.extrapackage;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
-import org.jni_zero.NativeLibraryLoadedStatus;
+import org.jni_zero.internal.NullUnmarked;
+import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
+@NullUnmarked
 class ImportsTinySampleJni implements ImportsTinySample.Natives {
-  private static JniTestInstanceHolder sOverride;
+  private static @Nullable JniTestInstanceHolder sOverride;
 
   public static ImportsTinySample.Natives get() {
     JniTestInstanceHolder holder = sOverride;
     if (holder != null && holder.value != null) {
       return (ImportsTinySample.Natives) holder.value;
     }
-    NativeLibraryLoadedStatus.checkLoaded();
     return new ImportsTinySampleJni();
   }
 

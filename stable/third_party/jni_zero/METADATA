@@ -3,8 +3,5 @@
 name: "JNI Zero"
 third_party {
   license_type: NOTICE
-  identifier {
-    value: "https://chromium.googlesource.com/chromium/src/+/main/third_party/jni_zero"
-    type: "Git"
-  }
+  homepage: "This is the canonical repository"
 }

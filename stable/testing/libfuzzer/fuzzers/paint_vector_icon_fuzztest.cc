@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "skia/ext/switches.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
@@ -111,7 +112,7 @@ class PaintVectorIconFuzzTest {
     // An icon can contain multiple representations. We do not fuzz the code
     // that chooses which representation to draw based on canvas size and scale,
     // and instead use a single representation.
-    gfx::VectorIconRep rep{path};
+    gfx::VectorIconRep rep(path.data(), path.size());
     gfx::VectorIcon icon(&rep, /*reps_size=*/1u, "icon");
 
     constexpr float kImageScale = 1.f;

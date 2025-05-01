@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <array>
 #include <iterator>
 #include <string>
 #include <string_view>
@@ -44,7 +43,7 @@ struct FrameHeaderTestCase {
   WebSocketError error_code;
 };
 
-constexpr auto kFrameHeaderTests = std::to_array<FrameHeaderTestCase>({
+constexpr FrameHeaderTestCase kFrameHeaderTests[] = {
     {{"\x81\x00", 2}, UINT64_C(0), kWebSocketNormalClosure},
     {{"\x81\x7D", 2}, UINT64_C(125), kWebSocketNormalClosure},
     {{"\x81\x7E\x00\x7E", 4}, UINT64_C(126), kWebSocketNormalClosure},
@@ -60,8 +59,7 @@ constexpr auto kFrameHeaderTests = std::to_array<FrameHeaderTestCase>({
      kWebSocketErrorMessageTooBig},
     {{"\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10},
      UINT64_C(0x7FFFFFFFFFFFFFFF),
-     kWebSocketErrorMessageTooBig},
-});
+     kWebSocketErrorMessageTooBig}};
 constexpr int kNumFrameHeaderTests = std::size(kFrameHeaderTests);
 
 TEST(WebSocketFrameParserTest, DecodeNormalFrame) {
@@ -131,7 +129,7 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
     const char* expected_payload;
     size_t expected_payload_length;
   };
-  constexpr static const auto kInputs = std::to_array<Input>({
+  static constexpr Input kInputs[] = {
       // Each |frame| data is split into two string literals because C++ lexers
       // consume unlimited number of hex characters in a hex character escape
       // (e.g. "\x05F" is not treated as { '\x5', 'F', '\0' } but as
@@ -165,8 +163,7 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
        7, "Ninth", 5},
       {"\x81\x05"
        "Tenth",
-       7, "Tenth", 5},
-  });
+       7, "Tenth", 5}};
   static constexpr int kNumInputs = std::size(kInputs);
 
   std::vector<uint8_t> input;

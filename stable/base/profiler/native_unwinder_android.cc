@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
@@ -38,8 +37,8 @@ namespace {
 class NonElfModule : public ModuleCache::Module {
  public:
   explicit NonElfModule(unwindstack::MapInfo* map_info)
-      : start_(static_cast<uintptr_t>(map_info->start())),
-        size_(static_cast<uintptr_t>(map_info->end() - start_)),
+      : start_(map_info->start()),
+        size_(map_info->end() - start_),
         map_info_name_(map_info->name()) {}
   ~NonElfModule() override = default;
 
@@ -79,13 +78,11 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
 void CopyToRegisterContext(unwindstack::Regs* regs,
                            RegisterContext* thread_context) {
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-  UNSAFE_TODO(memcpy(reinterpret_cast<void*>(&thread_context->arm_r0),
-                     regs->RawData(),
-                     unwindstack::ARM_REG_LAST * sizeof(uintptr_t)));
+  memcpy(reinterpret_cast<void*>(&thread_context->arm_r0), regs->RawData(),
+         unwindstack::ARM_REG_LAST * sizeof(uintptr_t));
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)
-  UNSAFE_TODO(memcpy(reinterpret_cast<void*>(&thread_context->regs[0]),
-                     regs->RawData(),
-                     unwindstack::ARM64_REG_LAST * sizeof(uintptr_t)));
+  memcpy(reinterpret_cast<void*>(&thread_context->regs[0]), regs->RawData(),
+         unwindstack::ARM64_REG_LAST * sizeof(uintptr_t));
 #else   // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
   NOTREACHED();
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
@@ -102,13 +99,11 @@ UnwindStackMemoryAndroid::UnwindStackMemoryAndroid(uintptr_t stack_ptr,
 UnwindStackMemoryAndroid::~UnwindStackMemoryAndroid() = default;
 
 size_t UnwindStackMemoryAndroid::Read(uint64_t addr, void* dst, size_t size) {
-  if (addr < stack_ptr_) {
+  if (addr < stack_ptr_)
     return 0;
-  }
-  if (size >= stack_top_ || addr > stack_top_ - size) {
+  if (size >= stack_top_ || addr > stack_top_ - size)
     return 0;
-  }
-  UNSAFE_TODO(memcpy(dst, reinterpret_cast<void*>(addr), size));
+  memcpy(dst, reinterpret_cast<void*>(addr), size);
   return size;
 }
 
@@ -141,9 +136,8 @@ NativeUnwinderAndroid::NativeUnwinderAndroid(
 }
 
 NativeUnwinderAndroid::~NativeUnwinderAndroid() {
-  if (module_cache()) {
+  if (module_cache())
     module_cache()->UnregisterAuxiliaryModuleProvider(this);
-  }
 
   map_delegate_->ReleaseMapReference();
 }
@@ -179,13 +173,11 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
 
     unwindstack::Elf* elf =
         map_info->GetElf(memory_regions_map_->memory(), arch);
-    if (!elf->valid()) {
+    if (!elf->valid())
       break;
-    }
 
-    UnwindStackMemoryAndroid stack_memory(static_cast<uintptr_t>(cur_sp),
-                                          stack_top);
-    uint64_t rel_pc = elf->GetRelPc(cur_pc, map_info);
+    UnwindStackMemoryAndroid stack_memory(cur_sp, stack_top);
+    uintptr_t rel_pc = elf->GetRelPc(cur_pc, map_info);
     bool is_signal_frame = false;
     bool finished = false;
     // map_info->GetElf() may return a valid elf whose memory() is nullptr.
@@ -197,25 +189,22 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
         (elf->StepIfSignalHandler(rel_pc, regs.get(), &stack_memory) ||
          elf->Step(rel_pc, regs.get(), &stack_memory, &finished,
                    &is_signal_frame));
-    if (stepped && finished) {
+    if (stepped && finished)
       return UnwindResult::kCompleted;
-    }
 
     if (!stepped) {
       // Stepping failed. Try unwinding using return address.
       if (stack->size() == 1) {
-        if (!regs->SetPcFromReturnAddress(&stack_memory)) {
+        if (!regs->SetPcFromReturnAddress(&stack_memory))
           return UnwindResult::kAborted;
-        }
       } else {
         break;
       }
     }
 
     // If the pc and sp didn't change, then consider everything stopped.
-    if (cur_pc == regs->pc() && cur_sp == regs->sp()) {
+    if (cur_pc == regs->pc() && cur_sp == regs->sp())
       return UnwindResult::kAborted;
-    }
 
     // Exclusive range of expected stack pointer values after the unwind.
     struct {
@@ -230,7 +219,7 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
 
     if (regs->dex_pc() != 0) {
       // Add a frame to represent the dex file.
-      EmitDexFrame(static_cast<uintptr_t>(regs->dex_pc()), arch, stack);
+      EmitDexFrame(regs->dex_pc(), arch, stack);
 
       // Clear the dex pc so that we don't repeat this frame later.
       regs->set_dex_pc(0);
@@ -240,7 +229,7 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
     // GetExistingModuleForAddress because the unwound-to address may be in a
     // module associated with a different unwinder.
     const ModuleCache::Module* module =
-        module_cache()->GetModuleForAddress(static_cast<uintptr_t>(regs->pc()));
+        module_cache()->GetModuleForAddress(regs->pc());
     stack->emplace_back(regs->pc(), module);
   } while (CanUnwindFrom(stack->back()));
 
@@ -288,7 +277,7 @@ void NativeUnwinderAndroid::EmitDexFrame(uintptr_t dex_pc,
     }
   }
 
-  stack->emplace_back(dex_pc, module);
+    stack->emplace_back(dex_pc, module);
 }
 
 }  // namespace base

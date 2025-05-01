@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/atomicops.h"
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/bits.h"
@@ -663,7 +664,7 @@ class BASE_EXPORT HangWatchState {
 
   // A unique ID of the thread under watch. Used for logging in crash reports
   // only.
-  PlatformThreadId thread_id_ = kInvalidThreadId;
+  PlatformThreadId thread_id_;
 
   // Number of active HangWatchScopeEnables on this thread.
   int nesting_level_ = 0;

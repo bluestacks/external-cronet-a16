@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -29,20 +28,13 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID) && \
-    (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64))
-#include "base/no_destructor.h"
-#include "base/profiler/native_unwinder_android.h"
-#if BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #include "base/android/apk_assets.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/no_destructor.h"
 #include "base/profiler/chrome_unwinder_android_32.h"
-#endif
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/profiler/core_unwinders.h"
+#include "base/profiler/native_unwinder_android.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -112,8 +104,7 @@ void OtherLibraryCallback(void* arg) {
   [[maybe_unused]] volatile int i = 0;
 }
 
-#if BUILDFLAG(IS_ANDROID) && \
-    (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64))
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 class NativeUnwinderAndroidMapDelegateForTesting
     : public NativeUnwinderAndroidMapDelegate {
  public:
@@ -146,7 +137,6 @@ std::unique_ptr<NativeUnwinderAndroid> CreateNativeUnwinderAndroidForTesting(
       exclude_module_with_base_address, GetMapDelegateForTesting());
 }
 
-#if BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 std::unique_ptr<Unwinder> CreateChromeUnwinderAndroid32ForTesting(
     uintptr_t chrome_module_base_address) {
   static constexpr char kCfiFileName[] = "assets/unwind_cfi_32_v2";
@@ -183,9 +173,7 @@ std::unique_ptr<Unwinder> CreateChromeUnwinderAndroid32ForTesting(
       chrome_module_base_address,
       /* text_section_start_address= */ base::android::kStartOfText);
 }
-#endif  // BUILDFLAG(ENABLE_ARM_CFI_TABLE)
-#endif  // BUILDFLAG(IS_ANDROID) && (BUILDFLAG(ENABLE_ARM_CFI_TABLE) ||
-        // defined(ARCH_CPU_ARM64))
+#endif  // #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 
 }  // namespace
 
@@ -266,9 +254,8 @@ NOINLINE FunctionAddressRange
 CallWithPlainFunction(OnceClosure wait_for_sample) {
   const void* start_program_counter = GetProgramCounter();
 
-  if (!wait_for_sample.is_null()) {
+  if (!wait_for_sample.is_null())
     std::move(wait_for_sample).Run();
-  }
 
   // Volatile to prevent a tail call to GetProgramCounter().
   const void* volatile end_program_counter = GetProgramCounter();
@@ -285,13 +272,11 @@ NOINLINE FunctionAddressRange CallWithAlloca(OnceClosure wait_for_sample) {
   // optimized out.
   volatile char* const allocation =
       const_cast<volatile char*>(static_cast<char*>(alloca(alloca_size)));
-  for (volatile char* p = allocation; p < allocation + alloca_size; ++p) {
+  for (volatile char* p = allocation; p < allocation + alloca_size; ++p)
     *p = '\0';
-  }
 
-  if (!wait_for_sample.is_null()) {
+  if (!wait_for_sample.is_null())
     std::move(wait_for_sample).Run();
-  }
 
   // Volatile to prevent a tail call to GetProgramCounter().
   const void* volatile end_program_counter = GetProgramCounter();
@@ -358,9 +343,8 @@ std::vector<Frame> SampleScenario(UnwindScenario* scenario,
                       sampling_thread_completed.Signal();
                     })),
                 CreateCoreUnwindersFactoryForTesting(module_cache));
-            if (aux_unwinder_factory) {
+            if (aux_unwinder_factory)
               profiler.AddAuxUnwinder(std::move(aux_unwinder_factory).Run());
-            }
             profiler.Start();
             sampling_thread_completed.Wait();
           }));
@@ -479,26 +463,8 @@ StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
         return unwinders;
       },
       std::move(unwinders));
-#elif BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-  std::vector<std::unique_ptr<Unwinder>> unwinders;
-  unwinders.push_back(CreateNativeUnwinderAndroidForTesting(
-      reinterpret_cast<uintptr_t>(&__executable_start)));
-  unwinders.push_back(std::make_unique<base::FramePointerUnwinder>(
-      base::BindRepeating([](const base::Frame& current_frame) {
-        return current_frame.module &&
-               current_frame.module->GetBaseAddress() ==
-                   reinterpret_cast<uintptr_t>(&__executable_start);
-      }),
-      /*is_system_unwinder=*/false));
-  return BindOnce(
-      [](std::vector<std::unique_ptr<Unwinder>> unwinders) {
-        return unwinders;
-      },
-      std::move(unwinders));
-#elif BUILDFLAG(IS_ANDROID)
-  return StackSamplingProfiler::UnwindersFactory();
 #else
-  return CreateCoreUnwindersFactory();
+  return StackSamplingProfiler::UnwindersFactory();
 #endif
 }
 

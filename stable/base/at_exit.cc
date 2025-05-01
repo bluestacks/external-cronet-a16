@@ -5,7 +5,6 @@
 #include "base/at_exit.h"
 
 #include <stddef.h>
-
 #include <ostream>
 #include <utility>
 
@@ -41,9 +40,8 @@ AtExitManager::~AtExitManager() {
   }
   DCHECK_EQ(this, g_top_manager);
 
-  if (!g_disable_managers) {
+  if (!g_disable_managers)
     ProcessCallbacksNow();
-  }
   g_top_manager = next_manager_;
 }
 

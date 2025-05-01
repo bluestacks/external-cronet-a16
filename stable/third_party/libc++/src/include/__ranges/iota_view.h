@@ -68,7 +68,7 @@ struct __get_wider_signed {
 };
 
 template <class _Start>
-using _IotaDiffT _LIBCPP_NODEBUG =
+using _IotaDiffT =
     typename _If< (!integral<_Start> || sizeof(iter_difference_t<_Start>) > sizeof(_Start)),
                   type_identity<iter_difference_t<_Start>>,
                   __get_wider_signed<_Start> >::type;

@@ -83,11 +83,8 @@ class BASE_EXPORT InputHintChecker {
   void set_is_after_input_yield(bool after) { is_after_input_yield_ = after; }
   bool is_after_input_yield() { return is_after_input_yield_; }
 
-  // Used to test UMA metric recording.
-  void disable_metric_subsampling() { metric_subsampling_disabled_ = true; }
-
   // Records the UMA metric based on the InputHintResult.
-  void RecordInputHintResult(InputHintResult result);
+  static void RecordInputHintResult(InputHintResult result);
 
   bool IsInitializedForTesting();
   bool FailedToInitializeForTesting();
@@ -108,7 +105,6 @@ class BASE_EXPORT InputHintChecker {
   bool HasInputImpl(JNIEnv* env, jobject o);
 
   bool is_after_input_yield_ = false;
-  bool metric_subsampling_disabled_ = false;
 
   // Last time the input hint was requested. Used for throttling.
   base::TimeTicks last_checked_;

@@ -31,10 +31,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   typedef NetworkChangeNotifier::ConnectionSubtype ConnectionSubtype;
   typedef NetworkChangeNotifier::NetworkList NetworkList;
 
-  enum class ForceUpdateNetworkState {
-    kEnabled,
-    kDisabled,
-  };
   // Observer interface implemented by NetworkChangeNotifierAndroid which
   // subscribes to network change notifications fired by the delegate (and
   // initiated by the Java side).
@@ -65,9 +61,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   //   // Creates Java NetworkChangeNotifierAutoDetect class instance.
   //   NetworkChangeNotifier.registerToReceiveNotificationsAlways();
   NetworkChangeNotifierDelegateAndroid();
-  explicit NetworkChangeNotifierDelegateAndroid(
-      net::NetworkChangeNotifierDelegateAndroid::ForceUpdateNetworkState
-          force_update_network_state);
   NetworkChangeNotifierDelegateAndroid(
       const NetworkChangeNotifierDelegateAndroid&) = delete;
   NetworkChangeNotifierDelegateAndroid& operator=(

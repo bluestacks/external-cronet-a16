@@ -12,7 +12,6 @@
 #include <stddef.h>
 
 #include <iosfwd>
-#include <limits>
 #include <optional>
 #include <type_traits>
 
@@ -21,14 +20,16 @@
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread_ref.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing_forward.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
+#elif BUILDFLAG(IS_APPLE)
+#include <mach/mach_types.h>
 #elif BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #include <unistd.h>
@@ -40,86 +41,17 @@
 
 namespace base {
 
-// Used for uniquely identifying a thread.
-//
-// Wraps a platform-specific integer value with platform-specific size,
-// guaranteed to have a maximum bitness of 64-bit. Getting a 32-bit value is
-// possible only if we either know the platform-specific size (because we're in
-// platform-specific code), or if we are ok with truncation of the value (e.g.
-// because we are logging and the occasional false match is not catastrophic).
-class BASE_EXPORT PlatformThreadId {
- public:
+// Used for logging. Always an integer value.
 #if BUILDFLAG(IS_WIN)
-  using UnderlyingType = DWORD;
+typedef DWORD PlatformThreadId;
 #elif BUILDFLAG(IS_FUCHSIA)
-  using UnderlyingType = zx_koid_t;
+typedef zx_koid_t PlatformThreadId;
 #elif BUILDFLAG(IS_APPLE)
-  using UnderlyingType = uint64_t;
+typedef mach_port_t PlatformThreadId;
 #elif BUILDFLAG(IS_POSIX)
-  using UnderlyingType = pid_t;
+typedef pid_t PlatformThreadId;
 #endif
-  static_assert(std::is_integral_v<UnderlyingType>, "Always an integer value.");
-
-  constexpr PlatformThreadId() = default;
-
-  // Special templated constructor which prevents implicit conversion of the
-  // integer argument.
-  template <typename T>
-  explicit constexpr PlatformThreadId(T value)
-    requires(std::is_same_v<T, UnderlyingType>)
-      : value_(value) {}
-
-  static constexpr PlatformThreadId ForTest(int value) {
-    return PlatformThreadId(static_cast<UnderlyingType>(value));
-  }
-
-  // Allow conversion to u/int64_t, whether the underlying type is signed or
-  // not, and whether it is 32-bit or 64-bit.
-  explicit constexpr operator uint64_t() const {
-    static_assert(sizeof(uint64_t) >= sizeof(UnderlyingType));
-    return static_cast<uint64_t>(value_);
-  }
-  explicit constexpr operator int64_t() const {
-    static_assert(sizeof(int64_t) >= sizeof(UnderlyingType));
-    return static_cast<int64_t>(value_);
-  }
-  // Forbid conversion to u/int32_t, since we might have a 64-bit
-  // value -- use truncate_to_int32_for_display_only() or raw() instead.
-  explicit constexpr operator uint32_t() const = delete;
-  explicit constexpr operator int32_t() const = delete;
-
-  // Truncating getter for an int32 representation of the id.
-  //
-  // AVOID: This should only be used in cases where truncation is not
-  // catastrophic, e.g. displaying the thread id in traces or logs. It will
-  // always be preferable to display the full, untruncated thread id.
-  constexpr int32_t truncate_to_int32_for_display_only() const {
-    return static_cast<int32_t>(value_);
-  }
-
-  // Getter for the underlying raw value. Should only be used when
-  // exposing the UnderlyingType, e.g. passing into system APIs or passing into
-  // functions overloaded on different integer sizes like NumberToString.
-  constexpr UnderlyingType raw() const { return value_; }
-
-  constexpr friend auto operator<=>(const PlatformThreadId& lhs,
-                                    const PlatformThreadId& rhs) = default;
-  constexpr friend bool operator==(const PlatformThreadId& lhs,
-                                   const PlatformThreadId& rhs) = default;
-
-  // Allow serialising into a trace.
-  void WriteIntoTrace(perfetto::TracedValue&& context) const;
-
- private:
-  // TODO(crbug.com/393384253): Use a system-specific invalid value, which might
-  // be 0, -1, or some other value from a system header.
-  UnderlyingType value_ = 0;
-};
-
-inline std::ostream& operator<<(std::ostream& stream,
-                                const PlatformThreadId& id) {
-  return stream << id.raw();
-}
+static_assert(std::is_integral_v<PlatformThreadId>, "Always an integer value.");
 
 // Used to operate on threads.
 class PlatformThreadHandle {
@@ -138,15 +70,19 @@ class PlatformThreadHandle {
     return handle_ == other.handle_;
   }
 
-  bool is_null() const { return !handle_; }
+  bool is_null() const {
+    return !handle_;
+  }
 
-  Handle platform_handle() const { return handle_; }
+  Handle platform_handle() const {
+    return handle_;
+  }
 
  private:
   Handle handle_;
 };
 
-static constexpr PlatformThreadId kInvalidThreadId = PlatformThreadId();
+const PlatformThreadId kInvalidThreadId(0);
 
 // Valid values for `thread_type` of Thread::Options, SimpleThread::Options,
 // and SetCurrentThreadType(), listed in increasing order of importance.
@@ -338,7 +274,7 @@ class BASE_EXPORT PlatformThreadBase {
 
   static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
 
- protected:
+  protected:
   static void SetNameCommon(const std::string& name);
 };
 
@@ -377,7 +313,7 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
   // to change the priority of sandboxed threads for improved performance.
   // Warning: Don't use this for a main thread because that will change the
   // whole thread group's (i.e. process) priority.
-  static void SetThreadType(ProcessId process_id,
+  static void SetThreadType(PlatformThreadId process_id,
                             PlatformThreadId thread_id,
                             ThreadType thread_type,
                             IsViaIPC via_ipc);
@@ -412,7 +348,7 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
   // Toggles a specific thread's type at runtime. This is the ChromeOS-specific
   // version and includes Linux's functionality but does slightly more. See
   // PlatformThreadLinux's SetThreadType() header comment for Linux details.
-  static void SetThreadType(ProcessId process_id,
+  static void SetThreadType(PlatformThreadId process_id,
                             PlatformThreadId thread_id,
                             ThreadType thread_type,
                             IsViaIPC via_ipc);
@@ -467,13 +403,13 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void SetThreadTypeLinux(ProcessId process_id,
+void SetThreadTypeLinux(PlatformThreadId process_id,
                         PlatformThreadId thread_id,
                         ThreadType thread_type,
                         IsViaIPC via_ipc);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-void SetThreadTypeChromeOS(ProcessId process_id,
+void SetThreadTypeChromeOS(PlatformThreadId process_id,
                            PlatformThreadId thread_id,
                            ThreadType thread_type,
                            IsViaIPC via_ipc);

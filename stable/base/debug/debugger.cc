@@ -13,7 +13,8 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-namespace base::debug {
+namespace base {
+namespace debug {
 
 static bool is_debug_ui_suppressed = false;
 
@@ -26,9 +27,8 @@ bool WaitForDebugger(int wait_seconds, bool silent) {
 #endif
   for (int i = 0; i < wait_seconds * 10; ++i) {
     if (BeingDebugged()) {
-      if (!silent) {
+      if (!silent)
         BreakDebugger();
-      }
       return true;
     }
     PlatformThread::Sleep(Milliseconds(100));
@@ -52,4 +52,5 @@ bool IsDebugUISuppressed() {
   return is_debug_ui_suppressed;
 }
 
-}  // namespace base::debug
+}  // namespace debug
+}  // namespace base

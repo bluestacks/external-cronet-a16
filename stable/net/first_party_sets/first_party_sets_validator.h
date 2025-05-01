@@ -36,9 +36,8 @@ class NET_EXPORT FirstPartySetsValidator {
   // Returns true iff all the calls to `Update` thus far describe a valid set.
   [[nodiscard]] bool IsValid() const;
 
-  // Returns true iff this site's state is valid and the site's primary is
-  // valid.
-  [[nodiscard]] bool IsSiteValid(const SchemefulSite& site) const;
+  // Returns true iff `primary` has valid primary state for the RWSs.
+  [[nodiscard]] bool IsSitePrimaryValid(const SchemefulSite& primary) const;
 
  private:
   struct PrimarySiteState {
@@ -57,9 +56,6 @@ class NET_EXPORT FirstPartySetsValidator {
   struct SiteState {
     SchemefulSite first_seen_primary;
   };
-
-  // Returns true iff `primary` has valid primary state.
-  [[nodiscard]] bool IsSitePrimaryValid(const SchemefulSite& primary) const;
 
   // Tracks validity states for each primary site.
   std::map<SchemefulSite, PrimarySiteState> primary_states_;

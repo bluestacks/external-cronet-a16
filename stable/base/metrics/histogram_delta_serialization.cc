@@ -21,9 +21,8 @@ namespace {
 // Silently returns when seeing any data problem in the pickle.
 void DeserializeHistogramAndAddSamples(PickleIterator* iter) {
   HistogramBase* histogram = DeserializeHistogramInfo(iter);
-  if (!histogram) {
+  if (!histogram)
     return;
-  }
 
   if (histogram->HasFlags(HistogramBase::kIPCSerializationSourceFlag)) {
     DVLOG(1) << "Single process mode, histogram observed and not copied: "

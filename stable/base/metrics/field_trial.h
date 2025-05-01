@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // The FieldTrial class handles the lower level configuration of running A/B
 // tests.
 //
@@ -185,10 +190,10 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
 
     // Return a pointer to the data area immediately following the entry.
     uint8_t* GetPickledDataPtr() {
-      return UNSAFE_TODO(reinterpret_cast<uint8_t*>(this + 1));
+      return reinterpret_cast<uint8_t*>(this + 1);
     }
     const uint8_t* GetPickledDataPtr() const {
-      return UNSAFE_TODO(reinterpret_cast<const uint8_t*>(this + 1));
+      return reinterpret_cast<const uint8_t*>(this + 1);
     }
 
     // Whether or not this field trial is activated. This is really just a

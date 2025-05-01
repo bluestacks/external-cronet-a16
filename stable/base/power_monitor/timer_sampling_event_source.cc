@@ -19,8 +19,4 @@ bool TimerSamplingEventSource::Start(SamplingEventCallback callback) {
   return true;
 }
 
-TimeDelta TimerSamplingEventSource::GetSampleInterval() {
-  return interval_;
-}
-
 }  // namespace base

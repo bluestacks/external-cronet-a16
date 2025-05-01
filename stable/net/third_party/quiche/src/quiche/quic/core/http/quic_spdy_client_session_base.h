@@ -21,11 +21,10 @@ class QUICHE_EXPORT QuicSpdyClientSessionBase
       public QuicCryptoClientStream::ProofHandler {
  public:
   // Takes ownership of |connection|.
-  QuicSpdyClientSessionBase(
-      QuicConnection* connection, QuicSession::Visitor* visitor,
-      const QuicConfig& config,
-      const ParsedQuicVersionVector& supported_versions,
-      QuicPriorityType priority_type = QuicPriorityType::kHttp);
+  QuicSpdyClientSessionBase(QuicConnection* connection,
+                            QuicSession::Visitor* visitor,
+                            const QuicConfig& config,
+                            const ParsedQuicVersionVector& supported_versions);
   QuicSpdyClientSessionBase(const QuicSpdyClientSessionBase&) = delete;
   QuicSpdyClientSessionBase& operator=(const QuicSpdyClientSessionBase&) =
       delete;

@@ -10,11 +10,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <cstdint>
-
 #include "absl/base/optimization.h"
 #include "quiche/quic/core/flow_label.h"
-#include "quiche/quic/core/quic_constants.h"
 #include "quiche/quic/core/quic_types.h"
 #include "quiche/quic/core/quic_udp_socket.h"
 #include "quiche/quic/platform/api/quic_bug_tracker.h"
@@ -37,6 +34,9 @@
 
 namespace quic {
 namespace {
+
+// Explicit Congestion Notification is the last two bits of the TOS byte.
+constexpr uint8_t kEcnMask = 0x03;
 
 constexpr int kIpv6RecvPacketInfo = IPV6_RECVPKTINFO;
 
@@ -140,10 +140,7 @@ void PopulatePacketInfoFromControlMessage(
   if ((cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_TOS) ||
       (cmsg->cmsg_level == IPPROTO_IPV6 && cmsg->cmsg_type == IPV6_TCLASS)) {
 #endif
-    if (packet_info_interested.IsSet(QuicUdpPacketInfoBit::TOS)) {
-      packet_info->SetTos(*(reinterpret_cast<uint8_t*>(CMSG_DATA(cmsg))));
-    } else if (packet_info_interested.IsSet(QuicUdpPacketInfoBit::ECN)) {
-      // TODO: b/732900348 - Remove this once TOS bit is always set.
+    if (packet_info_interested.IsSet(QuicUdpPacketInfoBit::ECN)) {
       packet_info->SetEcnCodepoint(QuicEcnCodepoint(
           *(reinterpret_cast<uint8_t*>(CMSG_DATA(cmsg))) & kEcnMask));
     }
@@ -238,12 +235,15 @@ bool QuicUdpSocketApi::SetupSocket(QuicUdpSocketFd fd, int address_family,
                                    << "IPv6 socket";
       return false;
     }
-#if defined(__linux__) && !defined(__ANDROID__)
-    if (setsockopt(fd, SOL_IPV6, IPV6_FLOWINFO, &set, sizeof(set)) != 0) {
-      QUIC_LOG_FIRST_N(ERROR, 100)
-          << "Failed to request to receive flow label on "
-          << "IPv6 socket";
-      return false;
+#if defined(__linux__)
+    if (GetQuicRestartFlag(quic_support_flow_label2)) {
+      QUIC_RESTART_FLAG_COUNT_N(quic_support_flow_label2, 5, 6);
+      if (setsockopt(fd, SOL_IPV6, IPV6_FLOWINFO, &set, sizeof(set)) != 0) {
+        QUIC_LOG_FIRST_N(ERROR, 100)
+            << "Failed to request to receive flow label on "
+            << "IPv6 socket";
+        return false;
+      }
     }
 #endif
     if (!EnableReceiveSelfIpAddressForV6(fd)) {

@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 
 #include "net/quic/quic_test_packet_printer.h"
+#include "base/memory/raw_ptr.h"
 
 #include <ostream>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
-#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_session.h"
 
 namespace quic {
 
@@ -21,12 +20,7 @@ namespace {
 class QuicPacketPrinter : public QuicFramerVisitorInterface {
  public:
   explicit QuicPacketPrinter(QuicFramer* framer, std::ostream* output)
-      : framer_(framer), session_(nullptr), output_(output) {}
-
-  explicit QuicPacketPrinter(QuicFramer* framer,
-                             std::ostream* output,
-                             raw_ptr<quic::QuicSimpleServerSession> session)
-      : framer_(framer), session_(session), output_(output) {}
+      : framer_(framer), output_(output) {}
 
   // QuicFramerVisitorInterface implementation.
   void OnError(QuicFramer* framer) override {
@@ -79,12 +73,6 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnStreamFrame: " << frame;
     *output_ << "         data: { "
              << base::HexEncode(frame.data_buffer, frame.data_length) << " }\n";
-    if (session_) {
-      *output_ << "If this is an HTTP frame, headers and body "
-                  "will be printed out by HTTP decoder."
-               << "\n";
-      session_->OnStreamFrame(frame);
-    }
     return true;
   }
   bool OnCryptoFrame(const QuicCryptoFrame& frame) override {
@@ -213,10 +201,6 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnAckFrequencyFrame: " << frame;
     return true;
   }
-  bool OnImmediateAckFrame(const QuicImmediateAckFrame& frame) override {
-    *output_ << "OnImmediateAckFrame: " << frame;
-    return true;
-  }
   bool OnResetStreamAtFrame(const QuicResetStreamAtFrame& frame) override {
     *output_ << "OnResetStreamAtFrame: " << frame;
     return true;
@@ -233,25 +217,17 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   }
 
  private:
-  raw_ptr<QuicFramer> framer_;                      // Unowned.
-  raw_ptr<quic::QuicSimpleServerSession> session_;  // Unowned.
+  raw_ptr<QuicFramer> framer_;  // Unowned.
   mutable raw_ptr<std::ostream> output_;
 };
 
 }  // namespace
+
 }  // namespace quic
 
 namespace net {
 
-std::string QuicPacketPrinter::PrintWrite(std::string_view data) {
-  std::ostringstream output;
-  return PrintWithQuicSession(data, output, nullptr);
-}
-
-std::string QuicPacketPrinter::PrintWithQuicSession(
-    std::string_view data,
-    std::ostringstream& stream,
-    quic::QuicSimpleServerSession* session) {
+std::string QuicPacketPrinter::PrintWrite(const std::string& data) {
   quic::ParsedQuicVersionVector versions = {version_};
   // Fake a time since we're not actually generating acks.
   quic::QuicTime start(quic::QuicTime::Zero());
@@ -259,8 +235,8 @@ std::string QuicPacketPrinter::PrintWithQuicSession(
   // the client.
   quic::QuicFramer framer(versions, start, quic::Perspective::IS_SERVER,
                           quic::kQuicDefaultConnectionIdLength);
-
-  quic::QuicPacketPrinter visitor(&framer, &stream, session);
+  std::ostringstream stream;
+  quic::QuicPacketPrinter visitor(&framer, &stream);
   framer.set_visitor(&visitor);
 
   if (version_.KnowsWhichDecrypterToUse()) {
@@ -273,7 +249,7 @@ std::string QuicPacketPrinter::PrintWithQuicSession(
         std::make_unique<quic::test::TaggingDecrypter>());  // IN-TEST
   }
 
-  quic::QuicEncryptedPacket encrypted(data);
+  quic::QuicEncryptedPacket encrypted(data.c_str(), data.length());
   framer.ProcessPacket(encrypted);
   return stream.str() + "\n\n";
 }

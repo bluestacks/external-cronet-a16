@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef BASE_STRINGS_STRING_NUMBER_CONVERSIONS_H_
 #define BASE_STRINGS_STRING_NUMBER_CONVERSIONS_H_
 
@@ -13,7 +18,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
 
@@ -123,8 +127,7 @@ inline void AppendHexEncodedByte(uint8_t byte,
                                             '6', '7', '8', '9', 'a', 'b',
                                             'c', 'd', 'e', 'f'};
   const char* const hex_chars = uppercase ? kHexCharsUpper : kHexCharsLower;
-  output.append(
-      {UNSAFE_TODO(hex_chars[byte >> 4]), UNSAFE_TODO(hex_chars[byte & 0xf])});
+  output.append({hex_chars[byte >> 4], hex_chars[byte & 0xf]});
 }
 
 // Best effort conversion, see StringToInt above for restrictions.

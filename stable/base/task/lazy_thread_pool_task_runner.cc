@@ -12,7 +12,8 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 ScopedLazyTaskRunnerListForTesting* g_scoped_lazy_task_runner_list_for_testing =
@@ -28,9 +29,8 @@ void LazyThreadPoolTaskRunner<TaskRunnerType, com_sta>::Reset() {
                                                   "resetting TaskRunners.";
 
   // Return if no reference is held by this instance.
-  if (!state) {
+  if (!state)
     return;
-  }
 
   // Release the reference acquired in Get().
   SequencedTaskRunner* task_runner = reinterpret_cast<TaskRunnerType*>(state);
@@ -113,9 +113,8 @@ ScopedLazyTaskRunnerListForTesting::ScopedLazyTaskRunnerListForTesting() {
 
 ScopedLazyTaskRunnerListForTesting::~ScopedLazyTaskRunnerListForTesting() {
   internal::CheckedAutoLock auto_lock(lock_);
-  for (auto& callback : callbacks_) {
+  for (auto& callback : callbacks_)
     std::move(callback).Run();
-  }
   g_scoped_lazy_task_runner_list_for_testing = nullptr;
 }
 
@@ -124,4 +123,5 @@ void ScopedLazyTaskRunnerListForTesting::AddCallback(OnceClosure callback) {
   callbacks_.push_back(std::move(callback));
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

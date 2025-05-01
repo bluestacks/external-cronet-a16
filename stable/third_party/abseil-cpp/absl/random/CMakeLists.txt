@@ -24,10 +24,10 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::config
     absl::random_distributions
     absl::random_internal_nonsecure_base
     absl::random_internal_pcg_engine
+    absl::random_internal_pool_urbg
     absl::random_internal_randen_engine
     absl::random_seed_sequences
 )
@@ -59,7 +59,6 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::config
     absl::random_bit_gen_ref
     absl::random_random
     absl::random_internal_sequence_urbg
@@ -212,7 +211,6 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::config
-    absl::raw_logging_internal
 )
 
 absl_cc_library(
@@ -230,7 +228,7 @@ absl_cc_library(
     absl::config
     absl::inlined_vector
     absl::nullability
-    absl::random_internal_entropy_pool
+    absl::random_internal_pool_urbg
     absl::random_internal_salted_seed_seq
     absl::random_internal_seed_material
     absl::random_seed_gen_exception
@@ -583,7 +581,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
     $<$<BOOL:${MINGW}>:-lbcrypt>
   DEPS
-    absl::config
+    absl::core_headers
     absl::optional
     absl::random_internal_fast_uniform_bits
     absl::raw_logging_internal
@@ -594,11 +592,11 @@ absl_cc_library(
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
-    random_internal_entropy_pool
+    random_internal_pool_urbg
   SRCS
-    "internal/entropy_pool.cc"
+    "internal/pool_urbg.cc"
   HDRS
-    "internal/entropy_pool.h"
+    "internal/pool_urbg.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   LINKOPTS
@@ -607,12 +605,13 @@ absl_cc_library(
     absl::base
     absl::config
     absl::core_headers
-    absl::random_internal_platform
+    absl::endian
     absl::random_internal_randen
     absl::random_internal_seed_material
+    absl::random_internal_traits
     absl::random_seed_gen_exception
+    absl::raw_logging_internal
     absl::span
-    absl::synchronization
 )
 
 # Internal-only target, do not depend on directly.
@@ -675,7 +674,6 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::config
     absl::int128
     absl::type_traits
 )
@@ -738,11 +736,12 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::config
+    absl::core_headers
     absl::inlined_vector
-    absl::random_internal_entropy_pool
+    absl::random_internal_pool_urbg
     absl::random_internal_salted_seed_seq
     absl::random_internal_seed_material
+    absl::span
     absl::type_traits
 )
 
@@ -852,7 +851,6 @@ absl_cc_library(
     absl::random_internal_platform
     absl::random_internal_randen_hwaes_impl
     absl::config
-    absl::optional
 )
 
 # Internal-only target, do not depend on directly.
@@ -1032,12 +1030,11 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::flat_hash_map
-    absl::random_distributions
     absl::random_internal_nonsecure_base
     absl::random_random
-    absl::synchronization
-    absl::type_traits
+    absl::random_distributions
+    absl::random_seed_sequences
+    absl::strings
     GTest::gtest_main
 )
 
@@ -1053,7 +1050,6 @@ absl_cc_test(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::random_internal_seed_material
-    absl::span
     GTest::gmock
     GTest::gtest_main
 )
@@ -1061,17 +1057,17 @@ absl_cc_test(
 # Internal-only target, do not depend on directly.
 absl_cc_test(
   NAME
-    random_internal_entropy_pool_test
+    random_internal_pool_urbg_test
   SRCS
-    "internal/entropy_pool_test.cc"
+    "internal/pool_urbg_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::flat_hash_map
-    absl::random_internal_entropy_pool
-    absl::synchronization
+    absl::random_internal_pool_urbg
+    absl::span
+    absl::type_traits
     GTest::gtest_main
 )
 
@@ -1244,6 +1240,7 @@ absl_cc_test(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::random_internal_wide_multiply
+    absl::bits
     absl::int128
     GTest::gmock
     GTest::gtest_main

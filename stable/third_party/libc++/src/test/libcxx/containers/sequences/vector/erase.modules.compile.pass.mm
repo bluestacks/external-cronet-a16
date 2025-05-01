@@ -13,4 +13,6 @@
 
 #include <vector>
 
-void f(std::vector<int> vec, std::vector<int>::iterator it) { (void)vec.erase(it); }
+void f(std::vector<int> vec, std::vector<int>::iterator it) {
+    (void)vec.erase(it);
+}

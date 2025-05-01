@@ -6,8 +6,6 @@ package org.chromium.base.metrics;
 
 import android.os.Trace;
 
-import org.chromium.build.annotations.NullMarked;
-
 /**
  * An alternative to @{TraceEvent} that allows us to trace events before native initialization.
  *
@@ -15,7 +13,6 @@ import org.chromium.build.annotations.NullMarked;
  * directly purges to the kernel debug message but that method does not allow tracing events to be
  * written *after* the event occurrence.
  */
-@NullMarked
 public class ScopedSysTraceEvent implements AutoCloseable {
     /** The maximum length of a section name. Longer names will be truncated. */
     // From:

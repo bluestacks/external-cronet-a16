@@ -35,7 +35,7 @@ class Eviction {
   void TrimCache(bool empty);
 
   // Updates the ranking information for an entry.
-  void UpdateRank(EntryImpl* entry);
+  void UpdateRank(EntryImpl* entry, bool modified);
 
   // Notifications of interesting events for a given entry.
   void OnOpenEntry(EntryImpl* entry);
@@ -60,7 +60,7 @@ class Eviction {
   // new eviction algorithm. This code will replace the original methods when
   // finished.
   void TrimCacheV2(bool empty);
-  void UpdateRankV2(EntryImpl* entry);
+  void UpdateRankV2(EntryImpl* entry, bool modified);
   void OnOpenEntryV2(EntryImpl* entry);
   void OnCreateEntryV2(EntryImpl* entry);
   void OnDoomEntryV2(EntryImpl* entry);

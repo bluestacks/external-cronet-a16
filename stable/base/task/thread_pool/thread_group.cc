@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -20,9 +19,12 @@
 #include "base/win/scoped_winrt_initializer.h"
 #endif
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
+
+constexpr size_t kMaxNumberOfWorkers = 256;
 
 // In a background thread group:
 // - Blocking calls take more time than in a foreground thread group.
@@ -134,7 +136,7 @@ ThreadGroup::ThreadGroup(std::string_view histogram_label,
   DCHECK(!thread_group_label_.empty());
 }
 
-void ThreadGroup::StartImplLockRequired(
+void ThreadGroup::StartImpl(
     size_t max_tasks,
     size_t max_best_effort_tasks,
     TimeDelta suggested_reclaim_time,
@@ -160,6 +162,8 @@ void ThreadGroup::StartImplLockRequired(
       thread_type_hint_ != ThreadType::kBackground
           ? kForegroundBlockedWorkersPoll
           : kBackgroundBlockedWorkersPoll;
+
+  CheckedAutoLock auto_lock(lock_);
 
   max_tasks_ = max_tasks;
   baseline_max_tasks_ = max_tasks;
@@ -410,9 +414,8 @@ void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
 bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   DCHECK(TS_UNCHECKED_READ(max_allowed_sort_key_).is_lock_free());
 
-  if (!task_tracker_->CanRunPriority(sort_key.priority())) {
+  if (!task_tracker_->CanRunPriority(sort_key.priority()))
     return true;
-  }
   // It is safe to read |max_allowed_sort_key_| without a lock since this
   // variable is atomic, keeping in mind that threads may not immediately see
   // the new value when it is updated.
@@ -657,4 +660,5 @@ void ThreadGroup::IncrementMaxBestEffortTasksLockRequired() {
 ThreadGroup::InitializedInStart::InitializedInStart() = default;
 ThreadGroup::InitializedInStart::~InitializedInStart() = default;
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

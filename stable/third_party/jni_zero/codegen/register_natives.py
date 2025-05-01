@@ -10,15 +10,14 @@ import common
 def gen_jni_register_function(sb, jni_mode, gen_jni_class,
                               boundary_proxy_natives):
   """RegisterNatives() method for natives in GEN_JNI."""
-  sb(f'bool RegisterNative_{gen_jni_class.to_cpp()}(JNIEnv* env)')
-  with sb.block():
-    sb('static const JNINativeMethod kMethods[] = {\n')
+  sb(f"""\
+bool RegisterNative_{gen_jni_class.to_cpp()}(JNIEnv* env) {{
+  static const JNINativeMethod kMethods[] = {{""")
+  with sb.indent(4):
     for i, native in enumerate(boundary_proxy_natives):
       if jni_mode.is_muxing:
-        descriptor = native.muxed_signature.to_descriptor()
-        if native.muxed_switch_num != -1:
-          # Add the switch_num parameter.
-          descriptor = '(I' + descriptor[1:]
+        # Add the switch_num parameter.
+        descriptor = '(I' + native.muxed_signature.to_descriptor()[1:]
       else:
         descriptor = native.proxy_signature.to_descriptor()
       boundary_name = native.boundary_name(jni_mode)
@@ -26,20 +25,24 @@ def gen_jni_register_function(sb, jni_mode, gen_jni_class,
                                                    gen_jni_class=gen_jni_class)
       if i > 0:
         sb(' ')
-      sb(f"""\
-      {{"{boundary_name}",
-       "{descriptor}",
-       reinterpret_cast<void*>({boundary_name_cpp})}},\n""")
-    sb('\n};')
-    sb(f"""
-jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
-    jni_zero::GetClass(env, "{gen_jni_class.full_name_with_slashes.replace("/", ".")}");
-if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {{
-  jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
-  return false;
-}}
+      sb(f"""{{
+    "{boundary_name}",
+    "{descriptor}",
+    reinterpret_cast<void*>({boundary_name_cpp})
+}},""")
+    sb('\n')
 
-return true;
+  sb(f"""}};
+
+  jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
+      jni_zero::GetClass(env, "{gen_jni_class.full_name_with_slashes.replace("/", ".")}");
+  if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {{
+    jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
+    return false;
+  }}
+
+  return true;
+}}
 """)
 
 

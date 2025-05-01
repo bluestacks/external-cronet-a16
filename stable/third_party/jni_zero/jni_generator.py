@@ -317,24 +317,16 @@ def _CollectReferencedClasses(jni_obj):
   return sorted(ret)
 
 
-def _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class, *,
-                     enable_definition_macros):
+def _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class):
   preamble, epilogue = header_common.header_preamble(
       GetScriptName(),
       jni_obj.java_class,
       system_includes=['jni.h'],
       user_includes=['third_party/jni_zero/jni_export.h'] + extra_includes)
+  java_classes = _CollectReferencedClasses(jni_obj)
   sb = common.StringBuilder()
   sb(preamble)
 
-  natives_header.natives_macro_definition(
-      sb,
-      jni_mode,
-      jni_obj,
-      gen_jni_class,
-      enable_definition_macros=enable_definition_macros)
-
-  java_classes = _CollectReferencedClasses(jni_obj)
   if java_classes:
     with sb.section('Class Accessors'):
       header_common.class_accessors(sb, java_classes, jni_obj.module_name)
@@ -345,15 +337,11 @@ def _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class, *,
         called_by_native_header.constants_enums(sb, jni_obj.java_class,
                                                 jni_obj.constant_fields)
 
-    if jni_obj.natives and not enable_definition_macros:
+    if jni_obj.natives:
       with sb.section('Java to native functions'):
         for native in jni_obj.natives:
-          natives_header.entry_point_method(sb,
-                                            jni_mode,
-                                            jni_obj,
-                                            native,
-                                            gen_jni_class,
-                                            include_forward_declaration=True)
+          natives_header.entry_point_method(sb, jni_mode, jni_obj, native,
+                                            gen_jni_class)
 
     if jni_obj.called_by_natives:
       with sb.section('Native to Java functions'):
@@ -510,16 +498,10 @@ def _WriteHeaders(jni_mode,
                   output_names,
                   output_dir,
                   extra_includes,
-                  gen_jni_class=None,
-                  enable_definition_macros=False):
+                  gen_jni_class=None):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
-    content = _generate_header(
-        jni_mode,
-        jni_obj,
-        extra_includes,
-        gen_jni_class,
-        enable_definition_macros=enable_definition_macros)
+    content = _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class)
 
     with common.atomic_output(output_file, 'w') as f:
       f.write(content)
@@ -554,13 +536,8 @@ def GenerateFromSource(parser, args, jni_mode):
       package_prefix=args.package_prefix,
       package_prefix_filter=args.package_prefix_filter)
 
-  _WriteHeaders(jni_mode,
-                jni_objs,
-                args.output_names,
-                args.output_dir,
-                args.extra_includes,
-                gen_jni_class,
-                enable_definition_macros=args.enable_definition_macros)
+  _WriteHeaders(jni_mode, jni_objs, args.output_names, args.output_dir,
+                args.extra_includes, gen_jni_class)
 
   jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
   # Write .srcjar

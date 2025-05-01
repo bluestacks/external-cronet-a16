@@ -14,8 +14,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
+namespace sequence_manager {
+namespace internal {
 // To avoid symbol collisions in jumbo builds.
-namespace base::sequence_manager::internal::task_queue_unittest {
+namespace task_queue_unittest {
 namespace {
 
 TEST(TaskQueueTest, TaskQueueVoters) {
@@ -176,4 +179,7 @@ TEST(TaskQueueTest, ValidCancelableTaskIsNotCanceled) {
 }
 
 }  // namespace
-}  // namespace base::sequence_manager::internal::task_queue_unittest
+}  // namespace task_queue_unittest
+}  // namespace internal
+}  // namespace sequence_manager
+}  // namespace base

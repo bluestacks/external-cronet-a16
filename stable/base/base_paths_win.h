@@ -57,7 +57,6 @@ enum {
   DIR_WINDOWS_FONTS,           // Usually C:\Windows\Fonts.
   DIR_SYSTEM_TEMP,             // %SystemRoot%\SystemTemp or %ProgramFiles%;
                                // only for admin processes.
-  DIR_ONE_DRIVE,               // The synced personal OneDrive directory.
   PATH_WIN_END
 };
 

@@ -27,19 +27,16 @@ class SessionServiceMock : public SessionService {
               RegisterBoundSession,
               (OnAccessCallback on_access_callback,
                RegistrationFetcherParam registration_params,
-               const IsolationInfo& isolation_info,
-               const NetLogWithSource& net_log,
-               const std::optional<url::Origin>& original_request_initiator),
+               const IsolationInfo& isolation_info),
               (override));
-  MOCK_METHOD(std::optional<SessionService::DeferralParams>,
-              ShouldDefer,
-              (URLRequest * request,
-               const FirstPartySetMetadata& first_party_set_metadata),
+  MOCK_METHOD(std::optional<Session::Id>,
+              GetAnySessionRequiringDeferral,
+              (URLRequest * request),
               (override));
   MOCK_METHOD(void,
               DeferRequestForRefresh,
               (URLRequest * request,
-               DeferralParams deferral,
+               Session::Id session_id,
                RefreshCompleteCallback restart_callback,
                RefreshCompleteCallback continue_callback),
               (override));
@@ -55,24 +52,8 @@ class SessionServiceMock : public SessionService {
       (base::OnceCallback<void(const std::vector<SessionKey>&)> callback),
       (override));
   MOCK_METHOD(void,
-              DeleteSessionAndNotify,
-              (const SchemefulSite& site,
-               const Session::Id& id,
-               SessionService::OnAccessCallback per_request_callback),
-              (override));
-  MOCK_METHOD(void,
-              DeleteAllSessions,
-              (std::optional<base::Time> created_after_time,
-               std::optional<base::Time> created_before_time,
-               base::RepeatingCallback<bool(const url::Origin&,
-                                            const net::SchemefulSite&)>
-                   origin_and_site_matcher,
-               base::OnceClosure completion_callback),
-              (override));
-  MOCK_METHOD(base::ScopedClosureRunner,
-              AddObserver,
-              (const GURL& url,
-               base::RepeatingCallback<void(const SessionAccess&)> callback),
+              DeleteSession,
+              (const SchemefulSite& site, const Session::Id& id),
               (override));
 };
 

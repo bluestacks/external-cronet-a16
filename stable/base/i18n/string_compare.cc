@@ -10,7 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 
-namespace base::i18n {
+namespace base {
+namespace i18n {
 
 // Compares the character data stored in two different std::u16string strings by
 // specified Collator instance.
@@ -26,4 +27,5 @@ UCollationResult CompareString16WithCollator(const icu::Collator& collator,
   return result;
 }
 
-}  // namespace base::i18n
+}  // namespace i18n
+}  // namespace base

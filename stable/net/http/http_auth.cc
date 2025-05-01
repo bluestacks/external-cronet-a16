@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/http/http_auth.h"
 
 #include <algorithm>
-#include <array>
 #include <optional>
 #include <string_view>
 
@@ -27,14 +31,9 @@
 namespace net {
 
 namespace {
-constexpr auto kSchemeNames = std::to_array<const char*>({
-    kBasicAuthScheme,
-    kDigestAuthScheme,
-    kNtlmAuthScheme,
-    kNegotiateAuthScheme,
-    kSpdyProxyAuthScheme,
-    kMockAuthScheme,
-});
+const char* const kSchemeNames[] = {kBasicAuthScheme,     kDigestAuthScheme,
+                                    kNtlmAuthScheme,      kNegotiateAuthScheme,
+                                    kSpdyProxyAuthScheme, kMockAuthScheme};
 }  // namespace
 
 HttpAuth::Identity::Identity() = default;

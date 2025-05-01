@@ -4,10 +4,10 @@
 
 package org.chromium.url;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.os.SystemClock;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import com.google.errorprone.annotations.DoNotMock;
 
@@ -23,10 +23,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.Contract;
-import org.chromium.build.annotations.Initializer;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.url.mojom.Url;
 import org.chromium.url.mojom.UrlConstants;
 
@@ -35,17 +31,16 @@ import java.util.Random;
 /**
  * An immutable Java wrapper for GURL, Chromium's URL parsing library.
  *
- * <p>This class is safe to use during startup, but will block on the native library being
- * sufficiently loaded to use native GURL (and will not wait for content initialization). In
- * practice it's very unlikely that this will actually block startup unless used extremely early, in
- * which case you should probably seek an alternative solution to using GURL.
+ * This class is safe to use during startup, but will block on the native library being sufficiently
+ * loaded to use native GURL (and will not wait for content initialization). In practice it's very
+ * unlikely that this will actually block startup unless used extremely early, in which case you
+ * should probably seek an alternative solution to using GURL.
  *
- * <p>The design of this class avoids destruction/finalization by caching all values necessary to
+ * The design of this class avoids destruction/finalization by caching all values necessary to
  * reconstruct a GURL in Java, allowing it to be much faster in the common case and easier to use.
  */
 @JNINamespace("url")
 @DoNotMock("Create a real instance instead.")
-@NullMarked
 public class GURL {
     private static final String TAG = "GURL";
     /* package */ static final int SERIALIZER_VERSION = 1;
@@ -64,7 +59,7 @@ public class GURL {
 
     // Right now this is only collecting reports on Canary which has a relatively small population.
     private static final int DEBUG_REPORT_PERCENTAGE = 10;
-    private static @Nullable ReportDebugThrowableCallback sReportCallback;
+    private static ReportDebugThrowableCallback sReportCallback;
 
     // TODO(crbug.com/40113773): Right now we return a new String with each request for a
     //      GURL component other than the spec itself. Should we cache return Strings (as
@@ -87,7 +82,7 @@ public class GURL {
      *
      * @param uri The string URI representation to parse into a GURL.
      */
-    public GURL(@Nullable String uri) {
+    public GURL(String uri) {
         // Avoid a jni hop (and initializing the native library) for empty GURLs.
         if (TextUtils.isEmpty(uri)) {
             mSpec = "";
@@ -133,20 +128,18 @@ public class GURL {
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         () -> {
-                            assumeNonNull(sReportCallback).run(throwable);
+                            sReportCallback.run(throwable);
                         });
             }
         }
     }
 
     /** @return true if the GURL is null, empty, or invalid. */
-    @Contract("null -> true")
     public static boolean isEmptyOrInvalid(@Nullable GURL gurl) {
         return gurl == null || gurl.isEmpty() || !gurl.isValid();
     }
 
     @CalledByNative
-    @Initializer
     private void init(@JniType("std::string") String spec, boolean isValid, Parsed parsed) {
         mSpec = spec;
         mIsValid = isValid;
@@ -271,10 +264,7 @@ public class GURL {
      * @return Copy of the URL with replacements applied.
      */
     public GURL replaceComponents(
-            @Nullable String username,
-            boolean clearUsername,
-            @Nullable String password,
-            boolean clearPassword) {
+            String username, boolean clearUsername, String password, boolean clearPassword) {
         GURL result = new GURL();
         getNatives()
                 .replaceComponents(this, username, clearUsername, password, clearPassword, result);
@@ -287,7 +277,7 @@ public class GURL {
     }
 
     @Override
-    public final boolean equals(@Nullable Object other) {
+    public final boolean equals(Object other) {
         if (other == this) return true;
         if (!(other instanceof GURL)) return false;
         return mSpec.equals(((GURL) other).mSpec);
@@ -340,8 +330,6 @@ public class GURL {
         try {
             return deserializeLatestVersionOnly(gurl);
         } catch (BadSerializerVersionException be) {
-            // deserializeLatestVersionOnly() handles null.
-            gurl = assumeNonNull(gurl);
             // Just re-parse the GURL on version changes.
             String[] tokens = gurl.split(Character.toString(SERIALIZER_DELIMITER));
             return new GURL(getSpecFromTokens(gurl, tokens));
@@ -444,9 +432,9 @@ public class GURL {
          */
         void replaceComponents(
                 @JniType("GURL") GURL self,
-                @Nullable String username,
+                String username,
                 boolean clearUsername,
-                @Nullable String password,
+                String password,
                 boolean clearPassword,
                 GURL result);
     }

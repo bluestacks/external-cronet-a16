@@ -16,7 +16,9 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
 
-namespace base::sequence_manager::internal {
+namespace base {
+namespace sequence_manager {
+namespace internal {
 
 TaskQueueSelector::TaskQueueSelector(
     scoped_refptr<const AssociatedThreadId> associated_thread,
@@ -51,9 +53,8 @@ void TaskQueueSelector::EnableQueue(internal::TaskQueueImpl* queue) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK(queue->IsQueueEnabled());
   AddQueueImpl(queue, queue->GetQueuePriority());
-  if (task_queue_selector_observer_) {
+  if (task_queue_selector_observer_)
     task_queue_selector_observer_->OnTaskQueueEnabled(queue);
-  }
 }
 
 void TaskQueueSelector::DisableQueue(internal::TaskQueueImpl* queue) {
@@ -174,9 +175,8 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
   auto highest_priority = GetHighestPendingPriority(option);
-  if (!highest_priority.has_value()) {
+  if (!highest_priority.has_value())
     return nullptr;
-  }
 
   // Select the priority from which we will select a task. Usually this is
   // the highest priority for which we have work, unless we are starving a lower
@@ -231,16 +231,14 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
 std::optional<TaskQueue::QueuePriority>
 TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!active_priority_tracker_.HasActivePriority()) {
+  if (!active_priority_tracker_.HasActivePriority())
     return std::nullopt;
-  }
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
   DCHECK_LT(highest_priority, priority_count());
-  if (option != SelectTaskOption::kSkipDelayedTask) {
+  if (option != SelectTaskOption::kSkipDelayedTask)
     return highest_priority;
-  }
 
   for (; highest_priority != priority_count(); ++highest_priority) {
     if (active_priority_tracker_.IsActive(highest_priority) &&
@@ -284,4 +282,6 @@ TaskQueueSelector::ActivePriorityTracker::HighestActivePriority() const {
       std::countr_zero(active_priorities_));
 }
 
-}  // namespace base::sequence_manager::internal
+}  // namespace internal
+}  // namespace sequence_manager
+}  // namespace base

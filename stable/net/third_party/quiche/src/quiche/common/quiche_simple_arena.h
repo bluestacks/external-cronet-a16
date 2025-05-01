@@ -5,8 +5,6 @@
 #ifndef QUICHE_COMMON_QUICHE_SIMPLE_ARENA_H_
 #define QUICHE_COMMON_QUICHE_SIMPLE_ARENA_H_
 
-#include <stddef.h>
-
 #include <memory>
 #include <vector>
 

@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_switches.h"
-#include "components/metrics/server_urls.h"
+#include "components/metrics/url_constants.h"
 #include "metrics_service_client.h"
 
 namespace metrics {
@@ -92,10 +92,6 @@ ukm::UkmService* MetricsServiceClient::GetUkmService() {
   return nullptr;
 }
 
-metrics::dwa::DwaService* MetricsServiceClient::GetDwaService() {
-  return nullptr;
-}
-
 IdentifiabilityStudyState*
 MetricsServiceClient::GetIdentifiabilityStudyState() {
   return nullptr;
@@ -115,8 +111,7 @@ GURL MetricsServiceClient::GetMetricsServerUrl() {
   if (command_line->HasSwitch(switches::kUmaServerUrl)) {
     return GURL(command_line->GetSwitchValueASCII(switches::kUmaServerUrl));
   }
-  // Explicitly prefix with metrics namespace due to name collision.
-  return metrics::GetMetricsServerUrl();
+  return GURL(kNewMetricsServerUrl);
 }
 
 GURL MetricsServiceClient::GetInsecureMetricsServerUrl() {
@@ -125,8 +120,7 @@ GURL MetricsServiceClient::GetInsecureMetricsServerUrl() {
     return GURL(
         command_line->GetSwitchValueASCII(switches::kUmaInsecureServerUrl));
   }
-  // Explicitly prefix with metrics namespace due to name collision.
-  return metrics::GetInsecureMetricsServerUrl();
+  return GURL(kNewMetricsServerUrlInsecure);
 }
 
 base::TimeDelta MetricsServiceClient::GetUploadInterval() {
@@ -160,7 +154,7 @@ std::optional<base::TimeDelta> MetricsServiceClient::GetCustomUploadInterval()
   return std::nullopt;
 }
 
-bool MetricsServiceClient::ShouldStartUpFast() const {
+bool MetricsServiceClient::ShouldStartUpFastForTesting() const {
   return false;
 }
 
@@ -177,10 +171,6 @@ bool MetricsServiceClient::IsOnCellularConnection() {
 }
 
 bool MetricsServiceClient::IsUkmAllowedForAllProfiles() {
-  return false;
-}
-
-bool MetricsServiceClient::IsDwaAllowedForAllProfiles() {
   return false;
 }
 

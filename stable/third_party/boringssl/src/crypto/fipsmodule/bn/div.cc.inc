@@ -1,16 +1,58 @@
-// Copyright 1995-2016 The OpenSSL Project Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+ * All rights reserved.
+ *
+ * This package is an SSL implementation written
+ * by Eric Young (eay@cryptsoft.com).
+ * The implementation was written so as to conform with Netscapes SSL.
+ *
+ * This library is free for commercial and non-commercial use as long as
+ * the following conditions are aheared to.  The following conditions
+ * apply to all code found in this distribution, be it the RC4, RSA,
+ * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+ * included with this distribution is covered by the same copyright terms
+ * except that the holder is Tim Hudson (tjh@cryptsoft.com).
+ *
+ * Copyright remains Eric Young's, and as such any Copyright notices in
+ * the code are not to be removed.
+ * If this package is used in a product, Eric Young should be given attribution
+ * as the author of the parts of the library used.
+ * This can be in the form of a textual message at program startup or
+ * in documentation (online or textual) provided with the package.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *    "This product includes cryptographic software written by
+ *     Eric Young (eay@cryptsoft.com)"
+ *    The word 'cryptographic' can be left out if the rouines from the library
+ *    being used are not cryptographic related :-).
+ * 4. If you include any Windows specific code (or a derivative thereof) from
+ *    the apps directory (application code) you must include an acknowledgement:
+ *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * The licence and distribution terms for any publically available version or
+ * derivative of this code cannot be changed.  i.e. this code cannot simply be
+ * copied and put under another distribution licence
+ * [including the GNU Public Licence.] */
 
 #include <openssl/bn.h>
 
@@ -147,7 +189,7 @@ int BN_div(BIGNUM *quotient, BIGNUM *rem, const BIGNUM *numerator,
     return 0;
   }
 
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   BIGNUM *tmp = BN_CTX_get(ctx);
   BIGNUM *snum = BN_CTX_get(ctx);
   BIGNUM *sdiv = BN_CTX_get(ctx);
@@ -155,7 +197,7 @@ int BN_div(BIGNUM *quotient, BIGNUM *rem, const BIGNUM *numerator,
   int norm_shift, num_n, loop, div_n;
   BN_ULONG d0, d1;
   if (tmp == NULL || snum == NULL || sdiv == NULL || res == NULL) {
-    return 0;
+    goto err;
   }
 
   // Knuth step D1: Normalise the numbers such that the divisor's MSB is set.
@@ -164,7 +206,7 @@ int BN_div(BIGNUM *quotient, BIGNUM *rem, const BIGNUM *numerator,
   norm_shift = BN_BITS2 - (BN_num_bits(divisor) % BN_BITS2);
   if (!BN_lshift(sdiv, divisor, norm_shift) ||
       !BN_lshift(snum, numerator, norm_shift)) {
-    return 0;
+    goto err;
   }
 
   // This algorithm relies on |sdiv| being minimal width. We do not use this
@@ -184,7 +226,7 @@ int BN_div(BIGNUM *quotient, BIGNUM *rem, const BIGNUM *numerator,
   //   digit in Knuth step D1.)
   num_n = snum->width <= div_n ? div_n + 1 : snum->width + 1;
   if (!bn_resize_words(snum, num_n)) {
-    return 0;
+    goto err;
   }
 
   // Knuth step D2: The quotient's width is the difference between numerator and
@@ -193,7 +235,7 @@ int BN_div(BIGNUM *quotient, BIGNUM *rem, const BIGNUM *numerator,
   res->neg = snum->neg ^ sdiv->neg;
   if (!bn_wexpand(res, loop) ||  //
       !bn_wexpand(tmp, div_n + 1)) {
-    return 0;
+    goto err;
   }
   res->width = loop;
 
@@ -312,10 +354,15 @@ int BN_div(BIGNUM *quotient, BIGNUM *rem, const BIGNUM *numerator,
 
   // Knuth step D8: Unnormalize. snum now contains the remainder.
   if (rem != NULL && !BN_rshift(rem, snum, norm_shift)) {
-    return 0;
+    goto err;
   }
 
+  BN_CTX_end(ctx);
   return 1;
+
+err:
+  BN_CTX_end(ctx);
+  return 0;
 }
 
 int BN_nnmod(BIGNUM *r, const BIGNUM *m, const BIGNUM *d, BN_CTX *ctx) {
@@ -391,7 +438,8 @@ int bn_div_consttime(BIGNUM *quotient, BIGNUM *remainder,
   // but it is simple, easy to make constant-time, and performant enough for RSA
   // key generation.
 
-  bssl::BN_CTXScope scope(ctx);
+  int ret = 0;
+  BN_CTX_start(ctx);
   BIGNUM *q = quotient, *r = remainder;
   if (quotient == NULL || quotient == numerator || quotient == divisor) {
     q = BN_CTX_get(ctx);
@@ -404,7 +452,7 @@ int bn_div_consttime(BIGNUM *quotient, BIGNUM *remainder,
   if (q == NULL || r == NULL || tmp == NULL ||
       !bn_wexpand(q, numerator->width) || !bn_wexpand(r, divisor->width) ||
       !bn_wexpand(tmp, divisor->width)) {
-    return 0;
+    goto err;
   }
 
   OPENSSL_memset(q->d, 0, numerator->width * sizeof(BN_ULONG));
@@ -455,10 +503,14 @@ int bn_div_consttime(BIGNUM *quotient, BIGNUM *remainder,
 
   if ((quotient != NULL && !BN_copy(quotient, q)) ||
       (remainder != NULL && !BN_copy(remainder, r))) {
-    return 0;
+    goto err;
   }
 
-  return 1;
+  ret = 1;
+
+err:
+  BN_CTX_end(ctx);
+  return ret;
 }
 
 static BIGNUM *bn_scratch_space_from_ctx(size_t width, BN_CTX *ctx) {
@@ -500,24 +552,26 @@ int BN_mod_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m,
 
 int BN_mod_add_quick(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
                      const BIGNUM *m) {
-  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
-  return ctx != nullptr && bn_mod_add_consttime(r, a, b, m, ctx.get());
+  BN_CTX *ctx = BN_CTX_new();
+  int ok = ctx != NULL && bn_mod_add_consttime(r, a, b, m, ctx);
+  BN_CTX_free(ctx);
+  return ok;
 }
 
 int bn_mod_add_consttime(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
                          const BIGNUM *m, BN_CTX *ctx) {
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   a = bn_resized_from_ctx(a, m->width, ctx);
   b = bn_resized_from_ctx(b, m->width, ctx);
   BIGNUM *tmp = bn_scratch_space_from_ctx(m->width, ctx);
-  if (a == nullptr || b == nullptr || tmp == nullptr ||
-      !bn_wexpand(r, m->width)) {
-    return 0;
+  int ok = a != NULL && b != NULL && tmp != NULL && bn_wexpand(r, m->width);
+  if (ok) {
+    bn_mod_add_words(r->d, a->d, b->d, m->d, tmp->d, m->width);
+    r->width = m->width;
+    r->neg = 0;
   }
-  bn_mod_add_words(r->d, a->d, b->d, m->d, tmp->d, m->width);
-  r->width = m->width;
-  r->neg = 0;
-  return 1;
+  BN_CTX_end(ctx);
+  return ok;
 }
 
 int BN_mod_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m,
@@ -530,49 +584,58 @@ int BN_mod_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m,
 
 int bn_mod_sub_consttime(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
                          const BIGNUM *m, BN_CTX *ctx) {
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   a = bn_resized_from_ctx(a, m->width, ctx);
   b = bn_resized_from_ctx(b, m->width, ctx);
   BIGNUM *tmp = bn_scratch_space_from_ctx(m->width, ctx);
-  if (a == nullptr || b == nullptr || tmp == nullptr ||
-      !bn_wexpand(r, m->width)) {
-    return 0;
+  int ok = a != NULL && b != NULL && tmp != NULL && bn_wexpand(r, m->width);
+  if (ok) {
+    bn_mod_sub_words(r->d, a->d, b->d, m->d, tmp->d, m->width);
+    r->width = m->width;
+    r->neg = 0;
   }
-  bn_mod_sub_words(r->d, a->d, b->d, m->d, tmp->d, m->width);
-  r->width = m->width;
-  r->neg = 0;
-  return 1;
+  BN_CTX_end(ctx);
+  return ok;
 }
 
 int BN_mod_sub_quick(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
                      const BIGNUM *m) {
-  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
-  return ctx != nullptr && bn_mod_sub_consttime(r, a, b, m, ctx.get());
+  BN_CTX *ctx = BN_CTX_new();
+  int ok = ctx != NULL && bn_mod_sub_consttime(r, a, b, m, ctx);
+  BN_CTX_free(ctx);
+  return ok;
 }
 
 int BN_mod_mul(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, const BIGNUM *m,
                BN_CTX *ctx) {
-  bssl::BN_CTXScope scope(ctx);
-  BIGNUM *t = BN_CTX_get(ctx);
+  BIGNUM *t;
+  int ret = 0;
+
+  BN_CTX_start(ctx);
+  t = BN_CTX_get(ctx);
   if (t == NULL) {
-    return 0;
+    goto err;
   }
 
   if (a == b) {
     if (!BN_sqr(t, a, ctx)) {
-      return 0;
+      goto err;
     }
   } else {
     if (!BN_mul(t, a, b, ctx)) {
-      return 0;
+      goto err;
     }
   }
 
   if (!BN_nnmod(r, t, m, ctx)) {
-    return 0;
+    goto err;
   }
 
-  return 1;
+  ret = 1;
+
+err:
+  BN_CTX_end(ctx);
+  return ret;
 }
 
 int BN_mod_sqr(BIGNUM *r, const BIGNUM *a, const BIGNUM *m, BN_CTX *ctx) {
@@ -586,20 +649,25 @@ int BN_mod_sqr(BIGNUM *r, const BIGNUM *a, const BIGNUM *m, BN_CTX *ctx) {
 
 int BN_mod_lshift(BIGNUM *r, const BIGNUM *a, int n, const BIGNUM *m,
                   BN_CTX *ctx) {
+  BIGNUM *abs_m = NULL;
+  int ret;
+
   if (!BN_nnmod(r, a, m, ctx)) {
     return 0;
   }
 
-  bssl::UniquePtr<BIGNUM> abs_m;
   if (m->neg) {
-    abs_m.reset(BN_dup(m));
-    if (abs_m == nullptr) {
+    abs_m = BN_dup(m);
+    if (abs_m == NULL) {
       return 0;
     }
     abs_m->neg = 0;
   }
 
-  return bn_mod_lshift_consttime(r, r, n, (abs_m ? abs_m.get() : m), ctx);
+  ret = bn_mod_lshift_consttime(r, r, n, (abs_m ? abs_m : m), ctx);
+
+  BN_free(abs_m);
+  return ret;
 }
 
 int bn_mod_lshift_consttime(BIGNUM *r, const BIGNUM *a, int n, const BIGNUM *m,
@@ -608,21 +676,24 @@ int bn_mod_lshift_consttime(BIGNUM *r, const BIGNUM *a, int n, const BIGNUM *m,
     return 0;
   }
 
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   BIGNUM *tmp = bn_scratch_space_from_ctx(m->width, ctx);
-  if (tmp == nullptr) {
-    return 0;
+  int ok = tmp != NULL;
+  if (ok) {
+    for (int i = 0; i < n; i++) {
+      bn_mod_add_words(r->d, r->d, r->d, m->d, tmp->d, m->width);
+    }
+    r->neg = 0;
   }
-  for (int i = 0; i < n; i++) {
-    bn_mod_add_words(r->d, r->d, r->d, m->d, tmp->d, m->width);
-  }
-  r->neg = 0;
-  return 1;
+  BN_CTX_end(ctx);
+  return ok;
 }
 
 int BN_mod_lshift_quick(BIGNUM *r, const BIGNUM *a, int n, const BIGNUM *m) {
-  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
-  return ctx != nullptr && bn_mod_lshift_consttime(r, a, n, m, ctx.get());
+  BN_CTX *ctx = BN_CTX_new();
+  int ok = ctx != NULL && bn_mod_lshift_consttime(r, a, n, m, ctx);
+  BN_CTX_free(ctx);
+  return ok;
 }
 
 int BN_mod_lshift1(BIGNUM *r, const BIGNUM *a, const BIGNUM *m, BN_CTX *ctx) {
@@ -639,8 +710,10 @@ int bn_mod_lshift1_consttime(BIGNUM *r, const BIGNUM *a, const BIGNUM *m,
 }
 
 int BN_mod_lshift1_quick(BIGNUM *r, const BIGNUM *a, const BIGNUM *m) {
-  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
-  return ctx != nullptr && bn_mod_lshift1_consttime(r, a, m, ctx.get());
+  BN_CTX *ctx = BN_CTX_new();
+  int ok = ctx != NULL && bn_mod_lshift1_consttime(r, a, m, ctx);
+  BN_CTX_free(ctx);
+  return ok;
 }
 
 BN_ULONG BN_div_word(BIGNUM *a, BN_ULONG w) {

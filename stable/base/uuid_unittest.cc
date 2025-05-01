@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <array>
 #include <limits>
 #include <set>
 #include <string_view>
@@ -190,8 +189,8 @@ TEST(UuidTest, Compare) {
 }
 
 TEST(UuidTest, FormatRandomDataAsV4) {
-  constexpr static const auto bytes1a =
-      std::to_array<uint64_t>({0x0123456789abcdefull, 0x5a5a5a5aa5a5a5a5ull});
+  static constexpr uint64_t bytes1a[] = {0x0123456789abcdefull,
+                                         0x5a5a5a5aa5a5a5a5ull};
   static constexpr uint64_t bytes1b[] = {bytes1a[0], bytes1a[1]};
   static constexpr uint64_t bytes2[] = {0xfffffffffffffffdull,
                                         0xfffffffffffffffeull};

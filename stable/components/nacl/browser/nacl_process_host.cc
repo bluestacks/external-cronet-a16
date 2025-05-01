@@ -37,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
 #include "components/nacl/browser/nacl_host_message_filter.h"
@@ -203,7 +204,9 @@ void NaClProcessHost::OnProcessCrashed(int exit_status) {
 void NaClProcessHost::EarlyStartup() {
   NaClBrowser::GetInstance()->EarlyStartup();
   // Inform NaClBrowser that we exist and will have a debug port at some point.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Open the IRT file early to make sure that it isn't replaced out from
   // under us by autoupdate.
   NaClBrowser::GetInstance()->EnsureIrtAvailable();

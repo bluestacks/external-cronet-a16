@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <algorithm>
 #include <iterator>
 #include <map>
 #include <utility>
@@ -25,6 +24,7 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
@@ -223,9 +223,8 @@ std::optional<Sid> Sid::FromSddlString(const std::wstring& sddl_sid) {
 
 std::optional<Sid> Sid::FromPSID(PSID sid) {
   DCHECK(sid);
-  if (!sid || !::IsValidSid(sid)) {
+  if (!sid || !::IsValidSid(sid))
     return std::nullopt;
-  }
   return Sid(sid, ::GetLengthSid(sid));
 }
 
@@ -247,9 +246,8 @@ std::optional<std::vector<Sid>> Sid::FromSddlStringVector(
   converted_sids.reserve(sddl_sids.size());
   for (const std::wstring& sddl_sid : sddl_sids) {
     std::optional<Sid> sid = FromSddlString(sddl_sid);
-    if (!sid) {
+    if (!sid)
       return std::nullopt;
-    }
     converted_sids.push_back(std::move(*sid));
   }
   return converted_sids;
@@ -258,23 +256,23 @@ std::optional<std::vector<Sid>> Sid::FromSddlStringVector(
 std::vector<Sid> Sid::FromNamedCapabilityVector(
     const std::vector<std::wstring>& capability_names) {
   std::vector<Sid> sids;
-  std::ranges::transform(capability_names, std::back_inserter(sids),
-                         FromNamedCapability);
+  ranges::transform(capability_names, std::back_inserter(sids),
+                    FromNamedCapability);
   return sids;
 }
 
 std::vector<Sid> Sid::FromKnownCapabilityVector(
     const std::vector<WellKnownCapability>& capabilities) {
   std::vector<Sid> sids;
-  std::ranges::transform(capabilities, std::back_inserter(sids),
-                         FromKnownCapability);
+  ranges::transform(capabilities, std::back_inserter(sids),
+                    FromKnownCapability);
   return sids;
 }
 
 std::vector<Sid> Sid::FromKnownSidVector(
     const std::vector<WellKnownSid>& known_sids) {
   std::vector<Sid> sids;
-  std::ranges::transform(known_sids, std::back_inserter(sids), FromKnownSid);
+  ranges::transform(known_sids, std::back_inserter(sids), FromKnownSid);
   return sids;
 }
 
@@ -292,9 +290,8 @@ PSID Sid::GetPSID() const {
 
 std::optional<std::wstring> Sid::ToSddlString() const {
   LPWSTR sid = nullptr;
-  if (!::ConvertSidToStringSid(GetPSID(), &sid)) {
+  if (!::ConvertSidToStringSid(GetPSID(), &sid))
     return std::nullopt;
-  }
   auto sid_ptr = TakeLocalAlloc(sid);
   return sid_ptr.get();
 }

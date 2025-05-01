@@ -6,7 +6,9 @@
 
 #include "base/check_op.h"
 
-namespace base::internal {
+namespace base {
+
+namespace internal {
 
 LinkNodeBase::LinkNodeBase() = default;
 
@@ -14,15 +16,6 @@ LinkNodeBase::LinkNodeBase(LinkNodeBase* previous, LinkNodeBase* next)
     : previous_(previous), next_(next) {}
 
 LinkNodeBase::LinkNodeBase(LinkNodeBase&& rhs) {
-  if (&rhs == rhs.next_) {
-    // rhs is the root node of an empty LinkedList. Add self-references to
-    // match.
-    CHECK_EQ(&rhs, rhs.previous_);
-    next_ = this;
-    previous_ = this;
-    return;
-  }
-
   next_ = rhs.next_;
   rhs.next_ = nullptr;
   previous_ = rhs.previous_;
@@ -63,15 +56,6 @@ void LinkNodeBase::InsertAfterBase(LinkNodeBase* e) {
   e->next_ = this;
 }
 
-void LinkNodeBase::MakeSelfReferencingBase() {
-  if (next_ == this) {
-    CHECK_EQ(previous_, this);
-    return;
-  }
-  CHECK_EQ(next_, nullptr);
-  CHECK_EQ(previous_, nullptr);
-  next_ = this;
-  previous_ = this;
-}
+}  // namespace internal
 
-}  // namespace base::internal
+}  // namespace base

@@ -4,14 +4,11 @@
 
 package org.chromium.base.shared_preferences;
 
-import org.chromium.build.annotations.NullMarked;
-
 /**
  * A prefix for a range of SharedPreferences keys generated dynamically.
  *
- * <p>Instances should be declared as keys in the PreferenceKeys registry.
+ * Instances should be declared as keys in the PreferenceKeys registry.
  */
-@NullMarked
 public class KeyPrefix {
     private final String mPrefix;
 

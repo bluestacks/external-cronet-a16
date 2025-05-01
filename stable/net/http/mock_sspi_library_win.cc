@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
@@ -174,8 +173,7 @@ SECURITY_STATUS MockSSPILibrary::InitializeSecurityContext(
   auto token = new_context->ToString();
   PSecBuffer out_buffer = pOutput->pBuffers;
   out_buffer->cbBuffer = std::min<ULONG>(out_buffer->cbBuffer, token.size());
-  UNSAFE_TODO(
-      std::memcpy(out_buffer->pvBuffer, token.data(), out_buffer->cbBuffer));
+  std::memcpy(out_buffer->pvBuffer, token.data(), out_buffer->cbBuffer);
 
   if (ptsExpiry) {
     ptsExpiry->LowPart = 0xBAA5B780;

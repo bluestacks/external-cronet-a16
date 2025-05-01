@@ -9,11 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Class to access the GURL library from java. */
 @JNINamespace("net")
-@NullMarked
 public final class GURLUtils {
 
     /**

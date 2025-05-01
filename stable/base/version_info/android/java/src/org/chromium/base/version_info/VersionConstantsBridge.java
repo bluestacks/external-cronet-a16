@@ -6,10 +6,7 @@ package org.chromium.base.version_info;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Bridge between native and VersionConstants.java. */
-@NullMarked
 public class VersionConstantsBridge {
     @CalledByNative
     public static int getChannel() {

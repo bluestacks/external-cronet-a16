@@ -15,7 +15,7 @@ class Manager;
 // May not be created without a PassKey.
 class Restricted {
  public:
-  explicit Restricted(base::PassKey<Manager>) {}
+  Restricted(base::PassKey<Manager>) {}
 };
 
 Restricted ConstructWithCopiedPassKey(base::PassKey<Manager> key) {
@@ -33,11 +33,10 @@ class Manager {
   enum class CopiedKey { kTag };
   enum class MovedKey { kTag };
 
-  explicit Manager(ExplicitConstruction)
-      : restricted_(base::PassKey<Manager>()) {}
-  explicit Manager(UniformInitialization) : restricted_({}) {}
-  explicit Manager(CopiedKey) : restricted_(ConstructWithCopiedPassKey({})) {}
-  explicit Manager(MovedKey) : restricted_(ConstructWithMovedPassKey({})) {}
+  Manager(ExplicitConstruction) : restricted_(base::PassKey<Manager>()) {}
+  Manager(UniformInitialization) : restricted_({}) {}
+  Manager(CopiedKey) : restricted_(ConstructWithCopiedPassKey({})) {}
+  Manager(MovedKey) : restricted_(ConstructWithMovedPassKey({})) {}
 
  private:
   Restricted restricted_;

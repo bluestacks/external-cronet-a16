@@ -83,8 +83,9 @@ ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
   }
 
   AuthorizationItem environment_items[] = {
-      {kAuthorizationEnvironmentIcon, icon_path_length, (void*)icon_path_c, 0},
-      {kAuthorizationEnvironmentPrompt, prompt_length, (void*)prompt_c, 0}};
+    {kAuthorizationEnvironmentIcon, icon_path_length, (void*)icon_path_c, 0},
+    {kAuthorizationEnvironmentPrompt, prompt_length, (void*)prompt_c, 0}
+  };
 
   AuthorizationEnvironment environment = {std::size(environment_items),
                                           environment_items};
@@ -136,8 +137,11 @@ OSStatus ExecuteWithPrivilegesAndGetPID(AuthorizationRef authorization,
   // but it doesn't actually modify the arguments, and that type is kind of
   // silly and callers probably aren't dealing with that.  Put the cast here
   // to make things a little easier on callers.
-  OSStatus status = AuthorizationExecuteWithPrivileges(
-      authorization, tool_path, options, (char* const*)arguments, pipe_pointer);
+  OSStatus status = AuthorizationExecuteWithPrivileges(authorization,
+                                                       tool_path,
+                                                       options,
+                                                       (char* const*)arguments,
+                                                       pipe_pointer);
 #pragma clang diagnostic pop
   if (status != errAuthorizationSuccess) {
     return status;
@@ -181,8 +185,12 @@ OSStatus ExecuteWithPrivilegesAndWait(AuthorizationRef authorization,
                                       FILE** pipe,
                                       int* exit_status) {
   pid_t pid;
-  OSStatus status = ExecuteWithPrivilegesAndGetPID(
-      authorization, tool_path, options, arguments, pipe, &pid);
+  OSStatus status = ExecuteWithPrivilegesAndGetPID(authorization,
+                                                   tool_path,
+                                                   options,
+                                                   arguments,
+                                                   pipe,
+                                                   &pid);
   if (status != errAuthorizationSuccess) {
     return status;
   }

@@ -33,13 +33,13 @@ void HistogramBrokenAlternateProtocolLocation(
 
 bool IsAlternateProtocolValid(NextProto protocol) {
   switch (protocol) {
-    case NextProto::kProtoUnknown:
+    case kProtoUnknown:
       return false;
-    case NextProto::kProtoHTTP11:
+    case kProtoHTTP11:
       return false;
-    case NextProto::kProtoHTTP2:
+    case kProtoHTTP2:
       return true;
-    case NextProto::kProtoQUIC:
+    case kProtoQUIC:
       return true;
   }
   NOTREACHED();
@@ -49,13 +49,13 @@ bool IsProtocolEnabled(NextProto protocol,
                        bool is_http2_enabled,
                        bool is_quic_enabled) {
   switch (protocol) {
-    case NextProto::kProtoUnknown:
+    case kProtoUnknown:
       NOTREACHED();
-    case NextProto::kProtoHTTP11:
+    case kProtoHTTP11:
       return true;
-    case NextProto::kProtoHTTP2:
+    case kProtoHTTP2:
       return is_http2_enabled;
-    case NextProto::kProtoQUIC:
+    case kProtoQUIC:
       return is_quic_enabled;
   }
   NOTREACHED();
@@ -104,7 +104,7 @@ AlternativeServiceInfo
 AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
     const AlternativeService& alternative_service,
     base::Time expiration) {
-  DCHECK_EQ(alternative_service.protocol, NextProto::kProtoHTTP2);
+  DCHECK_EQ(alternative_service.protocol, kProtoHTTP2);
   return AlternativeServiceInfo(alternative_service, expiration,
                                 quic::ParsedQuicVersionVector());
 }
@@ -114,7 +114,7 @@ AlternativeServiceInfo AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
     const AlternativeService& alternative_service,
     base::Time expiration,
     const quic::ParsedQuicVersionVector& advertised_versions) {
-  DCHECK_EQ(alternative_service.protocol, NextProto::kProtoQUIC);
+  DCHECK_EQ(alternative_service.protocol, kProtoQUIC);
   return AlternativeServiceInfo(alternative_service, expiration,
                                 advertised_versions);
 }
@@ -149,7 +149,7 @@ std::string AlternativeServiceInfo::ToString() const {
 
 void AlternativeServiceInfo::SetAdvertisedVersions(
     const quic::ParsedQuicVersionVector& advertised_versions) {
-  if (alternative_service_.protocol != NextProto::kProtoQUIC) {
+  if (alternative_service_.protocol != kProtoQUIC) {
     return;
   }
 
@@ -176,7 +176,7 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
     NextProto protocol =
         NextProtoFromString(alternative_service_entry.protocol_id);
     quic::ParsedQuicVersionVector advertised_versions;
-    if (protocol == NextProto::kProtoQUIC) {
+    if (protocol == kProtoQUIC) {
       continue;  // Ignore legacy QUIC alt-svc advertisements.
     } else if (!IsAlternateProtocolValid(protocol)) {
       quic::ParsedQuicVersion version =
@@ -185,7 +185,7 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
       if (version == quic::ParsedQuicVersion::Unsupported()) {
         continue;
       }
-      protocol = NextProto::kProtoQUIC;
+      protocol = kProtoQUIC;
       advertised_versions = {version};
     }
     if (!IsAlternateProtocolValid(protocol) ||
@@ -200,7 +200,7 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
         base::Time::Now() +
         base::Seconds(alternative_service_entry.max_age_seconds);
     AlternativeServiceInfo alternative_service_info;
-    if (protocol == NextProto::kProtoQUIC) {
+    if (protocol == kProtoQUIC) {
       alternative_service_info =
           AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
               alternative_service, expiration, advertised_versions);
@@ -219,7 +219,7 @@ AlternativeServiceInfo::AlternativeServiceInfo(
     base::Time expiration,
     const quic::ParsedQuicVersionVector& advertised_versions)
     : alternative_service_(alternative_service), expiration_(expiration) {
-  if (alternative_service_.protocol == NextProto::kProtoQUIC) {
+  if (alternative_service_.protocol == kProtoQUIC) {
     advertised_versions_ = advertised_versions;
   }
 }

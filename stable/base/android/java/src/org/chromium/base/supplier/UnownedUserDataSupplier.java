@@ -5,13 +5,13 @@
 package org.chromium.base.supplier;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.build.annotations.NullMarked;
 
 /**
  * UnownedUserDataSupplier handles the combined lifecycle management for {@link UnownedUserData} and
@@ -42,7 +42,6 @@ import org.chromium.build.annotations.NullMarked;
  * @see UnownedUserDataKey for information about the type of key that is required.
  * @see UnownedUserData for the marker interface used for this type of data.
  */
-@NullMarked
 public abstract class UnownedUserDataSupplier<E> extends ObservableSupplierImpl<E>
         implements Destroyable, UnownedUserData {
     private final UnownedUserDataKey<UnownedUserDataSupplier<E>> mUudKey;
@@ -53,7 +52,7 @@ public abstract class UnownedUserDataSupplier<E> extends ObservableSupplierImpl<
      * @param uudKey The {@link UnownedUserDataKey}, which is defined in subclasses.
      */
     protected UnownedUserDataSupplier(
-            UnownedUserDataKey<? extends UnownedUserDataSupplier<E>> uudKey) {
+            @NonNull UnownedUserDataKey<? extends UnownedUserDataSupplier<E>> uudKey) {
         mUudKey = (UnownedUserDataKey<UnownedUserDataSupplier<E>>) uudKey;
     }
 
@@ -61,7 +60,7 @@ public abstract class UnownedUserDataSupplier<E> extends ObservableSupplierImpl<
      * Attach to the specified host.
      * @param host The host to attach the supplier to.
      */
-    public void attach(UnownedUserDataHost host) {
+    public void attach(@NonNull UnownedUserDataHost host) {
         mDestroyChecker.checkNotDestroyed();
         mUudKey.attachToHost(host, this);
     }

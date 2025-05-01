@@ -4,11 +4,11 @@
 
 package org.chromium.base.supplier;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Abstract implementation of {@link LazySupplier} to be used by classes providing it as a
@@ -37,9 +37,7 @@ import org.chromium.build.annotations.Nullable;
  *
  * @param <T> The type of the wrapped object.
  */
-@NullMarked
-public abstract class LazyOneshotSupplierImpl<T extends @Nullable Object>
-        implements LazyOneshotSupplier<T> {
+public abstract class LazyOneshotSupplierImpl<T> implements LazyOneshotSupplier<T> {
     private final Promise<T> mPromise = new Promise<>();
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
@@ -88,7 +86,7 @@ public abstract class LazyOneshotSupplierImpl<T extends @Nullable Object>
      *
      * @param object The object to supply.
      */
-    public void set(T object) {
+    public void set(@Nullable T object) {
         mThreadChecker.assertOnValidThread();
         assert !mPromise.isFulfilled();
         mPromise.fulfill(object);

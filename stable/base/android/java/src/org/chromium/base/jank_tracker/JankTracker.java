@@ -4,10 +4,7 @@
 
 package org.chromium.base.jank_tracker;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Interface for Android UI jank tracking. */
-@NullMarked
 public interface JankTracker {
     /**
      * Starts tracking UI jank for a specific use scenario (e.g. Tab switcher, Omnibox, etc.),

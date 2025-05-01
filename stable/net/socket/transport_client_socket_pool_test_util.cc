@@ -76,9 +76,7 @@ class MockConnectClientSocket : public TransportClientSocket {
   const NetLogWithSource& NetLog() const override { return net_log_; }
 
   bool WasEverUsed() const override { return false; }
-  NextProto GetNegotiatedProtocol() const override {
-    return NextProto::kProtoUnknown;
-  }
+  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
@@ -140,9 +138,7 @@ class MockFailingClientSocket : public TransportClientSocket {
   const NetLogWithSource& NetLog() const override { return net_log_; }
 
   bool WasEverUsed() const override { return false; }
-  NextProto GetNegotiatedProtocol() const override {
-    return NextProto::kProtoUnknown;
-  }
+  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
@@ -257,9 +253,7 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   const NetLogWithSource& NetLog() const override { return net_log_; }
 
   bool WasEverUsed() const override { return false; }
-  NextProto GetNegotiatedProtocol() const override {
-    return NextProto::kProtoUnknown;
-  }
+  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();

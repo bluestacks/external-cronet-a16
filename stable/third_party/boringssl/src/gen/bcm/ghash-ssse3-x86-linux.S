@@ -32,7 +32,7 @@ gcm_gmult_ssse3:
 	pxor	%xmm3,%xmm3
 	movl	$5,%eax
 .L001loop_row_1:
-	movdqu	(%esi),%xmm4
+	movdqa	(%esi),%xmm4
 	leal	16(%esi),%esi
 	movdqa	%xmm2,%xmm6
 .byte	102,15,58,15,243,1
@@ -63,7 +63,7 @@ gcm_gmult_ssse3:
 	pxor	%xmm3,%xmm3
 	movl	$5,%eax
 .L002loop_row_2:
-	movdqu	(%esi),%xmm4
+	movdqa	(%esi),%xmm4
 	leal	16(%esi),%esi
 	movdqa	%xmm2,%xmm6
 .byte	102,15,58,15,243,1
@@ -94,7 +94,7 @@ gcm_gmult_ssse3:
 	pxor	%xmm3,%xmm3
 	movl	$6,%eax
 .L003loop_row_3:
-	movdqu	(%esi),%xmm4
+	movdqa	(%esi),%xmm4
 	leal	16(%esi),%esi
 	movdqa	%xmm2,%xmm6
 .byte	102,15,58,15,243,1
@@ -172,7 +172,7 @@ gcm_ghash_ssse3:
 	pxor	%xmm2,%xmm2
 	movl	$5,%eax
 .L006loop_row_4:
-	movdqu	(%esi),%xmm4
+	movdqa	(%esi),%xmm4
 	leal	16(%esi),%esi
 	movdqa	%xmm2,%xmm6
 .byte	102,15,58,15,243,1
@@ -203,7 +203,7 @@ gcm_ghash_ssse3:
 	pxor	%xmm3,%xmm3
 	movl	$5,%eax
 .L007loop_row_5:
-	movdqu	(%esi),%xmm4
+	movdqa	(%esi),%xmm4
 	leal	16(%esi),%esi
 	movdqa	%xmm2,%xmm6
 .byte	102,15,58,15,243,1
@@ -234,7 +234,7 @@ gcm_ghash_ssse3:
 	pxor	%xmm3,%xmm3
 	movl	$6,%eax
 .L008loop_row_6:
-	movdqu	(%esi),%xmm4
+	movdqa	(%esi),%xmm4
 	leal	16(%esi),%esi
 	movdqa	%xmm2,%xmm6
 .byte	102,15,58,15,243,1

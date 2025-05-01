@@ -21,59 +21,11 @@ package {
     ],
 }
 
-// GN: //net/android:dummy_spnego_authenticator_java__testing
-java_library {
-    name: "stable_cronet_net_android_dummy_spnego_authenticator_java__testing",
-    static_libs: [
-        "stable_cronet_base_base_java__testing",
-        "stable_cronet_base_base_java_url_utils_for_test__testing",
-        "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_net_android_dummy_spnego_authenticator_java__process_device__testing",
-        "stable_cronet_net_android_net_java__testing",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-        "//packages/modules/Connectivity:__subpackages__",
-    ],
-}
-
-// GN: //net/android:embedded_test_server_aidl_java__compile_java__testing
-java_library {
-    name: "stable_cronet_net_android_embedded_test_server_aidl_java__compile_java__testing",
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "stable_cronet_build_android_build_java__compile_java__testing",
-        "stable_cronet_net_android_embedded_test_server_aidl__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    target: {
-        android_x86: {
-            static_libs: [
-                "stable_cronet_net_android_embedded_test_server_aidl__testing",
-            ],
-        },
-    },
-}
-
 // GN: //net/android:embedded_test_server_aidl_java__testing
 java_library {
     name: "stable_cronet_net_android_embedded_test_server_aidl_java__testing",
     static_libs: [
-        "stable_cronet_build_android_build_java__testing",
         "stable_cronet_net_android_embedded_test_server_aidl__testing",
-        "stable_cronet_net_android_embedded_test_server_aidl_java__process_device__testing",
     ],
     apex_available: [
         "com.android.tethering",
@@ -83,18 +35,42 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }
 
 // GN: //net/android:net_java
 java_library {
     name: "stable_cronet_net_android_net_java",
+    srcs: [
+        ":stable_cronet_net_android_net_android_java_enums_srcjar",
+        ":stable_cronet_net_android_net_errors_java",
+        ":stable_cronet_net_net_jni_headers__action__java",
+        "java/src/org/chromium/net/AndroidCertVerifyResult.java",
+        "java/src/org/chromium/net/AndroidKeyStore.java",
+        "java/src/org/chromium/net/AndroidNetworkLibrary.java",
+        "java/src/org/chromium/net/AndroidTrafficStats.java",
+        "java/src/org/chromium/net/ChromiumNetworkAdapter.java",
+        "java/src/org/chromium/net/DnsStatus.java",
+        "java/src/org/chromium/net/GURLUtils.java",
+        "java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
+        "java/src/org/chromium/net/HttpNegotiateConstants.java",
+        "java/src/org/chromium/net/HttpUtil.java",
+        "java/src/org/chromium/net/MimeTypeFilter.java",
+        "java/src/org/chromium/net/NetStringUtil.java",
+        "java/src/org/chromium/net/NetworkActiveNotifier.java",
+        "java/src/org/chromium/net/NetworkChangeNotifier.java",
+        "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+        "java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
+        "java/src/org/chromium/net/ProxyBroadcastReceiver.java",
+        "java/src/org/chromium/net/ProxyChangeListener.java",
+        "java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
+        "java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
+        "java/src/org/chromium/net/X509Util.java",
+    ],
     static_libs: [
         "jsr305",
         "stable_cronet_base_base_java",
-        "stable_cronet_base_flagged_apis_java",
-        "stable_cronet_base_service_loader_java",
         "stable_cronet_build_android_build_java",
-        "stable_cronet_net_android_net_java__process_device",
         "stable_cronet_net_android_net_thread_stats_uid_java",
         "stable_cronet_third_party_jni_zero_jni_zero_java",
     ],
@@ -111,196 +87,42 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-}
-
-// GN: //net/android:net_java__compile_java
-java_library {
-    name: "stable_cronet_net_android_net_java__compile_java",
-    srcs: [
-        ":stable_cronet_net_android_net_android_java_enums_srcjar",
-        ":stable_cronet_net_android_net_errors_java",
-        ":stable_cronet_net_net_jni_headers__action__java_proxy_only",
-        "java/src/org/chromium/net/AndroidCertVerifyResult.java",
-        "java/src/org/chromium/net/AndroidKeyStore.java",
-        "java/src/org/chromium/net/AndroidNetworkLibrary.java",
-        "java/src/org/chromium/net/AndroidTrafficStats.java",
-        "java/src/org/chromium/net/ChromiumNetworkAdapter.java",
-        "java/src/org/chromium/net/DnsStatus.java",
-        "java/src/org/chromium/net/GURLUtils.java",
-        "java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
-        "java/src/org/chromium/net/HttpNegotiateConstants.java",
-        "java/src/org/chromium/net/HttpUtil.java",
-        "java/src/org/chromium/net/MimeTypeFilter.java",
-        "java/src/org/chromium/net/NetStringUtil.java",
-        "java/src/org/chromium/net/NetworkActiveNotifier.java",
-        "java/src/org/chromium/net/NetworkCapabilitiesWrapper.java",
-        "java/src/org/chromium/net/NetworkChangeNotifier.java",
-        "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
-        "java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
-        "java/src/org/chromium/net/ProxyBroadcastReceiver.java",
-        "java/src/org/chromium/net/ProxyChangeListener.java",
-        "java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
-        "java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
-        "java/src/org/chromium/net/X509Util.java",
-    ],
-    static_libs: [
-        "jsr305",
-    ],
-    defaults: [
-        "stable_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental",
-        "error_prone_annotations",
-        "stable_cronet_base_activity_state_java__compile_java",
-        "stable_cronet_base_android_info_java__compile_java",
-        "stable_cronet_base_android_runtime_jni_headers_java",
-        "stable_cronet_base_base_java__compile_java",
-        "stable_cronet_base_base_jni_java__compile_java",
-        "stable_cronet_base_base_minimal_jni_java__compile_java",
-        "stable_cronet_base_base_switches_java__compile_java",
-        "stable_cronet_base_build_info_java__compile_java",
-        "stable_cronet_base_callback_java__compile_java",
-        "stable_cronet_base_callback_jni_java__compile_java",
-        "stable_cronet_base_command_line_java__compile_java",
-        "stable_cronet_base_command_line_jni_java__compile_java",
-        "stable_cronet_base_flagged_apis_java__compile_java",
-        "stable_cronet_base_jank_tracker_java__compile_java",
-        "stable_cronet_base_library_loader_java__compile_java",
-        "stable_cronet_base_library_loader_jni_java__compile_java",
-        "stable_cronet_base_lifetime_java__compile_java",
-        "stable_cronet_base_log_java__compile_java",
-        "stable_cronet_base_memory_java__compile_java",
-        "stable_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java",
-        "stable_cronet_base_metrics_java__compile_java",
-        "stable_cronet_base_metrics_jni_java__compile_java",
-        "stable_cronet_base_promise_java__compile_java",
-        "stable_cronet_base_resetters_java__compile_java",
-        "stable_cronet_base_service_loader_java__compile_java",
-        "stable_cronet_base_stream_util_java__compile_java",
-        "stable_cronet_base_supplier_java__compile_java",
-        "stable_cronet_base_sys_utils_java__compile_java",
-        "stable_cronet_base_tasks_java__compile_java",
-        "stable_cronet_base_tasks_jni_java__compile_java",
-        "stable_cronet_base_tasks_minimal_jni_java__compile_java",
-        "stable_cronet_base_time_utils_java__compile_java",
-        "stable_cronet_base_unowned_user_data_java__compile_java",
-        "stable_cronet_base_version_info_android_channel_enum_java__compile_java",
-        "stable_cronet_base_version_info_android_version_constants_java__compile_java",
-        "stable_cronet_build_android_build_java__compile_java",
-        "stable_cronet_net_android_net_thread_stats_uid_java__compile_java",
-        "stable_cronet_third_party_jni_zero_gendeps_java__compile_java",
-        "stable_cronet_third_party_jni_zero_generate_jni_java__compile_java",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__compile_java",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //net/android:net_java__compile_java__testing
-java_library {
-    name: "stable_cronet_net_android_net_java__compile_java__testing",
-    srcs: [
-        ":stable_cronet_net_android_net_android_java_enums_srcjar__testing",
-        ":stable_cronet_net_android_net_errors_java__testing",
-        ":stable_cronet_net_net_jni_headers__action__testing__java_proxy_only",
-        "java/src/org/chromium/net/AndroidCertVerifyResult.java",
-        "java/src/org/chromium/net/AndroidKeyStore.java",
-        "java/src/org/chromium/net/AndroidNetworkLibrary.java",
-        "java/src/org/chromium/net/AndroidTrafficStats.java",
-        "java/src/org/chromium/net/ChromiumNetworkAdapter.java",
-        "java/src/org/chromium/net/DnsStatus.java",
-        "java/src/org/chromium/net/GURLUtils.java",
-        "java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
-        "java/src/org/chromium/net/HttpNegotiateConstants.java",
-        "java/src/org/chromium/net/HttpUtil.java",
-        "java/src/org/chromium/net/MimeTypeFilter.java",
-        "java/src/org/chromium/net/NetStringUtil.java",
-        "java/src/org/chromium/net/NetworkActiveNotifier.java",
-        "java/src/org/chromium/net/NetworkCapabilitiesWrapper.java",
-        "java/src/org/chromium/net/NetworkChangeNotifier.java",
-        "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
-        "java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
-        "java/src/org/chromium/net/ProxyBroadcastReceiver.java",
-        "java/src/org/chromium/net/ProxyChangeListener.java",
-        "java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
-        "java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
-        "java/src/org/chromium/net/X509Util.java",
-    ],
-    static_libs: [
-        "jsr305",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental",
-        "error_prone_annotations",
-        "stable_cronet_base_activity_state_java__compile_java__testing",
-        "stable_cronet_base_android_info_java__compile_java__testing",
-        "stable_cronet_base_android_runtime_jni_headers_java__testing",
-        "stable_cronet_base_base_java__compile_java__testing",
-        "stable_cronet_base_base_jni_java__compile_java__testing",
-        "stable_cronet_base_base_minimal_jni_java__compile_java__testing",
-        "stable_cronet_base_base_switches_java__compile_java__testing",
-        "stable_cronet_base_build_info_java__compile_java__testing",
-        "stable_cronet_base_callback_java__compile_java__testing",
-        "stable_cronet_base_callback_jni_java__compile_java__testing",
-        "stable_cronet_base_command_line_java__compile_java__testing",
-        "stable_cronet_base_command_line_jni_java__compile_java__testing",
-        "stable_cronet_base_flagged_apis_java__compile_java__testing",
-        "stable_cronet_base_jank_tracker_java__compile_java__testing",
-        "stable_cronet_base_library_loader_java__compile_java__testing",
-        "stable_cronet_base_library_loader_jni_java__compile_java__testing",
-        "stable_cronet_base_lifetime_java__compile_java__testing",
-        "stable_cronet_base_log_java__compile_java__testing",
-        "stable_cronet_base_memory_java__compile_java__testing",
-        "stable_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
-        "stable_cronet_base_metrics_java__compile_java__testing",
-        "stable_cronet_base_metrics_jni_java__compile_java__testing",
-        "stable_cronet_base_promise_java__compile_java__testing",
-        "stable_cronet_base_resetters_java__compile_java__testing",
-        "stable_cronet_base_service_loader_java__compile_java__testing",
-        "stable_cronet_base_stream_util_java__compile_java__testing",
-        "stable_cronet_base_supplier_java__compile_java__testing",
-        "stable_cronet_base_sys_utils_java__compile_java__testing",
-        "stable_cronet_base_tasks_java__compile_java__testing",
-        "stable_cronet_base_tasks_jni_java__compile_java__testing",
-        "stable_cronet_base_tasks_minimal_jni_java__compile_java__testing",
-        "stable_cronet_base_time_utils_java__compile_java__testing",
-        "stable_cronet_base_unowned_user_data_java__compile_java__testing",
-        "stable_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
-        "stable_cronet_base_version_info_android_version_constants_java__compile_java__testing",
-        "stable_cronet_build_android_build_java__compile_java__testing",
-        "stable_cronet_net_android_net_thread_stats_uid_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }
 
 // GN: //net/android:net_java__testing
 java_library {
     name: "stable_cronet_net_android_net_java__testing",
+    srcs: [
+        ":stable_cronet_net_android_net_android_java_enums_srcjar__testing",
+        ":stable_cronet_net_android_net_errors_java__testing",
+        ":stable_cronet_net_net_jni_headers__action__testing__java",
+        "java/src/org/chromium/net/AndroidCertVerifyResult.java",
+        "java/src/org/chromium/net/AndroidKeyStore.java",
+        "java/src/org/chromium/net/AndroidNetworkLibrary.java",
+        "java/src/org/chromium/net/AndroidTrafficStats.java",
+        "java/src/org/chromium/net/ChromiumNetworkAdapter.java",
+        "java/src/org/chromium/net/DnsStatus.java",
+        "java/src/org/chromium/net/GURLUtils.java",
+        "java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
+        "java/src/org/chromium/net/HttpNegotiateConstants.java",
+        "java/src/org/chromium/net/HttpUtil.java",
+        "java/src/org/chromium/net/MimeTypeFilter.java",
+        "java/src/org/chromium/net/NetStringUtil.java",
+        "java/src/org/chromium/net/NetworkActiveNotifier.java",
+        "java/src/org/chromium/net/NetworkChangeNotifier.java",
+        "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+        "java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
+        "java/src/org/chromium/net/ProxyBroadcastReceiver.java",
+        "java/src/org/chromium/net/ProxyChangeListener.java",
+        "java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
+        "java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
+        "java/src/org/chromium/net/X509Util.java",
+    ],
     static_libs: [
         "jsr305",
         "stable_cronet_base_base_java__testing",
-        "stable_cronet_base_flagged_apis_java__testing",
-        "stable_cronet_base_service_loader_java__testing",
         "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_net_android_net_java__process_device__testing",
         "stable_cronet_net_android_net_thread_stats_uid_java__testing",
         "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
     ],
@@ -315,65 +137,14 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }
 
-// GN: //net/android:net_java_test_support__testing
+// GN: //net/android:net_tests_java__testing
 java_library {
-    name: "stable_cronet_net_android_net_java_test_support__testing",
-    static_libs: [
-        "androidx.test.uiautomator_uiautomator",
-        "junit",
-        "stable_cronet_base_base_java__testing",
-        "stable_cronet_base_base_java_test_support__testing",
-        "stable_cronet_base_base_java_url_utils_for_test__testing",
-        "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_net_android_embedded_test_server_aidl_java__testing",
-        "stable_cronet_net_android_net_java__testing",
-        "stable_cronet_net_android_net_java_test_support__process_device__testing",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.test.monitor",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //net/android:net_test_support_provider_java__testing
-java_library {
-    name: "stable_cronet_net_android_net_test_support_provider_java__testing",
-    static_libs: [
-        "stable_cronet_base_base_java__testing",
-        "stable_cronet_base_base_java_url_utils_for_test__testing",
-        "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_net_android_embedded_test_server_aidl_java__testing",
-        "stable_cronet_net_android_net_java__testing",
-        "stable_cronet_net_android_net_test_support_provider_java__process_device__testing",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-        "//packages/modules/Connectivity:__subpackages__",
-    ],
-}
-
-// GN: //net/android:net_tests_java__compile_java__testing
-java_library {
-    name: "stable_cronet_net_android_net_tests_java__compile_java__testing",
+    name: "stable_cronet_net_android_net_tests_java__testing",
     srcs: [
-        ":stable_cronet_net_android_net_tests_jni__action__testing__java_proxy_only",
+        ":stable_cronet_net_android_net_tests_jni__action__testing__java",
         "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
         "javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
         "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
@@ -391,90 +162,10 @@ java_library {
         "androidx.test.runner",
         "junit",
         "mockito",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "android.test.mock.stubs",
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental",
-        "androidx.core_core",
-        "androidx.test.monitor",
-        "error_prone_annotations",
-        "stable_cronet_base_activity_state_java__compile_java__testing",
-        "stable_cronet_base_android_info_java__compile_java__testing",
-        "stable_cronet_base_android_runtime_jni_headers_java__testing",
-        "stable_cronet_base_base_cached_flags_java__compile_java__testing",
-        "stable_cronet_base_base_java__compile_java__testing",
-        "stable_cronet_base_base_java_test_support__compile_java__testing",
-        "stable_cronet_base_base_java_url_utils_for_test__compile_java__testing",
-        "stable_cronet_base_base_jni_java__compile_java__testing",
-        "stable_cronet_base_base_minimal_jni_java__compile_java__testing",
-        "stable_cronet_base_base_shared_preferences_java__compile_java__testing",
-        "stable_cronet_base_base_shared_preferences_jni_java__compile_java__testing",
-        "stable_cronet_base_base_switches_java__compile_java__testing",
-        "stable_cronet_base_build_info_java__compile_java__testing",
-        "stable_cronet_base_callback_java__compile_java__testing",
-        "stable_cronet_base_callback_jni_java__compile_java__testing",
-        "stable_cronet_base_command_line_java__compile_java__testing",
-        "stable_cronet_base_command_line_jni_java__compile_java__testing",
-        "stable_cronet_base_flagged_apis_java__compile_java__testing",
-        "stable_cronet_base_jank_tracker_java__compile_java__testing",
-        "stable_cronet_base_library_loader_java__compile_java__testing",
-        "stable_cronet_base_library_loader_jni_java__compile_java__testing",
-        "stable_cronet_base_lifetime_java__compile_java__testing",
-        "stable_cronet_base_log_java__compile_java__testing",
-        "stable_cronet_base_memory_java__compile_java__testing",
-        "stable_cronet_base_metrics_ScopedSysTraceEvent_java__compile_java__testing",
-        "stable_cronet_base_metrics_java__compile_java__testing",
-        "stable_cronet_base_metrics_jni_java__compile_java__testing",
-        "stable_cronet_base_promise_java__compile_java__testing",
-        "stable_cronet_base_resetters_java__compile_java__testing",
-        "stable_cronet_base_service_loader_java__compile_java__testing",
-        "stable_cronet_base_stream_util_java__compile_java__testing",
-        "stable_cronet_base_supplier_java__compile_java__testing",
-        "stable_cronet_base_sys_utils_java__compile_java__testing",
-        "stable_cronet_base_tasks_java__compile_java__testing",
-        "stable_cronet_base_tasks_jni_java__compile_java__testing",
-        "stable_cronet_base_tasks_minimal_jni_java__compile_java__testing",
-        "stable_cronet_base_time_utils_java__compile_java__testing",
-        "stable_cronet_base_unowned_user_data_java__compile_java__testing",
-        "stable_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
-        "stable_cronet_base_version_info_android_version_constants_java__compile_java__testing",
-        "stable_cronet_build_android_build_java__compile_java__testing",
-        "stable_cronet_net_android_embedded_test_server_aidl__testing",
-        "stable_cronet_net_android_embedded_test_server_aidl_java__compile_java__testing",
-        "stable_cronet_net_android_net_java__compile_java__testing",
-        "stable_cronet_net_android_net_java_test_support__compile_java__testing",
-        "stable_cronet_net_android_net_thread_stats_uid_java__compile_java__testing",
-        "stable_cronet_testing_android_instrumentation_test_runner_java__compile_java__testing",
-        "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing",
-        "stable_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //net/android:net_tests_java__testing
-java_library {
-    name: "stable_cronet_net_android_net_tests_java__testing",
-    static_libs: [
-        "androidx.test.rules",
-        "androidx.test.runner",
-        "junit",
-        "mockito",
         "stable_cronet_base_base_java__testing",
         "stable_cronet_base_base_java_test_support__testing",
-        "stable_cronet_build_android_build_java__testing",
         "stable_cronet_net_android_net_java__testing",
         "stable_cronet_net_android_net_java_test_support__testing",
-        "stable_cronet_net_android_net_tests_java__process_device__testing",
         "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
     ],
     apex_available: [
@@ -490,30 +181,12 @@ java_library {
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
     ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }
 
 // GN: //net/android:net_thread_stats_uid_java
 java_library {
     name: "stable_cronet_net_android_net_thread_stats_uid_java",
-    static_libs: [
-        "stable_cronet_build_android_build_java",
-        "stable_cronet_net_android_net_thread_stats_uid_java__process_device",
-    ],
-    defaults: [
-        "stable_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //net/android:net_thread_stats_uid_java__compile_java
-java_library {
-    name: "stable_cronet_net_android_net_thread_stats_uid_java__compile_java",
     srcs: [
         "java/src/org/chromium/net/ThreadStatsUid.java",
     ],
@@ -524,39 +197,17 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    libs: [
-        "stable_cronet_build_android_build_java__compile_java",
-    ],
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-}
-
-// GN: //net/android:net_thread_stats_uid_java__compile_java__testing
-java_library {
-    name: "stable_cronet_net_android_net_thread_stats_uid_java__compile_java__testing",
-    srcs: [
-        "java/src/org/chromium/net/ThreadStatsUid.java",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "stable_cronet_build_android_build_java__compile_java__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }
 
 // GN: //net/android:net_thread_stats_uid_java__testing
 java_library {
     name: "stable_cronet_net_android_net_thread_stats_uid_java__testing",
-    static_libs: [
-        "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_net_android_net_thread_stats_uid_java__process_device__testing",
+    srcs: [
+        "java/src/org/chromium/net/ThreadStatsUid.java",
     ],
     apex_available: [
         "com.android.tethering",
@@ -566,4 +217,5 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }

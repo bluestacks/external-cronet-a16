@@ -22,30 +22,28 @@ RegistrationRequestParam& RegistrationRequestParam::operator=(
 RegistrationRequestParam::~RegistrationRequestParam() = default;
 
 // static
-RegistrationRequestParam RegistrationRequestParam::CreateForRegistration(
+RegistrationRequestParam RegistrationRequestParam::Create(
     RegistrationFetcherParam&& fetcher_param) {
   return RegistrationRequestParam(fetcher_param.TakeRegistrationEndpoint(),
-                                  /*session_identifier=*/std::nullopt,
-                                  fetcher_param.TakeChallenge(),
+                                  std::nullopt, fetcher_param.TakeChallenge(),
                                   fetcher_param.TakeAuthorization());
 }
 
 // static
-RegistrationRequestParam RegistrationRequestParam::CreateForRefresh(
+RegistrationRequestParam RegistrationRequestParam::Create(
     const Session& session) {
   return RegistrationRequestParam(session.refresh_url(), session.id().value(),
-                                  session.cached_challenge(),
-                                  /*authorization=*/std::nullopt);
+                                  session.cached_challenge(), std::nullopt);
 }
 
 // static
 RegistrationRequestParam RegistrationRequestParam::CreateForTesting(
     const GURL& registration_endpoint,
-    std::optional<std::string> session_identifier,
+    std::string session_identifier,
     std::optional<std::string> challenge) {
-  return RegistrationRequestParam(
-      registration_endpoint, std::move(session_identifier),
-      std::move(challenge), /*authorization=*/std::nullopt);
+  return RegistrationRequestParam(registration_endpoint,
+                                  std::move(session_identifier),
+                                  std::move(challenge), std::nullopt);
 }
 
 RegistrationRequestParam::RegistrationRequestParam(

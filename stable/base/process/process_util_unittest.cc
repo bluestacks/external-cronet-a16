@@ -82,7 +82,6 @@
 #include <zircon/process.h>
 #include <zircon/processargs.h>
 #include <zircon/syscalls.h>
-
 #include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/filtered_service_directory.h"
@@ -849,9 +848,8 @@ MULTIPROCESS_TEST_MAIN(ChildVerifiesCetDisabled) {
   if (GetProcessMitigationPolicy(GetCurrentProcess(),
                                  ProcessUserShadowStackPolicy, &policy,
                                  sizeof(policy))) {
-    if (policy.EnableUserShadowStack) {
+    if (policy.EnableUserShadowStack)
       return 1;
-    }
   }
   return kSuccess;
 }
@@ -1023,9 +1021,8 @@ bool CanGuardFd(int fd) {
   // descriptor is bad, or EINVAL if the fd already has a guard set.
   int ret =
       change_fdguard_np(fd, NULL, 0, &kGuard, GUARD_DUP, &original_fdflags);
-  if (ret == -1) {
+  if (ret == -1)
     return false;
-  }
 
   // Remove the guard.  It should not be possible to fail in removing the guard
   // just added.
@@ -1047,9 +1044,8 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
   for (int i = STDERR_FILENO + 1; i < max_files; i++) {
 #if BUILDFLAG(IS_APPLE)
     // Ignore guarded or invalid file descriptors.
-    if (!CanGuardFd(i)) {
+    if (!CanGuardFd(i))
       continue;
-    }
 #endif
 
     if (i != kChildPipe) {
@@ -1072,9 +1068,8 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
 
 int ProcessUtilTest::CountOpenFDsInChild() {
   int fds[2];
-  if (pipe(fds) < 0) {
+  if (pipe(fds) < 0)
     NOTREACHED();
-  }
 
   LaunchOptions options;
   options.fds_to_remap.emplace_back(fds[1], kChildPipe);
@@ -1245,7 +1240,7 @@ TEST_F(ProcessUtilTest, LaunchWithHandleTransfer) {
   ASSERT_TRUE(signals & ZX_SOCKET_READABLE);
 
   size_t bytes_read = 0;
-  char buf[16] = {};
+  char buf[16] = {0};
   result = zx_socket_read(handles[1], 0, buf, sizeof(buf), &bytes_read);
   EXPECT_EQ(ZX_OK, result);
   EXPECT_EQ(1u, bytes_read);

@@ -123,9 +123,8 @@ bool EncodeBytesTruncate(uint64_t tag, absl::Span<const char> value,
   return true;
 }
 
-[[nodiscard]] absl::Span<char> EncodeMessageStart(uint64_t tag,
-                                                  uint64_t max_size,
-                                                  absl::Span<char> *buf) {
+ABSL_MUST_USE_RESULT absl::Span<char> EncodeMessageStart(
+    uint64_t tag, uint64_t max_size, absl::Span<char> *buf) {
   const uint64_t tag_type = MakeTagType(tag, WireType::kLengthDelimited);
   const size_t tag_type_size = VarintSize(tag_type);
   max_size = std::min<uint64_t>(max_size, buf->size());

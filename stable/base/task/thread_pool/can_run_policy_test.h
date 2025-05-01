@@ -166,9 +166,8 @@ void TestCanRunPolicyLoad(Target* target,
 #else
         256;
 #endif
-    for (size_t i = 0; i < kLargeNumber; ++i) {
+    for (size_t i = 0; i < kLargeNumber; ++i)
       task_runner->PostTask(FROM_HERE, DoNothing());
-    }
 
     // Change the CanRunPolicy concurrently with running tasks.
     // This should not cause crashes.

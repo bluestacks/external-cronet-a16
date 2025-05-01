@@ -11,10 +11,16 @@
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "build/robolectric_buildflags.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/JavaExceptionReporter_jni.h"
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/JavaExceptionReporter_jni.h"  // nogncheck
+#else
+#include "base/base_jni/JavaExceptionReporter_jni.h"
+#endif
 
+using jni_zero::JavaParamRef;
 using jni_zero::JavaRef;
 
 namespace base {
@@ -77,7 +83,7 @@ void SetJavaException(const char* exception) {
 void JNI_JavaExceptionReporter_ReportJavaException(
     JNIEnv* env,
     jboolean crash_after_report,
-    const JavaRef<jthrowable>& e) {
+    const JavaParamRef<jthrowable>& e) {
   std::string exception_info = base::android::GetJavaExceptionInfo(env, e);
   bool should_report_exception = g_java_exception_filter.Get().Run(e);
   if (should_report_exception) {
@@ -102,5 +108,3 @@ void JNI_JavaExceptionReporter_ReportJavaStackTrace(JNIEnv* env,
 
 }  // namespace android
 }  // namespace base
-
-DEFINE_JNI_FOR_JavaExceptionReporter()

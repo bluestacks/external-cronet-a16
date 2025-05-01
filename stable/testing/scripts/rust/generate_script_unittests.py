@@ -8,8 +8,7 @@ import os
 import tempfile
 import unittest
 
-# vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from generate_script import _parse_args
 from generate_script import _generate_script

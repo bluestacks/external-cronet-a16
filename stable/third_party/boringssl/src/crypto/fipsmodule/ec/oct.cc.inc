@@ -1,17 +1,69 @@
-// Copyright 2011-2016 The OpenSSL Project Authors. All Rights Reserved.
-// Copyright (c) 2002, Oracle and/or its affiliates. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/* Originally written by Bodo Moeller for the OpenSSL project.
+ * ====================================================================
+ * Copyright (c) 1998-2005 The OpenSSL Project.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. All advertising materials mentioning features or use of this
+ *    software must display the following acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
+ *
+ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
+ *    endorse or promote products derived from this software without
+ *    prior written permission. For written permission, please contact
+ *    openssl-core@openssl.org.
+ *
+ * 5. Products derived from this software may not be called "OpenSSL"
+ *    nor may "OpenSSL" appear in their names without prior written
+ *    permission of the OpenSSL Project.
+ *
+ * 6. Redistributions of any form whatsoever must retain the following
+ *    acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This product includes cryptographic software written by Eric Young
+ * (eay@cryptsoft.com).  This product includes software written by Tim
+ * Hudson (tjh@cryptsoft.com).
+ *
+ */
+/* ====================================================================
+ * Copyright 2002 Sun Microsystems, Inc. ALL RIGHTS RESERVED.
+ *
+ * Portions of the attached software ("Contribution") are developed by
+ * SUN MICROSYSTEMS, INC., and are contributed to the OpenSSL project.
+ *
+ * The Contribution is licensed pursuant to the OpenSSL open source
+ * license provided above.
+ *
+ * The elliptic curve binary polynomial software is originally written by
+ * Sheueling Chang Shantz and Douglas Stebila of Sun Microsystems
+ * Laboratories. */
 
 #include <openssl/ec.h>
 
@@ -116,30 +168,35 @@ static int ec_GFp_simple_oct2point(const EC_GROUP *group, EC_POINT *point,
   // for primes which are not 3 (mod 4), namely P-224 and custom curves. P-224's
   // prime is particularly inconvenient for compressed coordinates. See
   // https://cr.yp.to/papers/sqroot.pdf
-  bssl::UniquePtr<BN_CTX> new_ctx;
-  if (ctx == nullptr) {
-    new_ctx.reset(BN_CTX_new());
-    if (new_ctx == nullptr) {
+  BN_CTX *new_ctx = NULL;
+  if (ctx == NULL) {
+    ctx = new_ctx = BN_CTX_new();
+    if (ctx == NULL) {
       return 0;
     }
-    ctx = new_ctx.get();
   }
 
-  bssl::BN_CTXScope scope(ctx);
+  int ret = 0;
+  BN_CTX_start(ctx);
   BIGNUM *x = BN_CTX_get(ctx);
-  if (x == nullptr || !BN_bin2bn(buf + 1, field_len, x)) {
-    return 0;
+  if (x == NULL || !BN_bin2bn(buf + 1, field_len, x)) {
+    goto err;
   }
   if (BN_ucmp(x, &group->field.N) >= 0) {
     OPENSSL_PUT_ERROR(EC, EC_R_INVALID_ENCODING);
-    return 0;
+    goto err;
   }
 
   if (!EC_POINT_set_compressed_coordinates_GFp(group, point, x, y_bit, ctx)) {
-    return 0;
+    goto err;
   }
 
-  return 1;
+  ret = 1;
+
+err:
+  BN_CTX_end(ctx);
+  BN_CTX_free(new_ctx);
+  return ret;
 }
 
 int EC_POINT_oct2point(const EC_GROUP *group, EC_POINT *point,
@@ -209,27 +266,28 @@ int EC_POINT_set_compressed_coordinates_GFp(const EC_GROUP *group,
     return 0;
   }
 
+  BN_CTX *new_ctx = NULL;
+  int ret = 0;
+
   ERR_clear_error();
 
-  bssl::UniquePtr<BN_CTX> new_ctx;
-  if (ctx == nullptr) {
-    new_ctx.reset(BN_CTX_new());
-    if (new_ctx == nullptr) {
+  if (ctx == NULL) {
+    ctx = new_ctx = BN_CTX_new();
+    if (ctx == NULL) {
       return 0;
     }
-    ctx = new_ctx.get();
   }
 
   y_bit = (y_bit != 0);
 
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   BIGNUM *tmp1 = BN_CTX_get(ctx);
   BIGNUM *tmp2 = BN_CTX_get(ctx);
   BIGNUM *a = BN_CTX_get(ctx);
   BIGNUM *b = BN_CTX_get(ctx);
   BIGNUM *y = BN_CTX_get(ctx);
   if (y == NULL || !EC_GROUP_get_curve_GFp(group, NULL, a, b, ctx)) {
-    return 0;
+    goto err;
   }
 
   // Recover y.  We have a Weierstrass equation
@@ -239,7 +297,7 @@ int EC_POINT_set_compressed_coordinates_GFp(const EC_GROUP *group,
   // tmp1 := x^3
   if (!BN_mod_sqr(tmp2, x, field, ctx) ||
       !BN_mod_mul(tmp1, tmp2, x, field, ctx)) {
-    return 0;
+    goto err;
   }
 
   // tmp1 := tmp1 + a*x
@@ -247,18 +305,18 @@ int EC_POINT_set_compressed_coordinates_GFp(const EC_GROUP *group,
     if (!bn_mod_lshift1_consttime(tmp2, x, field, ctx) ||
         !bn_mod_add_consttime(tmp2, tmp2, x, field, ctx) ||
         !bn_mod_sub_consttime(tmp1, tmp1, tmp2, field, ctx)) {
-      return 0;
+      goto err;
     }
   } else {
     if (!BN_mod_mul(tmp2, a, x, field, ctx) ||
         !bn_mod_add_consttime(tmp1, tmp1, tmp2, field, ctx)) {
-      return 0;
+      goto err;
     }
   }
 
   // tmp1 := tmp1 + b
   if (!bn_mod_add_consttime(tmp1, tmp1, b, field, ctx)) {
-    return 0;
+    goto err;
   }
 
   if (!BN_mod_sqrt(y, tmp1, field, ctx)) {
@@ -270,26 +328,31 @@ int EC_POINT_set_compressed_coordinates_GFp(const EC_GROUP *group,
     } else {
       OPENSSL_PUT_ERROR(EC, ERR_R_BN_LIB);
     }
-    return 0;
+    goto err;
   }
 
   if (y_bit != BN_is_odd(y)) {
     if (BN_is_zero(y)) {
       OPENSSL_PUT_ERROR(EC, EC_R_INVALID_COMPRESSION_BIT);
-      return 0;
+      goto err;
     }
     if (!BN_usub(y, field, y)) {
-      return 0;
+      goto err;
     }
   }
   if (y_bit != BN_is_odd(y)) {
     OPENSSL_PUT_ERROR(EC, ERR_R_INTERNAL_ERROR);
-    return 0;
+    goto err;
   }
 
   if (!EC_POINT_set_affine_coordinates_GFp(group, point, x, y, ctx)) {
-    return 0;
+    goto err;
   }
 
-  return 1;
+  ret = 1;
+
+err:
+  BN_CTX_end(ctx);
+  BN_CTX_free(new_ctx);
+  return ret;
 }

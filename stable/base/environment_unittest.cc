@@ -5,10 +5,8 @@
 #include "base/environment.h"
 
 #include <memory>
-#include <optional>
 
 #include "build/build_config.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -30,8 +28,9 @@ constexpr char kValidEnvironmentVariable[] = "PATH";
 
 TEST_F(EnvironmentTest, GetVar) {
   std::unique_ptr<Environment> env(Environment::Create());
-  std::optional<std::string> env_value = env->GetVar(kValidEnvironmentVariable);
-  EXPECT_THAT(env_value, testing::Optional(testing::Not(testing::IsEmpty())));
+  std::string env_value;
+  EXPECT_TRUE(env->GetVar(kValidEnvironmentVariable, &env_value));
+  EXPECT_NE(env_value, "");
 }
 
 TEST_F(EnvironmentTest, GetVarReverse) {
@@ -43,8 +42,10 @@ TEST_F(EnvironmentTest, GetVarReverse) {
   EXPECT_TRUE(env->SetVar(kFooUpper, kFooLower));
 
   // And then try to get this variable passing the lower case.
-  EXPECT_THAT(env->GetVar(kFooLower),
-              testing::Optional(testing::Eq(kFooLower)));
+  std::string env_value;
+  EXPECT_TRUE(env->GetVar(kFooLower, &env_value));
+
+  EXPECT_STREQ(env_value.c_str(), kFooLower);
 
   EXPECT_TRUE(env->UnSetVar(kFooUpper));
 
@@ -53,7 +54,9 @@ TEST_F(EnvironmentTest, GetVarReverse) {
   EXPECT_TRUE(env->SetVar(kFooLower, kBar));
 
   // And then try to get this variable passing the UPPER case.
-  EXPECT_THAT(env->GetVar(kFooUpper), testing::Optional(testing::Eq(kBar)));
+  EXPECT_TRUE(env->GetVar(kFooUpper, &env_value));
+
+  EXPECT_STREQ(env_value.c_str(), kBar);
 
   EXPECT_TRUE(env->UnSetVar(kFooLower));
 }
@@ -73,8 +76,9 @@ TEST_F(EnvironmentTest, SetVar) {
   // Now verify that the environment has the new variable.
   EXPECT_TRUE(env->HasVar(kFooUpper));
 
-  EXPECT_THAT(env->GetVar(kFooUpper),
-              testing::Optional(testing::Eq(kFooLower)));
+  std::string var_value;
+  EXPECT_TRUE(env->GetVar(kFooUpper, &var_value));
+  EXPECT_EQ(var_value, kFooLower);
 }
 
 TEST_F(EnvironmentTest, UnSetVar) {

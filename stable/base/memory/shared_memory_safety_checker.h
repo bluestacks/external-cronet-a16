@@ -58,8 +58,7 @@ struct SharedMemorySafetyChecker<std::array<T, N>> {
 };
 
 template <typename T>
-concept AllowedOverSharedMemory =
-    SharedMemorySafetyChecker<std::remove_cvref_t<T>>::kIsAllowed;
+concept AllowedOverSharedMemory = SharedMemorySafetyChecker<T>::kIsAllowed;
 
 // Convenience alias for atomics that are safe to share across memory spaces.
 template <typename T>

@@ -51,16 +51,14 @@ class TRIVIAL_ABI TrivialAbiWithCountingOperations {
 TEST(VectorBuffer, DeletePOD) {
   constexpr int size = 10;
   VectorBuffer<int> buffer(size);
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++)
     buffer[i] = i + 1;
-  }
 
   VectorBuffer<int>::DestructRange(buffer.as_span());
 
   // Delete should do nothing.
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++)
     EXPECT_EQ(i + 1, buffer[i]);
-  }
 }
 
 TEST(VectorBuffer, DeleteMoveOnly) {
@@ -87,14 +85,12 @@ TEST(VectorBuffer, PODMove) {
   VectorBuffer<int> dest(size);
 
   VectorBuffer<int> original(size);
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++)
     original[i] = i + 1;
-  }
 
   VectorBuffer<int>::MoveConstructRange(original.as_span(), dest.as_span());
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++)
     EXPECT_EQ(i + 1, dest[i]);
-  }
 }
 
 TEST(VectorBuffer, MovableMove) {

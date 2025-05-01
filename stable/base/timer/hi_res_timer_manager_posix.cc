@@ -9,7 +9,8 @@
 namespace base {
 
 HighResolutionTimerManager::HighResolutionTimerManager()
-    : hi_res_clock_available_(false) {}
+    : hi_res_clock_available_(false) {
+}
 
 HighResolutionTimerManager::~HighResolutionTimerManager() = default;
 
@@ -20,6 +21,7 @@ void HighResolutionTimerManager::OnSuspend() {}
 
 void HighResolutionTimerManager::OnResume() {}
 
-void HighResolutionTimerManager::UseHiResClock(bool use) {}
+void HighResolutionTimerManager::UseHiResClock(bool use) {
+}
 
 }  // namespace base

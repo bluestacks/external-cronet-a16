@@ -7,7 +7,8 @@
 #include "base/debug/task_trace.h"
 #include "base/logging.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -51,4 +52,5 @@ bool PooledTaskRunnerDelegate::MatchesCurrentDelegate(
   return g_current_delegate == delegate;
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

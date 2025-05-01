@@ -38,7 +38,6 @@
 #define JNI_ZERO_ALWAYS_INLINE
 #endif
 
-// extern "C" used to ensure symbol is not within a namespace.
 #define JNI_ZERO_MUXED_ENTRYPOINT extern "C" JNI_ZERO_ALWAYS_INLINE
 
 #endif  // JNI_ZERO_JNI_EXPORT_H_

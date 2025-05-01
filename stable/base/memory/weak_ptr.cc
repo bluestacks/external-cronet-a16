@@ -89,9 +89,8 @@ WeakReferenceOwner::~WeakReferenceOwner() {
 WeakReference WeakReferenceOwner::GetRef() const {
 #if DCHECK_IS_ON()
   // If we hold the last reference to the Flag then detach the SequenceChecker.
-  if (!HasRefs()) {
+  if (!HasRefs())
     flag_->DetachFromSequence();
-  }
 #endif
 
   return WeakReference(flag_);

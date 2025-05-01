@@ -25,7 +25,6 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
-import org.chromium.net.impl.CronetLibraryLoader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,8 +45,7 @@ public class DiskStorageTest {
 
     @Before
     public void setUp() throws Exception {
-        CronetLibraryLoader.switchToTestLibrary();
-        CronetLibraryLoader.loadLibrary();
+        System.loadLibrary("cronet_tests");
         assertThat(
                         NativeTestServer.startNativeTestServer(
                                 mTestRule.getTestFramework().getContext()))

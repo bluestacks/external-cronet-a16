@@ -10,7 +10,6 @@
 #include "net/disk_cache/blockfile/backend_impl.h"
 
 #include <algorithm>
-#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -23,7 +22,6 @@
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -545,7 +543,7 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
     DCHECK(!error);
     if (!parent && data_->table[hash & mask_]) {
       // We should have corrected the problem.
-      DLOG(WARNING) << "Unable to correct hash collision";
+      DUMP_WILL_BE_NOTREACHED();
       return nullptr;
     }
   }
@@ -622,7 +620,7 @@ scoped_refptr<EntryImpl> BackendImpl::OpenNextEntryImpl(
     return nullptr;
 
   const int kListsToSearch = 3;
-  std::array<scoped_refptr<EntryImpl>, kListsToSearch> entries;
+  scoped_refptr<EntryImpl> entries[kListsToSearch];
   if (!iterator->my_rankings) {
     iterator->my_rankings = &rankings_;
     bool ret = false;
@@ -652,7 +650,7 @@ scoped_refptr<EntryImpl> BackendImpl::OpenNextEntryImpl(
 
   int newest = -1;
   int oldest = -1;
-  std::array<Time, kListsToSearch> access_times;
+  Time access_times[kListsToSearch];
   for (int i = 0; i < kListsToSearch; i++) {
     if (entries[i].get()) {
       access_times[i] = entries[i]->GetLastUsed();
@@ -770,7 +768,7 @@ LruData* BackendImpl::GetLruData() {
 void BackendImpl::UpdateRank(EntryImpl* entry, bool modified) {
   if (read_only_ || (!modified && GetCacheType() == net::SHADER_CACHE))
     return;
-  eviction_.UpdateRank(entry);
+  eviction_.UpdateRank(entry, modified);
 }
 
 void BackendImpl::RecoveredEntry(CacheRankingsBlock* rankings) {

@@ -9,7 +9,8 @@
 #ifndef LLVM_LIBC_TEST_SRC_TIME_TM_MATCHER_H
 #define LLVM_LIBC_TEST_SRC_TIME_TM_MATCHER_H
 
-#include "hdr/types/struct_tm.h"
+#include <time.h>
+
 #include "src/__support/macros/config.h"
 #include "test/UnitTest/Test.h"
 

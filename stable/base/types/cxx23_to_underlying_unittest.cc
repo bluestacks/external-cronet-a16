@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/types/cxx23_to_underlying.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

@@ -9,30 +9,17 @@
 #define QUICHE_QUIC_CORE_QUIC_TIME_WAIT_LIST_MANAGER_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
-#include "absl/base/nullability.h"
 #include "absl/container/flat_hash_map.h"
-#include "quiche/quic/core/quic_alarm.h"
-#include "quiche/quic/core/quic_alarm_factory.h"
 #include "quiche/quic/core/quic_blocked_writer_interface.h"
 #include "quiche/quic/core/quic_connection_id.h"
+#include "quiche/quic/core/quic_framer.h"
 #include "quiche/quic/core/quic_packet_writer.h"
 #include "quiche/quic/core/quic_packets.h"
 #include "quiche/quic/core/quic_session.h"
-#include "quiche/quic/core/quic_time.h"
 #include "quiche/quic/core/quic_types.h"
-#include "quiche/quic/core/quic_versions.h"
-#include "quiche/quic/platform/api/quic_bug_tracker.h"
 #include "quiche/quic/platform/api/quic_flags.h"
-#include "quiche/quic/platform/api/quic_socket_address.h"
-#include "quiche/common/platform/api/quiche_export.h"
-#include "quiche/common/platform/api/quiche_reference_counted.h"
-#include "quiche/common/quiche_circular_deque.h"
 #include "quiche/common/quiche_linked_hash_map.h"
 
 namespace quic {
@@ -95,6 +82,10 @@ class QUICHE_EXPORT QuicTimeWaitListManager
 
   class QUICHE_EXPORT Visitor : public QuicSession::Visitor {
    public:
+    // Called after the given connection is added to the time-wait list.
+    virtual void OnConnectionAddedToTimeWaitList(
+        QuicConnectionId connection_id) = 0;
+
     void OnPathDegrading() override {}
   };
 
@@ -154,11 +145,7 @@ class QUICHE_EXPORT QuicTimeWaitListManager
   void TrimTimeWaitListIfNeeded();
 
   // The number of connections on the time-wait list.
-  size_t num_connections() const {
-    return use_old_connection_id_map_ ? connection_id_map_.size()
-                                      : num_connections_;
-  }
-  bool has_connections() const;
+  size_t num_connections() const { return connection_id_map_.size(); }
 
   // Sends a version negotiation packet for |server_connection_id| and
   // |client_connection_id| announcing support for |supported_versions| to
@@ -288,47 +275,8 @@ class QUICHE_EXPORT QuicTimeWaitListManager
     TimeWaitConnectionInfo info;
   };
 
-  // TODO(haoyuewang): Merge RefCountedConnectionIdData & ConnectionIdData once
-  // there is no need for ConnectionIdData to be movable. Also removes the
-  // underscore in the constructor parameter names.
-  struct RefCountedConnectionIdData : public ConnectionIdData,
-                                      public quiche::QuicheReferenceCounted {
-    RefCountedConnectionIdData(int _num_packets, QuicTime _time_added,
-                               TimeWaitAction _action,
-                               TimeWaitConnectionInfo _info,
-                               size_t& _num_connections)
-        : ConnectionIdData(_num_packets, _time_added, _action,
-                           std::move(_info)),
-          num_connections(_num_connections) {
-      ++num_connections;
-    }
-
-    ~RefCountedConnectionIdData() {
-      QUIC_BUG_IF(bad_num_connections, num_connections == 0);
-      --num_connections;
-    }
-
-   private:
-    // Reference to the total number of connections counter in the time-wait
-    // list.
-    size_t& num_connections;
-  };
-
-  // Returns the time when the first connection was added to the time-wait list.
-  QuicTime GetOldestConnectionTime() const;
-
-  const bool use_old_connection_id_map_ =
-      !GetQuicRestartFlag(quic_use_one_map_in_time_wait_list);
-  size_t num_connections_ = 0;
-
   // QuicheLinkedHashMap allows lookup by ConnectionId
   // and traversal in add order.
-  quiche::QuicheLinkedHashMap<
-      QuicConnectionId,
-      quiche::QuicheReferenceCountedPointer<RefCountedConnectionIdData>,
-      QuicConnectionIdHash>
-      connection_id_data_map_;
-
   using ConnectionIdMap =
       quiche::QuicheLinkedHashMap<QuicConnectionId, ConnectionIdData,
                                   QuicConnectionIdHash>;
@@ -337,6 +285,8 @@ class QUICHE_EXPORT QuicTimeWaitListManager
   // RemoveConnectionDataFromMap instead.
   ConnectionIdMap connection_id_map_;
 
+  // TODO(haoyuewang) Consider making connection_id_map_ a map of shared pointer
+  // and remove the indirect map.
   // A connection can have multiple unretired ConnectionIds when it is closed.
   // These Ids have the same ConnectionIdData entry in connection_id_map_. To
   // find the entry, look up the cannoical ConnectionId in
@@ -345,9 +295,6 @@ class QUICHE_EXPORT QuicTimeWaitListManager
   absl::flat_hash_map<QuicConnectionId, QuicConnectionId, QuicConnectionIdHash>
       indirect_connection_id_map_;
 
-  // Find data for the given connection_id. Returns nullptr if not found.
-  absl::Nullable<ConnectionIdData*> FindConnectionIdData(
-      const QuicConnectionId& connection_id);
   // Find an iterator for the given connection_id. Returns
   // connection_id_map_.end() if none found.
   ConnectionIdMap::iterator FindConnectionIdDataInMap(

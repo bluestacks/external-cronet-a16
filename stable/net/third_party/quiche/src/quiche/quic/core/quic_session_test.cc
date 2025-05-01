@@ -238,8 +238,6 @@ class TestStream : public QuicStream {
               (override));
 
   MOCK_METHOD(bool, HasPendingRetransmission, (), (const, override));
-
-  MOCK_METHOD(void, OnSoonToBeDestroyed, (), (override));
 };
 
 class TestSession : public QuicSession {
@@ -432,13 +430,6 @@ class TestSession : public QuicSession {
 
   int num_incoming_streams_created() const {
     return num_incoming_streams_created_;
-  }
-
-  void EnableReliableStreamReset() {
-    QuicConfig* quic_config = config();
-    ASSERT_TRUE(quic_config != nullptr);
-    quic_config->SetReliableStreamReset(true);
-    connection()->SetFromConfig(*quic_config);
   }
 
   using QuicSession::ActivateStream;
@@ -1349,8 +1340,7 @@ TEST_P(QuicSessionTestServer, LimitMaxStreams) {
   EXPECT_CALL(*connection_, SendControlFrame(IsFrame(MAX_STREAMS_FRAME)))
       .WillOnce(Invoke(&ClearControlFrame));
   session_.OnFrameAcked(QuicFrame(max_stream_frames[0]),
-                        QuicTime::Delta::Zero(), QuicTime::Zero(),
-                        /*is_retransmission=*/false);
+                        QuicTime::Delta::Zero(), QuicTime::Zero());
   EXPECT_EQ(3 * kMaxStreams,
             QuicSessionPeer::ietf_streamid_manager(&session_)
                 ->advertised_max_incoming_bidirectional_streams());
@@ -1369,8 +1359,7 @@ TEST_P(QuicSessionTestServer, LimitMaxStreams) {
   // When the remaining outstanding MAX_STREAMS frame is ACK'd no new one
   // will be sent because the correct limit has already been advertised.
   session_.OnFrameAcked(QuicFrame(max_stream_frames[1]),
-                        QuicTime::Delta::Zero(), QuicTime::Zero(),
-                        /*is_retransmission=*/false);
+                        QuicTime::Delta::Zero(), QuicTime::Zero());
 }
 
 TEST_P(QuicSessionTestServer, BufferedHandshake) {
@@ -2431,6 +2420,17 @@ TEST_P(QuicSessionTestClient, IncomingStreamWithClientInitiatedStreamId) {
   session_.OnStreamFrame(frame);
 }
 
+TEST_P(QuicSessionTestClient, MinAckDelaySetOnTheClientQuicConfig) {
+  if (!session_.version().HasIetfQuicFrames()) {
+    return;
+  }
+  session_.config()->SetClientConnectionOptions({kAFFE});
+  session_.Initialize();
+  ASSERT_EQ(session_.config()->GetMinAckDelayToSendMs(),
+            kDefaultMinAckDelayTimeMs);
+  ASSERT_TRUE(session_.connection()->can_receive_ack_frequency_frame());
+}
+
 TEST_P(QuicSessionTestClient, FailedToCreateStreamIfTooCloseToIdleTimeout) {
   connection_->SetDefaultEncryptionLevel(ENCRYPTION_FORWARD_SECURE);
   EXPECT_TRUE(session_.CanOpenNextOutgoingBidirectionalStream());
@@ -3089,9 +3089,6 @@ TEST_P(QuicSessionTestServer, OnStopSendingForZombieStreams) {
   if (GetQuicReloadableFlag(quic_deliver_stop_sending_to_zombie_streams)) {
     EXPECT_CALL(*connection_, SendControlFrame(_)).Times(1);
     EXPECT_CALL(*connection_, OnStreamReset(_, _)).Times(1);
-    if (GetQuicReloadableFlag(quic_notify_stream_soon_to_destroy)) {
-      EXPECT_CALL(*stream, OnSoonToBeDestroyed());
-    }
   } else {
     EXPECT_CALL(*connection_, SendControlFrame(_)).Times(0);
     EXPECT_CALL(*connection_, OnStreamReset(_, _)).Times(0);
@@ -3106,29 +3103,6 @@ TEST_P(QuicSessionTestServer, OnStopSendingForZombieStreams) {
     EXPECT_TRUE(stream->IsZombie());
     EXPECT_EQ(0u, session_.closed_streams()->size());
   }
-}
-
-TEST_P(QuicSessionTestServer, OnConnectionCloseForZombieStreams) {
-  if (!VersionHasIetfQuicFrames(transport_version()) ||
-      !GetQuicReloadableFlag(quic_notify_stream_soon_to_destroy)) {
-    return;
-  }
-  CompleteHandshake();
-  session_.set_writev_consumes_all_data(true);
-
-  TestStream* stream = session_.CreateOutgoingBidirectionalStream();
-  std::string body(100, '.');
-  QuicStreamPeer::CloseReadSide(stream);
-  stream->WriteOrBufferData(body, true, nullptr);
-  EXPECT_TRUE(stream->IsWaitingForAcks());
-  // Verify that the stream is a zombie.
-  EXPECT_TRUE(stream->IsZombie());
-  ASSERT_EQ(0u, session_.closed_streams()->size());
-
-  EXPECT_CALL(*stream, OnSoonToBeDestroyed());
-  connection_->ReallyCloseConnection(QUIC_NO_ERROR, "Testing",
-                                     ConnectionCloseBehavior::SILENT_CLOSE);
-  EXPECT_EQ(0, session_.GetNumActiveStreams());
 }
 
 // If stream is closed, return true and do not close the connection.
@@ -3279,39 +3253,6 @@ TEST_P(QuicSessionTestServer, ResetForIETFStreamTypes) {
       .WillRepeatedly(Invoke(&ClearControlFrame));
   EXPECT_CALL(*connection_, OnStreamReset(bidirectional, _));
   session_.ResetStream(bidirectional, QUIC_STREAM_CANCELLED);
-}
-
-TEST_P(QuicSessionTestServer, AcceptReliableSizeIfNegotiated) {
-  CompleteHandshake();
-  if (!VersionHasIetfQuicFrames(transport_version())) {
-    return;
-  }
-  session_.EnableReliableStreamReset();
-  MockPacketWriter* writer = static_cast<MockPacketWriter*>(
-      QuicConnectionPeer::GetWriter(session_.connection()));
-  TestStream* write_only = session_.CreateOutgoingUnidirectionalStream();
-  EXPECT_CALL(*writer, WritePacket(_, _, _, _, _, _))
-      .WillOnce(Return(WriteResult(WRITE_STATUS_OK, 0)));
-  session_.SendStreamData(write_only);
-  EXPECT_FALSE(write_only->fin_sent());
-  EXPECT_TRUE(write_only->SetReliableSize());
-}
-
-TEST_P(QuicSessionTestServer, RejectReliableSizeNotNegotiated) {
-  if (!VersionHasIetfQuicFrames(transport_version())) {
-    return;
-  }
-  CompleteHandshake();
-  ASSERT_FALSE(session_.connection()->reliable_stream_reset_enabled());
-  TestStream* bidirectional =
-      session_.CreateIncomingStream(GetNthClientInitiatedBidirectionalId(0));
-  MockPacketWriter* writer = static_cast<MockPacketWriter*>(
-      QuicConnectionPeer::GetWriter(session_.connection()));
-  EXPECT_CALL(*writer, WritePacket(_, _, _, _, _, _))
-      .WillOnce(Return(WriteResult(WRITE_STATUS_OK, 0)));
-  session_.SendStreamData(bidirectional);
-  EXPECT_FALSE(bidirectional->fin_sent());
-  EXPECT_FALSE(bidirectional->SetReliableSize());
 }
 
 TEST_P(QuicSessionTestServer, DecryptionKeyAvailableBeforeEncryptionKey) {
@@ -3595,20 +3536,6 @@ TEST_P(QuicSessionTestServer, OpenStreamLimitPerEventLoop) {
   // The 10th bidi stream should remain pending.
   EXPECT_EQ(nullptr, session_.GetActiveStream(
                          GetNthClientInitiatedBidirectionalId(i - 1)));
-}
-
-TEST_P(QuicSessionTestServer, SetMinAckDelayDraft10) {
-  if (!VersionHasIetfQuicFrames(transport_version())) {
-    return;
-  }
-  SetQuicReloadableFlag(quic_receive_ack_frequency, true);
-  session_.Initialize();
-  if (GetQuicReloadableFlag(quic_receive_ack_frequency)) {
-    EXPECT_EQ(session_.config()->GetMinAckDelayDraft10ToSendMs(),
-              kDefaultMinAckDelayTimeMs);
-  } else {
-    EXPECT_FALSE(session_.config()->HasMinAckDelayDraft10ToSend());
-  }
 }
 
 // A client test class that can be used when the automatic configuration is not

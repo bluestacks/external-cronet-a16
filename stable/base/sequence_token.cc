@@ -5,7 +5,6 @@
 #include "base/sequence_token.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/check.h"
 
 namespace base {
 namespace internal {

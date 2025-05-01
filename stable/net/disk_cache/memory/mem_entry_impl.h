@@ -67,6 +67,12 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
     kChild,
   };
 
+  // Provided to better document calls to |UpdateStateOnUse()|.
+  enum EntryModified {
+    ENTRY_WAS_NOT_MODIFIED,
+    ENTRY_WAS_MODIFIED,
+  };
+
   // Constructor for parent entries.
   MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
                const std::string& key,
@@ -95,14 +101,16 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   // The in-memory size of this entry to use for the purposes of eviction.
   int GetStorageSize() const;
 
-  // Update an entry's position in the backend LRU list and set |last_used_|.
-  void UpdateStateOnUse();
+  // Update an entry's position in the backend LRU list and set |last_used_|. If
+  // the entry was modified, also update |last_modified_|.
+  void UpdateStateOnUse(EntryModified modified_enum);
 
   // From disk_cache::Entry:
   void Doom() override;
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
+  base::Time GetLastModified() const override;
   int32_t GetDataSize(int index) const override;
   int ReadData(int index,
                int offset,
@@ -173,7 +181,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   void Compact();
 
   std::string key_;
-  std::array<std::vector<char>, kNumStreams> data_;  // User data.
+  std::vector<char> data_[kNumStreams];  // User data.
   uint32_t ref_count_ = 0;
 
   int64_t child_id_;     // The ID of a child entry.
@@ -184,6 +192,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   raw_ptr<MemEntryImpl> parent_;
   std::unique_ptr<EntryMap> children_;
 
+  base::Time last_modified_;
   base::Time last_used_;
   base::WeakPtr<MemBackendImpl> backend_;  // Back pointer to the cache.
   bool doomed_ = false;  // True if this entry was removed from the cache.

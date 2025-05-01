@@ -377,17 +377,9 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
   return true;
 }
 
-std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickle(
-    bool skip_transient_headers,
-    bool response_truncated) const {
-  auto pickle = std::make_unique<base::Pickle>();
-  // Pre-reserve memory for the Pickle contents to reduce allocations and
-  // copies. This doesn't affect the size of the data that is written to disk.
-  // The Pickle object only lives long enough to be written to disk, so it
-  // doesn't matter if we briefly overallocate memory. 10,900 bytes is enough to
-  // cover 99% percentile of HttpResponseInfo pickle sizes based on Dev/Canary
-  // data from 2025-01-20 (the mean is 4,773).
-  pickle->Reserve(10900);
+void HttpResponseInfo::Persist(base::Pickle* pickle,
+                               bool skip_transient_headers,
+                               bool response_truncated) const {
   int flags = RESPONSE_INFO_VERSION;
   int extra_flags = 0;
   if (ssl_info.is_valid()) {
@@ -460,17 +452,17 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickle(
                       HttpResponseHeaders::PERSIST_SANS_SECURITY_STATE;
   }
 
-  headers->Persist(pickle.get(), persist_options);
+  headers->Persist(pickle, persist_options);
 
   if (ssl_info.is_valid()) {
-    ssl_info.cert->Persist(pickle.get());
+    ssl_info.cert->Persist(pickle);
     pickle->WriteUInt32(ssl_info.cert_status);
     if (ssl_info.connection_status != 0)
       pickle->WriteInt(ssl_info.connection_status);
   }
 
   if (vary_data.is_valid())
-    vary_data.Persist(pickle.get());
+    vary_data.Persist(pickle);
 
   pickle->WriteString(remote_endpoint.ToStringWithoutPort());
   pickle->WriteUInt16(remote_endpoint.port());
@@ -504,9 +496,8 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickle(
   }
 
   if (proxy_chain.IsValid()) {
-    proxy_chain.Persist(pickle.get());
+    proxy_chain.Persist(pickle);
   }
-  return pickle;
 }
 
 bool HttpResponseInfo::DidUseQuic() const {

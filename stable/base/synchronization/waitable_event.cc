@@ -53,9 +53,8 @@ void WaitableEvent::Wait() {
 }
 
 bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
-  if (wait_delta <= TimeDelta()) {
+  if (wait_delta <= TimeDelta())
     return IsSignaled();
-  }
 
   // Consider this thread blocked for scheduling purposes. Ignore this for
   // non-blocking WaitableEvents.

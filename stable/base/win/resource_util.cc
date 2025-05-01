@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/win/resource_util.h"
-
 #include "base/notreached.h"
 
 namespace base {
@@ -14,9 +13,8 @@ bool GetResourceFromModule(HMODULE module,
                            LPCTSTR resource_type,
                            void** data,
                            size_t* length) {
-  if (!module) {
+  if (!module)
     return false;
-  }
 
   if (!IS_INTRESOURCE(resource_id)) {
     NOTREACHED();
@@ -24,20 +22,17 @@ bool GetResourceFromModule(HMODULE module,
 
   HRSRC hres_info =
       FindResource(module, MAKEINTRESOURCE(resource_id), resource_type);
-  if (nullptr == hres_info) {
+  if (nullptr == hres_info)
     return false;
-  }
 
   DWORD data_size = SizeofResource(module, hres_info);
   HGLOBAL hres = LoadResource(module, hres_info);
-  if (!hres) {
+  if (!hres)
     return false;
-  }
 
   void* resource = LockResource(hres);
-  if (!resource) {
+  if (!resource)
     return false;
-  }
 
   *data = resource;
   *length = static_cast<size_t>(data_size);

@@ -1,9 +1,9 @@
 add_libc_fuzzer(
-  quick_sort_fuzz
+  qsort_fuzz
   SRCS
-    quick_sort_fuzz.cpp
+    qsort_fuzz.cpp
   DEPENDS
-    libc.src.stdlib.qsort_util
+    libc.src.stdlib.qsort
 )
 
 add_libc_fuzzer(

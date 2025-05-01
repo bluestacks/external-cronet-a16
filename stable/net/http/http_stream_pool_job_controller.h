@@ -21,7 +21,6 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
-#include "net/log/net_log.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
@@ -34,7 +33,7 @@ class SSLCertRequestInfo;
 class HttpStream;
 struct NetErrorDetails;
 
-// Manages a single HttpStreamRequest or a preconnect. Creates and owns Jobs.
+// Manages a single HttpStreamRequest and its associated Job(s).
 class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
                                       public HttpStreamRequest::Helper {
  public:
@@ -68,7 +67,6 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   bool enable_alternative_services() const override;
   bool is_http1_allowed() const override;
   const ProxyInfo& proxy_info() const override;
-  const NetLogWithSource& net_log() const override;
   void OnStreamReady(Job* job,
                      std::unique_ptr<HttpStream> stream,
                      NextProto negotiated_protocol) override;
@@ -80,7 +78,6 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
                           int status,
                           const SSLInfo& ssl_info) override;
   void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) override;
-  void OnPreconnectComplete(Job* job, int status) override;
 
   // HttpStreamRequest::Helper implementation:
   LoadState GetLoadState() const override;
@@ -151,7 +148,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   void MaybeMarkAlternativeServiceBroken();
 
   const raw_ptr<HttpStreamPool> pool_;
-  RequestPriority priority_;
+  const RequestPriority priority_;
   const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   const bool enable_ip_based_pooling_;
   const bool enable_alternative_services_;
@@ -167,14 +164,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   const std::optional<Alternative> alternative_;
 
-  const NetLogWithSource net_log_;
-
-  // Fields specific to stream request.
   raw_ptr<HttpStreamRequest::Delegate> delegate_;
   raw_ptr<HttpStreamRequest> stream_request_;
-
-  // Field specific to preconnect.
-  CompletionOnceCallback preconnect_callback_;
 
   std::unique_ptr<Job> origin_job_;
   std::optional<int> origin_job_result_;

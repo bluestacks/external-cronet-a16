@@ -4,7 +4,8 @@
 
 #include "base/tracing/tracing_tls.h"
 
-namespace base::tracing {
+namespace base {
+namespace tracing {
 
 // static
 bool* GetThreadIsInTraceEvent() {
@@ -12,4 +13,5 @@ bool* GetThreadIsInTraceEvent() {
   return &thread_is_in_trace_event;
 }
 
-}  // namespace base::tracing
+}  // namespace tracing
+}  // namespace base

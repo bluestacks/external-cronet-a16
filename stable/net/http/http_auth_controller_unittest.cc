@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
@@ -151,7 +152,7 @@ TEST(HttpAuthControllerTest, Logging) {
   ASSERT_GE(entries.size(), 2u);
 
   auto begin =
-      std::ranges::find_if(entries, [](const NetLogEntry& e) {
+      base::ranges::find_if(entries, [](const NetLogEntry& e) {
         if (e.type != NetLogEventType::AUTH_CONTROLLER ||
             e.phase != NetLogEventPhase::BEGIN)
           return false;

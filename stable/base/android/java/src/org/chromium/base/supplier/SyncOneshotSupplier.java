@@ -4,9 +4,9 @@
 
 package org.chromium.base.supplier;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * SyncOneshotSupplier wraps an asynchronously provided, non-null object {@code T}, synchronously
@@ -27,7 +27,6 @@ import org.chromium.build.annotations.Nullable;
  *
  * @param <T> The type of the wrapped object.
  */
-@NullMarked
 public interface SyncOneshotSupplier<T> extends Supplier<T> {
     /**
      * Add a callback that's synchronously called when the object owned by this supplier is

@@ -14,13 +14,14 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 
-namespace base::internal {
+namespace base {
+
+namespace internal {
 
 BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type) {
   for (const auto& pair : kThreadTypeToNiceValueMap) {
-    if (pair.thread_type == thread_type) {
+    if (pair.thread_type == thread_type)
       return pair.nice_value;
-    }
   }
   NOTREACHED() << "Unknown ThreadType";
 }
@@ -30,9 +31,8 @@ ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {
   // an exact match, this method returns the closest priority whose nice value
   // is higher (lower priority) than |nice_value|.
   for (const auto& pair : kThreadPriorityToNiceValueMapForTest) {
-    if (pair.nice_value >= nice_value) {
+    if (pair.nice_value >= nice_value)
       return pair.priority;
-    }
   }
 
   // Reaching here means |nice_value| is more than any of the defined
@@ -60,4 +60,6 @@ int GetCurrentThreadNiceValue() {
 #endif
 }
 
-}  // namespace base::internal
+}  // namespace internal
+
+}  // namespace base

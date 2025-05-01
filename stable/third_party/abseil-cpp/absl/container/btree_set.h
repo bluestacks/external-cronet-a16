@@ -46,10 +46,8 @@
 // reason, `insert()`, `erase()`, and `extract_and_get_next()` return a valid
 // iterator at the current position.
 //
-// There are other API differences: first, btree iterators can be subtracted,
-// and this is faster than using `std::distance`. Additionally, btree
-// iterators can be advanced via `operator+=` and `operator-=`, which is faster
-// than using `std::advance`.
+// Another API difference is that btree iterators can be subtracted, and this
+// is faster than using std::distance.
 //
 // B-tree sets are not exception-safe.
 

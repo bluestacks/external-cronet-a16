@@ -5,8 +5,6 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 
-#include <stddef.h>
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -210,15 +208,13 @@ class BASE_EXPORT ThreadGroup {
   class ThreadGroupWorkerDelegate;
 
  protected:
-  static constexpr size_t kMaxNumberOfWorkers = 256;
-
   ThreadGroup(std::string_view histogram_label,
               std::string_view thread_group_label,
               ThreadType thread_type_hint,
               TrackedRef<TaskTracker> task_tracker,
               TrackedRef<Delegate> delegate);
 
-  void StartImplLockRequired(
+  void StartImpl(
       size_t max_tasks,
       size_t max_best_effort_tasks,
       TimeDelta suggested_reclaim_time,
@@ -226,8 +222,8 @@ class BASE_EXPORT ThreadGroup {
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
       bool synchronous_thread_start_for_testing = false,
-      std::optional<TimeDelta> may_block_threshold = std::optional<TimeDelta>())
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      std::optional<TimeDelta> may_block_threshold =
+          std::optional<TimeDelta>());
 
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
@@ -401,12 +397,8 @@ class BASE_EXPORT ThreadGroup {
     ~InitializedInStart();
 
 #if DCHECK_IS_ON()
-    // Set after all members of this struct are set to ensure
-    // `InitializedInStart` is read-only after initialization.
+    // Set after all members of this struct are set.
     bool initialized = false;
-    // Set to ensure Start() is only called once and that `ThreadGroup`
-    // operations only occur after it is called.
-    bool start_called = false;
 #endif
 
     // Initial value of |max_tasks_|.

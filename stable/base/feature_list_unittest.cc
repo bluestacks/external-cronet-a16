@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/feature_list.h"
 
 #include <stddef.h>
 
-#include <algorithm>
-#include <array>
 #include <ostream>
 #include <set>
 #include <string>
@@ -22,10 +25,12 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -45,7 +50,7 @@ BASE_FEATURE(kFeatureOffByDefault,
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
-  std::ranges::sort(features);
+  ranges::sort(features);
   return JoinString(features, ",");
 }
 
@@ -71,13 +76,12 @@ TEST_F(FeatureListTest, DefaultStates) {
 }
 
 TEST_F(FeatureListTest, InitFromCommandLine) {
-  struct TestCases {
+  struct {
     const char* enable_features;
     const char* disable_features;
     bool expected_feature_on_state;
     bool expected_feature_off_state;
-  };
-  auto test_cases = std::to_array<TestCases>({
+  } test_cases[] = {
       {"", "", true, false},
       {"OffByDefault", "", true, true},
       {"OffByDefault", "OnByDefault", false, true},
@@ -85,7 +89,7 @@ TEST_F(FeatureListTest, InitFromCommandLine) {
       {"", "OnByDefault,OffByDefault", false, false},
       // In the case an entry is both, disable takes precedence.
       {"OnByDefault", "OnByDefault,OffByDefault", false, false},
-  });
+  };
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
@@ -177,20 +181,19 @@ TEST_F(FeatureListTest, CheckFeatureIdentity) {
 }
 
 TEST_F(FeatureListTest, FieldTrialOverrides) {
-  struct TestCases {
+  struct {
     FeatureList::OverrideState trial1_state;
     FeatureList::OverrideState trial2_state;
+  } test_cases[] = {
+      {FeatureList::OVERRIDE_DISABLE_FEATURE,
+       FeatureList::OVERRIDE_DISABLE_FEATURE},
+      {FeatureList::OVERRIDE_DISABLE_FEATURE,
+       FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {FeatureList::OVERRIDE_ENABLE_FEATURE,
+       FeatureList::OVERRIDE_DISABLE_FEATURE},
+      {FeatureList::OVERRIDE_ENABLE_FEATURE,
+       FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
-  auto test_cases = std::to_array<TestCases>({
-      {FeatureList::OVERRIDE_DISABLE_FEATURE,
-       FeatureList::OVERRIDE_DISABLE_FEATURE},
-      {FeatureList::OVERRIDE_DISABLE_FEATURE,
-       FeatureList::OVERRIDE_ENABLE_FEATURE},
-      {FeatureList::OVERRIDE_ENABLE_FEATURE,
-       FeatureList::OVERRIDE_DISABLE_FEATURE},
-      {FeatureList::OVERRIDE_ENABLE_FEATURE,
-       FeatureList::OVERRIDE_ENABLE_FEATURE},
-  });
 
   FieldTrial::ActiveGroup active_group;
   for (size_t i = 0; i < std::size(test_cases); ++i) {
@@ -394,20 +397,19 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
 }
 
 TEST_F(FeatureListTest, AssociateReportingFieldTrial) {
-  struct TestCases {
+  struct {
     const char* enable_features;
     const char* disable_features;
     bool expected_enable_trial_created;
     bool expected_disable_trial_created;
-  };
-  auto test_cases = std::to_array<TestCases>({
+  } test_cases[] = {
       // If no enable/disable flags are specified, no trials should be created.
       {"", "", false, false},
       // Enabling the feature should result in the enable trial created.
       {kFeatureOffByDefaultName, "", true, false},
       // Disabling the feature should result in the disable trial created.
       {"", kFeatureOffByDefaultName, false, true},
-  });
+  };
 
   const char kTrialName[] = "ForcingTrial";
   const char kForcedOnGroupName[] = "ForcedOn";
@@ -552,8 +554,9 @@ TEST_F(FeatureListTest, GetFeatureOverrides) {
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
 
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial", "Group");
-  feature_list->RegisterFieldTrialOverride(
-      kFeatureOffByDefaultName, FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
+  feature_list->RegisterFieldTrialOverride(kFeatureOffByDefaultName,
+                                           FeatureList::OVERRIDE_ENABLE_FEATURE,
+                                           trial);
 
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -663,9 +666,8 @@ TEST_F(FeatureListTest, UninitializedInstance_IsEnabledReturnsFalse) {
   EXPECT_EQ(nullptr, FeatureList::GetInstance());
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
 
-  if (original_feature_list) {
+  if (original_feature_list)
     FeatureList::RestoreInstanceForTesting(std::move(original_feature_list));
-  }
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
@@ -799,13 +801,12 @@ TEST(FeatureListAccessorTest, DefaultStates) {
 }
 
 TEST(FeatureListAccessorTest, InitFromCommandLine) {
-  struct TestCases {
+  struct {
     const char* enable_features;
     const char* disable_features;
     FeatureList::OverrideState expected_feature_on_state;
     FeatureList::OverrideState expected_feature_off_state;
-  };
-  auto test_cases = std::to_array<TestCases>({
+  } test_cases[] = {
       {"", "", FeatureList::OVERRIDE_USE_DEFAULT,
        FeatureList::OVERRIDE_USE_DEFAULT},
       {"OffByDefault", "", FeatureList::OVERRIDE_USE_DEFAULT,
@@ -820,7 +821,7 @@ TEST(FeatureListAccessorTest, InitFromCommandLine) {
       {"OnByDefault", "OnByDefault,OffByDefault",
        FeatureList::OVERRIDE_DISABLE_FEATURE,
        FeatureList::OVERRIDE_DISABLE_FEATURE},
-  });
+  };
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
@@ -847,14 +848,13 @@ TEST(FeatureListAccessorTest, InitFromCommandLine) {
 }
 
 TEST(FeatureListAccessorTest, InitFromCommandLineWithFeatureParams) {
-  struct TestCases {
+  struct {
     const std::string enable_features;
     const std::map<std::string, std::string> expected_feature_params;
-  };
-  auto test_cases = std::to_array<TestCases>({
+  } test_cases[] = {
       {"Feature:x/100/y/test", {{"x", "100"}, {"y", "test"}}},
       {"Feature<Trial:asdf/ghjkl/y/123", {{"asdf", "ghjkl"}, {"y", "123"}}},
-  });
+  };
 
   // Clear global state so that repeated runs of this test don't flake.
   // When https://crrev.com/c/3694674 is submitted, we should be able to remove
@@ -993,8 +993,8 @@ TEST(TestFeatureVisitor, FeatureHasParams) {
   base::test::ScopedFeatureList initialized_feature_list;
 
   initialized_feature_list.InitFromCommandLine(
-      /*enable_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
-      /*disable_features=*/"");
+      /*enabled_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
+      /*disabled_features=*/"");
 
   TestFeatureVisitor visitor;
   base::FeatureList::VisitFeaturesAndParams(visitor);

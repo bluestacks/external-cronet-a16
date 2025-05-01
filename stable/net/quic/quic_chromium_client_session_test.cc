@@ -16,7 +16,6 @@
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "net/base/connection_endpoint_metadata.h"
-#include "net/base/connection_migration_information.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -435,14 +434,6 @@ TEST_P(QuicChromiumClientSessionTest, Handle) {
   EXPECT_EQ(NetLogSourceType::QUIC_SESSION, session_net_log.source().type);
   EXPECT_EQ(NetLog::Get(), session_net_log.net_log());
 
-  // Set Migration information to the session so that it will be propagated to
-  // the handler on init.
-  auto migration_info = ConnectionMigrationInformation(
-      ConnectionMigrationInformation::NetworkEventCount(
-          /*default_network_change=*/1, /*network_disconnected=*/1,
-          /*network_connected=*/1, /*path_degrading=*/1));
-  session_->SetConnectionMigrationInformationForTesting(migration_info);
-
   std::unique_ptr<QuicChromiumClientSession::Handle> handle =
       session_->CreateHandle(destination_);
   EXPECT_TRUE(handle->IsConnected());
@@ -456,15 +447,6 @@ TEST_P(QuicChromiumClientSessionTest, Handle) {
   EXPECT_EQ(OK, handle->GetPeerAddress(&address));
   EXPECT_EQ(kIpEndPoint, address);
   EXPECT_TRUE(handle->CreatePacketBundler().get() != nullptr);
-
-  auto base_migration_info = migration_info;
-  EXPECT_EQ(handle->GetConnectionMigrationInfoSinceInit(),
-            migration_info - base_migration_info);
-
-  migration_info.event_count.network_connected_num++;
-  session_->OnNetworkConnected(kDefaultNetworkForTests);
-  EXPECT_EQ(handle->GetConnectionMigrationInfoSinceInit(),
-            migration_info - base_migration_info);
 
   CompleteCryptoHandshake();
 
@@ -491,8 +473,6 @@ TEST_P(QuicChromiumClientSessionTest, Handle) {
   EXPECT_EQ(session_net_log.net_log(), handle->net_log().net_log());
   EXPECT_EQ(ERR_CONNECTION_CLOSED, handle->GetPeerAddress(&address));
   EXPECT_TRUE(handle->CreatePacketBundler().get() == nullptr);
-  EXPECT_EQ(handle->GetConnectionMigrationInfoSinceInit(),
-            migration_info - base_migration_info);
   {
     // Verify that CreateHandle() works even after the session is closed.
     std::unique_ptr<QuicChromiumClientSession::Handle> handle2 =
@@ -521,8 +501,6 @@ TEST_P(QuicChromiumClientSessionTest, Handle) {
       ERR_CONNECTION_CLOSED,
       handle->RequestStream(/*requires_confirmation=*/false,
                             callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(handle->GetConnectionMigrationInfoSinceInit(),
-            migration_info - base_migration_info);
 }
 
 TEST_P(QuicChromiumClientSessionTest, StreamRequest) {
@@ -2345,33 +2323,6 @@ TEST_P(QuicChromiumClientSessionTest, OnOriginFrame) {
   EXPECT_TRUE(session_->received_origins().count(origin2));
   EXPECT_TRUE(session_->received_origins().count(origin3));
   EXPECT_TRUE(session_->received_origins().count(origin4));
-}
-
-TEST_P(QuicChromiumClientSessionTest, SettingEcn) {
-  quic::QuicTagVector copt;
-  copt.push_back(quic::kPRGC);  // Prague Cubic congestion control, uses ECT(1).
-  config_.SetClientConnectionOptions(copt);
-  MockQuicData quic_data(version_);
-  char packet[] = {
-      0x40, 0x72, 0x72, 0x72, 0x72, 0x72, 0x72, 0x72, 0x72, 0x01,
-      0x00, 0x00, 0x01, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a,
-      0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a, 0x0a,
-  };
-  quic_data.AddReadPause();
-  quic_data.AddWrite(ASYNC, std::make_unique<quic::QuicEncryptedPacket>(
-                                packet, sizeof(packet)));
-  quic_data.AddSocketDataToFactory(&socket_factory_);
-  Initialize();
-  auto* mock_socket = reinterpret_cast<const MockUDPClientSocket*>(
-      session_->GetDefaultSocket());
-
-  // The first packet write changes the socket ECN setting.
-  EXPECT_EQ(mock_socket->outgoing_ecn(), ECN_NOT_ECT);
-  session_->connection()->SetEncrypter(
-      quic::ENCRYPTION_FORWARD_SECURE,
-      std::make_unique<quic::test::TaggingEncrypter>(0x0a));
-  session_->connection()->SendPing();
-  EXPECT_EQ(mock_socket->outgoing_ecn(), ECN_ECT1);
 }
 
 }  // namespace

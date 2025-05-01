@@ -18,24 +18,34 @@
 #define EXPECT_EQ_32_64(e, _, a) EXPECT_EQ(e, a)
 #endif
 
-namespace base::trace_event {
+namespace base {
+namespace trace_event {
 
 namespace {
 
 // Test class with predictable memory usage.
 class Data {
  public:
-  explicit Data(size_t size = 17) : size_(size) {}
+  explicit Data(size_t size = 17): size_(size) {
+  }
 
   size_t size() const { return size_; }
 
-  size_t EstimateMemoryUsage() const { return size_; }
+  size_t EstimateMemoryUsage() const {
+    return size_;
+  }
 
-  bool operator<(const Data& other) const { return size_ < other.size_; }
-  bool operator==(const Data& other) const { return size_ == other.size_; }
+  bool operator < (const Data& other) const {
+    return size_ < other.size_;
+  }
+  bool operator == (const Data& other) const {
+    return size_ == other.size_;
+  }
 
   struct Hasher {
-    size_t operator()(const Data& data) const { return data.size(); }
+    size_t operator () (const Data& data) const {
+      return data.size();
+    }
   };
 
  private:
@@ -133,7 +143,7 @@ TEST(EstimateMemoryUsageTest, Vector) {
   // If vector is not empty, its size should also include memory usages
   // of all elements.
   for (size_t i = 0; i != capacity / 2; ++i) {
-    vector.emplace_back(i);
+    vector.push_back(Data(i));
     expected_size += EstimateMemoryUsage(vector.back());
   }
   EXPECT_EQ(expected_size, EstimateMemoryUsage(vector));
@@ -169,7 +179,7 @@ TEST(EstimateMemoryUsageTest, List) {
   };
   std::list<POD> list;
   for (int i = 0; i != 1000; ++i) {
-    list.emplace_back();
+    list.push_back(POD());
   }
   EXPECT_EQ_32_64(12000u, 24000u, EstimateMemoryUsage(list));
 }
@@ -246,7 +256,7 @@ TEST(EstimateMemoryUsageTest, Deque) {
   // for deque's blocks is small compared to usage of all items.
   constexpr size_t kDataSize = 100000;
   for (int i = 0; i != 1500; ++i) {
-    deque.emplace_back(kDataSize);
+    deque.push_back(Data(kDataSize));
   }
 
   // Compare against a reasonable minimum (i.e. no overhead).
@@ -274,4 +284,5 @@ TEST(EstimateMemoryUsageTest, IsStandardContainerComplexIteratorTest) {
   static_assert(!internal::IsIteratorOfStandardContainer<abstract*>, "");
 }
 
-}  // namespace base::trace_event
+}  // namespace trace_event
+}  // namespace base

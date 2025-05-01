@@ -41,8 +41,12 @@ constexpr inline auto kDiscardableMemoryBackingParamOptions =
         {DiscardableMemoryTrialGroup::kAshmem, "ashmem"},
     });
 
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(DiscardableMemoryTrialGroup,
-                                       kDiscardableMemoryBackingParam);
+constexpr inline base::FeatureParam<DiscardableMemoryTrialGroup>
+    kDiscardableMemoryBackingParam(
+        &kDiscardableMemoryBackingTrial,
+        "DiscardableMemoryBacking",
+        DiscardableMemoryTrialGroup::kEmulatedSharedMemory,
+        kDiscardableMemoryBackingParamOptions);
 
 }  // namespace features
 

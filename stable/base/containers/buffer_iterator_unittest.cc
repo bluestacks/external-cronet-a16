@@ -77,9 +77,9 @@ TEST(BufferIteratorTest, MutableObject) {
   }
 }
 
-TEST(BufferIteratorTest, ObjectDoesNotFit) {
+TEST(BufferIteratorTest, ObjectSizeOverflow) {
   char buffer[64];
-  BufferIterator<char> iterator(buffer);
+  BufferIterator<char> iterator(buffer, std::numeric_limits<size_t>::max());
 
   auto* pointer = iterator.Object<uint64_t>();
   EXPECT_TRUE(pointer);
@@ -216,7 +216,8 @@ TEST(BufferIteratorTest, CopyObject) {
   for (int i = 0; i < kNumCopies; i++) {
     as_writable_bytes(span(buffer))
         .subspan(i * sizeof(TestStruct))
-        .copy_prefix_from(byte_span_from_ref(expected));
+        .first<sizeof(TestStruct)>()
+        .copy_from(byte_span_from_ref(expected));
   }
 
   BufferIterator<char> iterator(buffer);
@@ -238,9 +239,8 @@ TEST(BufferIteratorTest, SeekWithSizeConfines) {
   EXPECT_TRUE(iterator.Span<char>(4).empty());
 
   std::string result;
-  while (const char* c = iterator.Object<char>()) {
+  while (const char* c = iterator.Object<char>())
     result += *c;
-  }
   EXPECT_EQ(result, "cat");
 }
 

@@ -97,9 +97,8 @@ circular_deque<FilePath> RunEnumerator(
   FileEnumerator enumerator(root_path, recursive, file_type, pattern,
                             folder_search_policy,
                             FileEnumerator::ErrorPolicy::IGNORE_ERRORS);
-  for (auto file = enumerator.Next(); !file.empty(); file = enumerator.Next()) {
+  for (auto file = enumerator.Next(); !file.empty(); file = enumerator.Next())
     rv.emplace_back(std::move(file));
-  }
   return rv;
 }
 

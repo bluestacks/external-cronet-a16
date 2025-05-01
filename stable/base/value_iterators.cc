@@ -6,7 +6,9 @@
 
 #include "base/values.h"
 
-namespace base::detail {
+namespace base {
+
+namespace detail {
 
 // ----------------------------------------------------------------------------
 // dict_iterator.
@@ -25,11 +27,11 @@ dict_iterator& dict_iterator::operator=(const dict_iterator& dict_iter) =
 
 dict_iterator::~dict_iterator() = default;
 
-dict_iterator::reference dict_iterator::operator*() const {
+dict_iterator::reference dict_iterator::operator*() {
   return {dict_iter_->first, *dict_iter_->second};
 }
 
-dict_iterator::pointer dict_iterator::operator->() const {
+dict_iterator::pointer dict_iterator::operator->() {
   return pointer(operator*());
 }
 
@@ -121,4 +123,6 @@ bool operator!=(const const_dict_iterator& lhs,
   return !(lhs == rhs);
 }
 
-}  // namespace base::detail
+}  // namespace detail
+
+}  // namespace base

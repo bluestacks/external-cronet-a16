@@ -11,7 +11,8 @@
 
 #include "base/tracing/protos/chrome_track_event.pbzero.h"  // nogncheck
 
-namespace base::trace_event {
+namespace base {
+namespace trace_event {
 
 perfetto::protos::pbzero::MemoryPressureLevel MemoryPressureLevelToTraceEnum(
     MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
@@ -26,4 +27,5 @@ perfetto::protos::pbzero::MemoryPressureLevel MemoryPressureLevelToTraceEnum(
   }
 }
 
-}  // namespace base::trace_event
+}  // namespace trace_event
+}  // namespace base

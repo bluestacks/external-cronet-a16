@@ -55,9 +55,7 @@ if(NOT LIBC_TARGET_OS_IS_GPU)
   )
 endif()
 
-# TODO: FreeListHeap uses the _end symbol which conflicts with the _end symbol
-# defined by GPU start.cpp files so for now we exclude this test on GPU.
-if(LLVM_LIBC_FULL_BUILD AND NOT LIBC_TARGET_OS_IS_GPU)
+if(LLVM_LIBC_FULL_BUILD)
   add_libc_test(
     freelist_heap_test
     SUITE
@@ -65,9 +63,11 @@ if(LLVM_LIBC_FULL_BUILD AND NOT LIBC_TARGET_OS_IS_GPU)
     SRCS
       fake_heap.s
       freelist_heap_test.cpp
+      freelist_malloc_test.cpp
     DEPENDS
       libc.src.__support.CPP.span
       libc.src.__support.freelist_heap
+      libc.src.stdlib.freelist_malloc
       libc.src.string.memcmp
       libc.src.string.memcpy
   )
@@ -234,7 +234,7 @@ add_libc_test(
     libc.src.stdlib.srand
     libc.src.string.memset
   COMPILE_OPTIONS
-    ${libc_opt_high_flag}
+    -O3
   UNIT_TEST_ONLY
     # Aligned Allocation is not supported in hermetic builds.
 )

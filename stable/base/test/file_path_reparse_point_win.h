@@ -6,7 +6,6 @@
 #define BASE_TEST_FILE_PATH_REPARSE_POINT_WIN_H_
 
 #include <optional>
-
 #include "base/files/file_path.h"
 #include "base/win/scoped_handle.h"
 

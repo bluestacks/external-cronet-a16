@@ -26,17 +26,16 @@ ReducedSequenceIndex::ReducedSequenceIndex(
     FullSequence sequence, MoqtForwardingPreference preference) {
   switch (preference) {
     case MoqtForwardingPreference::kSubgroup:
-      sequence_ = FullSequence(sequence.group, 0, sequence.subgroup);
+      sequence_ = FullSequence(sequence.group, sequence.subgroup, 0);
       break;
     case MoqtForwardingPreference::kDatagram:
-      sequence_ = FullSequence(sequence.group, 0, sequence.object);
+      sequence_ = FullSequence(sequence.group, sequence.object, 0);
       return;
   }
 }
 
 std::optional<webtransport::StreamId> SendStreamMap::GetStreamForSequence(
     FullSequence sequence) const {
-  QUICHE_DCHECK(forwarding_preference_ == MoqtForwardingPreference::kSubgroup);
   FullSequence index =
       ReducedSequenceIndex(sequence, forwarding_preference_).sequence();
   auto group_it = send_streams_.find(index.group);

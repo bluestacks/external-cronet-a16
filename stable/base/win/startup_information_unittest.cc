@@ -25,9 +25,8 @@ class ScopedProcessTerminator {
   ScopedProcessTerminator& operator=(const ScopedProcessTerminator&) = delete;
 
   ~ScopedProcessTerminator() {
-    if (process_info_.IsValid()) {
+    if (process_info_.IsValid())
       ::TerminateProcess(process_info_.process_handle(), 0);
-    }
   }
 
  private:

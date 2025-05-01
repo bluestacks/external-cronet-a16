@@ -53,7 +53,6 @@ quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
       case quic::STOP_SENDING_FRAME:
       case quic::PATH_CHALLENGE_FRAME:
       case quic::PATH_RESPONSE_FRAME:
-      case quic::IMMEDIATE_ACK_FRAME:
         break;
       case quic::ACK_FRAME:
         frame.ack_frame = new quic::QuicAckFrame(*frame.ack_frame);

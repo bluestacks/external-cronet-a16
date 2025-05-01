@@ -15,7 +15,8 @@
 #include "partition_alloc/partition_alloc_base/time/time.h"
 #include "partition_alloc/partition_root.h"
 
-namespace base::features {
+namespace base {
+namespace features {
 
 namespace internal {
 
@@ -36,13 +37,13 @@ enum class PAFeatureEnabledProcesses {
 
 }  // namespace internal
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUnretainedDanglingPtr);
+extern const BASE_EXPORT Feature kPartitionAllocUnretainedDanglingPtr;
 enum class UnretainedDanglingPtrMode {
   kCrash,
   kDumpWithoutCrashing,
 };
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(UnretainedDanglingPtrMode,
-                                       kUnretainedDanglingPtrModeParam);
+extern const BASE_EXPORT base::FeatureParam<UnretainedDanglingPtrMode>
+    kUnretainedDanglingPtrModeParam;
 
 // See /docs/dangling_ptr.md
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDanglingPtr);
@@ -61,7 +62,8 @@ enum class DanglingPtrMode {
 
   // Note: This will be extended with a single shot DumpWithoutCrashing.
 };
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(DanglingPtrMode, kDanglingPtrModeParam);
+extern const BASE_EXPORT base::FeatureParam<DanglingPtrMode>
+    kDanglingPtrModeParam;
 enum class DanglingPtrType {
   // Act on any dangling raw_ptr released after being freed.
   kAll,  // (default)
@@ -72,7 +74,8 @@ enum class DanglingPtrType {
 
   // Note: This will be extended with LongLived
 };
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(DanglingPtrType, kDanglingPtrTypeParam);
+extern const BASE_EXPORT base::FeatureParam<DanglingPtrType>
+    kDanglingPtrTypeParam;
 
 using PartitionAllocWithAdvancedChecksEnabledProcesses =
     internal::PAFeatureEnabledProcesses;
@@ -85,19 +88,13 @@ BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid();
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocWithAdvancedChecks);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    PartitionAllocWithAdvancedChecksEnabledProcesses,
-    kPartitionAllocWithAdvancedChecksEnabledProcessesParam);
+extern const BASE_EXPORT
+    base::FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>
+        kPartitionAllocWithAdvancedChecksEnabledProcessesParam;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSchedulerLoopQuarantine);
 // Scheduler Loop Quarantine's per-thread capacity in bytes.
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kPartitionAllocSchedulerLoopQuarantineBranchCapacity);
-// Scheduler Loop Quarantine's capacity for the UI thread in bytes.
-// TODO(https://crbug.com/387470567): Support more thread types.
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity);
+extern const BASE_EXPORT base::FeatureParam<int>
+    kPartitionAllocSchedulerLoopQuarantineBranchCapacity;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
 
@@ -105,11 +102,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
 // security guarantee, but to increase the compression ratio of PartitionAlloc's
 // fragmented super pages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory);
-
-// Whether to make PartitionAlloc use fewer memory regions. This matters on
-// Linux-based systems, where there is a per-process limit that we hit in some
-// cases. See the comment in PartitionBucket::SlotSpanCOmmitedSize() for detail.
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocFewerMemoryRegions);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 using BackupRefPtrEnabledProcesses = internal::PAFeatureEnabledProcesses;
@@ -147,38 +139,39 @@ enum class BucketDistributionMode : uint8_t {
 };
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtr);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(BackupRefPtrEnabledProcesses,
-                                       kBackupRefPtrEnabledProcessesParam);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(BackupRefPtrMode,
-                                       kBackupRefPtrModeParam);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                       kBackupRefPtrExtraExtrasSizeParam);
+extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
+    kBackupRefPtrEnabledProcessesParam;
+extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
+    kBackupRefPtrModeParam;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(MemtagMode, kMemtagModeParam);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(RetagMode, kRetagModeParam);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(MemoryTaggingEnabledProcesses,
-                                       kMemoryTaggingEnabledProcessesParam);
+extern const BASE_EXPORT base::FeatureParam<MemtagMode> kMemtagModeParam;
+extern const BASE_EXPORT base::FeatureParam<RetagMode> kRetagModeParam;
+extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
+    kMemoryTaggingEnabledProcessesParam;
 // Kill switch for memory tagging. Skips any code related to memory tagging when
 // enabled.
 BASE_EXPORT BASE_DECLARE_FEATURE(kKillPartitionAllocMemoryTagging);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
-BASE_EXPORT BASE_DECLARE_FEATURE(kAsanBrpDereferenceCheck);
-BASE_EXPORT BASE_DECLARE_FEATURE(kAsanBrpExtractionCheck);
-BASE_EXPORT BASE_DECLARE_FEATURE(kAsanBrpInstantiationCheck);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(BucketDistributionMode,
-                                       kPartitionAllocBucketDistributionParam);
+extern const BASE_EXPORT base::FeatureParam<bool>
+    kBackupRefPtrAsanEnableDereferenceCheckParam;
+extern const BASE_EXPORT base::FeatureParam<bool>
+    kBackupRefPtrAsanEnableExtractionCheckParam;
+extern const BASE_EXPORT base::FeatureParam<bool>
+    kBackupRefPtrAsanEnableInstantiationCheckParam;
+extern const BASE_EXPORT base::FeatureParam<BucketDistributionMode>
+    kPartitionAllocBucketDistributionParam;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseDenserDistribution);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryReclaimer);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(TimeDelta,
-                                       kPartitionAllocMemoryReclaimerInterval);
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kPartitionAllocMemoryReclaimerInterval;
 BASE_EXPORT BASE_DECLARE_FEATURE(
     kPartitionAllocStraightenLargerSlotSpanFreeLists);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    partition_alloc::StraightenLargerSlotSpanFreeListsMode,
-    kPartitionAllocStraightenLargerSlotSpanFreeListsMode);
+extern const BASE_EXPORT
+    base::FeatureParam<partition_alloc::StraightenLargerSlotSpanFreeListsMode>
+        kPartitionAllocStraightenLargerSlotSpanFreeListsMode;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
 
@@ -187,9 +180,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kPartialLowEndModeExcludePartitionAllocSupport);
+extern const base::FeatureParam<bool>
+    kPartialLowEndModeExcludePartitionAllocSupport;
 #endif
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCacheMultiplier);
@@ -210,6 +202,13 @@ BASE_EXPORT int GetThreadCacheMinCachedMemoryForPurgingBytes();
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
 
+// This feature is additionally gated behind a buildflag because
+// pool offset freelists cannot be represented when PartitionAlloc uses
+// 32-bit pointers.
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+BASE_EXPORT BASE_DECLARE_FEATURE(kUsePoolOffsetFreelists);
+#endif
+
 // When set, partitions use a larger ring buffer and free memory less
 // aggressively when in the foreground.
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground);
@@ -224,10 +223,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans);
 using ShadowMetadataEnabledProcesses = internal::PAFeatureEnabledProcesses;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocShadowMetadata);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(ShadowMetadataEnabledProcesses,
-                                       kShadowMetadataEnabledProcessesParam);
+extern const BASE_EXPORT base::FeatureParam<ShadowMetadataEnabledProcesses>
+    kShadowMetadataEnabledProcessesParam;
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
-}  // namespace base::features
+}  // namespace features
+}  // namespace base
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_

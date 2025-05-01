@@ -6,8 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-// XFAIL: FROZEN-CXX03-HEADERS-FIXME
-
 #include <__type_traits/is_trivially_relocatable.h>
 #include <array>
 #include <deque>
@@ -54,17 +52,11 @@ struct MoveOnlyTriviallyCopyable {
   MoveOnlyTriviallyCopyable(MoveOnlyTriviallyCopyable&&)                 = default;
   MoveOnlyTriviallyCopyable& operator=(MoveOnlyTriviallyCopyable&&)      = default;
 };
+#ifndef _MSC_VER
 static_assert(std::__libcpp_is_trivially_relocatable<MoveOnlyTriviallyCopyable>::value, "");
-
-struct NonTrivialMoveConstructor {
-  NonTrivialMoveConstructor(NonTrivialMoveConstructor&&);
-};
-static_assert(!std::__libcpp_is_trivially_relocatable<NonTrivialMoveConstructor>::value, "");
-
-struct NonTrivialDestructor {
-  ~NonTrivialDestructor() {}
-};
-static_assert(!std::__libcpp_is_trivially_relocatable<NonTrivialDestructor>::value, "");
+#else
+static_assert(!std::__libcpp_is_trivially_relocatable<MoveOnlyTriviallyCopyable>::value, "");
+#endif
 
 // library-internal types
 // ----------------------

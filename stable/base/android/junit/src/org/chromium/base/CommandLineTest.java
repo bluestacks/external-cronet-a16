@@ -7,6 +7,7 @@ package org.chromium.base;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -44,8 +45,15 @@ public class CommandLineTest {
     static final String CL_ADDED_SWITCH_2 = "username";
     static final String CL_ADDED_VALUE_2 = "bozo";
 
+    private CommandLine.JavaCommandLine mCommandLine;
+
+    @Before
+    public void setUp() {
+        mCommandLine = new CommandLine.JavaCommandLine(null);
+    }
+
     void checkInitSwitches() {
-        CommandLine cl = CommandLine.getInstance();
+        CommandLine cl = mCommandLine;
         Assert.assertFalse(cl.hasSwitch("init_command"));
         Assert.assertFalse(cl.hasSwitch("switch"));
         Assert.assertTrue(cl.hasSwitch("SWITCH"));
@@ -60,7 +68,7 @@ public class CommandLineTest {
     }
 
     void checkSettingThenGettingThenRemoving() {
-        CommandLine cl = CommandLine.getInstance();
+        CommandLine cl = mCommandLine;
 
         // Add a plain switch.
         Assert.assertFalse(cl.hasSwitch(CL_ADDED_SWITCH));
@@ -120,8 +128,7 @@ public class CommandLineTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testJavaInitialization() {
-        CommandLine.resetForTesting(false);
-        CommandLine.init(INIT_SWITCHES);
+        mCommandLine = new CommandLine.JavaCommandLine(INIT_SWITCHES);
         checkInitSwitches();
         checkSettingThenGettingThenRemoving();
     }
@@ -130,8 +137,9 @@ public class CommandLineTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testBufferInitialization() {
-        CommandLine.resetForTesting(false);
-        CommandLine.init(CommandLine.tokenizeQuotedArguments(INIT_SWITCHES_BUFFER));
+        mCommandLine =
+                new CommandLine.JavaCommandLine(
+                        CommandLine.tokenizeQuotedArguments(INIT_SWITCHES_BUFFER));
         checkInitSwitches();
         checkSettingThenGettingThenRemoving();
     }
@@ -164,8 +172,7 @@ public class CommandLineTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testUpdatingArgList() {
-        CommandLine.resetForTesting(true);
-        CommandLine cl = CommandLine.getInstance();
+        CommandLine cl = mCommandLine;
         cl.appendSwitch(CL_ADDED_SWITCH);
         cl.appendSwitchWithValue(CL_ADDED_SWITCH_2, CL_ADDED_VALUE_2);
         cl.appendSwitchWithValue(CL_ADDED_SWITCH_2, "updatedValue");
@@ -179,7 +186,7 @@ public class CommandLineTest {
         Assert.assertArrayEquals(
                 "Appending a switch multiple times should add multiple args",
                 expectedValueForBothSwitches,
-                CommandLine.getJavaSwitchesForTesting());
+                mCommandLine.getCommandLineArguments());
 
         cl.removeSwitch(CL_ADDED_SWITCH_2);
         final String[] expectedValueWithSecondSwitchRemoved = {
@@ -188,6 +195,6 @@ public class CommandLineTest {
         Assert.assertArrayEquals(
                 "Removing a switch should remove all its args",
                 expectedValueWithSecondSwitchRemoved,
-                CommandLine.getJavaSwitchesForTesting());
+                mCommandLine.getCommandLineArguments());
     }
 }

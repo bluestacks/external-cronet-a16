@@ -749,18 +749,6 @@ TEST(HttpAuthCacheTest, Remove) {
   EXPECT_FALSE(nullptr == entry);
 }
 
-TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenNothingToClear) {
-  HttpAuthCache cache(false /* key_entries_by_network_anonymization_key */);
-  EXPECT_FALSE(cache.ClearEntriesAddedBetween(
-      base::Time::Min(), base::Time::Max(),
-      base::RepeatingCallback<bool(const GURL&)>()));
-}
-
-TEST(HttpAuthCacheTest, ClearAllEntriesNothingToClear) {
-  HttpAuthCache cache(false /* key_entries_by_network_anonymization_key */);
-  EXPECT_FALSE(cache.ClearAllEntries());
-}
-
 TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
   url::SchemeHostPort scheme_host_port(GURL("http://foobar.com"));
 
@@ -800,8 +788,8 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
   ASSERT_TRUE(base::Time::FromString("30 May 2018 12:00:05", &test_time1));
   base::Time test_time2;
   ASSERT_TRUE(base::Time::FromString("30 May 2018 12:00:15", &test_time2));
-  EXPECT_TRUE(cache.ClearEntriesAddedBetween(
-      test_time1, test_time2, base::RepeatingCallback<bool(const GURL&)>()));
+  cache.ClearEntriesAddedBetween(test_time1, test_time2,
+                                 base::RepeatingCallback<bool(const GURL&)>());
 
   // Realms 1 and 2 are older than 12:00:05 and should not be cleared
   EXPECT_NE(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
@@ -829,13 +817,9 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
                                   kRealm4, HttpAuth::AUTH_SCHEME_BASIC,
                                   NetworkAnonymizationKey()));
 
-  // Repeated clear with the same filter should return false.
-  EXPECT_FALSE(cache.ClearEntriesAddedBetween(
-      test_time1, test_time2, base::RepeatingCallback<bool(const GURL&)>()));
-
-  EXPECT_TRUE(cache.ClearEntriesAddedBetween(
-      start_time - base::Seconds(1), base::Time::Max(),
-      base::RepeatingCallback<bool(const GURL&)>()));
+  cache.ClearEntriesAddedBetween(start_time - base::Seconds(1),
+                                 base::Time::Max(),
+                                 base::RepeatingCallback<bool(const GURL&)>());
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
                                   kRealm1, HttpAuth::AUTH_SCHEME_BASIC,
                                   NetworkAnonymizationKey()));
@@ -844,11 +828,6 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
                                   NetworkAnonymizationKey()));
   EXPECT_EQ(nullptr, cache.LookupByPath(scheme_host_port, HttpAuth::AUTH_SERVER,
                                         NetworkAnonymizationKey(), "/baz/"));
-
-  // Repeated clear with the same filter should return false.
-  EXPECT_FALSE(cache.ClearEntriesAddedBetween(
-      start_time - base::Seconds(1), base::Time::Max(),
-      base::RepeatingCallback<bool(const GURL&)>()));
 }
 
 TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenByFilter) {
@@ -868,10 +847,10 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenByFilter) {
             HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
             "basic realm=Realm1", AuthCredentials(kRoot, kWileCoyote), "/");
 
-  EXPECT_TRUE(cache.ClearEntriesAddedBetween(
+  cache.ClearEntriesAddedBetween(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(&DoesUrlMatchFilter,
-                          std::set<std::string>({scheme_host_port_1.host()}))));
+                          std::set<std::string>({scheme_host_port_1.host()})));
 
   // Only foobar.com should be cleared while foobar2.com remains.
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port_1, HttpAuth::AUTH_SERVER,
@@ -880,12 +859,6 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenByFilter) {
   EXPECT_NE(nullptr, cache.Lookup(scheme_host_port_2, HttpAuth::AUTH_SERVER,
                                   kRealm1, HttpAuth::AUTH_SCHEME_BASIC,
                                   NetworkAnonymizationKey()));
-
-  // Repeated clear with the same filter should return false.
-  EXPECT_FALSE(cache.ClearEntriesAddedBetween(
-      base::Time::Min(), base::Time::Max(),
-      base::BindRepeating(&DoesUrlMatchFilter,
-                          std::set<std::string>({scheme_host_port_1.host()}))));
 }
 
 TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenWithAllTimeValues) {
@@ -916,9 +889,8 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenWithAllTimeValues) {
             HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
             "basic realm=Realm2", AuthCredentials(kAdmin, kPassword), "/baz/");
 
-  EXPECT_TRUE(cache.ClearEntriesAddedBetween(
-      base::Time::Min(), base::Time::Max(),
-      base::RepeatingCallback<bool(const GURL&)>()));
+  cache.ClearEntriesAddedBetween(base::Time::Min(), base::Time::Max(),
+                                 base::RepeatingCallback<bool(const GURL&)>());
 
   // All entries should be cleared.
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
@@ -935,11 +907,6 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenWithAllTimeValues) {
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
                                   kRealm4, HttpAuth::AUTH_SCHEME_BASIC,
                                   NetworkAnonymizationKey()));
-
-  // A second clear while the cache is still empty should return false.
-  EXPECT_FALSE(cache.ClearEntriesAddedBetween(
-      base::Time::Min(), base::Time::Max(),
-      base::RepeatingCallback<bool(const GURL&)>()));
 }
 
 TEST(HttpAuthCacheTest, ClearAllEntries) {
@@ -971,7 +938,7 @@ TEST(HttpAuthCacheTest, ClearAllEntries) {
             "basic realm=Realm2", AuthCredentials(kAdmin, kPassword), "/baz/");
 
   test_clock.Advance(base::Seconds(55));
-  EXPECT_TRUE(cache.ClearAllEntries());
+  cache.ClearAllEntries();
 
   // All entries should be cleared.
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
@@ -988,9 +955,6 @@ TEST(HttpAuthCacheTest, ClearAllEntries) {
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
                                   kRealm4, HttpAuth::AUTH_SCHEME_BASIC,
                                   NetworkAnonymizationKey()));
-
-  // If there are no entries to clear, ClearAllEntries should return false.
-  EXPECT_FALSE(cache.ClearAllEntries());
 }
 
 TEST(HttpAuthCacheTest, UpdateStaleChallenge) {

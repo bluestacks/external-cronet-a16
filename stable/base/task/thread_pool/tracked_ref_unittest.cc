@@ -15,7 +15,8 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -146,4 +147,5 @@ TEST(TrackedRefTest, CopyAndMoveSemantics) {
   EXPECT_EQ(1, foo.factory.live_tracked_refs_.SubtleRefCountForDebug());
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

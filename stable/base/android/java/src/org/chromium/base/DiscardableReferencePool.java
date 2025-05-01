@@ -4,8 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.Set;
@@ -24,7 +23,6 @@ import java.util.WeakHashMap;
  * <p>This class and its references are not thread-safe and should not be used simultaneously by
  * multiple threads.
  */
-@NullMarked
 public class DiscardableReferencePool {
     /**
      * The underlying data storage. The wildcard type parameter allows using a single pool for
@@ -42,7 +40,7 @@ public class DiscardableReferencePool {
      * @param <T> The type of the object.
      */
     public static class DiscardableReference<T> {
-        private @Nullable T mPayload;
+        @Nullable private T mPayload;
 
         private DiscardableReference(T payload) {
             assert payload != null;
@@ -52,7 +50,8 @@ public class DiscardableReferencePool {
         /**
          * @return The referent, or null if the pool has been drained.
          */
-        public @Nullable T get() {
+        @Nullable
+        public T get() {
             return mPayload;
         }
 

@@ -5,7 +5,6 @@
 
 from typing import Iterable, Type
 
-# //testing imports.
 from flake_suppressor_common import common_typing as ct
 
 TagUtils = None
@@ -20,8 +19,6 @@ def SetTagUtilsImplementation(impl: Type['BaseTagUtils']) -> None:
 
 
 class BaseTagUtils():
-  # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def RemoveIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
     """Removes ignored tags from |tags|.
 
@@ -36,7 +33,6 @@ class BaseTagUtils():
       removed.
     """
     return tuple(tags)
-  # pylint: enable=no-self-use
 
 
 TagUtils = BaseTagUtils()

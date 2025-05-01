@@ -1,16 +1,115 @@
-// Copyright 2005-2016 The OpenSSL Project Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/*
+ * DTLS implementation written by Nagendra Modadugu
+ * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
+ */
+/* ====================================================================
+ * Copyright (c) 1998-2005 The OpenSSL Project.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. All advertising materials mentioning features or use of this
+ *    software must display the following acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
+ *
+ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
+ *    endorse or promote products derived from this software without
+ *    prior written permission. For written permission, please contact
+ *    openssl-core@openssl.org.
+ *
+ * 5. Products derived from this software may not be called "OpenSSL"
+ *    nor may "OpenSSL" appear in their names without prior written
+ *    permission of the OpenSSL Project.
+ *
+ * 6. Redistributions of any form whatsoever must retain the following
+ *    acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This product includes cryptographic software written by Eric Young
+ * (eay@cryptsoft.com).  This product includes software written by Tim
+ * Hudson (tjh@cryptsoft.com).
+ *
+ */
+/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+ * All rights reserved.
+ *
+ * This package is an SSL implementation written
+ * by Eric Young (eay@cryptsoft.com).
+ * The implementation was written so as to conform with Netscapes SSL.
+ *
+ * This library is free for commercial and non-commercial use as long as
+ * the following conditions are aheared to.  The following conditions
+ * apply to all code found in this distribution, be it the RC4, RSA,
+ * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+ * included with this distribution is covered by the same copyright terms
+ * except that the holder is Tim Hudson (tjh@cryptsoft.com).
+ *
+ * Copyright remains Eric Young's, and as such any Copyright notices in
+ * the code are not to be removed.
+ * If this package is used in a product, Eric Young should be given attribution
+ * as the author of the parts of the library used.
+ * This can be in the form of a textual message at program startup or
+ * in documentation (online or textual) provided with the package.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *    "This product includes cryptographic software written by
+ *     Eric Young (eay@cryptsoft.com)"
+ *    The word 'cryptographic' can be left out if the rouines from the library
+ *    being used are not cryptographic related :-).
+ * 4. If you include any Windows specific code (or a derivative thereof) from
+ *    the apps directory (application code) you must include an acknowledgement:
+ *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * The licence and distribution terms for any publically available version or
+ * derivative of this code cannot be changed.  i.e. this code cannot simply be
+ * copied and put under another distribution licence
+ * [including the GNU Public Licence.] */
 
 #include <openssl/ssl.h>
 
@@ -269,14 +368,14 @@ bool dtls1_process_handshake_fragments(SSL *ssl, uint8_t *out_alert,
     const size_t frag_off = msg_hdr.frag_off;
     const size_t frag_len = msg_hdr.frag_len;
     const size_t msg_len = msg_hdr.msg_len;
-    if (frag_off > msg_len || frag_len > msg_len - frag_off) {
-      OPENSSL_PUT_ERROR(SSL, SSL_R_BAD_HANDSHAKE_RECORD);
+    if (frag_off > msg_len || frag_len > msg_len - frag_off ||
+        msg_len > ssl_max_handshake_message_len(ssl)) {
+      OPENSSL_PUT_ERROR(SSL, SSL_R_EXCESSIVE_MESSAGE_SIZE);
       *out_alert = SSL_AD_ILLEGAL_PARAMETER;
       return false;
     }
 
-    if (msg_hdr.seq < ssl->d1->handshake_read_seq ||
-        ssl->d1->handshake_read_overflow) {
+    if (msg_hdr.seq < ssl->d1->handshake_read_seq) {
       // Ignore fragments from the past. This is a retransmit of data we already
       // received.
       //
@@ -284,21 +383,16 @@ bool dtls1_process_handshake_fragments(SSL *ssl, uint8_t *out_alert,
       continue;
     }
 
-    if (record_number.epoch() != ssl->d1->read_epoch.epoch ||
-        ssl->d1->next_read_epoch != nullptr) {
-      // New messages can only arrive in the latest epoch. This can fail if the
-      // record came from |prev_read_epoch|, or if it came from |read_epoch| but
-      // |next_read_epoch| exists. (It cannot come from |next_read_epoch|
-      // because |next_read_epoch| becomes |read_epoch| once it receives a
-      // record.)
+    assert(record_number.epoch() == ssl->d1->read_epoch.epoch);
+    if (ssl->d1->next_read_epoch != nullptr) {
+      // Any any time, we only expect new messages in one epoch. If
+      // |next_read_epoch| is set, we've started a new epoch but haven't
+      // received records in it yet. (Once a record is received in the new
+      // epoch, |next_read_epoch| becomes the current read epoch.) This new
+      // fragment is in the old epoch, but we expect handshake messages to be in
+      // the next epoch, so this is an error.
       OPENSSL_PUT_ERROR(SSL, SSL_R_EXCESS_HANDSHAKE_DATA);
       *out_alert = SSL_AD_UNEXPECTED_MESSAGE;
-      return false;
-    }
-
-    if (msg_len > ssl_max_handshake_message_len(ssl)) {
-      OPENSSL_PUT_ERROR(SSL, SSL_R_EXCESSIVE_MESSAGE_SIZE);
-      *out_alert = SSL_AD_ILLEGAL_PARAMETER;
       return false;
     }
 
@@ -313,6 +407,9 @@ bool dtls1_process_handshake_fragments(SSL *ssl, uint8_t *out_alert,
       // apply immediately after the handshake. As a client, receiving a
       // KeyUpdate or NewSessionTicket does not imply the server has received
       // our Finished. The server may have sent those messages in half-RTT.
+      //
+      // TODO(crbug.com/42290594): Once post-handshake messages are working,
+      // write a test for the half-RTT KeyUpdate case.
       implicit_ack = true;
     }
 
@@ -351,7 +448,7 @@ bool dtls1_process_handshake_fragments(SSL *ssl, uint8_t *out_alert,
 
     if (ssl_has_final_version(ssl) &&
         ssl_protocol_version(ssl) >= TLS1_3_VERSION &&
-        !ssl->d1->ack_timer.IsSet() && !ssl->d1->sending_ack) {
+        !ssl->d1->ack_timer.IsSet()) {
       // Schedule sending an ACK. The delay serves several purposes:
       // - If there are more records to come, we send only one ACK.
       // - If there are more records to come and the flight is now complete, we
@@ -387,23 +484,18 @@ ssl_open_record_t dtls1_open_handshake(SSL *ssl, size_t *out_consumed,
       return ssl_open_record_discard;
 
     case SSL3_RT_CHANGE_CIPHER_SPEC:
-      if (record.size() != 1u || record[0] != SSL3_MT_CCS) {
-        OPENSSL_PUT_ERROR(SSL, SSL_R_BAD_CHANGE_CIPHER_SPEC);
-        *out_alert = SSL_AD_ILLEGAL_PARAMETER;
-        return ssl_open_record_error;
-      }
-
       // We do not support renegotiation, so encrypted ChangeCipherSpec records
       // are illegal.
-      if (record_number.epoch() != 0) {
+      if (ssl->d1->read_epoch.epoch != 0) {
         OPENSSL_PUT_ERROR(SSL, SSL_R_UNEXPECTED_RECORD);
         *out_alert = SSL_AD_UNEXPECTED_MESSAGE;
         return ssl_open_record_error;
       }
 
-      // Ignore ChangeCipherSpec from a previous epoch.
-      if (record_number.epoch() != ssl->d1->read_epoch.epoch) {
-        return ssl_open_record_discard;
+      if (record.size() != 1u || record[0] != SSL3_MT_CCS) {
+        OPENSSL_PUT_ERROR(SSL, SSL_R_BAD_CHANGE_CIPHER_SPEC);
+        *out_alert = SSL_AD_ILLEGAL_PARAMETER;
+        return ssl_open_record_error;
       }
 
       // Flag the ChangeCipherSpec for later.
@@ -417,17 +509,20 @@ ssl_open_record_t dtls1_open_handshake(SSL *ssl, size_t *out_consumed,
       return dtls1_process_ack(ssl, out_alert, record_number, record);
 
     case SSL3_RT_HANDSHAKE:
-      if (!dtls1_process_handshake_fragments(ssl, out_alert, record_number,
-                                             record)) {
-        return ssl_open_record_error;
-      }
-      return ssl_open_record_success;
+      // Break out to main processing.
+      break;
 
     default:
       OPENSSL_PUT_ERROR(SSL, SSL_R_UNEXPECTED_RECORD);
       *out_alert = SSL_AD_UNEXPECTED_MESSAGE;
       return ssl_open_record_error;
   }
+
+  if (!dtls1_process_handshake_fragments(ssl, out_alert, record_number,
+                                         record)) {
+    return ssl_open_record_error;
+  }
+  return ssl_open_record_success;
 }
 
 bool dtls1_get_message(const SSL *ssl, SSLMessage *out) {
@@ -454,9 +549,6 @@ void dtls1_next_message(SSL *ssl) {
   size_t index = ssl->d1->handshake_read_seq % SSL_MAX_HANDSHAKE_FLIGHT;
   ssl->d1->incoming_messages[index].reset();
   ssl->d1->handshake_read_seq++;
-  if (ssl->d1->handshake_read_seq == 0) {
-    ssl->d1->handshake_read_overflow = true;
-  }
   ssl->s3->has_message = false;
   // If we previously sent a flight, mark it as having a reply, so
   // |on_handshake_complete| can manage post-handshake retransmission.
@@ -523,7 +615,6 @@ void dtls_clear_outgoing_messages(SSL *ssl) {
   ssl->d1->outgoing_offset = 0;
   ssl->d1->outgoing_messages_complete = false;
   ssl->d1->flight_has_reply = false;
-  ssl->d1->sending_flight = false;
   dtls_clear_unused_write_epochs(ssl);
 }
 
@@ -583,10 +674,6 @@ static bool add_outgoing(SSL *ssl, bool is_ccs, Array<uint8_t> data) {
   }
 
   if (!is_ccs) {
-    if (ssl->d1->handshake_write_overflow) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_OVERFLOW);
-      return false;
-    }
     // TODO(svaldez): Move this up a layer to fix abstraction for SSLTranscript
     // on hs.
     if (ssl->s3->hs != NULL && !ssl->s3->hs->transcript.Update(data)) {
@@ -594,9 +681,6 @@ static bool add_outgoing(SSL *ssl, bool is_ccs, Array<uint8_t> data) {
       return false;
     }
     ssl->d1->handshake_write_seq++;
-    if (ssl->d1->handshake_write_seq == 0) {
-      ssl->d1->handshake_write_overflow = true;
-    }
   }
 
   DTLSOutgoingMessage msg;
@@ -879,11 +963,6 @@ static int send_flight(SSL *ssl) {
     return -1;
   }
 
-  if (ssl->d1->num_timeouts > DTLS1_MAX_TIMEOUTS) {
-    OPENSSL_PUT_ERROR(SSL, SSL_R_READ_TIMEOUT_EXPIRED);
-    return -1;
-  }
-
   dtls1_update_mtu(ssl);
 
   Array<uint8_t> packet;
@@ -896,7 +975,7 @@ static int send_flight(SSL *ssl) {
     uint32_t old_offset = ssl->d1->outgoing_offset;
 
     size_t packet_len;
-    if (!seal_next_packet(ssl, Span(packet), &packet_len)) {
+    if (!seal_next_packet(ssl, MakeSpan(packet), &packet_len)) {
       return -1;
     }
 
@@ -928,38 +1007,27 @@ static int send_flight(SSL *ssl) {
   return 1;
 }
 
-void dtls1_finish_flight(SSL *ssl) {
-  if (ssl->d1->outgoing_messages.empty() ||
-      ssl->d1->outgoing_messages_complete) {
-    return;  // Nothing to do.
-  }
-
-  if (ssl->d1->outgoing_messages[0].epoch <= 2) {
-    // DTLS 1.3 handshake messages (epoch 2 and below) implicitly ACK the
-    // previous flight, so there is no need to ACK previous records. This
-    // clears the ACK buffer slightly earlier than the specification suggests.
-    // See the discussion in
+int dtls1_flush_flight(SSL *ssl, bool post_handshake) {
+  ssl->d1->outgoing_messages_complete = true;
+  if (!post_handshake) {
+    // Our new flight implicitly ACKs the previous flight, so there is no need
+    // to ACK previous records. This clears the ACK buffer slightly earlier than
+    // the specification suggests. See the discussion in
     // https://mailarchive.ietf.org/arch/msg/tls/kjJnquJOVaWxu5hUCmNzB35eqY0/
     ssl->d1->records_to_ack.Clear();
     ssl->d1->ack_timer.Stop();
-    ssl->d1->sending_ack = false;
   }
-
-  ssl->d1->outgoing_messages_complete = true;
-  ssl->d1->sending_flight = true;
-  // Stop retransmitting the previous flight. In DTLS 1.3, we'll have stopped
-  // the timer already, but DTLS 1.2 keeps it running until the next flight is
-  // ready.
-  dtls1_stop_timer(ssl);
+  // Start the retransmission timer for the next flight (if any).
+  dtls1_start_timer(ssl);
+  return send_flight(ssl);
 }
 
-void dtls1_schedule_ack(SSL *ssl) {
-  ssl->d1->ack_timer.Stop();
-  ssl->d1->sending_ack = !ssl->d1->records_to_ack.empty();
-}
-
-static int send_ack(SSL *ssl) {
+int dtls1_send_ack(SSL *ssl) {
   assert(ssl_protocol_version(ssl) >= TLS1_3_VERSION);
+  ssl->d1->ack_timer.Stop();
+  if (ssl->d1->records_to_ack.empty()) {
+    return 1;
+  }
 
   // Ensure we don't send so many ACKs that we overflow the MTU. There is a
   // 2-byte length prefix and each ACK is 16 bytes.
@@ -1006,7 +1074,7 @@ static int send_ack(SSL *ssl) {
   }
 
   ssl_do_msg_callback(ssl, /*is_write=*/1, SSL3_RT_ACK,
-                      Span(CBB_data(&cbb), CBB_len(&cbb)));
+                      MakeConstSpan(CBB_data(&cbb), CBB_len(&cbb)));
 
   int bio_ret =
       BIO_write(ssl->wbio.get(), record, static_cast<int>(record_len));
@@ -1015,54 +1083,18 @@ static int send_ack(SSL *ssl) {
     return bio_ret;
   }
 
-  if (BIO_flush(ssl->wbio.get()) <= 0) {
-    ssl->s3->rwstate = SSL_ERROR_WANT_WRITE;
-    return -1;
-  }
-
   return 1;
 }
 
-int dtls1_flush(SSL *ssl) {
-  // Send the pending ACK, if any.
-  if (ssl->d1->sending_ack) {
-    int ret = send_ack(ssl);
-    if (ret <= 0) {
-      return ret;
-    }
-    ssl->d1->sending_ack = false;
-  }
+int dtls1_retransmit_outgoing_messages(SSL *ssl) {
+  // Rewind to the start of the flight and write it again.
+  //
+  // TODO(davidben): This does not allow retransmits to be resumed on
+  // non-blocking write.
+  ssl->d1->outgoing_written = 0;
+  ssl->d1->outgoing_offset = 0;
 
-  // Send the pending flight, if any.
-  if (ssl->d1->sending_flight) {
-    int ret = send_flight(ssl);
-    if (ret <= 0) {
-      return ret;
-    }
-
-    // Reset state for the next send.
-    ssl->d1->outgoing_written = 0;
-    ssl->d1->outgoing_offset = 0;
-    ssl->d1->sending_flight = false;
-
-    // Schedule the next retransmit timer. In DTLS 1.3, we retransmit all
-    // flights until ACKed. In DTLS 1.2, the final Finished flight is never
-    // ACKed, so we do not keep the timer running after the handshake.
-    if (SSL_in_init(ssl) || ssl_protocol_version(ssl) >= TLS1_3_VERSION) {
-      if (ssl->d1->num_timeouts == 0) {
-        ssl->d1->timeout_duration_ms = ssl->initial_timeout_duration_ms;
-      } else {
-        ssl->d1->timeout_duration_ms =
-            std::min(ssl->d1->timeout_duration_ms * 2, uint32_t{60000});
-      }
-
-      OPENSSL_timeval now = ssl_ctx_get_current_time(ssl->ctx.get());
-      ssl->d1->retransmit_timer.StartMicroseconds(
-          now, uint64_t{ssl->d1->timeout_duration_ms} * 1000);
-    }
-  }
-
-  return 1;
+  return send_flight(ssl);
 }
 
 unsigned int dtls1_min_mtu(void) { return kMinMTU; }

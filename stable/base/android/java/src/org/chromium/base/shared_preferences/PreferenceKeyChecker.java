@@ -4,15 +4,12 @@
 
 package org.chromium.base.shared_preferences;
 
-import org.chromium.build.annotations.NullMarked;
-
 /**
  * A SharedPreferences key checker that may check if the key is in use.
  *
- * <p>In official builds, {@link NoOpPreferenceKeyChecker} is used, which is a no-op. In debug
- * builds, {@link StrictPreferenceKeyChecker} is used, which checks if a key is registered.
+ * In official builds, {@link NoOpPreferenceKeyChecker} is used, which is a no-op.
+ * In debug builds, {@link StrictPreferenceKeyChecker} is used, which checks if a key is registered.
  */
-@NullMarked
 interface PreferenceKeyChecker {
     // Asserts that the SharedPreferences |key| is registered as "in use".
     void checkIsKeyInUse(String key);

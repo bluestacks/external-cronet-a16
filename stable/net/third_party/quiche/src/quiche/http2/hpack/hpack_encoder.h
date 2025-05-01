@@ -95,12 +95,7 @@ class QUICHE_EXPORT HpackEncoder {
     listener_ = std::move(listener);
   }
 
-  void DisableCompression() {
-    enable_dynamic_table_ = false;
-    enable_huffman_ = false;
-  }
-
-  void DisableHuffman() { enable_huffman_ = false; }
+  void DisableCompression() { enable_compression_ = false; }
 
   // Disables the deconstruction of Cookie header values into individual
   // components, as described in
@@ -126,7 +121,8 @@ class QUICHE_EXPORT HpackEncoder {
 
   // Emits a literal representation (Section 7.2).
   void EmitIndexedLiteral(const Representation& representation);
-  void EmitNonIndexedLiteral(const Representation& representation);
+  void EmitNonIndexedLiteral(const Representation& representation,
+                             bool enable_compression);
   void EmitLiteral(const Representation& representation);
 
   // Emits a Huffman or identity string (whichever is smaller).
@@ -150,8 +146,7 @@ class QUICHE_EXPORT HpackEncoder {
   size_t min_table_size_setting_received_;
   HeaderListener listener_;
   IndexingPolicy should_index_;
-  bool enable_dynamic_table_;
-  bool enable_huffman_;
+  bool enable_compression_;
   bool should_emit_table_size_;
   bool crumble_cookies_;
 };

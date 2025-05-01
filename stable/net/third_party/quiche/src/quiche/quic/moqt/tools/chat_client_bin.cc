@@ -31,11 +31,8 @@ DEFINE_QUICHE_COMMAND_LINE_FLAG(
     std::string, output_file, "",
     "chat messages will stream to a file instead of stdout");
 
-using ::moqt::moq_chat::ChatClient;
-using ::moqt::moq_chat::ChatUserInterface;
-
 // Writes messages to a file, when directed from the command line.
-class FileOutput : public ChatUserInterface {
+class FileOutput : public moqt::ChatUserInterface {
  public:
   explicit FileOutput(absl::string_view filename, absl::string_view username)
       : username_(username) {
@@ -69,7 +66,7 @@ class FileOutput : public ChatUserInterface {
                 event_loop_ == nullptr)
         << "IoLoop called before Initialize";
     while (poll(&poll_settings_, 1, 0) <= 0) {
-      event_loop_->RunEventLoopOnce(moqt::moq_chat::kChatEventLoopDuration);
+      event_loop_->RunEventLoopOnce(moqt::kChatEventLoopDuration);
     }
     std::getline(std::cin, message_to_send);
     callback_(message_to_send);
@@ -89,7 +86,7 @@ class FileOutput : public ChatUserInterface {
 };
 
 // Writes messages to the terminal, without messing up entry of new messages.
-class CliOutput : public ChatUserInterface {
+class CliOutput : public moqt::ChatUserInterface {
  public:
   void Initialize(quic::InteractiveCli::LineCallback callback,
                   quic::QuicEventLoop* event_loop) override {
@@ -110,7 +107,7 @@ class CliOutput : public ChatUserInterface {
     QUIC_BUG_IF(quic_bug_moq_chat_user_interface_unitialized,
                 event_loop_ == nullptr)
         << "IoLoop called before Initialize";
-    event_loop_->RunEventLoopOnce(moqt::moq_chat::kChatEventLoopDuration);
+    event_loop_->RunEventLoopOnce(moqt::kChatEventLoopDuration);
   }
 
  private:
@@ -121,11 +118,10 @@ class CliOutput : public ChatUserInterface {
 // A client for MoQT over chat, used for interop testing. See
 // https://afrind.github.io/draft-frindell-moq-chat/draft-frindell-moq-chat.html
 int main(int argc, char* argv[]) {
-  const char* usage =
-      "Usage: chat_client [options] <url> <username> <chat-id> <localhost>";
+  const char* usage = "Usage: chat_client [options] <url> <username> <chat-id>";
   std::vector<std::string> args =
       quiche::QuicheParseCommandLineFlags(usage, argc, argv);
-  if (args.size() != 4) {
+  if (args.size() != 3) {
     quiche::QuichePrintCommandLineFlagHelp(usage);
     return 1;
   }
@@ -134,25 +130,24 @@ int main(int argc, char* argv[]) {
   std::string path = url.PathParamsQuery();
   const std::string& username = args[1];
   const std::string& chat_id = args[2];
-  std::string localhost = args[3];
   std::string output_filename =
       quiche::GetQuicheCommandLineFlag(FLAGS_output_file);
-  std::unique_ptr<ChatUserInterface> interface;
+  std::unique_ptr<moqt::ChatUserInterface> interface;
 
   if (!output_filename.empty()) {
     interface = std::make_unique<FileOutput>(output_filename, username);
   } else {  // Use the CLI.
     interface = std::make_unique<CliOutput>();
   }
-  ChatClient client(
+  moqt::ChatClient client(
       server_id,
       quiche::GetQuicheCommandLineFlag(FLAGS_disable_certificate_verification),
-      std::move(interface), chat_id, username, localhost);
+      std::move(interface));
 
-  if (!client.Connect(path)) {
+  if (!client.Connect(path, username, chat_id)) {
     return 1;
   }
-  if (!client.AnnounceAndSubscribeAnnounces()) {
+  if (!client.AnnounceAndSubscribe()) {
     return 1;
   }
   client.IoLoop();

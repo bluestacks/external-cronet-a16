@@ -347,8 +347,8 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   do {
     if (++num_tries > max_tries) {
-      DVLOG(1) << "Failed to listen on a valid port after " << max_tries
-               << " attempts.";
+      LOG(ERROR) << "Failed to listen on a valid port after " << max_tries
+                 << " attempts.";
       listen_socket_.reset();
       return false;
     }
@@ -358,14 +358,14 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
     int result =
         listen_socket_->ListenWithAddressAndPort(address.data(), port, 10);
     if (result) {
-      DVLOG(1) << "Listen failed: " << ErrorToString(result);
+      LOG(ERROR) << "Listen failed: " << ErrorToString(result);
       listen_socket_.reset();
       return false;
     }
 
     result = listen_socket_->GetLocalAddress(&local_endpoint_);
     if (result != OK) {
-      DVLOG(1) << "GetLocalAddress failed: " << ErrorToString(result);
+      LOG(ERROR) << "GetLocalAddress failed: " << ErrorToString(result);
       listen_socket_.reset();
       return false;
     }
@@ -387,10 +387,8 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   listen_socket_->DetachFromThread();
 
-  if (is_using_ssl_ && !InitializeSSLServerContext()) {
-    DVLOG(1) << "Unable to initialize SSL";
+  if (is_using_ssl_ && !InitializeSSLServerContext())
     return false;
-  }
 
   return true;
 }
@@ -576,15 +574,11 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
 
 bool EmbeddedTestServer::InitializeSSLServerContext() {
   if (UsingStaticCert()) {
-    if (!InitializeCertAndKeyFromFile()) {
-      DVLOG(1) << "Unable to initialize cert and key from file";
+    if (!InitializeCertAndKeyFromFile())
       return false;
-    }
   } else {
-    if (!GenerateCertAndKey()) {
-      DVLOG(1) << "Unable to generate cert and key";
+    if (!GenerateCertAndKey())
       return false;
-    }
   }
 
   if (protocol_ == HttpConnection::Protocol::kHttp2) {
@@ -769,7 +763,8 @@ void EmbeddedTestServer::HandleRequest(
   }
 
   if (!response) {
-    DVLOG(2) << "Request not handled. Returning 404: " << request->relative_url;
+    LOG(WARNING) << "Request not handled. Returning 404: "
+                 << request->relative_url;
     auto not_found_response = std::make_unique<BasicHttpResponse>();
     not_found_response->set_code(HTTP_NOT_FOUND);
     response = std::move(not_found_response);

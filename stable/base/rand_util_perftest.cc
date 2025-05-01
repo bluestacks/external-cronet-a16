@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/rand_util.h"
-
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"

@@ -76,8 +76,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void SetRequestIdempotency(Idempotency idempotency) override;
   const std::set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
-  std::optional<QuicConnectionDetails> GetQuicConnectionDetails()
-      const override;
+  std::optional<QuicErrorDetails> GetQuicErrorDetails() const override;
 
   static HttpConnectionInfo ConnectionInfoFromQuicVersion(
       quic::ParsedQuicVersion quic_version);

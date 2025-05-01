@@ -19,10 +19,7 @@ class PA_SCOPED_LOCKABLE
  public:
   PA_ALWAYS_INLINE explicit CompileTimeConditionalScopedGuard(Lock& lock)
       PA_EXCLUSIVE_LOCK_FUNCTION(lock) {}
-  // For some reason, defaulting this causes a thread safety annotation failure.
-  PA_ALWAYS_INLINE
-  ~CompileTimeConditionalScopedGuard()  // NOLINT(modernize-use-equals-default)
-      PA_UNLOCK_FUNCTION() {}
+  PA_ALWAYS_INLINE ~CompileTimeConditionalScopedGuard() PA_UNLOCK_FUNCTION() {}
 };
 
 template <>
@@ -74,12 +71,7 @@ LightweightQuarantineBranch::LightweightQuarantineBranch(
     const LightweightQuarantineBranchConfig& config)
     : root_(root),
       lock_required_(config.lock_required),
-      branch_capacity_in_bytes_(config.branch_capacity_in_bytes) {
-  if (lock_required_) {
-    to_be_freed_working_memory_ =
-        ConstructAtInternalPartition<ToBeFreedArray>();
-  }
-}
+      branch_capacity_in_bytes_(config.branch_capacity_in_bytes) {}
 
 LightweightQuarantineBranch::LightweightQuarantineBranch(
     LightweightQuarantineBranch&& b)
@@ -90,19 +82,10 @@ LightweightQuarantineBranch::LightweightQuarantineBranch(
       branch_capacity_in_bytes_(
           b.branch_capacity_in_bytes_.load(std::memory_order_relaxed)) {
   b.branch_size_in_bytes_ = 0;
-  if (lock_required_) {
-    to_be_freed_working_memory_.store(b.to_be_freed_working_memory_.exchange(
-                                          nullptr, std::memory_order_relaxed),
-                                      std::memory_order_relaxed);
-  }
 }
 
 LightweightQuarantineBranch::~LightweightQuarantineBranch() {
   Purge();
-  if (lock_required_) {
-    DestroyAtInternalPartition(to_be_freed_working_memory_.exchange(
-        nullptr, std::memory_order_relaxed));
-  }
 }
 
 bool LightweightQuarantineBranch::IsQuarantinedForTesting(void* object) {
@@ -168,26 +151,16 @@ bool LightweightQuarantineBranch::QuarantineInternal(
     const size_t random_index = random_.RandUint32() % slots_.size();
     std::swap(slots_[random_index], slots_.back());
   } else {
-    std::unique_ptr<ToBeFreedArray, InternalPartitionDeleter<ToBeFreedArray>>
-        to_be_freed;
+    ToBeFreedArray to_be_freed;
     size_t num_of_slots = 0;
 
     {
       CompileTimeConditionalScopedGuard<lock_required> guard(lock_);
 
-      // Borrow the reserved working memory from to_be_freed_working_memory_,
-      // and set nullptr to it indicating that it's in use.
-      to_be_freed.reset(to_be_freed_working_memory_.exchange(nullptr));
-      if (!to_be_freed) {
-        // When the reserved working memory has already been in use by another
-        // thread, fall back to allocate another chunk of working memory.
-        to_be_freed.reset(ConstructAtInternalPartition<ToBeFreedArray>());
-      }
-
       // Dequarantine some entries as required. Save the objects to be
       // deallocated into `to_be_freed`.
       PurgeInternalWithDefferedFree(capacity_in_bytes - usable_size,
-                                    *to_be_freed, num_of_slots);
+                                    to_be_freed, num_of_slots);
 
       // Put the entry onto the list.
       branch_size_in_bytes_ += usable_size;
@@ -200,17 +173,7 @@ bool LightweightQuarantineBranch::QuarantineInternal(
     }
 
     // Actually deallocate the dequarantined objects.
-    BatchFree(*to_be_freed, num_of_slots);
-
-    // Return the possibly-borrowed working memory to
-    // to_be_freed_working_memory_. It doesn't matter much if it's really
-    // borrowed or locally-allocated. The important facts are 1) to_be_freed is
-    // non-null, and 2) to_be_freed_working_memory_ may likely be null (because
-    // this or another thread has already borrowed it). It's simply good to make
-    // to_be_freed_working_memory_ non-null whenever possible. Maybe yet another
-    // thread would be about to borrow the working memory.
-    to_be_freed.reset(
-        to_be_freed_working_memory_.exchange(to_be_freed.release()));
+    BatchFree(to_be_freed, num_of_slots);
   }
 
   // Update stats (not locked).

@@ -7,7 +7,6 @@
 import os
 import sys
 
-# //testing imports.
 import test_env
 
 HERE = os.path.dirname(os.path.abspath(__file__))

@@ -9,9 +9,7 @@
 
 #include "net/dns/dns_test_util.h"
 
-#include <stdint.h>
-
-#include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -24,6 +22,7 @@
 #include "base/location.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
@@ -162,7 +161,7 @@ DnsResourceRecord BuildTestTextRecord(std::string name,
   for (const std::string& text_string : text_strings) {
     DCHECK(!text_string.empty());
 
-    rdata += base::checked_cast<uint8_t>(text_string.size());
+    rdata += base::checked_cast<unsigned char>(text_string.size());
     rdata += text_string;
   }
 
@@ -212,7 +211,7 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceEchConfigParam(
 
 std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
     std::vector<uint16_t> param_key_list) {
-  std::ranges::sort(param_key_list);
+  base::ranges::sort(param_key_list);
 
   std::string value;
   for (uint16_t param_key : param_key_list) {
@@ -889,7 +888,7 @@ MockHostResolverProc::MockHostResolverProc()
 
 MockHostResolverProc::~MockHostResolverProc() = default;
 
-bool MockHostResolverProc::WaitFor(uint32_t count) {
+bool MockHostResolverProc::WaitFor(unsigned count) {
   base::AutoLock lock(lock_);
   base::Time start_time = base::Time::Now();
   while (num_requests_waiting_ < count) {
@@ -901,7 +900,7 @@ bool MockHostResolverProc::WaitFor(uint32_t count) {
   return true;
 }
 
-void MockHostResolverProc::SignalMultiple(uint32_t count) {
+void MockHostResolverProc::SignalMultiple(unsigned count) {
   base::AutoLock lock(lock_);
   num_slots_available_ += count;
   slots_available_.Broadcast();

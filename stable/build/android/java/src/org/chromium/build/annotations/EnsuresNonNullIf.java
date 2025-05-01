@@ -16,10 +16,4 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.CLASS)
-public @interface EnsuresNonNullIf {
-    /** List of fields that are non-null after the method. */
-    String[] value();
-
-    /** The return value that causes the fields to be non-null. */
-    boolean result() default true;
-}
+public @interface EnsuresNonNullIf {}

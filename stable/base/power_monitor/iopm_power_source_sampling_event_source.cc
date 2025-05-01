@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/time/time.h"
 
 namespace base {
 
@@ -53,10 +52,6 @@ bool IOPMPowerSourceSamplingEventSource::Start(SamplingEventCallback callback) {
   }
 
   return true;
-}
-
-TimeDelta IOPMPowerSourceSamplingEventSource::GetSampleInterval() {
-  return Minutes(1);
 }
 
 // static

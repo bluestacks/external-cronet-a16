@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/meminfo_dump_provider.h"
-
 #include <jni.h>
-
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/time/time.h"

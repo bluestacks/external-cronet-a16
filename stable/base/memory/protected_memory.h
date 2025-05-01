@@ -218,7 +218,7 @@ class ProtectedDataHolder {
  private:
   // Initializing with a constant/zero value ensures no global constructor is
   // required when instantiating `ProtectedDataHolder` and `ProtectedMemory`.
-  alignas(T) uint8_t data_[sizeof(T)] = {};
+  alignas(T) uint8_t data_[sizeof(T)] = {0};
   bool constructed_ = false;
 };
 

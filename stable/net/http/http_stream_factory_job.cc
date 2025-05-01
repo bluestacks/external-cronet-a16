@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -129,12 +130,11 @@ HttpStreamFactory::Job::Job(
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
                  origin_url_.SchemeIs(url::kWssScheme)),
       using_quic_(
-          alternative_protocol == NextProto::kProtoQUIC ||
+          alternative_protocol == kProtoQUIC ||
           session->ShouldForceQuic(destination_, proxy_info, is_websocket_) ||
           job_type == DNS_ALPN_H3 || job_type == PRECONNECT_DNS_ALPN_H3),
       quic_version_(quic_version),
-      expect_spdy_(alternative_protocol == NextProto::kProtoHTTP2 &&
-                   !using_quic_),
+      expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
       quic_request_(session_->quic_session_pool()),
       spdy_session_key_(using_quic_
                             ? SpdySessionKey()
@@ -167,7 +167,7 @@ HttpStreamFactory::Job::Job(
   }
 
   DCHECK(session);
-  if (alternative_protocol != NextProto::kProtoUnknown) {
+  if (alternative_protocol != kProtoUnknown) {
     // If the alternative service protocol is specified, then the job type must
     // be either ALTERNATIVE or PRECONNECT.
     DCHECK(job_type_ == ALTERNATIVE || job_type_ == PRECONNECT);
@@ -311,9 +311,8 @@ void HttpStreamFactory::Job::SetPriority(RequestPriority priority) {
 
 bool HttpStreamFactory::Job::HasAvailableSpdySession() const {
   return !using_quic_ && CanUseExistingSpdySession() &&
-         session_->spdy_session_pool()->HasAvailableSession(
-             spdy_session_key_,
-             /*enable_ip_based_pooling=*/true, is_websocket_);
+         session_->spdy_session_pool()->HasAvailableSession(spdy_session_key_,
+                                                            is_websocket_);
 }
 
 bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
@@ -350,14 +349,7 @@ NextProto HttpStreamFactory::Job::negotiated_protocol() const {
 }
 
 bool HttpStreamFactory::Job::using_spdy() const {
-  return negotiated_protocol_ == NextProto::kProtoHTTP2;
-}
-
-url::SchemeHostPort HttpStreamFactory::Job::SchemeHostPortForSupportsSpdy()
-    const {
-  return url::SchemeHostPort(using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,
-                             spdy_session_key_.host_port_pair().HostForURL(),
-                             spdy_session_key_.host_port_pair().port());
+  return negotiated_protocol_ == kProtoHTTP2;
 }
 
 bool HttpStreamFactory::Job::disable_cert_verification_network_fetches() const {
@@ -524,9 +516,6 @@ void HttpStreamFactory::Job::RunLoop(int result) {
   // Stop watching for new SpdySessions, to avoid receiving a new SPDY session
   // while doing anything other than waiting to establish a connection.
   spdy_session_request_.reset();
-
-  // Record histograms which are required for the end of session creation.
-  RecordCompletionHistograms(result);
 
   if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -767,7 +756,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       if (job_type_ == PRECONNECT) {
         return OK;
       }
-      negotiated_protocol_ = NextProto::kProtoHTTP2;
+      negotiated_protocol_ = kProtoHTTP2;
       next_state_ = STATE_CREATE_STREAM;
       return OK;
     }
@@ -785,20 +774,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     auto callback =
         base::BindOnce(&Job::OnIOComplete, ptr_factory_.GetWeakPtr());
 
-    // TODO(crbug.com/391578657): Check proxy info for did try IPP proxy to
-    // populate `fail_if_alias_requires_proxy_override` and pass into method for
-    // Preconnect.
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
-        /*fail_if_alias_requires_proxy_override_=*/false, std::move(callback));
+        std::move(callback));
   }
 
-  // TODO(crbug.com/383134117): Check proxy info for did try IPP proxy to
-  // populate `fail_if_alias_requires_proxy_override` and pass into
-  // `InitSocketHandleForWebSocketRequest` and `InitSocketHandleForHttpRequest`
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =
       base::BindRepeating(&HttpStreamFactory::Job::OnNeedsProxyAuthCallback,
                           base::Unretained(this));
@@ -809,8 +792,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key, net_log_, connection_.get(),
-        io_callback_, proxy_auth_callback,
-        /*fail_if_alias_requires_proxy_override_=*/false);
+        io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
@@ -818,7 +800,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       allowed_bad_certs_, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
-      proxy_auth_callback, /*fail_if_alias_requires_proxy_override_=*/false);
+      proxy_auth_callback);
 }
 
 int HttpStreamFactory::Job::DoInitConnectionImplQuic(
@@ -948,10 +930,10 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       // below. In the QUIC case, we only record it for origin connections. In
       // the TCP case, we also record it for non-tunneled, proxied requests.
       if (using_ssl_) {
-        negotiated_protocol_ = NextProto::kProtoQUIC;
+        negotiated_protocol_ = kProtoQUIC;
       }
     } else if (connection_->socket()->GetNegotiatedProtocol() !=
-               NextProto::kProtoUnknown) {
+               kProtoUnknown) {
       // Only connections that use TLS (either to the origin or via a GET to a
       // secure proxy) can negotiate ALPN.
       bool get_to_secure_proxy =
@@ -1167,9 +1149,18 @@ int HttpStreamFactory::Job::DoCreateStream() {
     return rv;
   }
 
-  session_->http_server_properties()->SetSupportsSpdy(
-      SchemeHostPortForSupportsSpdy(), request_info_.network_anonymization_key,
-      /*supports_spdy=*/true);
+  url::SchemeHostPort scheme_host_port(
+      using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,
+      spdy_session_key_.host_port_pair().host(),
+      spdy_session_key_.host_port_pair().port());
+
+  HttpServerProperties* http_server_properties =
+      session_->http_server_properties();
+  if (http_server_properties) {
+    http_server_properties->SetSupportsSpdy(
+        scheme_host_port, request_info_.network_anonymization_key,
+        true /* supports_spdy */);
+  }
 
   // Create a SpdyHttpStream or a BidirectionalStreamImpl attached to the
   // session.
@@ -1212,7 +1203,7 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
     return;
   }
 
-  negotiated_protocol_ = NextProto::kProtoHTTP2;
+  negotiated_protocol_ = kProtoHTTP2;
   existing_spdy_session_ = spdy_session;
   next_state_ = STATE_CREATE_STREAM;
 
@@ -1277,64 +1268,26 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
     return false;
   }
 
+  url::SchemeHostPort scheme_host_port(
+      using_ssl_ ? url::kHttpsScheme : url::kHttpScheme,
+      spdy_session_key_.host_port_pair().host(),
+      spdy_session_key_.host_port_pair().port());
   // Only throttle the request if the server is believed to support H2.
   return session_->http_server_properties()->GetSupportsSpdy(
-      SchemeHostPortForSupportsSpdy(), request_info_.network_anonymization_key);
+      scheme_host_port, request_info_.network_anonymization_key);
 }
 
 void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
-  CHECK(job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3);
-  constexpr std::string_view kHistogramBase =
-      "Net.SessionCreate.GoogleSearch.Preconnect2";
-  if (!IsGoogleHostWithAlpnH3(destination_.host())) {
+  if (!IsGoogleHost(destination_.host())) {
     return;
   }
-  bool is_session_reuse = false;
   if (using_quic_) {
-    auto completion_result_histogram =
-        base::StrCat({kHistogramBase, ".Quic.CompletionResult"});
     // TODO(crbug.com/376304027): Expand this to non-Quic as well. Currently,
     // H1 and H2 does not return precise failure reason.
-    base::UmaHistogramSparse(completion_result_histogram, -result);
     base::UmaHistogramSparse(
-        base::StrCat({completion_result_histogram,
-                      job_type_ == PRECONNECT ? ".PreconnectJob"
-                                              : ".PreconnectDnsAlpnH3Job"}),
+        "Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult",
         -result);
-    is_session_reuse = using_existing_quic_session_;
-  } else {
-    is_session_reuse = existing_spdy_session_ != nullptr;
   }
-
-  base::UmaHistogramBoolean(
-      base::StrCat({kHistogramBase, using_quic_ ? ".Quic" : ".Spdy",
-                    ".IsSessionReused"}),
-      is_session_reuse);
-}
-
-void HttpStreamFactory::Job::RecordCompletionHistograms(int result) {
-  constexpr std::string_view kHistogramBase = "Net.SessionCreate";
-  bool is_session_reuse = using_quic_ ? using_existing_quic_session_
-                                      : existing_spdy_session_ != nullptr;
-  // We only record session creation which succeeded and the ones that we
-  // created a new session.
-  if (result != OK || is_session_reuse) {
-    return;
-  }
-  if (request_info_.traffic_annotation.is_valid()) {
-    base::UmaHistogramSparse(
-        base::StrCat(
-            {kHistogramBase, using_quic_ ? ".Quic" : ".Spdy",
-             ".TrafficAnnotation",
-             IsGoogleHostWithAlpnH3(destination_.host()) ? ".GoogleHost" : ""}),
-        request_info_.traffic_annotation.unique_id_hash_code);
-  }
-  base::UmaHistogramBoolean(
-      base::StrCat(
-          {kHistogramBase, using_quic_ ? ".Quic" : ".Spdy",
-           ".HasTrafficAnnotation",
-           IsGoogleHostWithAlpnH3(destination_.host()) ? ".GoogleHost" : ""}),
-      request_info_.traffic_annotation.is_valid());
 }
 
 }  // namespace net

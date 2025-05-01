@@ -23,25 +23,24 @@ sdl_includes = [
 objc_library(
     name = "sdl2_objc",
     srcs = glob([
-        "include/*.h",
         "src/**/*.h",
+        "include/*.h",
+    ]),
+    includes = sdl_includes,
+    non_arc_srcs = glob([
         "src/audio/coreaudio/*.m",
         "src/file/cocoa/*.m",
         "src/filesystem/cocoa/*.m",
-        "src/joystick/iphoneos/*.m",
         "src/render/metal/*.m",
         "src/video/cocoa/*.m",
     ]),
-    includes = sdl_includes,
     sdk_frameworks = [
         "AudioToolbox",
         "Carbon",
         "CoreAudio",
-        "CoreHaptics",
         "CoreVideo",
         "Cocoa",
         "ForceFeedback",
-        "GameController",
         "IOKit",
         "OpenGL",
         "Metal",
@@ -55,27 +54,11 @@ sdl_srcs = glob(
         "src/**/*.h",
     ],
     exclude = [
-        # Exclude non-Mac platforms.
-        "src/*/android/**",
-        "src/*/emscripten/**",
-        "src/*/gdk/**",
-        "src/*/libusb/**",
-        "src/*/linux/**",
-        "src/*/n3ds/**",
-        "src/*/openbsd/**",
-        "src/*/os2/**",
-        "src/*/ps2/**",
-        "src/*/psp/**",
-        "src/*/qnx/**",
-        "src/*/riscos/**",
-        "src/*/vita/**",
-        "src/*/windows/**",
-        "src/*/winrt/**",
-        # These C files are included as headers.
-        "src/hidapi/mac/**",
-        "src/thread/generic/**",
-        # Exclude tests.
-        "src/test/**",
+        "src/video/qnx/**",
+        "src/haptic/windows/**",
+        "src/test/*.c",
+        "src/thread/generic/*.c",
+        "src/core/linux/*.c",
     ],
 )
 
@@ -85,22 +68,19 @@ sdl_srcs = glob(
 cc_library(
     name = "sdl2",
     srcs = select({
-        "@platforms//os:linux": [],
-        "@platforms//os:osx": sdl_srcs,
+        "@com_google_quic_trace//buildenv:linux": [],
+        "@com_google_quic_trace//buildenv:osx": sdl_srcs,
     }),
     hdrs = glob(["include/*.h"]),
     includes = sdl_includes,
     linkopts = select({
-        "@platforms//os:linux": ["-lSDL2"],
-        "@platforms//os:osx": [],
+        "@com_google_quic_trace//buildenv:linux": ["-lSDL2"],
+        "@com_google_quic_trace//buildenv:osx": [],
     }),
-    textual_hdrs = glob([
-        "src/hidapi/mac/*.c",
-        "src/thread/generic/*.c",
-    ]),
+    textual_hdrs = glob(["src/thread/generic/*.c"]),
     visibility = ["//visibility:public"],
     deps = select({
-        "@platforms//os:linux": [],
-        "@platforms//os:osx": [":sdl2_objc"],
+        "@com_google_quic_trace//buildenv:linux": [],
+        "@com_google_quic_trace//buildenv:osx": [":sdl2_objc"],
     }),
 )

@@ -108,7 +108,7 @@ public class ParameterizedRunnerDelegateFactoryTest {
                 ParameterizedRunnerDelegateFactory.generateUnmodifiableFrameworkMethodList(
                         new TestClass(ExampleTestClass.class), "");
 
-        Assert.assertEquals(6, methods.size());
+        Assert.assertEquals(methods.size(), 6);
 
         Map<String, Method> expectedTests = new HashMap<>();
         Method testMethodA = ExampleTestClass.class.getDeclaredMethod("testA", String.class);

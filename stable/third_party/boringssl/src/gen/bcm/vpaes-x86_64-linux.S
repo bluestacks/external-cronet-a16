@@ -34,9 +34,9 @@ _vpaes_encrypt_core:
 	movdqu	(%r9),%xmm5
 	psrld	$4,%xmm1
 	pand	%xmm9,%xmm0
-	pshufb	%xmm0,%xmm2
+.byte	102,15,56,0,208
 	movdqa	.Lk_ipt+16(%rip),%xmm0
-	pshufb	%xmm1,%xmm0
+.byte	102,15,56,0,193
 	pxor	%xmm5,%xmm2
 	addq	$16,%r9
 	pxor	%xmm2,%xmm0
@@ -48,25 +48,25 @@ _vpaes_encrypt_core:
 
 	movdqa	%xmm13,%xmm4
 	movdqa	%xmm12,%xmm0
-	pshufb	%xmm2,%xmm4
-	pshufb	%xmm3,%xmm0
+.byte	102,15,56,0,226
+.byte	102,15,56,0,195
 	pxor	%xmm5,%xmm4
 	movdqa	%xmm15,%xmm5
 	pxor	%xmm4,%xmm0
 	movdqa	-64(%r11,%r10,1),%xmm1
-	pshufb	%xmm2,%xmm5
+.byte	102,15,56,0,234
 	movdqa	(%r11,%r10,1),%xmm4
 	movdqa	%xmm14,%xmm2
-	pshufb	%xmm3,%xmm2
+.byte	102,15,56,0,211
 	movdqa	%xmm0,%xmm3
 	pxor	%xmm5,%xmm2
-	pshufb	%xmm1,%xmm0
+.byte	102,15,56,0,193
 	addq	$16,%r9
 	pxor	%xmm2,%xmm0
-	pshufb	%xmm4,%xmm3
+.byte	102,15,56,0,220
 	addq	$16,%r11
 	pxor	%xmm0,%xmm3
-	pshufb	%xmm1,%xmm0
+.byte	102,15,56,0,193
 	andq	$0x30,%r11
 	subq	$1,%rax
 	pxor	%xmm3,%xmm0
@@ -78,19 +78,19 @@ _vpaes_encrypt_core:
 	pandn	%xmm0,%xmm1
 	psrld	$4,%xmm1
 	pand	%xmm9,%xmm0
-	pshufb	%xmm0,%xmm5
+.byte	102,15,56,0,232
 	movdqa	%xmm10,%xmm3
 	pxor	%xmm1,%xmm0
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	movdqa	%xmm10,%xmm4
 	pxor	%xmm5,%xmm3
-	pshufb	%xmm0,%xmm4
+.byte	102,15,56,0,224
 	movdqa	%xmm10,%xmm2
 	pxor	%xmm5,%xmm4
-	pshufb	%xmm3,%xmm2
+.byte	102,15,56,0,211
 	movdqa	%xmm10,%xmm3
 	pxor	%xmm0,%xmm2
-	pshufb	%xmm4,%xmm3
+.byte	102,15,56,0,220
 	movdqu	(%r9),%xmm5
 	pxor	%xmm1,%xmm3
 	jnz	.Lenc_loop
@@ -98,12 +98,12 @@ _vpaes_encrypt_core:
 
 	movdqa	-96(%r10),%xmm4
 	movdqa	-80(%r10),%xmm0
-	pshufb	%xmm2,%xmm4
+.byte	102,15,56,0,226
 	pxor	%xmm5,%xmm4
-	pshufb	%xmm3,%xmm0
+.byte	102,15,56,0,195
 	movdqa	64(%r11,%r10,1),%xmm1
 	pxor	%xmm4,%xmm0
-	pshufb	%xmm1,%xmm0
+.byte	102,15,56,0,193
 	ret
 .cfi_endproc	
 .size	_vpaes_encrypt_core,.-_vpaes_encrypt_core
@@ -156,12 +156,12 @@ _vpaes_encrypt_core_2x:
 	psrld	$4,%xmm7
 	pand	%xmm9,%xmm0
 	pand	%xmm9,%xmm6
-	pshufb	%xmm0,%xmm2
-	pshufb	%xmm6,%xmm8
+.byte	102,15,56,0,208
+.byte	102,68,15,56,0,198
 	movdqa	.Lk_ipt+16(%rip),%xmm0
 	movdqa	%xmm0,%xmm6
-	pshufb	%xmm1,%xmm0
-	pshufb	%xmm7,%xmm6
+.byte	102,15,56,0,193
+.byte	102,15,56,0,247
 	pxor	%xmm5,%xmm2
 	pxor	%xmm5,%xmm8
 	addq	$16,%r9
@@ -177,10 +177,10 @@ _vpaes_encrypt_core_2x:
 	movdqa	.Lk_sb1+16(%rip),%xmm0
 	movdqa	%xmm4,%xmm12
 	movdqa	%xmm0,%xmm6
-	pshufb	%xmm2,%xmm4
-	pshufb	%xmm8,%xmm12
-	pshufb	%xmm3,%xmm0
-	pshufb	%xmm11,%xmm6
+.byte	102,15,56,0,226
+.byte	102,69,15,56,0,224
+.byte	102,15,56,0,195
+.byte	102,65,15,56,0,243
 	pxor	%xmm5,%xmm4
 	pxor	%xmm5,%xmm12
 	movdqa	.Lk_sb2(%rip),%xmm5
@@ -189,30 +189,30 @@ _vpaes_encrypt_core_2x:
 	pxor	%xmm12,%xmm6
 	movdqa	-64(%r11,%r10,1),%xmm1
 
-	pshufb	%xmm2,%xmm5
-	pshufb	%xmm8,%xmm13
+.byte	102,15,56,0,234
+.byte	102,69,15,56,0,232
 	movdqa	(%r11,%r10,1),%xmm4
 
 	movdqa	.Lk_sb2+16(%rip),%xmm2
 	movdqa	%xmm2,%xmm8
-	pshufb	%xmm3,%xmm2
-	pshufb	%xmm11,%xmm8
+.byte	102,15,56,0,211
+.byte	102,69,15,56,0,195
 	movdqa	%xmm0,%xmm3
 	movdqa	%xmm6,%xmm11
 	pxor	%xmm5,%xmm2
 	pxor	%xmm13,%xmm8
-	pshufb	%xmm1,%xmm0
-	pshufb	%xmm1,%xmm6
+.byte	102,15,56,0,193
+.byte	102,15,56,0,241
 	addq	$16,%r9
 	pxor	%xmm2,%xmm0
 	pxor	%xmm8,%xmm6
-	pshufb	%xmm4,%xmm3
-	pshufb	%xmm4,%xmm11
+.byte	102,15,56,0,220
+.byte	102,68,15,56,0,220
 	addq	$16,%r11
 	pxor	%xmm0,%xmm3
 	pxor	%xmm6,%xmm11
-	pshufb	%xmm1,%xmm0
-	pshufb	%xmm1,%xmm6
+.byte	102,15,56,0,193
+.byte	102,15,56,0,241
 	andq	$0x30,%r11
 	subq	$1,%rax
 	pxor	%xmm3,%xmm0
@@ -230,32 +230,32 @@ _vpaes_encrypt_core_2x:
 	psrld	$4,%xmm7
 	pand	%xmm9,%xmm0
 	pand	%xmm9,%xmm6
-	pshufb	%xmm0,%xmm5
-	pshufb	%xmm6,%xmm13
+.byte	102,15,56,0,232
+.byte	102,68,15,56,0,238
 	movdqa	%xmm10,%xmm3
 	movdqa	%xmm10,%xmm11
 	pxor	%xmm1,%xmm0
 	pxor	%xmm7,%xmm6
-	pshufb	%xmm1,%xmm3
-	pshufb	%xmm7,%xmm11
+.byte	102,15,56,0,217
+.byte	102,68,15,56,0,223
 	movdqa	%xmm10,%xmm4
 	movdqa	%xmm10,%xmm12
 	pxor	%xmm5,%xmm3
 	pxor	%xmm13,%xmm11
-	pshufb	%xmm0,%xmm4
-	pshufb	%xmm6,%xmm12
+.byte	102,15,56,0,224
+.byte	102,68,15,56,0,230
 	movdqa	%xmm10,%xmm2
 	movdqa	%xmm10,%xmm8
 	pxor	%xmm5,%xmm4
 	pxor	%xmm13,%xmm12
-	pshufb	%xmm3,%xmm2
-	pshufb	%xmm11,%xmm8
+.byte	102,15,56,0,211
+.byte	102,69,15,56,0,195
 	movdqa	%xmm10,%xmm3
 	movdqa	%xmm10,%xmm11
 	pxor	%xmm0,%xmm2
 	pxor	%xmm6,%xmm8
-	pshufb	%xmm4,%xmm3
-	pshufb	%xmm12,%xmm11
+.byte	102,15,56,0,220
+.byte	102,69,15,56,0,220
 	movdqu	(%r9),%xmm5
 
 	pxor	%xmm1,%xmm3
@@ -267,18 +267,18 @@ _vpaes_encrypt_core_2x:
 	movdqa	-80(%r10),%xmm0
 	movdqa	%xmm4,%xmm12
 	movdqa	%xmm0,%xmm6
-	pshufb	%xmm2,%xmm4
-	pshufb	%xmm8,%xmm12
+.byte	102,15,56,0,226
+.byte	102,69,15,56,0,224
 	pxor	%xmm5,%xmm4
 	pxor	%xmm5,%xmm12
-	pshufb	%xmm3,%xmm0
-	pshufb	%xmm11,%xmm6
+.byte	102,15,56,0,195
+.byte	102,65,15,56,0,243
 	movdqa	64(%r11,%r10,1),%xmm1
 
 	pxor	%xmm4,%xmm0
 	pxor	%xmm12,%xmm6
-	pshufb	%xmm1,%xmm0
-	pshufb	%xmm1,%xmm6
+.byte	102,15,56,0,193
+.byte	102,15,56,0,241
 	ret
 .cfi_endproc	
 .size	_vpaes_encrypt_core_2x,.-_vpaes_encrypt_core_2x
@@ -302,11 +302,11 @@ _vpaes_decrypt_core:
 	movdqu	(%r9),%xmm5
 	shlq	$4,%r11
 	pand	%xmm9,%xmm0
-	pshufb	%xmm0,%xmm2
+.byte	102,15,56,0,208
 	movdqa	.Lk_dipt+16(%rip),%xmm0
 	xorq	$0x30,%r11
 	leaq	.Lk_dsbd(%rip),%r10
-	pshufb	%xmm1,%xmm0
+.byte	102,15,56,0,193
 	andq	$0x30,%r11
 	pxor	%xmm5,%xmm2
 	movdqa	.Lk_mc_forward+48(%rip),%xmm5
@@ -322,35 +322,35 @@ _vpaes_decrypt_core:
 
 	movdqa	-32(%r10),%xmm4
 	movdqa	-16(%r10),%xmm1
-	pshufb	%xmm2,%xmm4
-	pshufb	%xmm3,%xmm1
+.byte	102,15,56,0,226
+.byte	102,15,56,0,203
 	pxor	%xmm4,%xmm0
 	movdqa	0(%r10),%xmm4
 	pxor	%xmm1,%xmm0
 	movdqa	16(%r10),%xmm1
 
-	pshufb	%xmm2,%xmm4
-	pshufb	%xmm5,%xmm0
-	pshufb	%xmm3,%xmm1
+.byte	102,15,56,0,226
+.byte	102,15,56,0,197
+.byte	102,15,56,0,203
 	pxor	%xmm4,%xmm0
 	movdqa	32(%r10),%xmm4
 	pxor	%xmm1,%xmm0
 	movdqa	48(%r10),%xmm1
 
-	pshufb	%xmm2,%xmm4
-	pshufb	%xmm5,%xmm0
-	pshufb	%xmm3,%xmm1
+.byte	102,15,56,0,226
+.byte	102,15,56,0,197
+.byte	102,15,56,0,203
 	pxor	%xmm4,%xmm0
 	movdqa	64(%r10),%xmm4
 	pxor	%xmm1,%xmm0
 	movdqa	80(%r10),%xmm1
 
-	pshufb	%xmm2,%xmm4
-	pshufb	%xmm5,%xmm0
-	pshufb	%xmm3,%xmm1
+.byte	102,15,56,0,226
+.byte	102,15,56,0,197
+.byte	102,15,56,0,203
 	pxor	%xmm4,%xmm0
 	addq	$16,%r9
-	palignr	$12,%xmm5,%xmm5
+.byte	102,15,58,15,237,12
 	pxor	%xmm1,%xmm0
 	subq	$1,%rax
 
@@ -361,32 +361,32 @@ _vpaes_decrypt_core:
 	movdqa	%xmm11,%xmm2
 	psrld	$4,%xmm1
 	pand	%xmm9,%xmm0
-	pshufb	%xmm0,%xmm2
+.byte	102,15,56,0,208
 	movdqa	%xmm10,%xmm3
 	pxor	%xmm1,%xmm0
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	movdqa	%xmm10,%xmm4
 	pxor	%xmm2,%xmm3
-	pshufb	%xmm0,%xmm4
+.byte	102,15,56,0,224
 	pxor	%xmm2,%xmm4
 	movdqa	%xmm10,%xmm2
-	pshufb	%xmm3,%xmm2
+.byte	102,15,56,0,211
 	movdqa	%xmm10,%xmm3
 	pxor	%xmm0,%xmm2
-	pshufb	%xmm4,%xmm3
+.byte	102,15,56,0,220
 	movdqu	(%r9),%xmm0
 	pxor	%xmm1,%xmm3
 	jnz	.Ldec_loop
 
 
 	movdqa	96(%r10),%xmm4
-	pshufb	%xmm2,%xmm4
+.byte	102,15,56,0,226
 	pxor	%xmm0,%xmm4
 	movdqa	112(%r10),%xmm0
 	movdqa	-352(%r11),%xmm2
-	pshufb	%xmm3,%xmm0
+.byte	102,15,56,0,195
 	pxor	%xmm4,%xmm0
-	pshufb	%xmm2,%xmm0
+.byte	102,15,56,0,194
 	ret
 .cfi_endproc	
 .size	_vpaes_decrypt_core,.-_vpaes_decrypt_core
@@ -426,7 +426,7 @@ _vpaes_schedule_core:
 .Lschedule_am_decrypting:
 
 	movdqa	(%r8,%r10,1),%xmm1
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	movdqu	%xmm3,(%rdx)
 	xorq	$0x30,%r8
 
@@ -480,7 +480,7 @@ _vpaes_schedule_core:
 
 .Loop_schedule_192:
 	call	_vpaes_schedule_round
-	palignr	$8,%xmm6,%xmm0
+.byte	102,15,58,15,198,8
 	call	_vpaes_schedule_mangle
 	call	_vpaes_schedule_192_smear
 	call	_vpaes_schedule_mangle
@@ -546,7 +546,7 @@ _vpaes_schedule_core:
 
 
 	movdqa	(%r8,%r10,1),%xmm1
-	pshufb	%xmm1,%xmm0
+.byte	102,15,56,0,193
 	leaq	.Lk_opt(%rip),%r11
 	addq	$32,%rdx
 
@@ -622,13 +622,13 @@ _vpaes_schedule_round:
 .cfi_startproc	
 
 	pxor	%xmm1,%xmm1
-	palignr	$15,%xmm8,%xmm1
-	palignr	$15,%xmm8,%xmm8
+.byte	102,65,15,58,15,200,15
+.byte	102,69,15,58,15,192,15
 	pxor	%xmm1,%xmm7
 
 
 	pshufd	$0xFF,%xmm0,%xmm0
-	palignr	$1,%xmm0,%xmm0
+.byte	102,15,58,15,192,1
 
 
 
@@ -649,24 +649,24 @@ _vpaes_schedule_low_round:
 	psrld	$4,%xmm1
 	pand	%xmm9,%xmm0
 	movdqa	%xmm11,%xmm2
-	pshufb	%xmm0,%xmm2
+.byte	102,15,56,0,208
 	pxor	%xmm1,%xmm0
 	movdqa	%xmm10,%xmm3
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	pxor	%xmm2,%xmm3
 	movdqa	%xmm10,%xmm4
-	pshufb	%xmm0,%xmm4
+.byte	102,15,56,0,224
 	pxor	%xmm2,%xmm4
 	movdqa	%xmm10,%xmm2
-	pshufb	%xmm3,%xmm2
+.byte	102,15,56,0,211
 	pxor	%xmm0,%xmm2
 	movdqa	%xmm10,%xmm3
-	pshufb	%xmm4,%xmm3
+.byte	102,15,56,0,220
 	pxor	%xmm1,%xmm3
 	movdqa	%xmm13,%xmm4
-	pshufb	%xmm2,%xmm4
+.byte	102,15,56,0,226
 	movdqa	%xmm12,%xmm0
-	pshufb	%xmm3,%xmm0
+.byte	102,15,56,0,195
 	pxor	%xmm4,%xmm0
 
 
@@ -694,9 +694,9 @@ _vpaes_schedule_transform:
 	psrld	$4,%xmm1
 	pand	%xmm9,%xmm0
 	movdqa	(%r11),%xmm2
-	pshufb	%xmm0,%xmm2
+.byte	102,15,56,0,208
 	movdqa	16(%r11),%xmm0
-	pshufb	%xmm1,%xmm0
+.byte	102,15,56,0,193
 	pxor	%xmm2,%xmm0
 	ret
 .cfi_endproc	
@@ -737,11 +737,11 @@ _vpaes_schedule_mangle:
 
 	addq	$16,%rdx
 	pxor	.Lk_s63(%rip),%xmm4
-	pshufb	%xmm5,%xmm4
+.byte	102,15,56,0,229
 	movdqa	%xmm4,%xmm3
-	pshufb	%xmm5,%xmm4
+.byte	102,15,56,0,229
 	pxor	%xmm4,%xmm3
-	pshufb	%xmm5,%xmm4
+.byte	102,15,56,0,229
 	pxor	%xmm4,%xmm3
 
 	jmp	.Lschedule_mangle_both
@@ -755,40 +755,40 @@ _vpaes_schedule_mangle:
 	pand	%xmm9,%xmm4
 
 	movdqa	0(%r11),%xmm2
-	pshufb	%xmm4,%xmm2
+.byte	102,15,56,0,212
 	movdqa	16(%r11),%xmm3
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	pxor	%xmm2,%xmm3
-	pshufb	%xmm5,%xmm3
+.byte	102,15,56,0,221
 
 	movdqa	32(%r11),%xmm2
-	pshufb	%xmm4,%xmm2
+.byte	102,15,56,0,212
 	pxor	%xmm3,%xmm2
 	movdqa	48(%r11),%xmm3
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	pxor	%xmm2,%xmm3
-	pshufb	%xmm5,%xmm3
+.byte	102,15,56,0,221
 
 	movdqa	64(%r11),%xmm2
-	pshufb	%xmm4,%xmm2
+.byte	102,15,56,0,212
 	pxor	%xmm3,%xmm2
 	movdqa	80(%r11),%xmm3
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	pxor	%xmm2,%xmm3
-	pshufb	%xmm5,%xmm3
+.byte	102,15,56,0,221
 
 	movdqa	96(%r11),%xmm2
-	pshufb	%xmm4,%xmm2
+.byte	102,15,56,0,212
 	pxor	%xmm3,%xmm2
 	movdqa	112(%r11),%xmm3
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	pxor	%xmm2,%xmm3
 
 	addq	$-16,%rdx
 
 .Lschedule_mangle_both:
 	movdqa	(%r8,%r10,1),%xmm1
-	pshufb	%xmm1,%xmm3
+.byte	102,15,56,0,217
 	addq	$-16,%r8
 	andq	$0x30,%r8
 	movdqu	%xmm3,(%rdx)
@@ -971,8 +971,8 @@ _CET_ENDBR
 	movdqa	.Lrev_ctr(%rip),%xmm1
 	movdqa	%xmm14,%xmm0
 	movdqa	%xmm15,%xmm6
-	pshufb	%xmm1,%xmm0
-	pshufb	%xmm1,%xmm6
+.byte	102,15,56,0,193
+.byte	102,15,56,0,241
 	call	_vpaes_encrypt_core_2x
 	movdqu	(%rdi),%xmm1
 	movdqu	16(%rdi),%xmm2

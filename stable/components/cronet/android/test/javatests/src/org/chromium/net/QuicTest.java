@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
-import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.TestLogger;
@@ -59,8 +58,7 @@ public class QuicTest {
     @Before
     public void setUp() throws Exception {
         // Load library first, since we need the Quic test server's URL.
-        CronetLibraryLoader.switchToTestLibrary();
-        CronetLibraryLoader.loadLibrary();
+        System.loadLibrary("cronet_tests");
         QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
         mTestLogger = mLoggerTestRule.mTestLogger;
         mTestRule

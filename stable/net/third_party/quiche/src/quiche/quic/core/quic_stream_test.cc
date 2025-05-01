@@ -4,7 +4,6 @@
 
 #include "quiche/quic/core/quic_stream.h"
 
-#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -22,7 +21,6 @@
 #include "quiche/quic/core/quic_connection.h"
 #include "quiche/quic/core/quic_constants.h"
 #include "quiche/quic/core/quic_error_codes.h"
-#include "quiche/quic/core/quic_stream_sequencer.h"
 #include "quiche/quic/core/quic_types.h"
 #include "quiche/quic/core/quic_utils.h"
 #include "quiche/quic/core/quic_versions.h"
@@ -93,8 +91,6 @@ class TestStream : public QuicStream {
     ASSERT_EQ(num_bytes, QuicStreamPeer::sequencer(this)->Readv(&iov, 1));
   }
 
-  QuicStreamSequencer* sequencer() { return QuicStream::sequencer(); }
-
  private:
   std::string data_;
 };
@@ -125,7 +121,6 @@ class QuicStreamTest : public QuicTestWithParam<ParsedQuicVersion> {
     QuicConfigPeer::SetReceivedInitialMaxStreamDataBytesOutgoingBidirectional(
         session_->config(), kMinimumFlowControlSendWindow);
     QuicConfigPeer::SetReceivedMaxUnidirectionalStreams(session_->config(), 10);
-    session_->config()->SetReliableStreamReset(true);
     session_->OnConfigNegotiated();
 
     stream_ = new StrictMock<TestStream>(kTestStreamId, session_.get(),
@@ -170,23 +165,6 @@ class QuicStreamTest : public QuicTestWithParam<ParsedQuicVersion> {
     EXPECT_EQ(STOP_SENDING_FRAME, frame.type);
     DeleteFrame(&const_cast<QuicFrame&>(frame));
     return true;
-  }
-
-  // Use application stream interface for sending data. This will trigger a call
-  // to mock_stream->Writev(_, _) that will have to return QuicConsumedData.
-  QuicConsumedData SendApplicationData(TestStream* stream,
-                                       absl::string_view data, size_t iov_len,
-                                       bool fin) {
-    struct iovec iov = {const_cast<char*>(data.data()), iov_len};
-    quiche::QuicheMemSliceStorage storage(
-        &iov, 1,
-        session_->connection()->helper()->GetStreamSendBufferAllocator(), 1024);
-    return stream->WriteMemSlices(storage.ToSpan(), fin);
-  }
-
-  QuicConsumedData SendApplicationData(absl::string_view data, size_t iov_len,
-                                       bool fin) {
-    return SendApplicationData(stream_, data, iov_len, fin);
   }
 
  protected:
@@ -969,8 +947,8 @@ TEST_P(QuicStreamTest, StreamWaitsForAcks) {
   EXPECT_TRUE(stream_->IsWaitingForAcks());
   QuicByteCount newly_acked_length = 0;
   EXPECT_TRUE(stream_->OnStreamFrameAcked(0, 9, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(9u, newly_acked_length);
   // Stream is not waiting for acks as all sent data is acked.
   EXPECT_FALSE(stream_->IsWaitingForAcks());
@@ -992,8 +970,8 @@ TEST_P(QuicStreamTest, StreamWaitsForAcks) {
 
   // kData2 is acked.
   EXPECT_TRUE(stream_->OnStreamFrameAcked(9, 9, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(9u, newly_acked_length);
   // Stream is waiting for acks as FIN is not acked.
   EXPECT_TRUE(stream_->IsWaitingForAcks());
@@ -1003,8 +981,8 @@ TEST_P(QuicStreamTest, StreamWaitsForAcks) {
   // FIN is acked.
   EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState());
   EXPECT_TRUE(stream_->OnStreamFrameAcked(18, 0, true, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(0u, newly_acked_length);
   EXPECT_FALSE(stream_->IsWaitingForAcks());
   EXPECT_FALSE(session_->HasUnackedStreamData());
@@ -1025,20 +1003,20 @@ TEST_P(QuicStreamTest, StreamDataGetAckedOutOfOrder) {
   EXPECT_TRUE(session_->HasUnackedStreamData());
   QuicByteCount newly_acked_length = 0;
   EXPECT_TRUE(stream_->OnStreamFrameAcked(9, 9, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_TRUE(session_->HasUnackedStreamData());
   EXPECT_EQ(9u, newly_acked_length);
   EXPECT_EQ(3u, QuicStreamPeer::SendBuffer(stream_).size());
   EXPECT_TRUE(stream_->OnStreamFrameAcked(18, 9, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_TRUE(session_->HasUnackedStreamData());
   EXPECT_EQ(9u, newly_acked_length);
   EXPECT_EQ(3u, QuicStreamPeer::SendBuffer(stream_).size());
   EXPECT_TRUE(stream_->OnStreamFrameAcked(0, 9, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_TRUE(session_->HasUnackedStreamData());
   EXPECT_EQ(9u, newly_acked_length);
   EXPECT_EQ(0u, QuicStreamPeer::SendBuffer(stream_).size());
@@ -1047,8 +1025,8 @@ TEST_P(QuicStreamTest, StreamDataGetAckedOutOfOrder) {
   EXPECT_TRUE(session_->HasUnackedStreamData());
   EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState());
   EXPECT_TRUE(stream_->OnStreamFrameAcked(27, 0, true, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(0u, newly_acked_length);
   EXPECT_FALSE(stream_->IsWaitingForAcks());
   EXPECT_FALSE(session_->HasUnackedStreamData());
@@ -1244,7 +1222,11 @@ TEST_P(QuicStreamTest, WriteBufferedData) {
   // Testing Writev.
   EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
       .WillOnce(Return(QuicConsumedData(0, false)));
-  QuicConsumedData consumed = SendApplicationData(data, data.length(), false);
+  struct iovec iov = {const_cast<char*>(data.data()), data.length()};
+  quiche::QuicheMemSliceStorage storage(
+      &iov, 1, session_->connection()->helper()->GetStreamSendBufferAllocator(),
+      1024);
+  QuicConsumedData consumed = stream_->WriteMemSlices(storage.ToSpan(), false);
 
   // There is no buffered data before, all data should be consumed without
   // respecting buffered data upper limit.
@@ -1254,8 +1236,10 @@ TEST_P(QuicStreamTest, WriteBufferedData) {
   EXPECT_FALSE(stream_->CanWriteNewData());
 
   EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _)).Times(0);
-  consumed = SendApplicationData(data, data.length(), false);
-
+  quiche::QuicheMemSliceStorage storage2(
+      &iov, 1, session_->connection()->helper()->GetStreamSendBufferAllocator(),
+      1024);
+  consumed = stream_->WriteMemSlices(storage2.ToSpan(), false);
   // No Data can be consumed as buffered data is beyond upper limit.
   EXPECT_EQ(0u, consumed.bytes_consumed);
   EXPECT_FALSE(consumed.fin_consumed);
@@ -1277,7 +1261,10 @@ TEST_P(QuicStreamTest, WriteBufferedData) {
 
   EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _)).Times(0);
   // All data can be consumed as buffered data is below upper limit.
-  consumed = SendApplicationData(data, data.length(), false);
+  quiche::QuicheMemSliceStorage storage3(
+      &iov, 1, session_->connection()->helper()->GetStreamSendBufferAllocator(),
+      1024);
+  consumed = stream_->WriteMemSlices(storage3.ToSpan(), false);
   EXPECT_EQ(data.length(), consumed.bytes_consumed);
   EXPECT_FALSE(consumed.fin_consumed);
   EXPECT_EQ(data.length() + GetQuicFlag(quic_buffered_data_threshold) - 1,
@@ -1292,13 +1279,21 @@ TEST_P(QuicStreamTest, WritevDataReachStreamLimit) {
                                         stream_);
   EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
       .WillOnce(Invoke(session_.get(), &MockQuicSession::ConsumeData));
-  QuicConsumedData consumed = SendApplicationData(data, 5, false);
+  struct iovec iov = {const_cast<char*>(data.data()), 5u};
+  quiche::QuicheMemSliceStorage storage(
+      &iov, 1, session_->connection()->helper()->GetStreamSendBufferAllocator(),
+      1024);
+  QuicConsumedData consumed = stream_->WriteMemSlices(storage.ToSpan(), false);
   EXPECT_EQ(data.length(), consumed.bytes_consumed);
+  struct iovec iov2 = {const_cast<char*>(data.data()), 1u};
+  quiche::QuicheMemSliceStorage storage2(
+      &iov2, 1,
+      session_->connection()->helper()->GetStreamSendBufferAllocator(), 1024);
   EXPECT_QUIC_BUG(
       {
         EXPECT_CALL(*connection_,
                     CloseConnection(QUIC_STREAM_LENGTH_OVERFLOW, _, _));
-        SendApplicationData(data, 1, false);
+        stream_->WriteMemSlices(storage2.ToSpan(), false);
       },
       "Write too many data via stream");
 }
@@ -1416,20 +1411,20 @@ TEST_P(QuicStreamTest, StreamDataGetAckedMultipleTimes) {
   // Verify [0, 9) 9 bytes are acked.
   QuicByteCount newly_acked_length = 0;
   EXPECT_TRUE(stream_->OnStreamFrameAcked(0, 9, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(9u, newly_acked_length);
   EXPECT_EQ(2u, QuicStreamPeer::SendBuffer(stream_).size());
   // Verify [9, 22) 13 bytes are acked.
   EXPECT_TRUE(stream_->OnStreamFrameAcked(5, 17, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(13u, newly_acked_length);
   EXPECT_EQ(1u, QuicStreamPeer::SendBuffer(stream_).size());
   // Verify [22, 26) 4 bytes are acked.
   EXPECT_TRUE(stream_->OnStreamFrameAcked(18, 8, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(4u, newly_acked_length);
   EXPECT_EQ(1u, QuicStreamPeer::SendBuffer(stream_).size());
   EXPECT_TRUE(stream_->IsWaitingForAcks());
@@ -1437,8 +1432,8 @@ TEST_P(QuicStreamTest, StreamDataGetAckedMultipleTimes) {
 
   // Ack [0, 27). Verify [26, 27) 1 byte is acked.
   EXPECT_TRUE(stream_->OnStreamFrameAcked(26, 1, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(1u, newly_acked_length);
   EXPECT_EQ(0u, QuicStreamPeer::SendBuffer(stream_).size());
   EXPECT_TRUE(stream_->IsWaitingForAcks());
@@ -1447,17 +1442,17 @@ TEST_P(QuicStreamTest, StreamDataGetAckedMultipleTimes) {
   // Ack Fin.
   EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState()).Times(1);
   EXPECT_TRUE(stream_->OnStreamFrameAcked(27, 0, true, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(0u, newly_acked_length);
   EXPECT_EQ(0u, QuicStreamPeer::SendBuffer(stream_).size());
   EXPECT_FALSE(stream_->IsWaitingForAcks());
   EXPECT_FALSE(session_->HasUnackedStreamData());
 
   // Ack [10, 27) and fin. No new data is acked.
-  EXPECT_FALSE(stream_->OnStreamFrameAcked(
-      10, 17, true, QuicTime::Delta::Zero(), QuicTime::Zero(),
-      &newly_acked_length, /*is_retransmission=*/false));
+  EXPECT_FALSE(
+      stream_->OnStreamFrameAcked(10, 17, true, QuicTime::Delta::Zero(),
+                                  QuicTime::Zero(), &newly_acked_length));
   EXPECT_EQ(0u, newly_acked_length);
   EXPECT_EQ(0u, QuicStreamPeer::SendBuffer(stream_).size());
   EXPECT_FALSE(stream_->IsWaitingForAcks());
@@ -1512,8 +1507,8 @@ TEST_P(QuicStreamTest, OnStreamFrameLost) {
   // Ack [9, 18).
   QuicByteCount newly_acked_length = 0;
   EXPECT_TRUE(stream_->OnStreamFrameAcked(9, 9, false, QuicTime::Delta::Zero(),
-                                          QuicTime::Zero(), &newly_acked_length,
-                                          /*is_retransmission=*/false));
+                                          QuicTime::Zero(),
+                                          &newly_acked_length));
   EXPECT_EQ(9u, newly_acked_length);
   EXPECT_FALSE(stream_->IsStreamFrameOutstanding(9, 3, false));
   EXPECT_TRUE(stream_->HasPendingRetransmission());
@@ -1633,8 +1628,7 @@ TEST_P(QuicStreamTest, RetransmitStreamData) {
   // Ack [10, 13).
   QuicByteCount newly_acked_length = 0;
   stream_->OnStreamFrameAcked(10, 3, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
+                              QuicTime::Zero(), &newly_acked_length);
   EXPECT_EQ(3u, newly_acked_length);
   // Retransmit [0, 18) with fin, and only [0, 8) is consumed.
   EXPECT_CALL(*session_, WritevData(stream_->id(), 10, 0, NO_FIN, _, _))
@@ -1946,373 +1940,6 @@ TEST_P(QuicStreamTest, FinBeforeReliableOffset) {
       .Times(1);
   stream_->OnStreamFrame(
       QuicStreamFrame(stream_->id(), true, 0, absl::string_view(data, 100)));
-}
-
-TEST_P(QuicStreamTest, ReliableSizeNotAckedAtTimeOfReset) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  SendApplicationData(data, 100, false);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-  QuicByteCount newly_acked_length = 0;
-  EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState()).Times(1);
-  EXPECT_CALL(*connection_, OnStreamReset(stream_->id(), _)).Times(1);
-  stream_->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
-  std::vector<std::unique_ptr<QuicStream>>* closed_streams =
-      session_->ClosedStreams();
-  EXPECT_TRUE(closed_streams->empty());
-  // Peer sends RST_STREAM in response.
-  QuicRstStreamFrame rst_frame(kInvalidControlFrameId, stream_->id(),
-                               QUIC_STREAM_CANCELLED, 1234);
-  stream_->OnStreamReset(rst_frame);
-  EXPECT_EQ((*(closed_streams->begin()))->id(), stream_->id());
-  ASSERT_EQ(closed_streams->size(), 1);
-}
-
-TEST_P(QuicStreamTest, ReliableSizeNotAckedAtTimeOfResetAndRetransmitted) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  SendApplicationData(data, 100, false);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  // Send 50 more bytes that aren't reliable.
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(50, false)));
-  SendApplicationData(data, 50, false);
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-
-  // Lose all the bytes.
-  stream_->OnStreamFrameLost(0, 150, false);
-  // Cause retransmission of the reliable bytes.
-  EXPECT_CALL(*session_, WritevData(stream_->id(), 100, 0, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  stream_->OnCanWrite();
-
-  // Ack the reliable bytes, and close.
-  QuicByteCount newly_acked_length = 0;
-  EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState()).Times(1);
-  EXPECT_CALL(*connection_, OnStreamReset(stream_->id(), _)).Times(1);
-  stream_->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
-  std::vector<std::unique_ptr<QuicStream>>* closed_streams =
-      session_->ClosedStreams();
-  EXPECT_TRUE(closed_streams->empty());
-  // Peer sends RST_STREAM in response.
-  QuicRstStreamFrame rst_frame(kInvalidControlFrameId, stream_->id(),
-                               QUIC_STREAM_CANCELLED, 1234);
-  stream_->OnStreamReset(rst_frame);
-  EXPECT_EQ((*(closed_streams->begin()))->id(), stream_->id());
-  ASSERT_EQ(closed_streams->size(), 1);
-}
-
-TEST_P(QuicStreamTest, ReliableSizeNotAckedAtTimeOfResetThenReadSideReset) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  SendApplicationData(data, 100, false);
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-
-  // Peer sends RST_STREAM in response.
-  QuicRstStreamFrame rst_frame(kInvalidControlFrameId, stream_->id(),
-                               QUIC_STREAM_CANCELLED, 1234);
-  stream_->OnStreamReset(rst_frame);
-  std::vector<std::unique_ptr<QuicStream>>* closed_streams =
-      session_->ClosedStreams();
-  ASSERT_TRUE(closed_streams->empty());
-  QuicByteCount newly_acked_length = 0;
-  EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState()).Times(1);
-  EXPECT_CALL(*connection_, OnStreamReset(stream_->id(), _)).Times(1);
-  stream_->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
-  ASSERT_EQ(closed_streams->size(), 1);
-  EXPECT_EQ((*(closed_streams->begin()))->id(), stream_->id());
-}
-
-TEST_P(QuicStreamTest, ReliableSizeNotAckedAtTimeOfResetThenReadSideFin) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  SendApplicationData(data, 100, false);
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-  EXPECT_TRUE(stream_->write_side_closed());
-
-  // Peer sends OOO FIN.
-  stream_->OnStreamFrame(
-      QuicStreamFrame(stream_->id(), true, sizeof(data), ""));
-  std::vector<std::unique_ptr<QuicStream>>* closed_streams =
-      session_->ClosedStreams();
-  ASSERT_TRUE(closed_streams->empty());
-  EXPECT_FALSE(stream_->read_side_closed());  // Missing the data before 100.
-
-  QuicByteCount newly_acked_length = 0;
-  EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState()).Times(1);
-  EXPECT_CALL(*connection_, OnStreamReset(stream_->id(), _)).Times(1);
-  stream_->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
-  ASSERT_TRUE(closed_streams->empty());
-  // The rest of the stream arrives.
-  EXPECT_CALL(*stream_, OnDataAvailable()).WillOnce([&]() {
-    // Most classes derived from QuicStream do something like this in
-    // OnDataAvailable. This is how FIN-related state is updated.
-    std::string buffer;
-    stream_->sequencer()->Read(&buffer);
-    if (stream_->sequencer()->IsClosed()) {
-      stream_->OnFinRead();
-    }
-  });
-  stream_->OnStreamFrame(QuicStreamFrame(
-      stream_->id(), false, 0, absl::string_view(data, sizeof(data))));
-  EXPECT_TRUE(stream_->read_side_closed());
-  ASSERT_EQ(closed_streams->size(), 1);
-  EXPECT_EQ((*(closed_streams->begin()))->id(), stream_->id());
-}
-
-TEST_P(QuicStreamTest, ReliableSizeAckedAtTimeOfReset) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  char data[100];
-  memset(data, 0, sizeof(data));
-  SendApplicationData(data, 100, false);
-  QuicByteCount newly_acked_length = 0;
-  stream_->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  EXPECT_CALL(*connection_, OnStreamReset(stream_->id(), _)).Times(1);
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-}
-
-TEST_P(QuicStreamTest, BufferedDataInReliableSize) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  EXPECT_CALL(*session_, WritevData(stream_->id(), 100, 0, _, _, _))
-      .WillOnce(Return(QuicConsumedData(50, false)));
-  char data[100];
-  memset(data, 0, sizeof(data));
-  // 50 bytes of this will be buffered.
-  SendApplicationData(data, 100, false);
-  EXPECT_EQ(stream_->BufferedDataBytes(), 50);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-  EXPECT_FALSE(stream_->write_side_closed());
-  EXPECT_CALL(*session_, WritevData(stream_->id(), 50, 50, _, _, _))
-      .WillOnce(Return(QuicConsumedData(50, false)));
-  stream_->OnCanWrite();
-  // Now that the stream has sent 100 bytes, the write side can be closed.
-  EXPECT_TRUE(stream_->write_side_closed());
-  EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState()).Times(1);
-  EXPECT_CALL(*connection_, OnStreamReset(stream_->id(), _)).Times(1);
-  QuicByteCount newly_acked_length = 0;
-  stream_->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
-}
-
-TEST_P(QuicStreamTest, ReliableSizeIsFinOffset) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  EXPECT_CALL(*session_, WritevData(_, 100, 0, FIN, _, _))
-      .WillOnce(Return(QuicConsumedData(100, true)));
-  char data[100];
-  memset(data, 0, sizeof(data));
-  SendApplicationData(data, 100, true);
-  // Send STOP_SENDING, but nothing else.
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  EXPECT_CALL(*session_, MaybeSendRstStreamFrame(_, _, _)).Times(0);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-  // Lose the packet; the stream will not be FINed again.
-  stream_->OnStreamFrameLost(0, 100, true);
-  EXPECT_CALL(*session_,
-              WritevData(stream_->id(), 100, 0, NO_FIN, LOSS_RETRANSMISSION, _))
-      .WillOnce(Return(QuicConsumedData(100, true)));
-  stream_->OnCanWrite();
-}
-
-TEST_P(QuicStreamTest, DataAfterResetStreamAt) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  SendApplicationData(data, 100, false);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _)).Times(0);
-  EXPECT_QUIC_BUG(SendApplicationData(data, 100, false),
-                  "Fin already buffered or RESET_STREAM_AT sent");
-  EXPECT_EQ(stream_->stream_bytes_written(), 100);
-}
-
-TEST_P(QuicStreamTest, SetReliableSizeOnUnidirectionalRead) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  QuicStreamId stream_id = QuicUtils::GetFirstUnidirectionalStreamId(
-      connection_->transport_version(), Perspective::IS_CLIENT);
-  TestStream stream(stream_id, session_.get(), READ_UNIDIRECTIONAL);
-  EXPECT_FALSE(stream.SetReliableSize());
-}
-
-// This covers the case where the read side is already closed, that the zombie
-// stream is cleaned up.
-TEST_P(QuicStreamTest, ResetStreamAtUnidirectionalWrite) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  const QuicStreamId kId = 3;
-  std::unique_ptr<TestStream> stream =
-      std::make_unique<TestStream>(kId, session_.get(), WRITE_UNIDIRECTIONAL);
-  TestStream* stream_ptr = stream.get();
-  session_->ActivateStream(std::move(stream));
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(kId, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  SendApplicationData(stream_ptr, data, 100, false);
-  EXPECT_TRUE(stream_ptr->SetReliableSize());
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  stream_ptr->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-  EXPECT_CALL(*stream_ptr, OnWriteSideInDataRecvdState());
-  EXPECT_CALL(*connection_, OnStreamReset(kId, _)).Times(1);
-  ;
-  QuicByteCount newly_acked_length = 0;
-  stream_ptr->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                                 QuicTime::Zero(), &newly_acked_length,
-                                 /*is_retransmission=*/false);
-  std::vector<std::unique_ptr<QuicStream>>* closed_streams =
-      session_->ClosedStreams();
-  ASSERT_EQ(closed_streams->size(), 1);
-  EXPECT_EQ((*(closed_streams->begin()))->id(), kId);
-}
-
-// This covers the case where the read side is already closed with FIN, that the
-// zombie stream is cleaned up.
-TEST_P(QuicStreamTest, ResetStreamAtReadSideFin) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  // Fin the read side.
-  QuicStreamId stream_id = stream_->id();
-  EXPECT_CALL(*stream_, OnDataAvailable()).Times(1);
-  stream_->OnStreamFrame(QuicStreamFrame(stream_->id(), true, 0, ""));
-  stream_->OnFinRead();
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  SendApplicationData(data, 100, false);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  stream_->PartialResetWriteSide(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-  EXPECT_CALL(*stream_, OnWriteSideInDataRecvdState());
-  EXPECT_CALL(*connection_, OnStreamReset(stream_id, _)).Times(1);
-  QuicByteCount newly_acked_length = 0;
-  stream_->OnStreamFrameAcked(0, 100, false, QuicTime::Delta::Zero(),
-                              QuicTime::Zero(), &newly_acked_length,
-                              /*is_retransmission=*/false);
-  std::vector<std::unique_ptr<QuicStream>>* closed_streams =
-      session_->ClosedStreams();
-  ASSERT_EQ(closed_streams->size(), 1);
-  EXPECT_EQ((*(closed_streams->begin()))->id(), stream_id);
-}
-
-TEST_P(QuicStreamTest, ResetStreamAtAfterStopSending) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  stream_->WriteOrBufferData(absl::string_view(data, 100), false, nullptr);
-  EXPECT_TRUE(stream_->SetReliableSize());
-  EXPECT_CALL(*session_, MaybeSendResetStreamAtFrame(_, _, _, _)).Times(1);
-  stream_->OnStopSending(
-      QuicResetStreamError::FromInternal(QUIC_STREAM_CANCELLED));
-}
-
-TEST_P(QuicStreamTest, RejectReliableSizeOldVersion) {
-  Initialize();
-  if (VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  char data[100];
-  memset(data, 0, sizeof(data));
-  EXPECT_CALL(*session_, WritevData(_, _, _, _, _, _))
-      .WillOnce(Return(QuicConsumedData(100, false)));
-  stream_->WriteOrBufferData(absl::string_view(data, 100), false, nullptr);
-  EXPECT_FALSE(stream_->SetReliableSize());
-}
-
-TEST_P(QuicStreamTest, RejectReliableSizeReadOnlyStream) {
-  Initialize();
-  if (!VersionHasIetfQuicFrames(session_->transport_version())) {
-    return;
-  }
-  auto uni = new StrictMock<TestStream>(6, session_.get(), READ_UNIDIRECTIONAL);
-  session_->ActivateStream(absl::WrapUnique(uni));
-  EXPECT_FALSE(uni->SetReliableSize());
 }
 
 }  // namespace

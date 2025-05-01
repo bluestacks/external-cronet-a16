@@ -80,8 +80,7 @@ TEST_F(ContentStabilityMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
-  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY,
-                                               content::ChildProcessId());
+  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
   child_process_data.metrics_name = kTestUtilityProcessName;
 
   provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
@@ -114,8 +113,7 @@ TEST_F(ContentStabilityMetricsProviderTest, CdmServiceProcessObserverUtility) {
   base::HistogramTester histogram_tester;
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
-  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY,
-                                               content::ChildProcessId());
+  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
   child_process_data.metrics_name = kTestCdmServiceUtilityProcessName;
   child_process_data.sandbox_type = sandbox::mojom::Sandbox::kCdm;
 
@@ -140,8 +138,7 @@ TEST_F(ContentStabilityMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
-  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY,
-                                               content::ChildProcessId());
+  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
   child_process_data.metrics_name = kTestCdmServiceUtilityProcessName;
   child_process_data.sandbox_type = sandbox::mojom::Sandbox::kCdm;
 
@@ -173,8 +170,7 @@ TEST_F(ContentStabilityMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
-  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY,
-                                               content::ChildProcessId());
+  content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
   child_process_data.metrics_name =
       kTestMediaFoundationServiceUtilityProcessName;
   child_process_data.sandbox_type =

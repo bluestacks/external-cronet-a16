@@ -67,13 +67,14 @@ template <typename T, typename... Args>
 T* ConstructAtInternalPartition(Args&&... args);
 
 // Destroy an object on heap in the internal partition.
+// TODO(crbug.com/40274826) This is an unused function. Start using it in tests
+// and/or in production code.
 template <typename T>
 void DestroyAtInternalPartition(T* ptr);
 
 // A deleter for `std::unique_ptr<T>`.
-template <typename T>
-struct InternalPartitionDeleter final {
-  void operator()(T* ptr) const { DestroyAtInternalPartition(ptr); }
+struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) InternalPartitionDeleter final {
+  void operator()(void* ptr) const;
 };
 
 }  // namespace partition_alloc::internal

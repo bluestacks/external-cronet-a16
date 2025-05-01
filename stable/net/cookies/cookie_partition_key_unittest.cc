@@ -4,13 +4,11 @@
 
 #include "net/cookies/cookie_partition_key.h"
 
-#include <optional>
 #include <string>
 #include <tuple>
 
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
-#include "net/base/network_isolation_partition.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_switches.h"
 #include "net/cookies/site_for_cookies.h"
@@ -20,10 +18,26 @@ namespace net {
 
 using enum CookiePartitionKey::AncestorChainBit;
 
-class CookiePartitionKeyTest : public ::testing::Test {};
+class CookiePartitionKeyTest : public testing::TestWithParam<bool> {
+ protected:
+  // testing::Test
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAncestorChainBitEnabledInPartitionedCookies,
+        AncestorChainBitEnabled());
+  }
 
+  bool AncestorChainBitEnabled() { return GetParam(); }
 
-TEST(CookiePartitionKeyTest, TestFromStorage) {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         CookiePartitionKeyTest,
+                         ::testing::Bool());
+
+TEST_P(CookiePartitionKeyTest, TestFromStorage) {
   struct {
     const std::string top_level_site;
     bool third_party;
@@ -62,7 +76,7 @@ TEST(CookiePartitionKeyTest, TestFromStorage) {
   }
 }
 
-TEST(CookiePartitionKeyTest, TestFromUntrustedInput) {
+TEST_P(CookiePartitionKeyTest, TestFromUntrustedInput) {
   const std::string kFullURL = "https://subdomain.toplevelsite.com/index.html";
   const std::string kValidSite = "https://toplevelsite.com";
   struct Output {
@@ -114,7 +128,7 @@ TEST(CookiePartitionKeyTest, TestFromUntrustedInput) {
   }
 }
 
-TEST(CookiePartitionKeyTest, Serialization) {
+TEST_P(CookiePartitionKeyTest, Serialization) {
   base::UnguessableToken nonce = base::UnguessableToken::Create();
   struct Output {
     std::string top_level_site;
@@ -218,7 +232,7 @@ TEST(CookiePartitionKeyTest, Serialization) {
   }
 }
 
-TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
+TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
   const SchemefulSite kTopLevelSite =
       SchemefulSite(GURL("https://toplevelsite.com"));
   const SchemefulSite kCookieSite =
@@ -244,13 +258,6 @@ TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
        CookiePartitionKey::FromURLForTesting(kCookieSite.GetURL(), kCrossSite,
                                              kNonce),
        SiteForCookies::FromUrl(GURL::EmptyGURL()), SchemefulSite(kTopLevelSite),
-       /*main_frame_navigation=*/false},
-      {"WithNetworkIsolationPartition",
-       NetworkIsolationKey(
-           kTopLevelSite, kCookieSite, /*nonce=*/std::nullopt,
-           NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
-       std::nullopt, SiteForCookies::FromUrl(GURL::EmptyGURL()),
-       SchemefulSite(kTopLevelSite),
        /*main_frame_navigation=*/false},
       {"WithCrossSiteAncestorSameSite",
        NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
@@ -284,6 +291,11 @@ TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
        SchemefulSite(kTopLevelSite), /*main_frame_navigation=*/true},
   };
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(
+      features::kAncestorChainBitEnabledInPartitionedCookies,
+      AncestorChainBitEnabled());
+
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.desc);
 
@@ -299,7 +311,7 @@ TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
   }
 }
 
-TEST(CookiePartitionKeyTest, FromWire) {
+TEST_P(CookiePartitionKeyTest, FromWire) {
   struct TestCase {
     const GURL url;
     const std::optional<base::UnguessableToken> nonce;
@@ -321,7 +333,7 @@ TEST(CookiePartitionKeyTest, FromWire) {
   }
 }
 
-TEST(CookiePartitionKeyTest, FromStorageKeyComponents) {
+TEST_P(CookiePartitionKeyTest, FromStorageKeyComponents) {
   struct TestCase {
     const GURL url;
     const std::optional<base::UnguessableToken> nonce = std::nullopt;
@@ -343,7 +355,7 @@ TEST(CookiePartitionKeyTest, FromStorageKeyComponents) {
   }
 }
 
-TEST(CookiePartitionKeyTest, FromScript) {
+TEST_P(CookiePartitionKeyTest, FromScript) {
   auto key = CookiePartitionKey::FromScript();
   EXPECT_TRUE(key);
   EXPECT_TRUE(key->from_script());
@@ -362,14 +374,14 @@ TEST(CookiePartitionKeyTest, FromScript) {
   EXPECT_TRUE(key != key2);
 }
 
-TEST(CookiePartitionKeyTest, IsSerializeable) {
+TEST_P(CookiePartitionKeyTest, IsSerializeable) {
   EXPECT_FALSE(CookiePartitionKey::FromURLForTesting(GURL()).IsSerializeable());
   EXPECT_TRUE(
       CookiePartitionKey::FromURLForTesting(GURL("https://www.example.com"))
           .IsSerializeable());
 }
 
-TEST(CookiePartitionKeyTest, Equality) {
+TEST_P(CookiePartitionKeyTest, Equality) {
   // Same eTLD+1 but different scheme are not equal.
   EXPECT_NE(CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")),
             CookiePartitionKey::FromURLForTesting(GURL("http://foo.com")));
@@ -379,18 +391,18 @@ TEST(CookiePartitionKeyTest, Equality) {
             CookiePartitionKey::FromURLForTesting(GURL("https://b.foo.com")));
 }
 
-TEST(CookiePartitionKeyTest, Equality_WithAncestorChain) {
+TEST_P(CookiePartitionKeyTest, Equality_WithAncestorChain) {
   CookiePartitionKey key1 = CookiePartitionKey::FromURLForTesting(
       GURL("https://foo.com"), kSameSite, std::nullopt);
   CookiePartitionKey key2 = CookiePartitionKey::FromURLForTesting(
       GURL("https://foo.com"), kCrossSite, std::nullopt);
 
-  EXPECT_NE(key1 , key2);
+  EXPECT_EQ((key1 == key2), !AncestorChainBitEnabled());
   EXPECT_EQ(key1, CookiePartitionKey::FromURLForTesting(
                       GURL("https://foo.com"), kSameSite, std::nullopt));
 }
 
-TEST(CookiePartitionKeyTest, Equality_WithNonce) {
+TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
   SchemefulSite top_level_site =
       SchemefulSite(GURL("https://toplevelsite.com"));
   SchemefulSite frame_site = SchemefulSite(GURL("https://cookiesite.com"));
@@ -423,7 +435,7 @@ TEST(CookiePartitionKeyTest, Equality_WithNonce) {
   EXPECT_NE(key1, unnonced_key);
 }
 
-TEST(CookiePartitionKeyTest, Localhost) {
+TEST_P(CookiePartitionKeyTest, Localhost) {
   SchemefulSite top_level_site(GURL("https://localhost:8000"));
 
   auto key = CookiePartitionKey::FromNetworkIsolationKey(

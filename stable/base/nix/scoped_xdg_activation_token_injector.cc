@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/nix/scoped_xdg_activation_token_injector.h"
-
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"

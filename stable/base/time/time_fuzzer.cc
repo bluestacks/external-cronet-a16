@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/time/time.h"
-
 #include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -12,6 +10,7 @@
 #include <tuple>
 
 #include "base/test/icu_test_util.h"
+#include "base/time/time.h"
 
 namespace {
 

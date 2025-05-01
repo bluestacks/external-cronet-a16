@@ -31,7 +31,6 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
-#include "net/dns/stale_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
@@ -62,7 +61,7 @@
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_info.h"
+#include "base/android/build_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -268,6 +267,13 @@ void URLRequestContextBuilder::BindToNetwork(
     std::optional<HostResolver::ManagerOptions> options) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
+  // DNS lookups for this context will need to target `network`. NDK to do that
+  // has been introduced in Android Marshmallow
+  // (https://developer.android.com/ndk/reference/group/networking#android_getaddrinfofornetwork)
+  // This is also checked later on in the codepath (at lookup time), but
+  // failing here should be preferred to return a more intuitive crash path.
+  CHECK(base::android::BuildInfo::GetInstance()->sdk_int() >=
+        base::android::SDK_VERSION_MARSHMALLOW);
   bound_network_ = network;
   manager_options_ = options.value_or(manager_options_);
 #else
@@ -355,21 +361,21 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     if (host_resolver_factory_) {
       host_resolver_ = host_resolver_factory_->CreateResolver(
           host_resolver_manager_, host_mapping_rules_,
-          true /* enable_caching */, stale_dns_enabled_);
+          true /* enable_caching */);
     } else {
-      host_resolver_ = HostResolver::CreateResolver(
-          host_resolver_manager_, host_mapping_rules_,
-          true /* enable_caching */, stale_dns_enabled_);
+      host_resolver_ = HostResolver::CreateResolver(host_resolver_manager_,
+                                                    host_mapping_rules_,
+                                                    true /* enable_caching */);
     }
   } else {
     if (host_resolver_factory_) {
       host_resolver_ = host_resolver_factory_->CreateStandaloneResolver(
           context->net_log(), HostResolver::ManagerOptions(),
-          host_mapping_rules_, true /* enable_caching */, stale_dns_enabled_);
+          host_mapping_rules_, true /* enable_caching */);
     } else {
       host_resolver_ = HostResolver::CreateStandaloneResolver(
           context->net_log(), HostResolver::ManagerOptions(),
-          host_mapping_rules_, true /* enable_caching */, stale_dns_enabled_);
+          host_mapping_rules_, true /* enable_caching */);
     }
   }
   host_resolver_->SetRequestContext(context.get());

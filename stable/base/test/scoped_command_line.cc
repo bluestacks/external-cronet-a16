@@ -4,7 +4,8 @@
 
 #include "base/test/scoped_command_line.h"
 
-namespace base::test {
+namespace base {
+namespace test {
 
 ScopedCommandLine::ScopedCommandLine()
     : original_command_line_(*base::CommandLine::ForCurrentProcess()) {}
@@ -17,4 +18,5 @@ CommandLine* ScopedCommandLine::GetProcessCommandLine() {
   return base::CommandLine::ForCurrentProcess();
 }
 
-}  // namespace base::test
+}  // namespace test
+}  // namespace base

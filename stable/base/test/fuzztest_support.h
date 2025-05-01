@@ -55,17 +55,16 @@ auto ArbitraryValueDouble() {
 
 auto ArbitraryValueString() {
   return fuzztest::ReversibleMap(
-      [](std::string string) { return base::Value(std::move(string)); },
+      [](std::string string) { return base::Value(string); },
       [](const base::Value& value) {
         return Wrap<std::string>(value.GetIfString());
       },
-      // TODO: Strings should not be constrained to ASCII.
-      fuzztest::AsciiString());
+      fuzztest::String());
 }
 
 auto ArbitraryValueBlob() {
   return fuzztest::ReversibleMap(
-      [](std::vector<uint8_t> blob) { return base::Value(std::move(blob)); },
+      [](std::vector<uint8_t> blob) { return base::Value(blob); },
       [](const base::Value& value) {
         return Wrap<std::vector<uint8_t>>(value.GetIfBlob());
       },
@@ -75,7 +74,7 @@ auto ArbitraryValueBlob() {
 auto ArbitraryValueList(fuzztest::Domain<base::Value> entry_domain) {
   return fuzztest::ReversibleMap(
       [](std::vector<base::Value> values) {
-        auto list = base::Value::List::with_capacity(values.size());
+        base::Value::List list;
         for (auto& value : values) {
           list.Append(std::move(value));
         }
@@ -109,8 +108,7 @@ auto ArbitraryValueDict(fuzztest::Domain<base::Value> value_domain) {
                    : std::nullopt;
       },
       fuzztest::ContainerOf<std::vector<std::pair<std::string, base::Value>>>(
-          // TODO: Keys should not be constrained to ASCII.
-          fuzztest::PairOf(fuzztest::AsciiString(), value_domain)));
+          fuzztest::PairOf(fuzztest::String(), value_domain)));
 }
 
 fuzztest::Domain<base::Value> ArbitraryValue() {

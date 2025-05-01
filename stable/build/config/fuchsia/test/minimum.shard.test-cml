@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {
-  // The following components must be subpackaged by all Chromium tests that
-  // aren't system tests, to provide implementations of always-required
-  // capabilities (see the `use`s and `offer`s).
+  include: [
+    "syslog/client.shard.cml",
+  ],
+  // Add capability providers.
   children: [
     {
       name: "build-info-service",
-      url: "fake-build-info#meta/fake_build_info.cm",
+      url: "fuchsia-pkg://fuchsia.com/fake-build-info#meta/fake_build_info.cm",
     },
     {
       name: "intl_property_manager",
-      url: "intl_property_manager#meta/intl_property_manager.cm",
+      url: "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cm",
     },
   ],
   offer: [
     {
-      dictionary: "diagnostics",
+      protocol: "fuchsia.logger.LogSink",
       from: "parent",
-      to: [
-        "#intl_property_manager",
-        "#build-info-service",
-      ],
+      to: [ "#intl_property_manager" ],
     }
   ],
   use: [

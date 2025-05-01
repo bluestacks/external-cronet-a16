@@ -228,9 +228,8 @@ void CompareTokens(const AccessToken& token,
     EXPECT_FALSE(result);
   } else {
     ASSERT_TRUE(result);
-    if (compare_linked_token) {
+    if (compare_linked_token)
       CompareTokens(*linked_token, atl_linked_token, false);
-    }
   }
 }
 
@@ -239,9 +238,8 @@ bool DuplicateTokenWithSecurityDescriptor(const ATL::CAccessToken& token,
                                           LPCWSTR security_descriptor,
                                           ATL::CAccessToken* new_token) {
   ATL::CSecurityDesc sd;
-  if (!sd.FromString(security_descriptor)) {
+  if (!sd.FromString(security_descriptor))
     return false;
-  }
   ATL::CSecurityAttributes sa;
   sa.Set(sd);
   return token.CreatePrimaryToken(new_token, desired_access, &sa);
@@ -250,9 +248,8 @@ bool DuplicateTokenWithSecurityDescriptor(const ATL::CAccessToken& token,
 bool CreateImpersonationToken(SECURITY_IMPERSONATION_LEVEL impersonation_level,
                               ATL::CAccessToken* imp_token) {
   ATL::CAccessToken token;
-  if (!token.GetProcessToken(MAXIMUM_ALLOWED)) {
+  if (!token.GetProcessToken(MAXIMUM_ALLOWED))
     return false;
-  }
   return token.CreateImpersonationToken(imp_token, impersonation_level);
 }
 

@@ -7,8 +7,6 @@
 #include <deque>
 #include <memory>
 #include <optional>
-#include <set>
-#include <variant>
 #include <vector>
 
 #include "base/containers/linked_list.h"
@@ -41,6 +39,7 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -133,7 +132,7 @@ HostCache::Key HostResolverManager::JobKey::ToCacheKey(bool secure) const {
   const DnsQueryType query_type_for_key = query_types.size() == 1
                                               ? *query_types.begin()
                                               : DnsQueryType::UNSPECIFIED;
-  std::variant<url::SchemeHostPort, std::string> host_for_cache;
+  absl::variant<url::SchemeHostPort, std::string> host_for_cache;
   if (host.HasScheme()) {
     host_for_cache = host.AsSchemeHostPort();
   } else {
@@ -177,7 +176,7 @@ HostResolverManager::Job::Job(
     return NetLogJobCreationParams(source_net_log.source());
   });
 
-  if (resolver_->IsHappyEyeballsV3Enabled()) {
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
     dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
         this, key_.host, key_.query_types, net_log_);
   }
@@ -297,7 +296,6 @@ void HostResolverManager::Job::AddServiceEndpointRequest(
 
 void HostResolverManager::Job::CancelServiceEndpointRequest(
     ServiceEndpointRequestImpl* request) {
-  CHECK(!service_endpoint_requests_.empty());
   CancelRequestCommon(request->priority(), request->net_log());
 
   if (num_active_requests() > 0) {
@@ -375,18 +373,12 @@ void HostResolverManager::Job::OnEvicted() {
 
 bool HostResolverManager::Job::ServeFromHosts() {
   DCHECK_GT(num_active_requests(), 0u);
-  std::set<std::unique_ptr<HostResolverInternalResult>> results =
-      resolver_->ServeFromHosts(
-          key_.host.GetHostnameWithoutBrackets(), key_.query_types,
-          key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
-  if (!results.empty() && std::ranges::any_of(results, [](const auto& result) {
-        return result->type() == HostResolverInternalResult::Type::kData;
-      })) {
-    HostCache::Entry legacy_results(results, base::Time::Now(),
-                                    tick_clock_->NowTicks(),
-                                    HostCache::Entry::SOURCE_HOSTS);
+  std::optional<HostCache::Entry> results = resolver_->ServeFromHosts(
+      key_.host.GetHostnameWithoutBrackets(), key_.query_types,
+      key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
+  if (results) {
     // This will destroy the Job.
-    CompleteRequests(legacy_results, base::TimeDelta(), true /* allow_cache */,
+    CompleteRequests(results.value(), base::TimeDelta(), true /* allow_cache */,
                      true /* secure */, TaskType::HOSTS);
     return true;
   }
@@ -394,13 +386,13 @@ bool HostResolverManager::Job::ServeFromHosts() {
 }
 
 void HostResolverManager::Job::OnAddedToJobMap(JobMap::iterator iterator) {
-  CHECK(!self_iterator_);
+  DCHECK(!self_iterator_);
   CHECK(iterator != resolver_->jobs_.end(), base::NotFatalUntil::M130);
   self_iterator_ = iterator;
 }
 
 void HostResolverManager::Job::OnRemovedFromJobMap() {
-  CHECK(self_iterator_);
+  DCHECK(self_iterator_);
   self_iterator_ = std::nullopt;
 }
 
@@ -867,10 +859,6 @@ void HostResolverManager::Job::OnIntermediateTransactionsComplete(
   }
 }
 
-bool HostResolverManager::Job::IsHappyEyeballsV3Enabled() const {
-  return resolver_->IsHappyEyeballsV3Enabled();
-}
-
 void HostResolverManager::Job::AddTransactionTimeQueued(
     base::TimeDelta time_queued) {
   total_transaction_time_queued_ += time_queued;
@@ -917,19 +905,15 @@ void HostResolverManager::Job::OnMdnsTaskComplete() {
   DCHECK(mdns_task_);
   // TODO(crbug.com/40577881): Consider adding MDNS-specific logging.
 
-  std::set<std::unique_ptr<HostResolverInternalResult>> results =
-      mdns_task_->GetResults();
-  HostCache::Entry legacy_results(results, base::Time::Now(),
-                                  tick_clock_->NowTicks(),
-                                  HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry results = mdns_task_->GetResults();
 
-  if (ContainsIcannNameCollisionIp(legacy_results.ip_endpoints())) {
+  if (ContainsIcannNameCollisionIp(results.ip_endpoints())) {
     CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION, TaskType::MDNS);
     return;
   }
   // MDNS uses a separate cache, so skip saving result to cache.
   // TODO(crbug.com/40611558): Consider merging caches.
-  CompleteRequestsWithoutCache(legacy_results, /*stale_info=*/std::nullopt,
+  CompleteRequestsWithoutCache(results, std::nullopt /* stale_info */,
                                TaskType::MDNS);
 }
 

@@ -5,7 +5,6 @@
 #include "base/profiler/stack_base_address_posix.h"
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
@@ -31,16 +30,13 @@ std::optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
   char line[1024];
   base::ScopedFILE fp(base::OpenFile(base::FilePath("/proc/self/maps"), "r"));
   uintptr_t stack_addr = reinterpret_cast<uintptr_t>(line);
-  if (!fp) {
+  if (!fp)
     return std::nullopt;
-  }
-  while (UNSAFE_TODO(fgets(line, sizeof(line), fp.get())) != nullptr) {
+  while (fgets(line, sizeof(line), fp.get()) != nullptr) {
     uintptr_t start, end;
-    if (UNSAFE_TODO(sscanf(line, "%" SCNxPTR "-%" SCNxPTR, &start, &end)) ==
-        2) {
-      if (start <= stack_addr && stack_addr < end) {
+    if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR, &start, &end) == 2) {
+      if (start <= stack_addr && stack_addr < end)
         return end;
-      }
     }
   }
   return std::nullopt;
@@ -84,7 +80,7 @@ std::optional<uintptr_t> GetThreadStackBaseAddress(PlatformThreadId id,
   // trying to work around the problem.
   return std::nullopt;
 #else
-  const bool is_main_thread = id.raw() == GetCurrentProcId();
+  const bool is_main_thread = id == GetCurrentProcId();
   if (is_main_thread) {
 #if BUILDFLAG(IS_ANDROID)
     // The implementation of pthread_getattr_np() in Bionic reads proc/self/maps

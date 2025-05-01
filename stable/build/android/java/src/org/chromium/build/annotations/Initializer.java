@@ -10,9 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Causes a method to treated as a constructor for the sake of null checking.
- *
- * <p>See: https://github.com/uber/NullAway/wiki/Supported-Annotations
+ * See: https://github.com/uber/NullAway/wiki/Supported-Annotations
  *
  * <p>Not directly using NullAway's annotations so that Cronet does not need the extra dep.
  */

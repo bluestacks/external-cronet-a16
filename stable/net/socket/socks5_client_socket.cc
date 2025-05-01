@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/socket/socks5_client_socket.h"
 
-#include <stdint.h>
-
-#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/numerics/byte_conversions.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/base/sys_addrinfo.h"
 #include "net/base/tracing.h"
@@ -42,6 +43,7 @@ SOCKS5ClientSocket::SOCKS5ClientSocket(
     : io_callback_(base::BindRepeating(&SOCKS5ClientSocket::OnIOComplete,
                                        base::Unretained(this))),
       transport_socket_(std::move(transport_socket)),
+      read_header_size(kReadHeaderSize),
       destination_(destination),
       net_log_(transport_socket_->NetLog()),
       traffic_annotation_(traffic_annotation) {}
@@ -62,8 +64,7 @@ int SOCKS5ClientSocket::Connect(CompletionOnceCallback callback) {
   net_log_.BeginEvent(NetLogEventType::SOCKS5_CONNECT);
 
   next_state_ = STATE_GREET_WRITE;
-  write_buf_.reset();
-  read_buf_.reset();
+  buffer_.clear();
 
   int rv = DoLoop(OK);
   if (rv == ERR_IO_PENDING) {
@@ -251,8 +252,7 @@ int SOCKS5ClientSocket::DoLoop(int last_io_result) {
   return rv;
 }
 
-static constexpr std::array<uint8_t, 3> kSOCKS5GreetWriteData{
-    0x05, 0x01, 0x00};  // no authentication
+const char kSOCKS5GreetWriteData[] = { 0x05, 0x01, 0x00 };  // no authentication
 
 int SOCKS5ClientSocket::DoGreetWrite() {
   // Since we only have 1 byte to send the hostname length in, if the
@@ -262,26 +262,29 @@ int SOCKS5ClientSocket::DoGreetWrite() {
     return ERR_SOCKS_CONNECTION_FAILED;
   }
 
-  if (!write_buf_) {
-    auto greet_buffer =
-        base::MakeRefCounted<WrappedIOBuffer>(kSOCKS5GreetWriteData);
-    write_buf_ = base::MakeRefCounted<DrainableIOBuffer>(
-        std::move(greet_buffer), greet_buffer->size());
+  if (buffer_.empty()) {
+    buffer_ =
+        std::string(kSOCKS5GreetWriteData, std::size(kSOCKS5GreetWriteData));
+    bytes_sent_ = 0;
   }
 
   next_state_ = STATE_GREET_WRITE_COMPLETE;
-  return transport_socket_->Write(write_buf_.get(),
-                                  write_buf_->BytesRemaining(), io_callback_,
-                                  traffic_annotation_);
+  size_t handshake_buf_len = buffer_.size() - bytes_sent_;
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
+  memcpy(handshake_buf_->data(), &buffer_.data()[bytes_sent_],
+         handshake_buf_len);
+  return transport_socket_->Write(handshake_buf_.get(), handshake_buf_len,
+                                  io_callback_, traffic_annotation_);
 }
 
 int SOCKS5ClientSocket::DoGreetWriteComplete(int result) {
   if (result < 0)
     return result;
 
-  write_buf_->DidConsume(result);
-  if (write_buf_->BytesRemaining() == 0) {
-    write_buf_.reset();
+  bytes_sent_ += result;
+  if (bytes_sent_ == buffer_.size()) {
+    buffer_.clear();
+    bytes_received_ = 0;
     next_state_ = STATE_GREET_READ;
   } else {
     next_state_ = STATE_GREET_WRITE;
@@ -291,12 +294,10 @@ int SOCKS5ClientSocket::DoGreetWriteComplete(int result) {
 
 int SOCKS5ClientSocket::DoGreetRead() {
   next_state_ = STATE_GREET_READ_COMPLETE;
-  if (!read_buf_) {
-    read_buf_ = base::MakeRefCounted<GrowableIOBuffer>();
-    read_buf_->SetCapacity(kGreetReadHeaderSize);
-  }
-  return transport_socket_->Read(read_buf_.get(),
-                                 read_buf_->RemainingCapacity(), io_callback_);
+  size_t handshake_buf_len = kGreetReadHeaderSize - bytes_received_;
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
+  return transport_socket_->Read(handshake_buf_.get(), handshake_buf_len,
+                                 io_callback_);
 }
 
 int SOCKS5ClientSocket::DoGreetReadComplete(int result) {
@@ -309,67 +310,69 @@ int SOCKS5ClientSocket::DoGreetReadComplete(int result) {
     return ERR_SOCKS_CONNECTION_FAILED;
   }
 
-  read_buf_->set_offset(read_buf_->offset() + result);
-  if (read_buf_->RemainingCapacity() > 0) {
+  bytes_received_ += result;
+  buffer_.append(handshake_buf_->data(), result);
+  if (bytes_received_ < kGreetReadHeaderSize) {
     next_state_ = STATE_GREET_READ;
     return OK;
   }
 
   // Got the greet data.
-  base::span<uint8_t> read_data = read_buf_->span_before_offset();
-
-  if (read_data[0] != kSOCKS5Version) {
+  if (buffer_[0] != kSOCKS5Version) {
     net_log_.AddEventWithIntParams(NetLogEventType::SOCKS_UNEXPECTED_VERSION,
-                                   "version", read_data[0]);
+                                   "version", buffer_[0]);
     return ERR_SOCKS_CONNECTION_FAILED;
   }
-  if (read_data[1] != 0x00) {
+  if (buffer_[1] != 0x00) {
     net_log_.AddEventWithIntParams(NetLogEventType::SOCKS_UNEXPECTED_AUTH,
-                                   "method", read_data[1]);
+                                   "method", buffer_[1]);
     return ERR_SOCKS_CONNECTION_FAILED;
   }
 
-  read_buf_.reset();
+  buffer_.clear();
   next_state_ = STATE_HANDSHAKE_WRITE;
   return OK;
 }
 
-scoped_refptr<DrainableIOBuffer> SOCKS5ClientSocket::BuildHandshakeWriteBuffer()
+int SOCKS5ClientSocket::BuildHandshakeWriteBuffer(std::string* handshake)
     const {
-  std::vector<uint8_t> handshake;
-  handshake.reserve(7 + destination_.host().size());
+  DCHECK(handshake->empty());
 
-  handshake.push_back(kSOCKS5Version);
-  handshake.push_back(kTunnelCommand);  // Connect command
-  handshake.push_back(kNullByte);       // Reserved null
+  handshake->push_back(kSOCKS5Version);
+  handshake->push_back(kTunnelCommand);  // Connect command
+  handshake->push_back(kNullByte);  // Reserved null
 
-  handshake.push_back(kEndPointDomain);  // The type of the address.
+  handshake->push_back(kEndPointDomain);  // The type of the address.
 
-  // First add the size of the hostname, followed by the hostname. The length of
-  // the hostname must fit within one byte.
-  const auto& host = destination_.host();
-  handshake.push_back(base::checked_cast<uint8_t>(host.size()));
-  handshake.insert(handshake.end(), host.begin(), host.end());
+  DCHECK_GE(static_cast<size_t>(0xFF), destination_.host().size());
 
-  auto nw_port = base::U16ToBigEndian(destination_.port());
-  handshake.insert(handshake.end(), nw_port.begin(), nw_port.end());
+  // First add the size of the hostname, followed by the hostname.
+  handshake->push_back(static_cast<unsigned char>(destination_.host().size()));
+  handshake->append(destination_.host());
 
-  auto base_buffer = base::MakeRefCounted<VectorIOBuffer>(std::move(handshake));
-  return base::MakeRefCounted<DrainableIOBuffer>(std::move(base_buffer),
-                                                 base_buffer->size());
+  uint16_t nw_port = base::HostToNet16(destination_.port());
+  handshake->append(reinterpret_cast<char*>(&nw_port), sizeof(nw_port));
+  return OK;
 }
 
 // Writes the SOCKS handshake data to the underlying socket connection.
 int SOCKS5ClientSocket::DoHandshakeWrite() {
   next_state_ = STATE_HANDSHAKE_WRITE_COMPLETE;
 
-  if (!write_buf_) {
-    write_buf_ = BuildHandshakeWriteBuffer();
+  if (buffer_.empty()) {
+    int rv = BuildHandshakeWriteBuffer(&buffer_);
+    if (rv != OK)
+      return rv;
+    bytes_sent_ = 0;
   }
 
-  return transport_socket_->Write(write_buf_.get(),
-                                  write_buf_->BytesRemaining(), io_callback_,
-                                  traffic_annotation_);
+  int handshake_buf_len = buffer_.size() - bytes_sent_;
+  DCHECK_LT(0, handshake_buf_len);
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
+  memcpy(handshake_buf_->data(), &buffer_[bytes_sent_],
+         handshake_buf_len);
+  return transport_socket_->Write(handshake_buf_.get(), handshake_buf_len,
+                                  io_callback_, traffic_annotation_);
 }
 
 int SOCKS5ClientSocket::DoHandshakeWriteComplete(int result) {
@@ -379,12 +382,14 @@ int SOCKS5ClientSocket::DoHandshakeWriteComplete(int result) {
   // We ignore the case when result is 0, since the underlying Write
   // may return spurious writes while waiting on the socket.
 
-  write_buf_->DidConsume(result);
-  if (write_buf_->BytesRemaining() == 0) {
-    write_buf_.reset();
+  bytes_sent_ += result;
+  if (bytes_sent_ == buffer_.size()) {
     next_state_ = STATE_HANDSHAKE_READ;
-  } else {
+    buffer_.clear();
+  } else if (bytes_sent_ < buffer_.size()) {
     next_state_ = STATE_HANDSHAKE_WRITE;
+  } else {
+    NOTREACHED();
   }
 
   return OK;
@@ -393,13 +398,15 @@ int SOCKS5ClientSocket::DoHandshakeWriteComplete(int result) {
 int SOCKS5ClientSocket::DoHandshakeRead() {
   next_state_ = STATE_HANDSHAKE_READ_COMPLETE;
 
-  if (!read_buf_) {
-    read_buf_ = base::MakeRefCounted<GrowableIOBuffer>();
-    read_buf_->SetCapacity(kReadHeaderSize);
+  if (buffer_.empty()) {
+    bytes_received_ = 0;
+    read_header_size = kReadHeaderSize;
   }
 
-  return transport_socket_->Read(read_buf_.get(),
-                                 read_buf_->RemainingCapacity(), io_callback_);
+  int handshake_buf_len = read_header_size - bytes_received_;
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
+  return transport_socket_->Read(handshake_buf_.get(), handshake_buf_len,
+                                 io_callback_);
 }
 
 int SOCKS5ClientSocket::DoHandshakeReadComplete(int result) {
@@ -413,21 +420,20 @@ int SOCKS5ClientSocket::DoHandshakeReadComplete(int result) {
     return ERR_SOCKS_CONNECTION_FAILED;
   }
 
-  read_buf_->set_offset(read_buf_->offset() + result);
+  buffer_.append(handshake_buf_->data(), result);
+  bytes_received_ += result;
 
   // When the first few bytes are read, check how many more are required
   // and accordingly increase them
-  if (read_buf_->offset() == kReadHeaderSize) {
-    base::span<uint8_t> read_data = read_buf_->span_before_offset();
-
-    if (read_data[0] != kSOCKS5Version || read_data[2] != kNullByte) {
+  if (bytes_received_ == kReadHeaderSize) {
+    if (buffer_[0] != kSOCKS5Version || buffer_[2] != kNullByte) {
       net_log_.AddEventWithIntParams(NetLogEventType::SOCKS_UNEXPECTED_VERSION,
-                                     "version", read_data[0]);
+                                     "version", buffer_[0]);
       return ERR_SOCKS_CONNECTION_FAILED;
     }
-    if (read_data[1] != 0x00) {
+    if (buffer_[1] != 0x00) {
       net_log_.AddEventWithIntParams(NetLogEventType::SOCKS_SERVER_ERROR,
-                                     "error_code", read_data[1]);
+                                     "error_code", buffer_[1]);
       return ERR_SOCKS_CONNECTION_FAILED;
     }
 
@@ -437,24 +443,21 @@ int SOCKS5ClientSocket::DoHandshakeReadComplete(int result) {
     // size. Since for IPv4/IPv6 the size is fixed and hence no 'size' is
     // read, we substract 1 byte from the additional request size.
     SocksEndPointAddressType address_type =
-        static_cast<SocksEndPointAddressType>(read_data[3]);
-    int additional_bytes_expected = 0;
+        static_cast<SocksEndPointAddressType>(buffer_[3]);
     if (address_type == kEndPointDomain) {
-      additional_bytes_expected += read_data[4];
+      read_header_size += static_cast<uint8_t>(buffer_[4]);
     } else if (address_type == kEndPointResolvedIPv4) {
-      additional_bytes_expected += sizeof(struct in_addr) - 1;
+      read_header_size += sizeof(struct in_addr) - 1;
     } else if (address_type == kEndPointResolvedIPv6) {
-      additional_bytes_expected += sizeof(struct in6_addr) - 1;
+      read_header_size += sizeof(struct in6_addr) - 1;
     } else {
       net_log_.AddEventWithIntParams(
           NetLogEventType::SOCKS_UNKNOWN_ADDRESS_TYPE, "address_type",
-          read_data[3]);
+          buffer_[3]);
       return ERR_SOCKS_CONNECTION_FAILED;
     }
 
-    additional_bytes_expected += 2;  // for the port.
-    // Update capacity.
-    read_buf_->SetCapacity(kReadHeaderSize + additional_bytes_expected);
+    read_header_size += 2;  // for the port.
     next_state_ = STATE_HANDSHAKE_READ;
     return OK;
   }
@@ -462,9 +465,9 @@ int SOCKS5ClientSocket::DoHandshakeReadComplete(int result) {
   // When the final bytes are read, setup handshake. We ignore the rest
   // of the response since they represent the SOCKSv5 endpoint and have
   // no use when doing a tunnel connection.
-  if (read_buf_->RemainingCapacity() == 0) {
+  if (bytes_received_ == read_header_size) {
     completed_handshake_ = true;
-    read_buf_.reset();
+    buffer_.clear();
     next_state_ = STATE_NONE;
     return OK;
   }

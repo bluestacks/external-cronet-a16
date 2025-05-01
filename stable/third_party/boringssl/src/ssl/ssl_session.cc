@@ -1,17 +1,137 @@
-// Copyright 1995-2016 The OpenSSL Project Authors. All Rights Reserved.
-// Copyright 2005 Nokia. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+ * All rights reserved.
+ *
+ * This package is an SSL implementation written
+ * by Eric Young (eay@cryptsoft.com).
+ * The implementation was written so as to conform with Netscapes SSL.
+ *
+ * This library is free for commercial and non-commercial use as long as
+ * the following conditions are aheared to.  The following conditions
+ * apply to all code found in this distribution, be it the RC4, RSA,
+ * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+ * included with this distribution is covered by the same copyright terms
+ * except that the holder is Tim Hudson (tjh@cryptsoft.com).
+ *
+ * Copyright remains Eric Young's, and as such any Copyright notices in
+ * the code are not to be removed.
+ * If this package is used in a product, Eric Young should be given attribution
+ * as the author of the parts of the library used.
+ * This can be in the form of a textual message at program startup or
+ * in documentation (online or textual) provided with the package.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *    "This product includes cryptographic software written by
+ *     Eric Young (eay@cryptsoft.com)"
+ *    The word 'cryptographic' can be left out if the rouines from the library
+ *    being used are not cryptographic related :-).
+ * 4. If you include any Windows specific code (or a derivative thereof) from
+ *    the apps directory (application code) you must include an acknowledgement:
+ *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * The licence and distribution terms for any publically available version or
+ * derivative of this code cannot be changed.  i.e. this code cannot simply be
+ * copied and put under another distribution licence
+ * [including the GNU Public Licence.]
+ */
+/* ====================================================================
+ * Copyright (c) 1998-2006 The OpenSSL Project.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. All advertising materials mentioning features or use of this
+ *    software must display the following acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
+ *
+ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
+ *    endorse or promote products derived from this software without
+ *    prior written permission. For written permission, please contact
+ *    openssl-core@openssl.org.
+ *
+ * 5. Products derived from this software may not be called "OpenSSL"
+ *    nor may "OpenSSL" appear in their names without prior written
+ *    permission of the OpenSSL Project.
+ *
+ * 6. Redistributions of any form whatsoever must retain the following
+ *    acknowledgment:
+ *    "This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This product includes cryptographic software written by Eric Young
+ * (eay@cryptsoft.com).  This product includes software written by Tim
+ * Hudson (tjh@cryptsoft.com).
+ *
+ */
+/* ====================================================================
+ * Copyright 2005 Nokia. All rights reserved.
+ *
+ * The portions of the attached software ("Contribution") is developed by
+ * Nokia Corporation and is licensed pursuant to the OpenSSL open source
+ * license.
+ *
+ * The Contribution, originally written by Mika Kousa and Pasi Eronen of
+ * Nokia Corporation, consists of the "PSK" (Pre-Shared Key) ciphersuites
+ * support (see RFC 4279) to OpenSSL.
+ *
+ * No patent licenses or other rights except those expressly stated in
+ * the OpenSSL open source license shall be deemed granted or received
+ * expressly, by implication, estoppel, or otherwise.
+ *
+ * No assurances are provided by Nokia that the Contribution does not
+ * infringe the patent or other intellectual property rights of any third
+ * party or that the license provides you with all the necessary rights
+ * to make use of the Contribution.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. IN
+ * ADDITION TO THE DISCLAIMERS INCLUDED IN THE LICENSE, NOKIA
+ * SPECIFICALLY DISCLAIMS ANY LIABILITY FOR CLAIMS BROUGHT BY YOU OR ANY
+ * OTHER ENTITY BASED ON INFRINGEMENT OF INTELLECTUAL PROPERTY RIGHTS OR
+ * OTHERWISE. */
 
 #include <openssl/ssl.h>
 
@@ -230,7 +350,7 @@ bool ssl_get_new_session(SSL_HANDSHAKE *hs) {
 
   session->is_server = ssl->server;
   session->ssl_version = ssl->s3->version;
-  session->is_quic = SSL_is_quic(ssl);
+  session->is_quic = ssl->quic_method != nullptr;
 
   // Fill in the time from the |SSL_CTX|'s clock.
   OPENSSL_timeval now = ssl_ctx_get_current_time(ssl->ctx.get());
@@ -364,21 +484,21 @@ static int ssl_encrypt_ticket_with_cipher_ctx(SSL_HANDSHAKE *hs, CBB *out,
   }
 
   size_t total = 0;
-  if (CRYPTO_fuzzer_mode_enabled()) {
-    OPENSSL_memcpy(ptr, session_buf, session_len);
-    total = session_len;
-  } else {
-    int len;
-    if (!EVP_EncryptUpdate(ctx.get(), ptr + total, &len, session_buf,
-                           session_len)) {
-      return 0;
-    }
-    total += len;
-    if (!EVP_EncryptFinal_ex(ctx.get(), ptr + total, &len)) {
-      return 0;
-    }
-    total += len;
+#if defined(BORINGSSL_UNSAFE_FUZZER_MODE)
+  OPENSSL_memcpy(ptr, session_buf, session_len);
+  total = session_len;
+#else
+  int len;
+  if (!EVP_EncryptUpdate(ctx.get(), ptr + total, &len, session_buf,
+                         session_len)) {
+    return 0;
   }
+  total += len;
+  if (!EVP_EncryptFinal_ex(ctx.get(), ptr + total, &len)) {
+    return 0;
+  }
+  total += len;
+#endif
   if (!CBB_did_write(out, total)) {
     return 0;
   }
@@ -462,7 +582,7 @@ SSLSessionType ssl_session_get_type(const SSL_SESSION *session) {
 bool ssl_session_is_context_valid(const SSL_HANDSHAKE *hs,
                                   const SSL_SESSION *session) {
   return session != nullptr &&
-         Span(session->sid_ctx) == hs->config->cert->sid_ctx;
+         MakeConstSpan(session->sid_ctx) == hs->config->cert->sid_ctx;
 }
 
 bool ssl_session_is_time_valid(const SSL *ssl, const SSL_SESSION *session) {
@@ -507,7 +627,7 @@ bool ssl_session_is_resumable(const SSL_HANDSHAKE *hs,
               hs->config->retain_only_sha256_of_client_certs) &&
          // Only resume if the underlying transport protocol hasn't changed.
          // This is to prevent cross-protocol resumption between QUIC and TCP.
-         SSL_is_quic(ssl) == int{session->is_quic};
+         (hs->ssl->quic_method != nullptr) == session->is_quic;
 }
 
 // ssl_lookup_session looks up |session_id| in the session cache and sets
@@ -595,9 +715,9 @@ enum ssl_hs_wait_t ssl_get_prev_session(SSL_HANDSHAKE *hs,
       ssl_client_hello_get_extension(client_hello, &ticket,
                                      TLSEXT_TYPE_session_ticket);
   if (tickets_supported && CBS_len(&ticket) != 0) {
-    switch (ssl_process_ticket(
-        hs, &session, &renew_ticket, ticket,
-        Span(client_hello->session_id, client_hello->session_id_len))) {
+    switch (ssl_process_ticket(hs, &session, &renew_ticket, ticket,
+                               MakeConstSpan(client_hello->session_id,
+                                             client_hello->session_id_len))) {
       case ssl_ticket_aead_success:
         break;
       case ssl_ticket_aead_ignore_ticket:
@@ -612,7 +732,7 @@ enum ssl_hs_wait_t ssl_get_prev_session(SSL_HANDSHAKE *hs,
     // The client didn't send a ticket, so the session ID is a real ID.
     enum ssl_hs_wait_t lookup_ret = ssl_lookup_session(
         hs, &session,
-        Span(client_hello->session_id, client_hello->session_id_len));
+        MakeConstSpan(client_hello->session_id, client_hello->session_id_len));
     if (lookup_ret != ssl_hs_ok) {
       return lookup_ret;
     }
@@ -815,8 +935,7 @@ ssl_session_st::ssl_session_st(const SSL_X509_METHOD *method)
       ticket_age_add_valid(false),
       is_server(false),
       is_quic(false),
-      has_application_settings(false),
-      is_resumable_across_names(false) {
+      has_application_settings(false) {
   CRYPTO_new_ex_data(&ex_data);
   time = ::time(nullptr);
 }
@@ -836,10 +955,9 @@ int SSL_SESSION_up_ref(SSL_SESSION *session) {
 }
 
 void SSL_SESSION_free(SSL_SESSION *session) {
-  if (session == nullptr) {
-    return;
+  if (session != nullptr) {
+    session->DecRefInternal();
   }
-  session->DecRefInternal();
 }
 
 const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *session,
@@ -852,7 +970,7 @@ const uint8_t *SSL_SESSION_get_id(const SSL_SESSION *session,
 
 int SSL_SESSION_set1_id(SSL_SESSION *session, const uint8_t *sid,
                         size_t sid_len) {
-  if (!session->session_id.TryCopyFrom(Span(sid, sid_len))) {
+  if (!session->session_id.TryCopyFrom(MakeConstSpan(sid, sid_len))) {
     OPENSSL_PUT_ERROR(SSL, SSL_R_SSL_SESSION_ID_TOO_LONG);
     return 0;
   }
@@ -945,7 +1063,7 @@ const uint8_t *SSL_SESSION_get0_id_context(const SSL_SESSION *session,
 
 int SSL_SESSION_set1_id_context(SSL_SESSION *session, const uint8_t *sid_ctx,
                                 size_t sid_ctx_len) {
-  if (!session->sid_ctx.TryCopyFrom(Span(sid_ctx, sid_ctx_len))) {
+  if (!session->sid_ctx.TryCopyFrom(MakeConstSpan(sid_ctx, sid_ctx_len))) {
     OPENSSL_PUT_ERROR(SSL, SSL_R_SSL_SESSION_ID_CONTEXT_TOO_LONG);
     return 0;
   }
@@ -975,7 +1093,7 @@ void SSL_SESSION_get0_ticket(const SSL_SESSION *session,
 
 int SSL_SESSION_set_ticket(SSL_SESSION *session, const uint8_t *ticket,
                            size_t ticket_len) {
-  return session->ticket.CopyFrom(Span(ticket, ticket_len));
+  return session->ticket.CopyFrom(MakeConstSpan(ticket, ticket_len));
 }
 
 uint32_t SSL_SESSION_get_ticket_lifetime_hint(const SSL_SESSION *session) {
@@ -999,10 +1117,6 @@ void SSL_SESSION_get0_peer_sha256(const SSL_SESSION *session,
     *out_ptr = nullptr;
     *out_len = 0;
   }
-}
-
-int SSL_SESSION_is_resumable_across_names(const SSL_SESSION *session) {
-  return session->is_resumable_across_names;
 }
 
 int SSL_SESSION_early_data_capable(const SSL_SESSION *session) {
@@ -1200,14 +1314,6 @@ SSL_SESSION *(*SSL_CTX_sess_get_get_cb(SSL_CTX *ctx))(SSL *ssl,
                                                       int id_len,
                                                       int *out_copy) {
   return ctx->get_session_cb;
-}
-
-void SSL_CTX_set_resumption_across_names_enabled(SSL_CTX *ctx, int enabled) {
-  ctx->resumption_across_names_enabled = !!enabled;
-}
-
-void SSL_set_resumption_across_names_enabled(SSL *ssl, int enabled) {
-  ssl->resumption_across_names_enabled = !!enabled;
 }
 
 void SSL_CTX_set_info_callback(SSL_CTX *ctx, void (*cb)(const SSL *ssl,

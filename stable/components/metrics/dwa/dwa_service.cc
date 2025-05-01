@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "components/metrics/dwa/dwa_pref_names.h"
-#include "components/metrics/dwa/dwa_rotation_scheduler.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -80,9 +79,9 @@ DwaService::DwaService(MetricsServiceClient* client, PrefService* local_state)
   auto get_upload_interval_callback =
       base::BindRepeating(&metrics::MetricsServiceClient::GetUploadInterval,
                           base::Unretained(client_));
-  bool fast_startup = client_->ShouldStartUpFast();
-  scheduler_ = std::make_unique<DwaRotationScheduler>(
-      rotate_callback, get_upload_interval_callback, fast_startup);
+  bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
+  scheduler_ = std::make_unique<MetricsRotationScheduler>(
+      rotate_callback, get_upload_interval_callback, fast_startup_for_testing);
   scheduler_->InitTaskComplete();
 }
 
@@ -170,7 +169,7 @@ void DwaService::RecordCoarseSystemInformation(
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_ANDROID);
 #elif BUILDFLAG(IS_IOS)
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_IOS);
-#elif BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_CHROMEOS);
 #else
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_OTHER);

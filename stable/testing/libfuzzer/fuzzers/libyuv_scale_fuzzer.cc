@@ -7,15 +7,12 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "testing/libfuzzer/fuzzers/libyuv_scale_fuzzer.h"
-
 #include <stddef.h>
 #include <stdint.h>
-
-#include <cstdlib>
 #include <random>
 #include <string>
 
+#include "testing/libfuzzer/fuzzers/libyuv_scale_fuzzer.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 static void FillBufferWithRandomData(uint8_t* dst,

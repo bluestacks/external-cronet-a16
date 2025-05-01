@@ -38,6 +38,7 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Pointee;
@@ -722,6 +723,7 @@ TEST(HTTPBalsaFrame, RequestFirstLineParsedCorrectly) {
 
 TEST(HTTPBalsaFrame, RequestLineSanitizedProperly) {
   SCOPED_TRACE("Testing that the request line is properly sanitized.");
+  using enum HttpValidationPolicy::FirstLineValidationOption;
   using FirstLineValidationOption =
       HttpValidationPolicy::FirstLineValidationOption;
 
@@ -733,35 +735,35 @@ TEST(HTTPBalsaFrame, RequestLineSanitizedProperly) {
   };
   const std::vector<TestCase> cases = {
       // No invalid whitespace.
-      {"GET / HTTP/1.1\r\n", "GET / HTTP/1.1", FirstLineValidationOption::NONE,
+      {"GET / HTTP/1.1\r\n", "GET / HTTP/1.1", NONE,
        BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET / HTTP/1.1\r\n", "GET / HTTP/1.1",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET / HTTP/1.1\r\n", "GET / HTTP/1.1",
-       FirstLineValidationOption::REJECT, BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET / HTTP/1.1\r\n", "GET / HTTP/1.1", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET / HTTP/1.1\r\n", "GET / HTTP/1.1", REJECT,
+       BalsaFrameEnums::BALSA_NO_ERROR},
 
       // Illegal CR in the request-line.
-      {"GET /\rHTTP/1.1\r\n", "GET /\rHTTP/1.1",
-       FirstLineValidationOption::NONE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET /\rHTTP/1.1\r\n", "GET / HTTP/1.1",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET /\rHTTP/1.1\r\n", "", FirstLineValidationOption::REJECT,
+      {"GET /\rHTTP/1.1\r\n", "GET /\rHTTP/1.1", NONE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET /\rHTTP/1.1\r\n", "GET / HTTP/1.1", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET /\rHTTP/1.1\r\n", "", REJECT,
        BalsaFrameEnums::INVALID_WS_IN_REQUEST_LINE},
 
       // Invalid tab in the request-line.
-      {"GET \t/ HTTP/1.1\r\n", "GET \t/ HTTP/1.1",
-       FirstLineValidationOption::NONE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET \t/ HTTP/1.1\r\n", "GET  / HTTP/1.1",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET \t/ HTTP/1.1\r\n", "", FirstLineValidationOption::REJECT,
+      {"GET \t/ HTTP/1.1\r\n", "GET \t/ HTTP/1.1", NONE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET \t/ HTTP/1.1\r\n", "GET  / HTTP/1.1", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET \t/ HTTP/1.1\r\n", "", REJECT,
        BalsaFrameEnums::INVALID_WS_IN_REQUEST_LINE},
 
       // Both CR and tab in the request-line.
-      {"GET \t/\rHTTP/1.1 \r\n", "GET \t/\rHTTP/1.1",
-       FirstLineValidationOption::NONE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET \t/\rHTTP/1.1 \r\n", "GET  / HTTP/1.1",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"GET \t/\rHTTP/1.1 \r\n", "", FirstLineValidationOption::REJECT,
+      {"GET \t/\rHTTP/1.1 \r\n", "GET \t/\rHTTP/1.1", NONE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET \t/\rHTTP/1.1 \r\n", "GET  / HTTP/1.1", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"GET \t/\rHTTP/1.1 \r\n", "", REJECT,
        BalsaFrameEnums::INVALID_WS_IN_REQUEST_LINE},
   };
   const absl::string_view kHeaderLineAndEnding = "Foo: bar\r\n\r\n";
@@ -849,6 +851,7 @@ TEST(HTTPBalsaFrame, ResponseFirstLineParsedCorrectly) {
 
 TEST(HTTPBalsaFrame, StatusLineSanitizedProperly) {
   SCOPED_TRACE("Testing that the status line is properly sanitized.");
+  using enum HttpValidationPolicy::FirstLineValidationOption;
   using FirstLineValidationOption =
       HttpValidationPolicy::FirstLineValidationOption;
 
@@ -860,35 +863,35 @@ TEST(HTTPBalsaFrame, StatusLineSanitizedProperly) {
   };
   const std::vector<TestCase> cases = {
       // No invalid whitespace.
-      {"HTTP/1.1 200 OK\r\n", "HTTP/1.1 200 OK",
-       FirstLineValidationOption::NONE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 200 OK\r\n", "HTTP/1.1 200 OK",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 200 OK\r\n", "HTTP/1.1 200 OK",
-       FirstLineValidationOption::REJECT, BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 200 OK\r\n", "HTTP/1.1 200 OK", NONE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 200 OK\r\n", "HTTP/1.1 200 OK", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 200 OK\r\n", "HTTP/1.1 200 OK", REJECT,
+       BalsaFrameEnums::BALSA_NO_ERROR},
 
       // Illegal CR in the status-line.
-      {"HTTP/1.1 200\rOK\r\n", "HTTP/1.1 200\rOK",
-       FirstLineValidationOption::NONE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 200\rOK\r\n", "HTTP/1.1 200 OK",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 200\rOK\r\n", "", FirstLineValidationOption::REJECT,
+      {"HTTP/1.1 200\rOK\r\n", "HTTP/1.1 200\rOK", NONE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 200\rOK\r\n", "HTTP/1.1 200 OK", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 200\rOK\r\n", "", REJECT,
        BalsaFrameEnums::INVALID_WS_IN_STATUS_LINE},
 
       // Invalid tab in the status-line.
-      {"HTTP/1.1 \t200 OK\r\n", "HTTP/1.1 \t200 OK",
-       FirstLineValidationOption::NONE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 \t200 OK\r\n", "HTTP/1.1  200 OK",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 \t200 OK\r\n", "", FirstLineValidationOption::REJECT,
+      {"HTTP/1.1 \t200 OK\r\n", "HTTP/1.1 \t200 OK", NONE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 \t200 OK\r\n", "HTTP/1.1  200 OK", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 \t200 OK\r\n", "", REJECT,
        BalsaFrameEnums::INVALID_WS_IN_STATUS_LINE},
 
       // Both CR and tab in the request-line.
-      {"HTTP/1.1 \t200\rOK \r\n", "HTTP/1.1 \t200\rOK",
-       FirstLineValidationOption::NONE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 \t200\rOK \r\n", "HTTP/1.1  200 OK",
-       FirstLineValidationOption::SANITIZE, BalsaFrameEnums::BALSA_NO_ERROR},
-      {"HTTP/1.1 \t200\rOK \r\n", "", FirstLineValidationOption::REJECT,
+      {"HTTP/1.1 \t200\rOK \r\n", "HTTP/1.1 \t200\rOK", NONE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 \t200\rOK \r\n", "HTTP/1.1  200 OK", SANITIZE,
+       BalsaFrameEnums::BALSA_NO_ERROR},
+      {"HTTP/1.1 \t200\rOK \r\n", "", REJECT,
        BalsaFrameEnums::INVALID_WS_IN_STATUS_LINE},
   };
   const absl::string_view kHeaderLineAndEnding =
@@ -1909,78 +1912,6 @@ TEST_F(HTTPBalsaFrameTest, ChunkExtensionLoneCarriageReturnAtBoundary) {
   EXPECT_EQ(BalsaFrameEnums::INVALID_CHUNK_EXTENSION, balsa_frame_.ErrorCode());
 }
 
-// Regression test for chunk extension sanitization.
-TEST_F(HTTPBalsaFrameTest, InvalidChunkExtensionWithLineFeedAllowed) {
-  balsa_frame_.set_http_validation_policy(
-      HttpValidationPolicy{.disallow_lone_lf_in_chunk_extension = false});
-  std::string message_headers =
-      "POST /potato?salad=withmayo HTTP/1.1\r\n"
-      "transfer-encoding: chunked\r\n"
-      "\r\n";
-  std::string message_body =
-      "9; bad\nextension\r\n"
-      "012345678\r\n"
-      "0\r\n"
-      "\r\n";
-  std::string message =
-      std::string(message_headers) + std::string(message_body);
-
-  EXPECT_CALL(visitor_mock_,
-              HandleError(BalsaFrameEnums::INVALID_CHUNK_EXTENSION))
-      .Times(0);  // Bug! b/380075645
-  ASSERT_EQ(message_headers.size(),
-            balsa_frame_.ProcessInput(message.data(), message.size()));
-  balsa_frame_.ProcessInput(message.data() + message_headers.size(),
-                            message.size());
-}
-
-// A LF character preceded by CR is allowed even if separated into multiple
-// calls to ProcessInput().
-TEST_F(HTTPBalsaFrameTest,
-       ChunkExtensionLoneCarriageReturnAtBoundaryWithLineFeed) {
-  balsa_frame_.set_http_validation_policy(
-      HttpValidationPolicy{.disallow_lone_lf_in_chunk_extension = true});
-  EXPECT_CALL(visitor_mock_, ProcessHeaders(_));
-  EXPECT_CALL(visitor_mock_, HeaderDone());
-  constexpr absl::string_view headers(
-      "POST / HTTP/1.1\r\n"
-      "transfer-encoding: chunked\r\n\r\n");
-  ASSERT_EQ(headers.size(),
-            balsa_frame_.ProcessInput(headers.data(), headers.size()));
-
-  constexpr absl::string_view body1("3\r");
-  ASSERT_EQ(body1.size(),
-            balsa_frame_.ProcessInput(body1.data(), body1.size()));
-  ASSERT_EQ(BalsaFrameEnums::BALSA_NO_ERROR, balsa_frame_.ErrorCode());
-
-  constexpr absl::string_view body2("\n");
-  EXPECT_EQ(body2.size(),
-            balsa_frame_.ProcessInput(body2.data(), body2.size()));
-  EXPECT_EQ(BalsaFrameEnums::BALSA_NO_ERROR, balsa_frame_.ErrorCode());
-}
-
-TEST_F(HTTPBalsaFrameTest, InvalidChunkExtensionWithLineFeedRejected) {
-  balsa_frame_.set_http_validation_policy(
-      HttpValidationPolicy{.disallow_lone_lf_in_chunk_extension = true});
-  std::string message_headers =
-      "POST /potato?salad=withmayo HTTP/1.1\r\n"
-      "transfer-encoding: chunked\r\n\r\n";
-  std::string message_body =
-      "9; bad\nextension\r\n"
-      "012345678\r\n"
-      "0\r\n"
-      "\r\n";
-  const std::string message = absl::StrCat(message_headers, message_body);
-
-  EXPECT_CALL(visitor_mock_,
-              HandleError(BalsaFrameEnums::INVALID_CHUNK_EXTENSION))
-      .Times(1);
-  ASSERT_EQ(message_headers.size(),
-            balsa_frame_.ProcessInput(message.data(), message.size()));
-  balsa_frame_.ProcessInput(message.data() + message_headers.size(),
-                            message.size());
-}
-
 TEST_F(HTTPBalsaFrameTest,
        VisitorInvokedProperlyForRequestWithTransferEncoding) {
   std::string message_headers =
@@ -1990,7 +1921,7 @@ TEST_F(HTTPBalsaFrameTest,
   std::string message_body =
       "A            chunkjed extension  \r\n"
       "01234567890            more crud including numbers 123123\r\n"
-      "3f\r\n"
+      "3f\n"
       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
       "0 last one\r\n"
       "\r\n";
@@ -2045,6 +1976,7 @@ TEST_F(HTTPBalsaFrameTest,
   EXPECT_EQ(message_body, body_input);
   EXPECT_EQ(message_body_data, body_data);
 }
+
 TEST_F(HTTPBalsaFrameTest,
        VisitorInvokedProperlyForRequestWithTransferEncodingAndTrailers) {
   std::string message_headers =
@@ -2057,7 +1989,7 @@ TEST_F(HTTPBalsaFrameTest,
   std::string message_body =
       "A            chunkjed extension  \r\n"
       "01234567890            more crud including numbers 123123\r\n"
-      "3f\r\n"
+      "3f\n"
       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
       "1  \r\n"
       "x   \r\n"
@@ -2619,7 +2551,7 @@ TEST_F(HTTPBalsaFrameTest,
   std::string message_body =
       "A            chunkjed extension  \r\n"
       "01234567890            more crud including numbers 123123\r\n"
-      "3f\r\n"
+      "3f\n"
       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
       "0 last one\r\n"
       "\r\n";
@@ -2681,7 +2613,7 @@ TEST_F(HTTPBalsaFrameTest,
   std::string message_body =
       "A            chunkjed extension  \r\n"
       "01234567890            more crud including numbers 123123\r\n"
-      "3f\r\n"
+      "3f\n"
       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
       "0 last one\r\n";
   std::string trailer_data =
@@ -2751,7 +2683,7 @@ TEST_F(
   std::string message_body =
       "A            chunkjed extension  \r\n"
       "01234567890            more crud including numbers 123123\r\n"
-      "3f\r\n"
+      "3f\n"
       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
       "0 last one\r\n";
   std::string trailer_data =
@@ -2827,7 +2759,7 @@ TEST(HTTPBalsaFrame,
     std::string message_body =
         "A            chunkjed extension  \r\n"
         "01234567890            more crud including numbers 123123\r\n"
-        "3f\r\n"
+        "3f\n"
         "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n"
         "0 last one\r\n";
     std::string trailer_data =
@@ -3459,26 +3391,6 @@ TEST_F(HTTPBalsaFrameTest, TwoSameContentLengthHeadersIsAnError) {
             balsa_frame_.ErrorCode());
 }
 
-TEST_F(HTTPBalsaFrameTest, ChunkedTransferEncodingWithContentLength) {
-  std::string header =
-      "POST / HTTP/1.1\r\n"
-      "transfer-encoding: chunked\r\n"
-      "content-length: 3\r\n"
-      "\r\n";
-  FakeHeaders fake_headers;
-  fake_headers.AddKeyValue("transfer-encoding", "chunked");
-  fake_headers.AddKeyValue("content-length", "3");
-  EXPECT_CALL(visitor_mock_, ProcessHeaders(fake_headers));
-
-  balsa_frame_.ProcessInput(header.data(), header.size());
-
-  EXPECT_FALSE(balsa_frame_.Error());
-  EXPECT_EQ(headers_.content_length_status(),
-            BalsaHeadersEnums::VALID_CONTENT_LENGTH);
-  EXPECT_EQ(headers_.content_length(), 3);
-  EXPECT_TRUE(headers_.transfer_encoding_is_chunked());
-}
-
 TEST_F(HTTPBalsaFrameTest, TwoTransferEncodingHeadersIsAnError) {
   std::string header =
       "HTTP/1.1 200 OK\r\n"
@@ -3856,7 +3768,7 @@ TEST_F(HTTPBalsaFrameTest, MultipleHeadersInTrailer) {
   std::string chunks =
       "3\r\n"
       "123\n"
-      "0\r\n";
+      "0\n";
   std::map<std::string, std::string> trailer;
   trailer["X-Trace"] =
       "http://trace.example.com/trace?host="

@@ -4,11 +4,10 @@
 
 #include "base/profiler/native_unwinder_win.h"
 
-#include <windows.h>
+#include <winnt.h>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/profiler/register_context_registers.h"
 #include "base/profiler/win32_stack_frame_unwinder.h"
 #include "build/build_config.h"
 
@@ -60,9 +59,8 @@ UnwindResult NativeUnwinderWin::TryUnwind(UnwinderStateCapture* capture_state,
       return UnwindResult::kAborted;
     }
 
-    if (RegisterContextInstructionPointer(thread_context) == 0) {
+    if (RegisterContextInstructionPointer(thread_context) == 0)
       return UnwindResult::kCompleted;
-    }
 
     // Exclusive range of expected stack pointer values after the unwind.
     struct {

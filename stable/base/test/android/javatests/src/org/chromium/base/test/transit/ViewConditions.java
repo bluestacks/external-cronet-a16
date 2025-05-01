@@ -45,11 +45,6 @@ public class ViewConditions {
         private final Matcher<View> mMatcher;
         private final Options mOptions;
         private View mViewMatched;
-        private int mPreviousViewX = Integer.MIN_VALUE;
-        private int mPreviousViewY = Integer.MIN_VALUE;
-        private int mPreviousViewWidth = Integer.MIN_VALUE;
-        private int mPreviousViewHeight = Integer.MIN_VALUE;
-        private long mLastChangeMs = -1;
 
         public DisplayedCondition(Matcher<View> matcher, Options options) {
             super(/* isRunOnUiThread= */ false);
@@ -65,17 +60,9 @@ public class ViewConditions {
                     .append(StringDescription.toString(mMatcher))
                     .append(" (>= ")
                     .append(mOptions.mDisplayedPercentageRequired)
-                    .append("% displayed");
-            if (mOptions.mSettleTimeMs > 0) {
-                description.append(", settled for ").append(mOptions.mSettleTimeMs).append("ms");
-            }
-            if (mOptions.mExpectEnabled) {
-                description.append(", enabled");
-            }
-            if (mOptions.mExpectDisabled) {
-                description.append(", disabled");
-            }
-            description.append(")");
+                    .append("% displayed, ")
+                    .append(mOptions.mExpectEnabled ? "enabled" : "disabled")
+                    .append(")");
             return description.toString();
         }
 
@@ -151,44 +138,15 @@ public class ViewConditions {
                     messages.add(String.format("%d%% displayed", portion.mPercentage));
                 }
             }
-
             if (mOptions.mExpectEnabled) {
                 if (!mViewMatched.isEnabled()) {
                     fulfilled = false;
                     messages.add("disabled");
                 }
-            } else if (mOptions.mExpectDisabled) {
+            } else { // Expected a displayed but disabled View.
                 if (mViewMatched.isEnabled()) {
                     fulfilled = false;
                     messages.add("enabled");
-                }
-            }
-
-            if (mOptions.mSettleTimeMs > 0) {
-                long nowMs = System.currentTimeMillis();
-                int[] locationOnScreen = new int[2];
-                mViewMatched.getLocationOnScreen(locationOnScreen);
-                int newX = locationOnScreen[0];
-                int newY = locationOnScreen[1];
-                int newWidth = view.getWidth();
-                int newHeight = view.getHeight();
-                if (mPreviousViewX != newX
-                        || mPreviousViewY != newY
-                        || mPreviousViewWidth != newWidth
-                        || mPreviousViewHeight != newHeight) {
-                    mPreviousViewX = newX;
-                    mPreviousViewY = newY;
-                    mPreviousViewWidth = newWidth;
-                    mPreviousViewHeight = newHeight;
-                    mLastChangeMs = nowMs;
-                }
-
-                long timeSinceMoveMs = nowMs - mLastChangeMs;
-                if (timeSinceMoveMs < mOptions.mSettleTimeMs) {
-                    fulfilled = false;
-                    messages.add("Not settled for " + mOptions.mSettleTimeMs + "ms");
-                } else {
-                    messages.add("Settled for " + mOptions.mSettleTimeMs + "ms");
                 }
             }
 
@@ -219,9 +177,7 @@ public class ViewConditions {
         /** Extra options for declaring DisplayedCondition. */
         public static class Options {
             boolean mExpectEnabled = true;
-            boolean mExpectDisabled;
             int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
-            int mSettleTimeMs;
 
             private Options() {}
 
@@ -230,27 +186,15 @@ public class ViewConditions {
                     return Options.this;
                 }
 
-                /** Whether the View is expected to be enabled. */
+                /** Whether the View is expected to be enabled or disabled. */
                 public Builder withExpectEnabled(boolean state) {
                     mExpectEnabled = state;
-                    return this;
-                }
-
-                /** Whether the View is expected to be disabled. */
-                public Builder withExpectDisabled(boolean state) {
-                    mExpectDisabled = state;
                     return this;
                 }
 
                 /** Minimum percentage of the View that needs to be displayed. */
                 public Builder withDisplayingAtLeast(int displayedPercentageRequired) {
                     mDisplayedPercentageRequired = displayedPercentageRequired;
-                    return this;
-                }
-
-                /** How long the View's rect needs to be unchanged. */
-                public Builder withSettleTimeMs(int settleTimeMs) {
-                    mSettleTimeMs = settleTimeMs;
                     return this;
                 }
             }

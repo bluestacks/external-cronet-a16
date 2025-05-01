@@ -4,10 +4,7 @@
 
 package org.chromium.base.memory;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** self freeze callback interface. */
-@NullMarked
 @FunctionalInterface
 public interface SelfFreezeCallback {
     public void onSelfFreeze();

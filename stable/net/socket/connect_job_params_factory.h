@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <variant>
 #include <vector>
 
 #include "net/base/host_port_pair.h"
@@ -22,6 +21,7 @@
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 

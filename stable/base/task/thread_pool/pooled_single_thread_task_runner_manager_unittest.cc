@@ -35,7 +35,8 @@
 #include "base/win/current_module.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -59,9 +60,8 @@ class PooledSingleThreadTaskRunnerManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (single_thread_task_runner_manager_) {
+    if (single_thread_task_runner_manager_)
       TearDownSingleThreadTaskRunnerManager();
-    }
     delayed_task_manager_.Shutdown();
     service_thread_.Stop();
   }
@@ -406,6 +406,7 @@ TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, PostDelayedTask) {
   task_ran.Wait();
   ASSERT_TRUE(!task_ran.IsSignaled());
 
+
   // Post a task with a short delay.
   const TimeTicks start_time = TimeTicks::Now();
   EXPECT_TRUE(task_runner->PostDelayedTask(
@@ -468,7 +469,7 @@ namespace {
 
 class CallJoinFromDifferentThread : public SimpleThread {
  public:
-  explicit CallJoinFromDifferentThread(
+  CallJoinFromDifferentThread(
       PooledSingleThreadTaskRunnerManager* manager_to_join)
       : SimpleThread("PooledSingleThreadTaskRunnerManagerJoinThread"),
         manager_to_join_(manager_to_join) {}
@@ -626,9 +627,8 @@ class PooledSingleThreadTaskRunnerManagerTestWin
   }
 
   void TearDown() override {
-    if (register_class_succeeded_) {
+    if (register_class_succeeded_)
       ::UnregisterClass(kTestWindowClassName, CURRENT_MODULE());
-    }
 
     PooledSingleThreadTaskRunnerManagerTest::TearDown();
   }
@@ -731,4 +731,5 @@ TEST_F(PooledSingleThreadTaskRunnerManagerStartTest, PostTaskBeforeStart) {
   task_finished.Wait();
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

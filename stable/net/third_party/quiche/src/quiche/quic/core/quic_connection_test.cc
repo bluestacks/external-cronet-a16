@@ -65,10 +65,12 @@ using testing::AtLeast;
 using testing::DoAll;
 using testing::DoDefault;
 using testing::ElementsAre;
+using testing::Ge;
 using testing::IgnoreResult;
 using testing::InSequence;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
+using testing::Lt;
 using testing::Ref;
 using testing::Return;
 using testing::SaveArg;
@@ -339,23 +341,18 @@ class TestConnection : public QuicConnection {
   // split needlessly across packet boundaries).  As a result, we have separate
   // tests for some cases for this stream.
   QuicConsumedData SendCryptoStreamData() {
-    return SendCryptoStreamDataAtLevel(ENCRYPTION_INITIAL);
-  }
-
-  QuicConsumedData SendCryptoStreamDataAtLevel(
-      EncryptionLevel encryption_level) {
     QuicStreamOffset offset = 0;
     absl::string_view data("chlo");
     if (!QuicVersionUsesCryptoFrames(transport_version())) {
       return SendCryptoDataWithString(data, offset);
     }
-    producer_.SaveCryptoData(encryption_level, offset, data);
+    producer_.SaveCryptoData(ENCRYPTION_INITIAL, offset, data);
     size_t bytes_written;
     if (notifier_) {
       bytes_written =
-          notifier_->WriteCryptoData(encryption_level, data.length(), offset);
+          notifier_->WriteCryptoData(ENCRYPTION_INITIAL, data.length(), offset);
     } else {
-      bytes_written = QuicConnection::SendCryptoData(encryption_level,
+      bytes_written = QuicConnection::SendCryptoData(ENCRYPTION_INITIAL,
                                                      data.length(), offset);
     }
     return QuicConsumedData(bytes_written, /*fin_consumed*/ false);
@@ -1038,7 +1035,7 @@ class QuicConnectionTest : public QuicTestWithParam<TestParams> {
                            0 /* ttl */, true /* ttl_valid */,
                            nullptr /* packet_headers */, 0 /* headers_length */,
                            false /* owns_header_buffer */, ECN_NOT_ECT,
-                           /*tos=*/std::nullopt, flow_label));
+                           flow_label));
 
     if (connection_.GetSendAlarm()->IsSet()) {
       connection_.GetSendAlarm()->Fire();
@@ -1602,6 +1599,12 @@ INSTANTIATE_TEST_SUITE_P(QuicConnectionTests, QuicConnectionTest,
 
 // Regression test for b/372756997.
 TEST_P(QuicConnectionTest, NoNestedCloseConnection) {
+  if (!GetQuicReloadableFlag(quic_avoid_nested_close_connection)) {
+    // EXPECT_QUIC_BUG tests are expensive so only run one instance of them.
+    if (!IsDefaultTestConfiguration()) {
+      return;
+    }
+  }
   EXPECT_TRUE(connection_.connected());
   EXPECT_CALL(visitor_, OnConnectionClosed(_, ConnectionCloseSource::FROM_SELF))
       .WillRepeatedly(
@@ -1613,11 +1616,20 @@ TEST_P(QuicConnectionTest, NoNestedCloseConnection) {
   writer_->SetShouldWriteFail();
   writer_->SetWriteError(*writer_->MessageTooBigErrorCode());
 
-  connection_.CloseConnection(
-      QUIC_CRYPTO_TOO_MANY_ENTRIES, "Closed by test",
-      ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
-  EXPECT_THAT(saved_connection_close_frame_.quic_error_code,
-              IsError(QUIC_CRYPTO_TOO_MANY_ENTRIES));
+  if (GetQuicReloadableFlag(quic_avoid_nested_close_connection)) {
+    connection_.CloseConnection(
+        QUIC_CRYPTO_TOO_MANY_ENTRIES, "Closed by test",
+        ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
+    EXPECT_THAT(saved_connection_close_frame_.quic_error_code,
+                IsError(QUIC_CRYPTO_TOO_MANY_ENTRIES));
+  } else {
+    EXPECT_QUIC_BUG(
+        connection_.CloseConnection(
+            QUIC_CRYPTO_TOO_MANY_ENTRIES, "Closed by test",
+            ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET),
+        // 30=QUIC_CRYPTO_TOO_MANY_ENTRIES, 27=QUIC_PACKET_WRITE_ERROR.
+        "Initial error code: 30, new error code: 27");
+  }
 }
 
 // These two tests ensure that the QuicErrorCode mapping works correctly.
@@ -3997,7 +4009,7 @@ TEST_P(QuicConnectionTest, FramePackingCryptoThenNonCrypto) {
     connection_.SetDefaultEncryptionLevel(ENCRYPTION_FORWARD_SECURE);
     EXPECT_CALL(*send_algorithm_, OnPacketSent(_, _, _, _, _)).Times(2);
     QuicConnection::ScopedPacketFlusher flusher(&connection_);
-    connection_.SendCryptoStreamDataAtLevel(ENCRYPTION_FORWARD_SECURE);
+    connection_.SendCryptoStreamData();
     connection_.SendStreamData3();
   }
   EXPECT_EQ(0u, connection_.NumQueuedPackets());
@@ -7134,25 +7146,6 @@ TEST_P(QuicConnectionTest, OnPacketHeaderDebugVisitor) {
   connection_.OnPacketHeader(header);
 }
 
-TEST_P(QuicConnectionTest, OnPacketHeaderReturnValue) {
-  QuicPacketHeader header;
-  header.packet_number = QuicPacketNumber(1);
-  header.form = IETF_QUIC_LONG_HEADER_PACKET;
-  EXPECT_TRUE(connection_.OnPacketHeader(header));
-
-  EXPECT_CALL(visitor_, OnConnectionClosed(_, _)).Times(1);
-  connection_.CloseConnection(QUIC_NO_ERROR, "Closed by test",
-                              ConnectionCloseBehavior::SILENT_CLOSE);
-
-  header.packet_number = QuicPacketNumber(2);
-  if (!GetQuicReloadableFlag(quic_on_packet_header_return_connected)) {
-    EXPECT_QUICHE_DEBUG_DEATH(connection_.OnPacketHeader(header), ".*");
-    return;
-  }
-
-  EXPECT_FALSE(connection_.OnPacketHeader(header));
-}
-
 TEST_P(QuicConnectionTest, Pacing) {
   TestConnection server(connection_id_, kPeerAddress, kSelfAddress,
                         helper_.get(), alarm_factory_.get(), writer_.get(),
@@ -10245,7 +10238,7 @@ TEST_P(QuicConnectionTest, SendCoalescedPackets) {
   EXPECT_EQ(connection_.max_packet_length(), writer_->last_packet_size());
 
   // Verify packet process.
-  EXPECT_LE(1u, writer_->crypto_frames().size());
+  EXPECT_EQ(1u, writer_->crypto_frames().size());
   EXPECT_EQ(0u, writer_->stream_frames().size());
   // Verify there is coalesced packet.
   EXPECT_NE(nullptr, writer_->coalesced_packet());
@@ -10708,7 +10701,7 @@ TEST_P(QuicConnectionTest, ClientRetransmitsInitialPacketsOnRetry) {
   // RETRY.
   if (GetParam().ack_response == AckResponse::kImmediate) {
     EXPECT_EQ(2u, writer_->packets_write_attempts());
-    EXPECT_LE(1u, writer_->framer()->crypto_frames().size());
+    EXPECT_EQ(1u, writer_->framer()->crypto_frames().size());
   }
 }
 
@@ -15800,7 +15793,6 @@ TEST_P(QuicConnectionTest, AckElicitingFrames) {
   QuicConnectionPeer::GetSelfIssuedConnectionIdManager(&connection_)
       ->MaybeSendNewConnectionIds();
   connection_.set_can_receive_ack_frequency_frame();
-  connection_.set_can_receive_ack_frequency_immediate_ack(true);
 
   QuicAckFrame ack_frame = InitAckFrame(1);
   QuicRstStreamFrame rst_stream_frame;
@@ -15906,9 +15898,6 @@ TEST_P(QuicConnectionTest, AckElicitingFrames) {
       case ACK_FREQUENCY_FRAME:
         frame = QuicFrame(&ack_frequency_frame);
         break;
-      case IMMEDIATE_ACK_FRAME:
-        frame = QuicFrame(QuicImmediateAckFrame());
-        break;
       case RESET_STREAM_AT_FRAME:
         frame = QuicFrame(&reset_stream_at_frame);
         break;
@@ -15926,35 +15915,14 @@ TEST_P(QuicConnectionTest, AckElicitingFrames) {
     ProcessFramesPacketAtLevel(packet_number++, frames,
                                ENCRYPTION_FORWARD_SECURE);
     if (QuicUtils::IsAckElicitingFrame(frame_type)) {
-      if (frame_type != IMMEDIATE_ACK_FRAME) {
-        ASSERT_TRUE(connection_.HasPendingAcks()) << frame;
-        // Flush ACK.
-        clock_.AdvanceTime(DefaultDelayedAckTime());
-        connection_.GetAckAlarm()->Fire();
-      }
-      EXPECT_FALSE(writer_->ack_frames().empty());
-      writer_->framer()->Reset();  // Clear the visitor.
+      ASSERT_TRUE(connection_.HasPendingAcks()) << frame;
+      // Flush ACK.
+      clock_.AdvanceTime(DefaultDelayedAckTime());
+      connection_.GetAckAlarm()->Fire();
     }
     EXPECT_FALSE(connection_.HasPendingAcks());
     ASSERT_TRUE(connection_.connected());
   }
-}
-
-TEST_P(QuicConnectionTest, ImmediateAckOverridesOtherFrame) {
-  if (!version().HasIetfQuicFrames()) {
-    return;
-  }
-  QuicFrames frames;
-  connection_.SetDefaultEncryptionLevel(ENCRYPTION_FORWARD_SECURE);
-  connection_.set_can_receive_ack_frequency_immediate_ack(true);
-  // A PING frame will set the ack timer. IMMEDIATE_ACK should override it to
-  // send an ACK immediately.
-  frames.push_back(QuicFrame(QuicPingFrame()));
-  frames.push_back(QuicFrame(QuicImmediateAckFrame()));
-  writer_->framer()->Reset();  // Clear the visitor.
-  EXPECT_TRUE(writer_->ack_frames().empty());
-  ProcessFramesPacketAtLevel(1, frames, ENCRYPTION_FORWARD_SECURE);
-  EXPECT_FALSE(writer_->ack_frames().empty());
 }
 
 TEST_P(QuicConnectionTest, ReceivedChloAndAck) {
@@ -17783,6 +17751,7 @@ TEST_P(QuicConnectionTest, EcnCodepointsAccepted) {
   }
 }
 
+
 TEST_P(QuicConnectionTest, EcnValidationDisabled) {
   QuicConnectionPeer::DisableEcnCodepointValidation(&connection_);
   for (QuicEcnCodepoint ecn : {ECN_NOT_ECT, ECN_ECT0, ECN_ECT1, ECN_CE}) {
@@ -17938,17 +17907,6 @@ TEST_P(QuicConnectionTest, OnParsedClientHelloInfoWithDebugVisitor) {
   connection_.set_debug_visitor(&debug_visitor);
   EXPECT_CALL(debug_visitor, OnParsedClientHelloInfo(parsed_chlo)).Times(1);
   connection_.OnParsedClientHelloInfo(parsed_chlo);
-}
-
-TEST_P(QuicConnectionTest, ConfigEnablesAckFrequency) {
-  QuicConfig config;
-  EXPECT_FALSE(QuicConnectionPeer::CanReceiveAckFrequencyFrames(&connection_));
-  config.SetMinAckDelayDraft10Ms(kDefaultMinAckDelayTimeMs);
-  EXPECT_CALL(*send_algorithm_, SetFromConfig(_, _));
-  EXPECT_CALL(*send_algorithm_, EnableECT1()).WillOnce(Return(false));
-  EXPECT_CALL(*send_algorithm_, EnableECT0()).WillOnce(Return(false));
-  connection_.SetFromConfig(config);
-  EXPECT_TRUE(QuicConnectionPeer::CanReceiveAckFrequencyFrames(&connection_));
 }
 
 }  // namespace

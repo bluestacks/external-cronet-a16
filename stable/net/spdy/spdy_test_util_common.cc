@@ -465,7 +465,6 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
       socket_params, /*proxy_annotation_tag=*/std::nullopt, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
       callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-      /*fail_if_alias_requires_proxy_override=*/false,
       http_session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                   ProxyChain::Direct()),
       net_log);
@@ -528,9 +527,7 @@ class FakeSpdySessionClientSocket : public MockClientSocket {
   }
 
   // Return kProtoUnknown to use the pool's default protocol.
-  NextProto GetNegotiatedProtocol() const override {
-    return NextProto::kProtoUnknown;
-  }
+  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
 
   // The functions below are not expected to be called.
 

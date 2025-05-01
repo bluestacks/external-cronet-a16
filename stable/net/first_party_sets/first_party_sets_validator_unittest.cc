@@ -44,7 +44,7 @@ FirstPartySetsValidator ValidateSets(std::initializer_list<SiteEntry> sites) {
 TEST(FirstPartySetsValidator, Default) {
   FirstPartySetsValidator validator;
   EXPECT_TRUE(validator.IsValid());
-  EXPECT_FALSE(validator.IsSiteValid(kPrimary1));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
 }
 
 TEST(FirstPartySetsValidator, Valid) {
@@ -58,11 +58,8 @@ TEST(FirstPartySetsValidator, Valid) {
   });
 
   EXPECT_TRUE(validator.IsValid());
-  EXPECT_TRUE(validator.IsSiteValid(kAssociated1));
-  EXPECT_TRUE(validator.IsSiteValid(kPrimary1));
-
-  EXPECT_TRUE(validator.IsSiteValid(kService1));
-  EXPECT_TRUE(validator.IsSiteValid(kPrimary2));
+  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary1));
+  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
 TEST(FirstPartySetsValidator, Invalid_Singleton) {
@@ -75,10 +72,8 @@ TEST(FirstPartySetsValidator, Invalid_Singleton) {
   });
 
   EXPECT_FALSE(validator.IsValid());
-  EXPECT_FALSE(validator.IsSiteValid(kPrimary1));
-
-  EXPECT_TRUE(validator.IsSiteValid(kService1));
-  EXPECT_TRUE(validator.IsSiteValid(kPrimary2));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
+  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
 TEST(FirstPartySetsValidator, Invalid_Orphan) {
@@ -91,11 +86,8 @@ TEST(FirstPartySetsValidator, Invalid_Orphan) {
   });
 
   EXPECT_FALSE(validator.IsValid());
-  EXPECT_FALSE(validator.IsSiteValid(kAssociated1));
-  EXPECT_FALSE(validator.IsSiteValid(kPrimary1));
-
-  EXPECT_TRUE(validator.IsSiteValid(kService1));
-  EXPECT_TRUE(validator.IsSiteValid(kPrimary2));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
+  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
 TEST(FirstPartySetsValidator, Invalid_Nondisjoint) {
@@ -114,15 +106,9 @@ TEST(FirstPartySetsValidator, Invalid_Nondisjoint) {
   });
 
   EXPECT_FALSE(validator.IsValid());
-  EXPECT_FALSE(validator.IsSiteValid(kAssociated1));
-  EXPECT_FALSE(validator.IsSiteValid(kService1));
-  EXPECT_FALSE(validator.IsSiteValid(kPrimary1));
-
-  EXPECT_FALSE(validator.IsSiteValid(kService2));
-  EXPECT_FALSE(validator.IsSiteValid(kPrimary2));
-
-  EXPECT_TRUE(validator.IsSiteValid(kAssociated3));
-  EXPECT_TRUE(validator.IsSiteValid(kPrimary3));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary2));
+  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary3));
 }
 
 }  // namespace net

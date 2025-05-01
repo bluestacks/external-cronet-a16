@@ -19,26 +19,15 @@ x:
 
 	# .bss handling is terminated by a .text directive.
 	.text
-not_bss1:
-	ret
-
-	# The .bss directive can introduce BSS.
-	.bss
-test:
-	.quad 0
-	.text
-not_bss2:
-	ret
-
 	.section .bss,"awT",@nobits
 y:
 	.quad 0
 
-	# A .section directive also terminates BSS.
+	# Or a .section directive.
 	.section .rodata
 	.quad 0
 
-	# The end of the file terminates BSS.
+	# Or the end of the file.
 	.section .bss,"awT",@nobits
 z:
 	.quad 0

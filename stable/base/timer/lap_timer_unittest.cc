@@ -13,7 +13,9 @@
 // This file is supposed to match closely with the example code, documented in
 // lap_timer.h. Please update that documentation if you need to change things.
 
-namespace base::test {
+namespace base {
+
+namespace test {
 
 namespace {
 
@@ -73,4 +75,5 @@ TEST(LapTimer, ThreadTicksUsageExample) {
 }
 #endif
 
-}  // namespace base::test
+}  // namespace test
+}  // namespace base

@@ -31,7 +31,6 @@ _warningFlags = [
     "-Wno-reserved-module-identifier",
     '-Wdeprecated-copy',
     '-Wdeprecated-copy-dtor',
-    "-Wshift-negative-value",
     # GCC warns about places where we might want to add sized allocation/deallocation
     # functions, but we know better what we're doing/testing in the test suite.
     "-Wno-sized-deallocation",
@@ -72,9 +71,6 @@ _warningFlags = [
 
     # This doesn't make sense in real code, but we have to test it because the standard requires us to not break
     "-Wno-self-move",
-
-    # We're not annotating all the APIs, since that's a lot of annotations compared to how many we actually care about
-    "-Wno-nullability-completeness",
 ]
 
 _allStandards = ["c++03", "c++11", "c++14", "c++17", "c++20", "c++23", "c++26"]
@@ -190,8 +186,7 @@ DEFAULT_PARAMETERS = [
             AddFeature(std),
             AddSubstitution("%{cxx_std}", re.sub(r"\+", "x", std)),
             AddCompileFlag(lambda cfg: getStdFlag(cfg, std)),
-        ]
-        + [AddFeature(f"std-at-least-{s}") for s in _allStandards if s <= std],
+        ],
     ),
     Parameter(
         name="optimization",
@@ -452,13 +447,6 @@ DEFAULT_PARAMETERS = [
             AddFeature('has-clang-tidy'),
             AddSubstitution('%{clang-tidy}', exe),
         ]
-    ),
-    Parameter(
-        name='test_frozen_cxx03_headers',
-        type=bool,
-        default=False,
-        help="Whether to test the main or C++03-specific headers. Only changes behaviour when std=c++03.",
-        actions=lambda enabled: [] if not enabled else [AddFlag("-D_LIBCPP_USE_FROZEN_CXX03_HEADERS"), AddFeature("FROZEN-CXX03-HEADERS-FIXME")],
     ),
 ]
 # fmt: on

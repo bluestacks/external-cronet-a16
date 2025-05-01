@@ -4,7 +4,6 @@
 
 #include "quiche/quic/test_tools/quic_server_peer.h"
 
-#include "absl/memory/memory.h"
 #include "quiche/quic/core/quic_dispatcher.h"
 #include "quiche/quic/core/quic_packet_reader.h"
 #include "quiche/quic/tools/quic_server.h"
@@ -26,7 +25,7 @@ QuicDispatcher* QuicServerPeer::GetDispatcher(QuicServer* server) {
 
 // static
 void QuicServerPeer::SetReader(QuicServer* server, QuicPacketReader* reader) {
-  server->io_->OverridePacketReaderForTests(absl::WrapUnique(reader));
+  server->packet_reader_.reset(reader);
 }
 
 }  // namespace test

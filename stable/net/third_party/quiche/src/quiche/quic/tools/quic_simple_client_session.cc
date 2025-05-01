@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "quiche/quic/core/quic_path_validator.h"
-#include "quiche/quic/core/quic_types.h"
 #include "quiche/common/http/http_header_block.h"
 
 namespace quic {
@@ -30,10 +29,7 @@ QuicSimpleClientSession::QuicSimpleClientSession(
     const QuicServerId& server_id, QuicCryptoClientConfig* crypto_config,
     bool drop_response_body, bool enable_web_transport)
     : QuicSpdyClientSession(config, supported_versions, connection, visitor,
-                            server_id, crypto_config,
-                            enable_web_transport
-                                ? QuicPriorityType::kWebTransport
-                                : QuicPriorityType::kHttp),
+                            server_id, crypto_config),
       network_helper_(network_helper),
       drop_response_body_(drop_response_body),
       enable_web_transport_(enable_web_transport) {}

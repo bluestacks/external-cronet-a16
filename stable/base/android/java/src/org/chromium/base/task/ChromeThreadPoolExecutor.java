@@ -8,8 +8,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.annotations.NullMarked;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -20,7 +18,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@NullMarked
 class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 

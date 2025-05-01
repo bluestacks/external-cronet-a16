@@ -21,33 +21,14 @@ package {
     ],
 }
 
-// GN: //testing/android/reporter:reporter_java__compile_java__testing
-java_library {
-    name: "stable_cronet_testing_android_reporter_reporter_java__compile_java__testing",
-    srcs: [
-        "java/src/org/chromium/test/reporter/TestStatusReporter.java",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "stable_cronet_build_android_build_java__compile_java__testing",
-        "stable_cronet_build_android_gtest_apk_native_test_instrumentation_test_runner_java__compile_java__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
 // GN: //testing/android/reporter:reporter_java__testing
 java_library {
     name: "stable_cronet_testing_android_reporter_reporter_java__testing",
+    srcs: [
+        "java/src/org/chromium/test/reporter/TestStatusReporter.java",
+    ],
     static_libs: [
-        "stable_cronet_build_android_build_java__testing",
         "stable_cronet_build_android_gtest_apk_native_test_instrumentation_test_runner_java__testing",
-        "stable_cronet_testing_android_reporter_reporter_java__process_device__testing",
     ],
     apex_available: [
         "com.android.tethering",
@@ -57,4 +38,5 @@ java_library {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }

@@ -4,11 +4,10 @@
 
 #include "net/first_party_sets/sets_mutation.h"
 
-#include <algorithm>
 #include <map>
 #include <utility>
 
-#include "base/containers/map_util.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 
@@ -18,11 +17,9 @@ SetsMutation::SetsMutation(
     std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
         replacement_sets,
     std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-        addition_sets,
-    base::flat_map<SchemefulSite, SchemefulSite> aliases)
+        addition_sets)
     : replacements_(std::move(replacement_sets)),
-      additions_(std::move(addition_sets)),
-      aliases_(std::move(aliases)) {
+      additions_(std::move(addition_sets)) {
   std::map<SchemefulSite, int> site_counts;
 
   for (const auto& set : replacements_) {
@@ -35,20 +32,10 @@ SetsMutation::SetsMutation(
       site_counts[site]++;
     }
   }
-  CHECK(std::ranges::all_of(site_counts,
-                            [](const std::pair<const SchemefulSite, int>& p) {
-                              return p.second == 1;
-                            }));
-  CHECK(std::ranges::all_of(aliases_, [&](const auto& pair) -> bool {
-    const auto contains_entries = [&](const auto& set) -> bool {
-      const FirstPartySetEntry* alias_entry = base::FindOrNull(set, pair.first);
-      const FirstPartySetEntry* canonical_entry =
-          base::FindOrNull(set, pair.second);
-      return alias_entry && canonical_entry && *alias_entry == *canonical_entry;
-    };
-    return std::ranges::any_of(replacements_, contains_entries) ||
-           std::ranges::any_of(additions_, contains_entries);
-  }));
+  CHECK(base::ranges::all_of(site_counts,
+                             [](const std::pair<const SchemefulSite, int>& p) {
+                               return p.second == 1;
+                             }));
 }
 
 SetsMutation::SetsMutation() = default;

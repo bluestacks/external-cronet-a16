@@ -11,7 +11,8 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -46,4 +47,5 @@ TEST(ThreadPoolServiceThreadTest, MAYBE_StackHasIdentifyingFrame) {
   service_thread.FlushForTesting();
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

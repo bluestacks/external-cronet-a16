@@ -306,8 +306,7 @@ void PnaclTranslationCacheEntry::DispatchNext(int rv) {
       }
       // rv == 0 or we fell through (i.e. we have transferred all the bytes)
       step_ = CLOSE_ENTRY;
-      // All data in the buffer should have been consumed.
-      DCHECK_EQ(io_buf_->size(), 0);
+      DCHECK(io_buf_->BytesConsumed() == io_buf_->size());
       if (is_read_)
         io_buf_->SetOffset(0);
       CloseEntry(0);

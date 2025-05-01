@@ -685,7 +685,7 @@ xmlEscapeText(const xmlChar *text, int flags) {
 
             replSize = xmlSerializeHexCharRef(buf, val);
             repl = BAD_CAST buf;
-	} else if ((flags & (XML_ESCAPE_ALLOW_INVALID | XML_ESCAPE_HTML)) ||
+	} else if ((flags & XML_ESCAPE_ALLOW_INVALID) ||
                    (c >= 0x20) ||
 	           (c == '\n') || (c == '\t') || (c == '\r')) {
 	    /* default case, just copy */

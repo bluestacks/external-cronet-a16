@@ -177,9 +177,7 @@ class TestFuture {
                 "Don't use TestFuture<> but use TestFuture<void> instead");
 
   TestFuture() = default;
-  TestFuture(TestFuture&&) = default;
   TestFuture(const TestFuture&) = delete;
-  TestFuture& operator=(TestFuture&&) = default;
   TestFuture& operator=(const TestFuture&) = delete;
   ~TestFuture() = default;
 
@@ -194,17 +192,15 @@ class TestFuture {
   //   ASSERT_TRUE(queue.Wait()) << "Detailed error message";
   //
   [[nodiscard]] bool Wait() {
-    CheckNotUsedAfterMove();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (impl_->values) {
+    if (values_) {
       return true;
     }
 
     // Wait for the value to arrive.
     RunLoop loop;
-    AutoReset<RepeatingClosure> quit_loop(&impl_->ready_signal,
-                                          loop.QuitClosure());
+    AutoReset<RepeatingClosure> quit_loop(&ready_signal_, loop.QuitClosure());
     loop.Run();
 
     return IsReady();
@@ -212,9 +208,8 @@ class TestFuture {
 
   // Returns true if the value has arrived.
   bool IsReady() const {
-    CheckNotUsedAfterMove();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
-    return impl_->values.has_value();
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return values_.has_value();
   }
 
   // Waits for the value to arrive, and returns the I-th value.
@@ -302,16 +297,15 @@ class TestFuture {
   //
   template <typename... CallbackArgumentsTypes>
   RepeatingCallback<void(CallbackArgumentsTypes...)> GetRepeatingCallback() {
-    CheckNotUsedAfterMove();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return BindRepeating(
-        [](WeakPtr<Impl> impl, CallbackArgumentsTypes... values) {
-          if (impl) {
-            SetValueImpl(*impl,
-                         std::forward<CallbackArgumentsTypes>(values)...);
+        [](WeakPtr<TestFuture<Types...>> future,
+           CallbackArgumentsTypes... values) {
+          if (future) {
+            future->SetValue(std::forward<CallbackArgumentsTypes>(values)...);
           }
         },
-        impl_->weak_ptr_factory.GetWeakPtr());
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   RepeatingCallback<void(Types...)> GetRepeatingCallback() {
@@ -384,8 +378,7 @@ class TestFuture {
   template <typename... CallbackArgumentsTypes>
   RepeatingCallback<void(CallbackArgumentsTypes...)>
   GetSequenceBoundRepeatingCallback() {
-    CheckNotUsedAfterMove();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                         GetRepeatingCallback<CallbackArgumentsTypes...>());
   }
@@ -397,9 +390,18 @@ class TestFuture {
   // Sets the value of the future.
   // This will unblock any pending Wait() or Get() call.
   void SetValue(Types... values) {
-    CheckNotUsedAfterMove();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
-    SetValueImpl(*impl_, std::forward<Types>(values)...);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    auto new_values = std::make_tuple(std::forward<Types>(values)...);
+
+    EXPECT_FALSE(values_.has_value())
+        << "Received new value " << ToString(new_values)  //
+        << " before old value " << ToString(GetTuple())
+        << " was consumed through Take() or Clear().";
+
+    values_ = std::move(new_values);
+
+    ready_signal_.Run();
   }
 
   // Clears the future, allowing it to be reused and accept a new value.
@@ -456,61 +458,29 @@ class TestFuture {
   }
 
  private:
-  // Nested struct, used together with std::unique_ptr to make TestFuture
-  // movable.
-  struct Impl {
-    Impl() = default;
-    ~Impl() = default;
-
-    SEQUENCE_CHECKER(sequence_checker);
-
-    base::RepeatingClosure ready_signal GUARDED_BY_CONTEXT(sequence_checker) =
-        base::DoNothing();
-
-    std::optional<TupleType> values GUARDED_BY_CONTEXT(sequence_checker);
-
-    WeakPtrFactory<Impl> weak_ptr_factory{this};
-  };
-
-  static void SetValueImpl(Impl& impl, Types... values) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl.sequence_checker);
-
-    auto new_values = std::make_tuple(std::forward<Types>(values)...);
-
-    EXPECT_FALSE(impl.values.has_value())
-        << "Received new value " << ToString(new_values) << " before old value "
-        << ToString(impl.values.value())
-        << " was consumed through Take() or Clear().";
-
-    impl.values = std::move(new_values);
-
-    impl.ready_signal.Run();
-  }
-
-  void CheckNotUsedAfterMove() const {
-    // `impl_` may only be null of `this` is an instance that has been moved
-    // away, after which `this` becomes unusable.
-    CHECK(impl_);
-  }
-
   [[nodiscard]] const TupleType& GetTuple() {
-    CheckNotUsedAfterMove();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     CHECK(success) << "Waiting for value timed out.";
-    return impl_->values.value();
+    return values_.value();
   }
 
   [[nodiscard]] TupleType TakeTuple() {
-    CheckNotUsedAfterMove();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     CHECK(success) << "Waiting for value timed out.";
 
-    return std::exchange(impl_->values, {}).value();
+    return std::exchange(values_, {}).value();
   }
 
-  std::unique_ptr<Impl> impl_ = std::make_unique<Impl>();
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::RepeatingClosure ready_signal_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      base::DoNothing();
+
+  std::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };
 
 // Specialization so you can use `TestFuture` to wait for a no-args callback.

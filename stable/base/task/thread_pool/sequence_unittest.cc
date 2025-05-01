@@ -15,7 +15,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -217,8 +218,9 @@ TEST(ThreadPoolSequenceTest, DidProcessTaskWithoutWillRunTask) {
 
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
-  EXPECT_DCHECK_DEATH(
-      { registered_task_source.DidProcessTask(&sequence_transaction); });
+  EXPECT_DCHECK_DEATH({
+    registered_task_source.DidProcessTask(&sequence_transaction);
+  });
 }
 
 // Verify that a DCHECK fires if TakeTask() is called on a sequence whose front
@@ -717,4 +719,5 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyDelayedtasks) {
   registered_task_source.DidProcessTask(&sequence_transaction);
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

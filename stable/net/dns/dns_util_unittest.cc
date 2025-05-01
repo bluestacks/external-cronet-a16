@@ -22,7 +22,7 @@ namespace {
 const DohProviderEntry& GetDohProviderEntry(std::string_view provider) {
   auto provider_list = DohProviderEntry::GetList();
   auto it =
-      std::ranges::find(provider_list, provider, &DohProviderEntry::provider);
+      base::ranges::find(provider_list, provider, &DohProviderEntry::provider);
   CHECK(it != provider_list.end());
   return **it;
 }

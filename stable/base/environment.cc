@@ -6,16 +6,14 @@
 
 #include <array>
 #include <string_view>
-#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "base/strings/utf_string_conversions.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <stdlib.h>
 #endif
@@ -26,11 +24,9 @@ namespace {
 
 class EnvironmentImpl : public Environment {
  public:
-  std::optional<std::string> GetVar(std::string_view variable_name) override {
-    auto result = GetVarImpl(variable_name);
-    if (result.has_value()) {
-      return result;
-    }
+  bool GetVar(std::string_view variable_name, std::string* result) override {
+    if (GetVarImpl(variable_name, result))
+      return true;
 
     // Some commonly used variable names are uppercase while others
     // are lowercase, which is inconsistent. Let's try to be helpful
@@ -38,14 +34,13 @@ class EnvironmentImpl : public Environment {
     // I.e. HTTP_PROXY may be http_proxy for some users/systems.
     char first_char = variable_name[0];
     std::string alternate_case_var;
-    if (IsAsciiLower(first_char)) {
+    if (IsAsciiLower(first_char))
       alternate_case_var = ToUpperASCII(variable_name);
-    } else if (IsAsciiUpper(first_char)) {
+    else if (IsAsciiUpper(first_char))
       alternate_case_var = ToLowerASCII(variable_name);
-    } else {
-      return std::nullopt;
-    }
-    return GetVarImpl(alternate_case_var);
+    else
+      return false;
+    return GetVarImpl(alternate_case_var, result);
   }
 
   bool SetVar(std::string_view variable_name,
@@ -58,26 +53,31 @@ class EnvironmentImpl : public Environment {
   }
 
  private:
-  std::optional<std::string> GetVarImpl(std::string_view variable_name) {
+  bool GetVarImpl(std::string_view variable_name, std::string* result) {
 #if BUILDFLAG(IS_WIN)
     std::wstring wide_name = UTF8ToWide(variable_name);
+    if (!result) {
+      return ::GetEnvironmentVariable(wide_name.c_str(), nullptr, 0) != 0;
+    }
     // Documented to be the maximum environment variable size.
     std::array<wchar_t, 32767> value;
     DWORD value_length =
         ::GetEnvironmentVariable(wide_name.c_str(), value.data(), value.size());
     if (value_length == 0) {
-      return std::nullopt;
+      return false;
     }
-
     CHECK_LE(value_length, value.size() - 1)
         << "value should fit in the buffer (including the null terminator)";
-    return WideToUTF8(std::wstring_view(value.data(), value_length));
+    WideToUTF8(value.data(), value_length, result);
+    return true;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     const char* env_value = getenv(std::string(variable_name).c_str());
-    if (!env_value) {
-      return std::nullopt;
-    }
-    return std::string(env_value);
+    if (!env_value)
+      return false;
+    // Note that the variable may be defined but empty.
+    if (result)
+      *result = env_value;
+    return true;
 #endif
   }
 
@@ -123,18 +123,8 @@ std::unique_ptr<Environment> Environment::Create() {
   return std::make_unique<EnvironmentImpl>();
 }
 
-bool Environment::GetVar(std::string_view variable_name, std::string* result) {
-  std::optional<std::string> actual_result = GetVar(variable_name);
-  if (!actual_result.has_value()) {
-    return false;
-  }
-
-  *result = std::move(actual_result.value());
-  return true;
-}
-
 bool Environment::HasVar(std::string_view variable_name) {
-  return GetVar(variable_name).has_value();
+  return GetVar(variable_name, nullptr);
 }
 
 }  // namespace base

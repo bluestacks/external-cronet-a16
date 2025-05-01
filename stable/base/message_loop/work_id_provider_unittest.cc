@@ -19,7 +19,7 @@ namespace {
 
 class TestThread : public SimpleThread {
  public:
-  explicit TestThread(OnceCallback<void(WorkIdProvider*)> validate_func)
+  TestThread(OnceCallback<void(WorkIdProvider*)> validate_func)
       : SimpleThread("WorkIdProviderTestThread"),
         validate_func_(std::move(validate_func)) {}
 

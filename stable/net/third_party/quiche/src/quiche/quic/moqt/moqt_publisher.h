@@ -12,12 +12,10 @@
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
-#include "quiche/quic/core/quic_time.h"
 #include "quiche/quic/moqt/moqt_messages.h"
 #include "quiche/quic/moqt/moqt_priority.h"
 #include "quiche/common/platform/api/quiche_mem_slice.h"
 #include "quiche/common/quiche_callbacks.h"
-#include "quiche/web_transport/web_transport.h"
 
 namespace moqt {
 
@@ -28,7 +26,6 @@ struct PublishedObject {
   MoqtObjectStatus status;
   MoqtPriority publisher_priority;
   quiche::QuicheMemSlice payload;
-  quic::QuicTime arrival_time = quic::QuicTime::Zero();
   bool fin_after_this = false;
 };
 
@@ -38,28 +35,12 @@ class MoqtObjectListener {
  public:
   virtual ~MoqtObjectListener() = default;
 
-  // Called when the publisher is sure that it can serve the subscription. This
-  // could happen synchronously or asynchronously.Details necessary for the
-  // SUBSCRIBE_OK can be obtained from the MoqtTrackPublisher.
-  virtual void OnSubscribeAccepted() = 0;
-  // Called when the publisher is sure that it cannot serve the subscription.
-  // This could happen synchronously or asynchronously.
-  virtual void OnSubscribeRejected(
-      MoqtSubscribeErrorReason reason,
-      std::optional<uint64_t> track_alias = std::nullopt) = 0;
-
   // Notifies that an object with the given sequence number has become
   // available.  The object payload itself may be retrieved via GetCachedObject
   // method of the associated track publisher.
   virtual void OnNewObjectAvailable(FullSequence sequence) = 0;
-  // Notifies that a pure FIN has arrived following |sequence|. Should not be
-  // called unless all objects have already been delivered. If not delivered,
-  // instead set the fin_after_this flag in the PublishedObject.
+  // Notifies that a pure FIN has arrived following |sequence|.
   virtual void OnNewFinAvailable(FullSequence sequence) = 0;
-  // Notifies that the a stream is being abandoned (via RESET_STREAM) before
-  // all objects are delivered.
-  virtual void OnSubgroupAbandoned(
-      FullSequence sequence, webtransport::StreamErrorCode error_code) = 0;
 
   // No further object will be published for the given group, usually due to a
   // timeout. The owner of the Listener may want to reset the relevant streams.
@@ -96,9 +77,7 @@ class MoqtFetchTask {
 
   // Sets the callback that is called when GetNextObject() has previously
   // returned kPending, but now a new object (or potentially an error or an
-  // end-of-fetch) is available. The application is responsible for calling
-  // GetNextObject() until it gets kPending; no further callback will occur
-  // until then.
+  // end-of-fetch) is available.
   virtual void SetObjectAvailableCallback(
       ObjectsAvailableCallback callback) = 0;
 

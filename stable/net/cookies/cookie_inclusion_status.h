@@ -11,8 +11,8 @@
 #include <cstdint>
 #include <ostream>
 #include <string>
+#include <vector>
 
-#include "base/containers/enum_set.h"
 #include "net/base/net_export.h"
 
 class GURL;
@@ -20,7 +20,7 @@ class GURL;
 namespace net {
 
 // This class represents if a cookie was included or excluded in a cookie get or
-// set operation, and if excluded why. It holds a set of reasons for
+// set operation, and if excluded why. It holds a vector of reasons for
 // exclusion, where cookie inclusion is represented by the absence of any
 // exclusion reasons. Also marks whether a cookie should be warned about, e.g.
 // for deprecation or intervention reasons.
@@ -28,7 +28,7 @@ namespace net {
 class NET_EXPORT CookieInclusionStatus {
  public:
   // Types of reasons why a cookie might be excluded.
-  enum class ExclusionReason {
+  enum ExclusionReason {
     EXCLUDE_UNKNOWN_ERROR = 0,
 
     // Statuses applied when accessing a cookie (either sending or setting):
@@ -108,14 +108,22 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_THIRD_PARTY_PHASEOUT = 25,
     // Cookie contains no content or only whitespace.
     EXCLUDE_NO_COOKIE_CONTENT = 26,
+
     // This should be kept last.
-    MAX_EXCLUSION_REASON = EXCLUDE_NO_COOKIE_CONTENT
+    NUM_EXCLUSION_REASONS
   };
+
+  // Mojom and some tests assume that all the exclusion reasons will fit within
+  // a uint32_t. Once that's not longer true those assumptions need to be
+  // updated (along with this assert).
+  static_assert(ExclusionReason::NUM_EXCLUSION_REASONS <= 32,
+                "Expanding ExclusionReasons past 32 reasons requires updating "
+                "usage assumptions.");
 
   // Reason to warn about a cookie. Any information contained in
   // WarningReason of an included cookie may be passed to an untrusted
   // renderer.
-  enum class WarningReason {
+  enum WarningReason {
     // Of the following 3 SameSite warnings, there will be, at most, a single
     // active one.
 
@@ -220,8 +228,15 @@ class NET_EXPORT CookieInclusionStatus {
     WARN_THIRD_PARTY_PHASEOUT = 16,
 
     // This should be kept last.
-    MAX_WARNING_REASON = WARN_THIRD_PARTY_PHASEOUT
+    NUM_WARNING_REASONS
   };
+
+  // Mojom and some tests assume that all the warning reasons will fit within
+  // a uint32_t. Once that's not longer true those assumptions need to be
+  // updated (along with this assert).
+  static_assert(WarningReason::NUM_WARNING_REASONS <= 32,
+                "Expanding WarningReasons past 32 reasons requires updating "
+                "usage assumptions.");
 
   // These enums encode the context downgrade warnings + the secureness of the
   // url sending/setting the cookie. They're used for metrics only. The format
@@ -272,33 +287,14 @@ class NET_EXPORT CookieInclusionStatus {
     kTopLevelStorageAccess = 8,
     // Allowed by the scheme.
     kScheme = 9,
-    // Allowed by the sandbox 'allow-same-site-none-cookies' value.
-    kSameSiteNoneCookiesInSandbox = 10,
 
     // Keep last.
-    kMaxValue = kSameSiteNoneCookiesInSandbox
+    kMaxValue = kScheme
   };
 
   using ExclusionReasonBitset =
-      base::EnumSet<ExclusionReason,
-                    ExclusionReason::EXCLUDE_UNKNOWN_ERROR,
-                    ExclusionReason::MAX_EXCLUSION_REASON>;
-  // Mojom and some tests assume that all the exclusion reasons will fit within
-  // a uint64_t. Once that's not longer true those assumptions need to be
-  // updated (along with this assert).
-  static_assert(ExclusionReasonBitset::kValueCount <= 64,
-                "Expanding ExclusionReasons past 64 reasons requires updating "
-                "usage assumptions.");
-  using WarningReasonBitset =
-      base::EnumSet<WarningReason,
-                    WarningReason::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-                    WarningReason::MAX_WARNING_REASON>;
-  // Mojom and some tests assume that all the warning reasons will fit within
-  // a uint64_t. Once that's not longer true those assumptions need to be
-  // updated (along with this assert).
-  static_assert(WarningReasonBitset::kValueCount <= 64,
-                "Expanding WarningReasons past 64 reasons requires updating "
-                "usage assumptions.");
+      std::bitset<ExclusionReason::NUM_EXCLUSION_REASONS>;
+  using WarningReasonBitset = std::bitset<WarningReason::NUM_WARNING_REASONS>;
 
   // Makes a status that says include and should not warn.
   CookieInclusionStatus();
@@ -321,14 +317,14 @@ class NET_EXPORT CookieInclusionStatus {
   // for exclusion.
   bool HasOnlyExclusionReason(ExclusionReason status_type) const;
 
-  // Add an exclusion reason. CHECKs if `status_type` is out of range.
+  // Add an exclusion reason.
   void AddExclusionReason(ExclusionReason status_type);
 
-  // Remove an exclusion reason. CHECKs if `reason` is out of range.
+  // Remove an exclusion reason.
   void RemoveExclusionReason(ExclusionReason reason);
 
   // Remove multiple exclusion reasons.
-  void RemoveExclusionReasons(ExclusionReasonBitset reasons);
+  void RemoveExclusionReasons(const std::vector<ExclusionReason>& reasons);
 
   // Only updates exemption reason if the cookie was not already excluded and
   // doesn't already have an exemption reason.
@@ -360,10 +356,10 @@ class NET_EXPORT CookieInclusionStatus {
   bool HasSchemefulDowngradeWarning(
       CookieInclusionStatus::WarningReason* reason = nullptr) const;
 
-  // Add an warning reason. CHECKs if `reason` is out of range.
+  // Add an warning reason.
   void AddWarningReason(WarningReason reason);
 
-  // Remove an warning reason. CHECKs if `reason` is out of range.
+  // Remove an warning reason.
   void RemoveWarningReason(WarningReason reason);
 
   // Used for serialization/deserialization.
@@ -378,50 +374,53 @@ class NET_EXPORT CookieInclusionStatus {
   std::string GetDebugString() const;
 
   // Checks whether the exclusion reasons are exactly the set of exclusion
-  // reasons in the set. (Ignores warnings.)
+  // reasons in the vector. (Ignores warnings.)
   bool HasExactlyExclusionReasonsForTesting(
-      ExclusionReasonBitset reasons) const;
+      const std::vector<ExclusionReason>& reasons) const;
 
   // Checks whether the warning reasons are exactly the set of warning
-  // reasons in the set. (Ignores exclusions.)
-  bool HasExactlyWarningReasonsForTesting(WarningReasonBitset reasons) const;
+  // reasons in the vector. (Ignores exclusions.)
+  bool HasExactlyWarningReasonsForTesting(
+      const std::vector<WarningReason>& reasons) const;
+
+  // Validates mojo data, since mojo does not support bitsets. ExemptionReason
+  // is omitted intendedly.
+  // TODO(crbug.com/40219875): Improve serialization validation comments
+  // and check for mutually exclusive values.
+  static bool ValidateExclusionAndWarningFromWire(uint32_t exclusion_reasons,
+                                                  uint32_t warning_reasons);
 
   // Makes a status that contains the given reasons. If the given reasons are
   // self-inconsistent, CHECKs.
   static CookieInclusionStatus MakeFromReasonsForTesting(
-      ExclusionReasonBitset exclusions,
-      WarningReasonBitset warnings = WarningReasonBitset(),
+      const std::vector<ExclusionReason>& exclusions,
+      const std::vector<WarningReason>& warnings = std::vector<WarningReason>(),
       ExemptionReason exemption = ExemptionReason::kNone);
-
-  static std::optional<CookieInclusionStatus> MakeFromComponents(
-      ExclusionReasonBitset exclusions,
-      WarningReasonBitset warnings,
-      ExemptionReason exemption);
 
   // Returns true if the cookie was excluded because of user preferences or
   // 3PCD.
   bool ExcludedByUserPreferencesOrTPCD() const;
 
   void ResetForTesting() {
-    exclusion_reasons_.Clear();
-    warning_reasons_.Clear();
+    exclusion_reasons_.reset();
+    warning_reasons_.reset();
     exemption_reason_ = ExemptionReason::kNone;
   }
 
  private:
   // Returns the `exclusion_reasons_` with the given `reasons` unset.
   ExclusionReasonBitset ExclusionReasonsWithout(
-      ExclusionReasonBitset reasons) const;
+      const std::vector<ExclusionReason>& reasons) const;
 
   // If the cookie would have been excluded by reasons that are not
   // Third-party cookie phaseout related, clear the Third-party cookie phaseout
   // warning/exclusion reason in this case.
   void MaybeClearThirdPartyPhaseoutReason();
 
-  // A bitset of the applicable exclusion reasons.
+  // A bit vector of the applicable exclusion reasons.
   ExclusionReasonBitset exclusion_reasons_;
 
-  // A bitset of the applicable warning reasons.
+  // A bit vector of the applicable warning reasons.
   WarningReasonBitset warning_reasons_;
 
   // A cookie can only have at most one exemption reason.

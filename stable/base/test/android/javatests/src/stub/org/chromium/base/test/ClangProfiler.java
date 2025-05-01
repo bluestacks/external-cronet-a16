@@ -4,10 +4,7 @@
 
 package org.chromium.base.test;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Placeholder class used when clang profiling is not enabled at building. */
-@NullMarked
 public class ClangProfiler {
     private ClangProfiler() {}
 

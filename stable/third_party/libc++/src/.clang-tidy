@@ -5,8 +5,6 @@ Checks: >
   bugprone-stringview-nullptr,
   bugprone-use-after-move,
 
-  libcpp-*,
-
   llvm-include-order,
   llvm-namespace-comment,
 

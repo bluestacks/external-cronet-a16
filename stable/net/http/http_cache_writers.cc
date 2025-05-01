@@ -4,11 +4,6 @@
 
 #include "net/http/http_cache_writers.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <algorithm>
 #include <utility>
 
@@ -16,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
-#include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -276,11 +270,12 @@ void HttpCache::Writers::ProcessFailure(int error) {
 
 void HttpCache::Writers::TruncateEntry() {
   DCHECK(ShouldTruncate());
-  auto data = base::MakeRefCounted<PickledIOBuffer>(
-      response_info_truncation_.MakePickle(
-          /*skip_transient_headers=*/true,
-          /*response_truncated=*/true));
-  io_buf_len_ = data->size();
+  auto data = base::MakeRefCounted<PickledIOBuffer>();
+  response_info_truncation_.Persist(data->pickle(),
+                                    true /* skip_transient_headers*/,
+                                    true /* response_truncated */);
+  data->Done();
+  io_buf_len_ = data->pickle()->size();
   entry_->GetEntry()->WriteData(kResponseInfoIndex, 0, data.get(), io_buf_len_,
                                 base::DoNothing(), true);
 }

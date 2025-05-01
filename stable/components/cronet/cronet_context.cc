@@ -128,9 +128,8 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override {
     // Disallow sending cookies by default.
-    ExcludeAllCookies(
-        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
-        maybe_included_cookies, excluded_cookies);
+    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                      maybe_included_cookies, excluded_cookies);
     return false;
   }
 
@@ -176,8 +175,7 @@ void SetQuicHint(net::URLRequestContext* context,
 
   url::SchemeHostPort quic_server("https", canon_host, quic_hint->port);
   net::AlternativeService alternative_service(
-      net::NextProto::kProtoQUIC, "",
-      static_cast<uint16_t>(quic_hint->alternate_port));
+      net::kProtoQUIC, "", static_cast<uint16_t>(quic_hint->alternate_port));
   context->http_server_properties()->SetQuicAlternativeService(
       quic_server, net::NetworkAnonymizationKey(), alternative_service,
       base::Time::Max(), quic::ParsedQuicVersionVector());

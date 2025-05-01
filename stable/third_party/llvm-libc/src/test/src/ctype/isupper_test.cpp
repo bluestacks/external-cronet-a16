@@ -11,7 +11,16 @@
 
 #include "test/UnitTest/Test.h"
 
-namespace {
+TEST(LlvmLibcIsUpper, SimpleTest) {
+  EXPECT_NE(LIBC_NAMESPACE::isupper('B'), 0);
+
+  EXPECT_EQ(LIBC_NAMESPACE::isupper('a'), 0);
+  EXPECT_EQ(LIBC_NAMESPACE::isupper('3'), 0);
+  EXPECT_EQ(LIBC_NAMESPACE::isupper(' '), 0);
+  EXPECT_EQ(LIBC_NAMESPACE::isupper('?'), 0);
+  EXPECT_EQ(LIBC_NAMESPACE::isupper('\0'), 0);
+  EXPECT_EQ(LIBC_NAMESPACE::isupper(-1), 0);
+}
 
 // TODO: Merge the ctype tests using this framework.
 constexpr char UPPER_ARRAY[] = {
@@ -24,19 +33,6 @@ bool in_span(int ch, LIBC_NAMESPACE::cpp::span<const char> arr) {
     if (static_cast<int>(arr[i]) == ch)
       return true;
   return false;
-}
-
-} // namespace
-
-TEST(LlvmLibcIsUpper, SimpleTest) {
-  EXPECT_NE(LIBC_NAMESPACE::isupper('B'), 0);
-
-  EXPECT_EQ(LIBC_NAMESPACE::isupper('a'), 0);
-  EXPECT_EQ(LIBC_NAMESPACE::isupper('3'), 0);
-  EXPECT_EQ(LIBC_NAMESPACE::isupper(' '), 0);
-  EXPECT_EQ(LIBC_NAMESPACE::isupper('?'), 0);
-  EXPECT_EQ(LIBC_NAMESPACE::isupper('\0'), 0);
-  EXPECT_EQ(LIBC_NAMESPACE::isupper(-1), 0);
 }
 
 TEST(LlvmLibcIsUpper, DefaultLocale) {

@@ -4,11 +4,11 @@
 
 package org.chromium.base;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,9 +61,8 @@ import java.util.WeakHashMap;
  * @see UnownedUserDataHost for more details on ownership and typical usage.
  * @see UnownedUserData for the marker interface used for this type of data.
  */
-@NullMarked
 public final class UnownedUserDataKey<T extends UnownedUserData> {
-    private final Class<T> mClazz;
+    @NonNull private final Class<T> mClazz;
     // A Set that uses WeakReference<UnownedUserDataHost> internally.
     private final Set<UnownedUserDataHost> mWeakHostAttachments =
             Collections.newSetFromMap(new WeakHashMap<>());
@@ -73,10 +72,11 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
      *
      * @param clazz The particular {@link UnownedUserData} class.
      */
-    public UnownedUserDataKey(Class<T> clazz) {
+    public UnownedUserDataKey(@NonNull Class<T> clazz) {
         mClazz = clazz;
     }
 
+    @NonNull
     /* package */ final Class<T> getValueClass() {
         return mClazz;
     }
@@ -88,7 +88,7 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
      * @param host   The host to attach the {@code object} to.
      * @param object The object to attach.
      */
-    public final void attachToHost(UnownedUserDataHost host, T object) {
+    public final void attachToHost(@NonNull UnownedUserDataHost host, @NonNull T object) {
         Objects.requireNonNull(object);
         // Setting a new value might lead to detachment of previously attached data, including
         // re-entry to this key, to happen before we update the {@link #mHostAttachments}.
@@ -108,7 +108,8 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
      * @param host The host to retrieve the {@link UnownedUserData} from.
      * @return The current {@link UnownedUserData} stored in the {@code host}, or {@code null}.
      */
-    public final @Nullable T retrieveDataFromHost(UnownedUserDataHost host) {
+    @Nullable
+    public final T retrieveDataFromHost(@NonNull UnownedUserDataHost host) {
         assertNoDestroyedAttachments();
         for (UnownedUserDataHost attachedHost : mWeakHostAttachments) {
             if (host.equals(attachedHost)) {
@@ -124,7 +125,7 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
      *
      * @param host The host to detach from.
      */
-    public final void detachFromHost(UnownedUserDataHost host) {
+    public final void detachFromHost(@NonNull UnownedUserDataHost host) {
         assertNoDestroyedAttachments();
         for (UnownedUserDataHost attachedHost : new ArrayList<>(mWeakHostAttachments)) {
             if (host.equals(attachedHost)) {
@@ -139,7 +140,7 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
      *
      * @param object The object to detach from all hosts.
      */
-    public final void detachFromAllHosts(T object) {
+    public final void detachFromAllHosts(@NonNull T object) {
         assertNoDestroyedAttachments();
         for (UnownedUserDataHost attachedHost : new ArrayList<>(mWeakHostAttachments)) {
             if (object.equals(attachedHost.get(this))) {
@@ -154,7 +155,7 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
      * @param host The host to check if the {@link UnownedUserData} is attached to.
      * @return true if currently attached, false otherwise.
      */
-    public final boolean isAttachedToHost(UnownedUserDataHost host) {
+    public final boolean isAttachedToHost(@NonNull UnownedUserDataHost host) {
         T t = retrieveDataFromHost(host);
         return t != null;
     }
@@ -162,12 +163,12 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
     /**
      * @return Whether the {@link UnownedUserData} is currently attached to any hosts with this key.
      */
-    public final boolean isAttachedToAnyHost(T object) {
+    public final boolean isAttachedToAnyHost(@NonNull T object) {
         return getHostAttachmentCount(object) > 0;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    /* package */ int getHostAttachmentCount(T object) {
+    /* package */ int getHostAttachmentCount(@NonNull T object) {
         assertNoDestroyedAttachments();
         int ret = 0;
         for (UnownedUserDataHost attachedHost : mWeakHostAttachments) {

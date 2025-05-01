@@ -18,18 +18,6 @@
 
 namespace {
 
-enum class Provider {
-  kTPM,
-  kMock,
-  kMicrosoftSoftware,
-};
-
-const Provider kAllProviders[] = {
-    Provider::kTPM,
-    Provider::kMock,
-    Provider::kMicrosoftSoftware,
-};
-
 const crypto::SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
     crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
     crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
@@ -39,20 +27,9 @@ const crypto::SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
 #endif  // BUILDFLAG(IS_MAC)
 
-std::string ToString(Provider provider) {
-  switch (provider) {
-    case Provider::kTPM:
-      return "TPM";
-    case Provider::kMock:
-      return "Mock";
-    case Provider::kMicrosoftSoftware:
-      return "Microsoft Software";
-  }
-}
-
 class UnexportableKeySigningTest
     : public testing::TestWithParam<
-          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, Provider>> {
+          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, bool>> {
  private:
 #if BUILDFLAG(IS_MAC)
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
@@ -63,29 +40,29 @@ class UnexportableKeySigningTest
 INSTANTIATE_TEST_SUITE_P(All,
                          UnexportableKeySigningTest,
                          testing::Combine(testing::ValuesIn(kAllAlgorithms),
-                                          testing::ValuesIn(kAllProviders)));
+                                          testing::Bool()));
 
 TEST_P(UnexportableKeySigningTest, RoundTrip) {
   const crypto::SignatureVerifier::SignatureAlgorithm algo =
       std::get<0>(GetParam());
-  const Provider provider_type = std::get<1>(GetParam());
+  const bool mock_enabled = std::get<1>(GetParam());
 
   switch (algo) {
     case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
-      LOG(INFO) << "ECDSA P-256, provider=" << ToString(provider_type);
+      LOG(INFO) << "ECDSA P-256, mock=" << mock_enabled;
       break;
     case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
-      LOG(INFO) << "RSA, provider=" << ToString(provider_type);
+      LOG(INFO) << "RSA, mock=" << mock_enabled;
       break;
     default:
       ASSERT_TRUE(false);
   }
 
   SCOPED_TRACE(static_cast<int>(algo));
-  SCOPED_TRACE(ToString(provider_type));
+  SCOPED_TRACE(mock_enabled);
 
   std::optional<crypto::ScopedMockUnexportableKeyProvider> mock;
-  if (provider_type == Provider::kMock) {
+  if (mock_enabled) {
     mock.emplace();
   }
 
@@ -96,12 +73,8 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
       .keychain_access_group = kTestKeychainAccessGroup
 #endif  // BUILDLFAG(IS_MAC)
   };
-  std::unique_ptr<crypto::UnexportableKeyProvider> provider;
-  if (provider_type == Provider::kMicrosoftSoftware) {
-    provider = crypto::GetMicrosoftSoftwareUnexportableKeyProvider();
-  } else {
-    provider = crypto::GetUnexportableKeyProvider(std::move(config));
-  }
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider =
+      crypto::GetUnexportableKeyProvider(std::move(config));
   if (!provider) {
     LOG(INFO) << "Skipping test because of lack of hardware support.";
     return;

@@ -55,7 +55,7 @@ struct IfaddrsTraits {
 };
 
 int set_ifname(struct ifaddrs* ifaddr, int interface) {
-  char buf[IFNAMSIZ] = {};
+  char buf[IFNAMSIZ] = {0};
   char* name = if_indextoname(interface, buf);
   if (name == nullptr) {
     return -1;

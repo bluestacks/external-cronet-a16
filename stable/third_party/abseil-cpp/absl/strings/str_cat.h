@@ -101,7 +101,6 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "absl/base/config.h"
 #include "absl/base/nullability.h"
 #include "absl/base/port.h"
 #include "absl/meta/type_traits.h"
@@ -110,10 +109,6 @@
 #include "absl/strings/internal/stringify_sink.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/string_view.h"
-
-#if defined(ABSL_HAVE_STD_STRING_VIEW) && !defined(ABSL_USES_STD_STRING_VIEW)
-#include <string_view>
-#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -366,12 +361,6 @@ class AlphaNum {
                ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : piece_(pc) {}
 
-#if defined(ABSL_HAVE_STD_STRING_VIEW) && !defined(ABSL_USES_STD_STRING_VIEW)
-  AlphaNum(std::string_view pc  // NOLINT(runtime/explicit)
-               ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : piece_(pc.data(), pc.size()) {}
-#endif  // !ABSL_USES_STD_STRING_VIEW
-
   template <typename T, typename = typename std::enable_if<
                             HasAbslStringify<T>::value>::type>
   AlphaNum(  // NOLINT(runtime/explicit)
@@ -538,28 +527,28 @@ using EnableIfFastCase = T;
 
 }  // namespace strings_internal
 
-[[nodiscard]] inline std::string StrCat() { return std::string(); }
+ABSL_MUST_USE_RESULT inline std::string StrCat() { return std::string(); }
 
 template <typename T>
-[[nodiscard]] inline std::string StrCat(
+ABSL_MUST_USE_RESULT inline std::string StrCat(
     strings_internal::EnableIfFastCase<T> a) {
   return strings_internal::SingleArgStrCat(a);
 }
-[[nodiscard]] inline std::string StrCat(const AlphaNum& a) {
+ABSL_MUST_USE_RESULT inline std::string StrCat(const AlphaNum& a) {
   return std::string(a.data(), a.size());
 }
 
-[[nodiscard]] std::string StrCat(const AlphaNum& a, const AlphaNum& b);
-[[nodiscard]] std::string StrCat(const AlphaNum& a, const AlphaNum& b,
-                                 const AlphaNum& c);
-[[nodiscard]] std::string StrCat(const AlphaNum& a, const AlphaNum& b,
-                                 const AlphaNum& c, const AlphaNum& d);
+ABSL_MUST_USE_RESULT std::string StrCat(const AlphaNum& a, const AlphaNum& b);
+ABSL_MUST_USE_RESULT std::string StrCat(const AlphaNum& a, const AlphaNum& b,
+                                        const AlphaNum& c);
+ABSL_MUST_USE_RESULT std::string StrCat(const AlphaNum& a, const AlphaNum& b,
+                                        const AlphaNum& c, const AlphaNum& d);
 
 // Support 5 or more arguments
 template <typename... AV>
-[[nodiscard]] inline std::string StrCat(const AlphaNum& a, const AlphaNum& b,
-                                        const AlphaNum& c, const AlphaNum& d,
-                                        const AlphaNum& e, const AV&... args) {
+ABSL_MUST_USE_RESULT inline std::string StrCat(
+    const AlphaNum& a, const AlphaNum& b, const AlphaNum& c, const AlphaNum& d,
+    const AlphaNum& e, const AV&... args) {
   return strings_internal::CatPieces(
       {a.Piece(), b.Piece(), c.Piece(), d.Piece(), e.Piece(),
        static_cast<const AlphaNum&>(args).Piece()...});

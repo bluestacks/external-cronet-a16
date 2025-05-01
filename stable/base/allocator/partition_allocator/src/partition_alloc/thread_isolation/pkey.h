@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 

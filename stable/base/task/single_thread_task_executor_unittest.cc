@@ -69,7 +69,7 @@ namespace {
 
 class Foo : public RefCounted<Foo> {
  public:
-  Foo() = default;
+  Foo() : test_count_(0) {}
 
   Foo(const Foo&) = delete;
   Foo& operator=(const Foo&) = delete;
@@ -108,7 +108,7 @@ class Foo : public RefCounted<Foo> {
 
   ~Foo() = default;
 
-  int test_count_ = 0;
+  int test_count_;
   std::string result_;
 };
 
@@ -117,9 +117,8 @@ static void SlowFunc(TimeDelta pause,
                      int* quit_counter,
                      base::OnceClosure quit_closure) {
   PlatformThread::Sleep(pause);
-  if (--(*quit_counter) == 0) {
+  if (--(*quit_counter) == 0)
     std::move(quit_closure).Run();
-  }
 }
 
 // This function records the time when Run was called in a Time object, which is
@@ -193,9 +192,8 @@ std::ostream& operator<<(std::ostream& os, TaskType type) {
 }
 
 std::ostream& operator<<(std::ostream& os, const TaskItem& item) {
-  if (item.start) {
+  if (item.start)
     return os << item.type << " " << item.cookie << " starts";
-  }
   return os << item.type << " " << item.cookie << " ends";
 }
 
@@ -296,9 +294,8 @@ void MessageBoxFunc(TaskList* order, int cookie, bool is_reentrant) {
   order->RecordStart(MESSAGEBOX, cookie);
   std::optional<CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop>
       maybe_allow_nesting;
-  if (is_reentrant) {
+  if (is_reentrant)
     maybe_allow_nesting.emplace();
-  }
   ::MessageBox(NULL, L"Please wait...", kMessageBoxTitle, MB_OK);
   order->RecordEnd(MESSAGEBOX, cookie);
 }
@@ -375,9 +372,8 @@ void Post128KTasksThenQuit(SingleThreadTaskRunner* executor_task_runner,
   // detailed logging for diagnosis where this flakes.
   const auto now = TimeTicks::Now();
   const auto scheduling_delay = now - last_post_ticks;
-  if (scheduling_delay > slowest_delay) {
+  if (scheduling_delay > slowest_delay)
     slowest_delay = scheduling_delay;
-  }
 
   if (num_posts_done == kNumTimes) {
     std::move(on_done).Run();
@@ -411,7 +407,7 @@ class TestIOHandler : public MessagePumpForIO::IOHandler {
                      DWORD error) override;
 
   void Init();
-  OVERLAPPED* context() { return context_.GetOverlapped(); }
+  OVERLAPPED* context() { return &context_.overlapped; }
   DWORD size() { return sizeof(buffer_); }
 
  private:
@@ -423,7 +419,7 @@ class TestIOHandler : public MessagePumpForIO::IOHandler {
 
 TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
     : MessagePumpForIO::IOHandler(FROM_HERE), signal_(signal) {
-  UNSAFE_TODO(memset(buffer_, 0, sizeof(buffer_)));
+  memset(buffer_, 0, sizeof(buffer_));
 
   file_.Set(CreateFile(name, GENERIC_READ, 0, NULL, OPEN_EXISTING,
                        FILE_FLAG_OVERLAPPED, NULL));
@@ -497,7 +493,7 @@ class SingleThreadTaskExecutorTypedTest
   SingleThreadTaskExecutorTypedTest& operator=(
       const SingleThreadTaskExecutorTypedTest&) = delete;
 
-  ~SingleThreadTaskExecutorTypedTest() override = default;
+  ~SingleThreadTaskExecutorTypedTest() = default;
 
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<MessagePumpType> param_info) {
@@ -676,11 +672,10 @@ TEST_P(SingleThreadTaskExecutorTypedTest, PostDelayedTask_InPostOrder_3) {
   TimeTicks run_time1, run_time2;
   base::RunLoop loop;
   // Clutter the ML with tasks.
-  for (int i = 1; i < num_tasks; ++i) {
+  for (int i = 1; i < num_tasks; ++i)
     executor.task_runner()->PostTask(
         FROM_HERE, BindOnce(&RecordRunTimeFunc, &run_time1, &num_tasks,
                             loop.QuitWhenIdleClosure()));
-  }
 
   executor.task_runner()->PostDelayedTask(
       FROM_HERE,
@@ -751,10 +746,9 @@ class RecordDeletionProbe : public RefCounted<RecordDeletionProbe> {
 
   ~RecordDeletionProbe() {
     *was_deleted_ = true;
-    if (post_on_delete_.get()) {
+    if (post_on_delete_.get())
       SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, BindOnce(&RecordDeletionProbe::Run, post_on_delete_));
-    }
   }
 
   scoped_refptr<RecordDeletionProbe> post_on_delete_;
@@ -1878,7 +1872,8 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
  public:
   MLDestructionObserver(bool* task_destroyed, bool* destruction_observer_called)
       : task_destroyed_(task_destroyed),
-        destruction_observer_called_(destruction_observer_called) {}
+        destruction_observer_called_(destruction_observer_called),
+        task_destroyed_before_message_loop_(false) {}
   void WillDestroyCurrentMessageLoop() override {
     task_destroyed_before_message_loop_ = *task_destroyed_;
     *destruction_observer_called_ = true;
@@ -1890,7 +1885,7 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
  private:
   raw_ptr<bool> task_destroyed_;
   raw_ptr<bool> destruction_observer_called_;
-  bool task_destroyed_before_message_loop_ = false;
+  bool task_destroyed_before_message_loop_;
 };
 
 }  // namespace
@@ -1973,12 +1968,10 @@ LRESULT CALLBACK TestWndProcThunk(HWND hwnd,
                                   UINT message,
                                   WPARAM wparam,
                                   LPARAM lparam) {
-  if (message == WM_CLOSE) {
+  if (message == WM_CLOSE)
     EXPECT_TRUE(DestroyWindow(hwnd));
-  }
-  if (message != kSignalMsg) {
+  if (message != kSignalMsg)
     return DefWindowProc(hwnd, message, wparam, lparam);
-  }
 
   switch (lparam) {
     case 1:
@@ -2004,16 +1997,14 @@ LRESULT CALLBACK TestWndProcThunk(HWND hwnd,
       // If it doesn't, then we'll loop here until the test times out.
       MSG msg;
       while (GetMessage(&msg, 0, 0, 0)) {
-        if (!CallMsgFilter(&msg, kMyMessageFilterCode)) {
+        if (!CallMsgFilter(&msg, kMyMessageFilterCode))
           DispatchMessage(&msg);
-        }
         // If this message is a WM_CLOSE, explicitly exit the modal loop.
         // Posting a WM_QUIT should handle this, but unfortunately
         // MessagePumpWin eats WM_QUIT messages even when running inside a modal
         // loop.
-        if (msg.message == WM_CLOSE) {
+        if (msg.message == WM_CLOSE)
           break;
-        }
       }
       EXPECT_TRUE(did_run);
 
@@ -2118,7 +2109,7 @@ namespace {
 
 class PostTaskOnDestroy {
  public:
-  explicit PostTaskOnDestroy(int times) : times_remaining_(times) {}
+  PostTaskOnDestroy(int times) : times_remaining_(times) {}
 
   PostTaskOnDestroy(const PostTaskOnDestroy&) = delete;
   PostTaskOnDestroy& operator=(const PostTaskOnDestroy&) = delete;

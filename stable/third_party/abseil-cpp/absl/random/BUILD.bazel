@@ -42,9 +42,9 @@ cc_library(
     deps = [
         ":distributions",
         ":seed_sequences",
-        "//absl/base:config",
         "//absl/random/internal:nonsecure_base",
         "//absl/random/internal:pcg_engine",
+        "//absl/random/internal:pool_urbg",
         "//absl/random/internal:randen_engine",
     ],
 )
@@ -93,10 +93,7 @@ cc_library(
     hdrs = ["seed_gen_exception.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = [
-        "//absl/base:config",
-        "//absl/base:raw_logging_internal",
-    ],
+    deps = ["//absl/base:config"],
 )
 
 cc_library(
@@ -111,7 +108,7 @@ cc_library(
         ":seed_gen_exception",
         "//absl/base:config",
         "//absl/base:nullability",
-        "//absl/random/internal:entropy_pool",
+        "//absl/random/internal:pool_urbg",
         "//absl/random/internal:salted_seed_seq",
         "//absl/random/internal:seed_material",
         "//absl/strings:string_view",
@@ -164,7 +161,7 @@ cc_library(
         "//absl/meta:type_traits",
         "//absl/random/internal:mock_helpers",
         "//absl/utility",
-        "@googletest//:gtest",
+        "@com_google_googletest//:gtest",
     ],
 )
 
@@ -180,8 +177,8 @@ cc_test(
         ":random",
         "//absl/random/internal:pcg_engine",
         "//absl/random/internal:sequence_urbg",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -206,8 +203,8 @@ cc_test(
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
         "//absl/strings:str_format",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -226,8 +223,8 @@ cc_test(
         "//absl/meta:type_traits",
         "//absl/numeric:int128",
         "//absl/random/internal:distribution_test_util",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -240,8 +237,8 @@ cc_test(
     deps = [
         ":distributions",
         ":random",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -265,8 +262,8 @@ cc_test(
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
         "//absl/strings:str_format",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -286,8 +283,8 @@ cc_test(
         "//absl/random/internal:pcg_engine",
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -316,8 +313,8 @@ cc_test(
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
         "//absl/strings:str_format",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -339,8 +336,8 @@ cc_test(
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
         "//absl/strings:str_format",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -363,8 +360,8 @@ cc_test(
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
         "//absl/strings:str_format",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -385,8 +382,8 @@ cc_test(
         "//absl/random/internal:pcg_engine",
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -412,8 +409,8 @@ cc_test(
         "//absl/random/internal:pcg_engine",
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -433,8 +430,8 @@ cc_test(
         "//absl/random/internal:pcg_engine",
         "//absl/random/internal:sequence_urbg",
         "//absl/strings",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -447,11 +444,10 @@ cc_test(
     deps = [
         ":bit_gen_ref",
         ":random",
-        "//absl/base:config",
         "//absl/base:fast_type_id",
         "//absl/random/internal:sequence_urbg",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -469,8 +465,8 @@ cc_test(
         ":mock_distributions",
         ":mocking_bit_gen",
         ":random",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -490,8 +486,8 @@ cc_test(
         ":mocking_bit_gen",
         ":random",
         "//absl/numeric:int128",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -506,8 +502,8 @@ cc_test(
     ],
     deps = [
         ":random",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -521,8 +517,8 @@ cc_test(
         ":random",
         ":seed_sequences",
         "//absl/random/internal:nonsecure_base",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -539,9 +535,11 @@ cc_binary(
     deps = [
         ":distributions",
         ":random",
+        ":seed_sequences",
         "//absl/base:core_headers",
+        "//absl/meta:type_traits",
         "//absl/random/internal:fast_uniform_bits",
         "//absl/random/internal:randen_engine",
-        "@google_benchmark//:benchmark_main",
+        "@com_github_google_benchmark//:benchmark_main",
     ],
 )

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_delegate.h"
@@ -119,7 +120,10 @@ const HttpNetworkSessionContext* URLRequestContext::GetNetworkSessionContext()
   return &network_session->context();
 }
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if !BUILDFLAG(IS_WIN) && \
+    !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     const GURL& url,
     RequestPriority priority,

@@ -13,6 +13,7 @@
 
 #include "base/i18n/base_i18n_export.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
 U_NAMESPACE_BEGIN
@@ -80,12 +81,12 @@ BASE_I18N_EXPORT std::u16string TimeFormatShortDateNumeric(const Time& time);
 // Returns a numeric date and time such as "12/13/52 2:44:30 PM".
 BASE_I18N_EXPORT std::u16string TimeFormatShortDateAndTime(const Time& time);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns a month and year, e.g. "November 2007" for the specified time zone.
 BASE_I18N_EXPORT std::u16string TimeFormatMonthAndYearForTimeZone(
     const Time& time,
     const icu::TimeZone* time_zone);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns a month and year, e.g. "November 2007"
 BASE_I18N_EXPORT std::u16string TimeFormatMonthAndYear(const Time& time);

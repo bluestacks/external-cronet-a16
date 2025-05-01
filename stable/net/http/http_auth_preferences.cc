@@ -8,6 +8,7 @@
 
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/http/http_auth_filter.h"
 #include "net/http/url_security_manager.h"
 

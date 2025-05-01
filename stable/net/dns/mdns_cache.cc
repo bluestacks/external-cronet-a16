@@ -4,8 +4,6 @@
 
 #include "net/dns/mdns_cache.h"
 
-#include <stdint.h>
-
 #include <algorithm>
 #include <tuple>
 #include <utility>
@@ -28,9 +26,9 @@ constexpr size_t kDefaultEntryLimit = 100'000;
 // The effective TTL given to records with a nominal zero TTL.
 // Allows time for hosts to send updated records, as detailed in RFC 6762
 // Section 10.1.
-static constexpr uint32_t kZeroTTLSeconds = 1;
+static const unsigned kZeroTTLSeconds = 1;
 
-MDnsCache::Key::Key(uint32_t type,
+MDnsCache::Key::Key(unsigned type,
                     const std::string& name,
                     const std::string& optional)
     : type_(type),
@@ -134,7 +132,7 @@ void MDnsCache::CleanupRecords(
   next_expiration_ = next_expiration;
 }
 
-void MDnsCache::FindDnsRecords(uint32_t type,
+void MDnsCache::FindDnsRecords(unsigned type,
                                const std::string& name,
                                std::vector<const RecordParsed*>* results,
                                base::Time now) const {

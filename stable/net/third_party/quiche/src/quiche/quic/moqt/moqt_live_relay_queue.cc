@@ -20,7 +20,6 @@
 #include "quiche/common/platform/api/quiche_mem_slice.h"
 #include "quiche/common/quiche_buffer_allocator.h"
 #include "quiche/common/simple_buffer_allocator.h"
-#include "quiche/web_transport/web_transport.h"
 
 namespace moqt {
 
@@ -58,32 +57,6 @@ bool MoqtLiveRelayQueue::AddFin(FullSequence sequence) {
   return true;
 }
 
-bool MoqtLiveRelayQueue::OnStreamReset(
-    FullSequence sequence, webtransport::StreamErrorCode error_code) {
-  switch (forwarding_preference_) {
-    case MoqtForwardingPreference::kDatagram:
-      return false;
-    case MoqtForwardingPreference::kSubgroup:
-      break;
-  }
-  auto group_it = queue_.find(sequence.group);
-  if (group_it == queue_.end()) {
-    // Group does not exist.
-    return false;
-  }
-  Group& group = group_it->second;
-  auto subgroup_it = group.subgroups.find(
-      SubgroupPriority{publisher_priority_, sequence.subgroup});
-  if (subgroup_it == group.subgroups.end()) {
-    // Subgroup does not exist.
-    return false;
-  }
-  for (MoqtObjectListener* listener : listeners_) {
-    listener->OnSubgroupAbandoned(sequence, error_code);
-  }
-  return true;
-}
-
 // TODO(martinduke): Unless Track Forwarding preference goes away, support it.
 bool MoqtLiveRelayQueue::AddRawObject(FullSequence sequence,
                                       MoqtObjectStatus status,
@@ -110,32 +83,18 @@ bool MoqtLiveRelayQueue::AddRawObject(FullSequence sequence,
                       << "track";
     return false;
   }
-  switch (status) {
-    case MoqtObjectStatus::kEndOfTrackAndGroup:
-      if (sequence < next_sequence_) {
-        QUICHE_DLOG(INFO) << "EndOfTrackAndGroup is too early.";
-        return false;
-      }
-      // TODO(martinduke): Check that EndOfTrackAndGroup has normal IDs.
-      end_of_track_ = sequence;
-      break;
-    case MoqtObjectStatus::kEndOfTrack:
-      if (sequence.group <= next_sequence_.group || sequence.object > 0) {
-        QUICHE_DLOG(INFO) << "EndOfTrack is too early.";
-        return false;
-      }
-      // TODO(martinduke): Check that EndOfTrack has normal IDs.
-      end_of_track_ = sequence;
-      break;
-    case MoqtObjectStatus::kGroupDoesNotExist:
-      if (sequence.object > 0) {
-        QUICHE_DLOG(INFO) << "GroupDoesNotExist is not the last object in the "
-                          << "group";
-        return false;
-      }
-      break;
-    default:
-      break;
+  if (status == MoqtObjectStatus::kEndOfTrack) {
+    if (sequence < next_sequence_) {
+      QUICHE_DLOG(INFO) << "EndOfTrack is too early.";
+      return false;
+    }
+    // TODO(martinduke): Check that EndOfTrack has normal IDs.
+    end_of_track_ = sequence;
+  }
+  if (status == MoqtObjectStatus::kGroupDoesNotExist && sequence.object > 0) {
+    QUICHE_DLOG(INFO) << "GroupDoesNotExist is not the last object in the "
+                      << "group";
+    return false;
   }
   auto group_it = queue_.try_emplace(sequence.group);
   Group& group = group_it.first->second;
@@ -145,8 +104,7 @@ bool MoqtLiveRelayQueue::AddRawObject(FullSequence sequence,
                         << "group";
       return false;
     }
-    if ((status == MoqtObjectStatus::kEndOfGroup ||
-         status == MoqtObjectStatus::kEndOfTrackAndGroup) &&
+    if (status == MoqtObjectStatus::kEndOfGroup &&
         sequence.object < group.next_object) {
       QUICHE_DLOG(INFO) << "Skipping EndOfGroup because it is not the last "
                         << "object in the group.";
@@ -165,7 +123,7 @@ bool MoqtLiveRelayQueue::AddRawObject(FullSequence sequence,
     }
     // If last_object has stream-ending status, it should have been caught by
     // the fin_after_this check above.
-    QUICHE_DCHECK(last_object.status != MoqtObjectStatus::kEndOfTrackAndGroup &&
+    QUICHE_DCHECK(last_object.status != MoqtObjectStatus::kEndOfSubgroup &&
                   last_object.status != MoqtObjectStatus::kEndOfGroup &&
                   last_object.status != MoqtObjectStatus::kEndOfTrack);
     if (last_object.sequence.object >= sequence.object) {
@@ -184,13 +142,13 @@ bool MoqtLiveRelayQueue::AddRawObject(FullSequence sequence,
   // Anticipate stream FIN with most non-normal objects.
   switch (status) {
     case MoqtObjectStatus::kEndOfTrack:
-    case MoqtObjectStatus::kEndOfTrackAndGroup:
       end_of_track_ = sequence;
-      last_object_in_stream = true;
       ABSL_FALLTHROUGH_INTENDED;
     case MoqtObjectStatus::kGroupDoesNotExist:
     case MoqtObjectStatus::kEndOfGroup:
       group.complete = true;
+      ABSL_FALLTHROUGH_INTENDED;
+    case MoqtObjectStatus::kEndOfSubgroup:
       last_object_in_stream = true;
       break;
     default:
@@ -201,10 +159,8 @@ bool MoqtLiveRelayQueue::AddRawObject(FullSequence sequence,
           ? nullptr
           : std::make_shared<quiche::QuicheMemSlice>(quiche::QuicheBuffer::Copy(
                 quiche::SimpleBufferAllocator::Get(), payload));
-  subgroup.emplace(
-      sequence.object,
-      CachedObject{sequence, status, priority, slice, clock_->ApproximateNow(),
-                   last_object_in_stream});
+  subgroup.emplace(sequence.object, CachedObject{sequence, status, priority,
+                                                 slice, last_object_in_stream});
   for (MoqtObjectListener* listener : listeners_) {
     listener->OnNewObjectAvailable(sequence);
   }

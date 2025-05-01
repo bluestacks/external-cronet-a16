@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/http/http_content_disposition.h"
 
-#include <string>
 #include <string_view>
 
 #include "base/base64.h"
@@ -118,7 +122,8 @@ bool DecodeWord(std::string_view encoded_word,
   *is_rfc2047 = true;
   int part_index = 0;
   std::string charset;
-  base::StringViewTokenizer t(encoded_word, "?");
+  base::CStringTokenizer t(encoded_word.data(),
+                           encoded_word.data() + encoded_word.size(), "?");
   RFC2047EncodingType enc_type = Q_ENCODING;
   while (*is_rfc2047 && t.GetNext()) {
     std::string_view part = t.token_piece();
@@ -342,9 +347,10 @@ HttpContentDisposition::HttpContentDisposition(
 
 HttpContentDisposition::~HttpContentDisposition() = default;
 
-std::string_view HttpContentDisposition::ConsumeDispositionType(
-    std::string_view header) {
+std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
+    std::string::const_iterator begin, std::string::const_iterator end) {
   DCHECK(type_ == INLINE);
+  auto header = base::MakeStringPiece(begin, end);
   size_t delimiter = header.find(';');
   std::string_view type = header.substr(0, delimiter);
   type = HttpUtil::TrimLWS(type);
@@ -353,7 +359,7 @@ std::string_view HttpContentDisposition::ConsumeDispositionType(
   // Content-Disposition header is malformed, and we treat the first bytes as
   // a parameter rather than a disposition-type.
   if (type.empty() || !HttpUtil::IsToken(type))
-    return header;
+    return begin;
 
   parse_result_flags_ |= HAS_DISPOSITION_TYPE;
 
@@ -367,12 +373,7 @@ std::string_view HttpContentDisposition::ConsumeDispositionType(
     parse_result_flags_ |= HAS_UNKNOWN_DISPOSITION_TYPE;
     type_ = ATTACHMENT;
   }
-
-  // Return everything in the string after the delimiter, if there was one.
-  if (delimiter == std::string_view::npos) {
-    return std::string_view();
-  }
-  return header.substr(delimiter + 1);
+  return begin + (type.data() + type.size() - header.data());
 }
 
 // http://tools.ietf.org/html/rfc6266
@@ -398,12 +399,14 @@ void HttpContentDisposition::Parse(const std::string& header,
   DCHECK(type_ == INLINE);
   DCHECK(filename_.empty());
 
-  std::string_view params = ConsumeDispositionType(header);
+  std::string::const_iterator pos = header.begin();
+  std::string::const_iterator end = header.end();
+  pos = ConsumeDispositionType(pos, end);
 
   std::string filename;
   std::string ext_filename;
 
-  HttpUtil::NameValuePairsIterator iter(params, ';');
+  HttpUtil::NameValuePairsIterator iter(base::MakeStringPiece(pos, end), ';');
   while (iter.GetNext()) {
     if (filename.empty() &&
         base::EqualsCaseInsensitiveASCII(iter.name(), "filename")) {

@@ -7,20 +7,13 @@ import datetime
 import typing
 import unittest
 
-# //testing imports.
 from flake_suppressor_common import data_types
-from unexpected_passes_common import data_types as unexpected_dt
-
-NON_WILDCARD = unexpected_dt.WildcardType.NON_WILDCARD
-SIMPLE_WILDCARD = unexpected_dt.WildcardType.SIMPLE_WILDCARD
-FULL_WILDCARD = unexpected_dt.WildcardType.FULL_WILDCARD
 
 
 class ExpectationUnittest(unittest.TestCase):
   def testAppliesToResultNonResult(self) -> None:
     """Tests that AppliesToResult properly fails when given a non-Result."""
-    e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'],
-                               NON_WILDCARD)
+    e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
     fake_result = typing.cast(data_types.Result, None)
     with self.assertRaises(AssertionError):
       e.AppliesToResult(fake_result)
@@ -28,8 +21,7 @@ class ExpectationUnittest(unittest.TestCase):
   def testAppliesToResultApplies(self) -> None:
     """Tests that AppliesToResult properly returns True on expected Results."""
     # Exact match.
-    e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'],
-                               NON_WILDCARD)
+    e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
     r = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id')
     self.assertTrue(e.AppliesToResult(r))
     # With status
@@ -56,20 +48,14 @@ class ExpectationUnittest(unittest.TestCase):
     # Tag subset
     r = data_types.Result('suite', 'test', ('win', 'nvidia', 'release'), 'id')
     self.assertTrue(e.AppliesToResult(r))
-    # Simple glob match
-    e = data_types.Expectation('t*', ['win', 'nvidia'], ['Failure'],
-                               SIMPLE_WILDCARD)
-    self.assertTrue(e.AppliesToResult(r))
-    # Full glob match
-    e = data_types.Expectation('t*st', ['win', 'nvidia'], ['Failure'],
-                               FULL_WILDCARD)
+    # Glob match
+    e = data_types.Expectation('t*', ['win', 'nvidia'], ['Failure'])
     self.assertTrue(e.AppliesToResult(r))
 
   def testAppliesToResultDoesNotApply(self) -> None:
     """Tests that AppliesToResult properly returns False on expected Results."""
     # Name mismatch
-    e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'],
-                               NON_WILDCARD)
+    e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
     r = data_types.Result('suite', 'notatest', ('win', 'nvidia'), 'id')
     self.assertFalse(e.AppliesToResult(r))
     # With status

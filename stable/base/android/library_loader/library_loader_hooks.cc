@@ -10,18 +10,22 @@
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/android/library_loader/library_prefetcher.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
+#include "base/android/sys_utils.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/system/sys_info.h"
+#include "build/robolectric_buildflags.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/LibraryLoader_jni.h"  // nogncheck
+#else
 #include "base/library_loader_jni/LibraryLoader_jni.h"
+#endif
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
-#include "base/android/orderfile/orderfile_instrumentation.h"  // nogncheck
+#include "base/android/orderfile/orderfile_instrumentation.h"
 #endif
 
 namespace base {
@@ -42,7 +46,7 @@ LibraryProcessType GetLibraryProcessType() {
 
 bool IsUsingOrderfileOptimization() {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  return SysInfo::IsLowEndDevice();
+  return SysUtils::IsLowEndDeviceFromJni();
 #else  //  !SUPPORTS_CODE_ORDERING
   return false;
 #endif
@@ -57,8 +61,9 @@ void SetLibraryLoadedHook(LibraryLoadedHook* func) {
   g_registration_callback = func;
 }
 
-static jboolean JNI_LibraryLoader_LibraryLoaded(JNIEnv* env,
-                                                jint library_process_type) {
+static jboolean JNI_LibraryLoader_LibraryLoaded(
+    JNIEnv* env,
+    jint library_process_type) {
   DCHECK_EQ(g_library_process_type, PROCESS_UNINITIALIZED);
   g_library_process_type =
       static_cast<LibraryProcessType>(library_process_type);
@@ -78,9 +83,8 @@ static jboolean JNI_LibraryLoader_LibraryLoaded(JNIEnv* env,
 
   if (g_native_initialization_hook &&
       !g_native_initialization_hook(
-          static_cast<LibraryProcessType>(library_process_type))) {
+          static_cast<LibraryProcessType>(library_process_type)))
     return false;
-  }
   if (g_registration_callback &&
       !g_registration_callback(
           env, nullptr,

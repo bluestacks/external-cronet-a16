@@ -77,7 +77,8 @@ class PnaclHostTest : public testing::Test {
     EXPECT_TRUE(mutable_file->GetInfo(&info));
     EXPECT_FALSE(info.is_directory);
     EXPECT_EQ(0LL, info.size);
-    char str[kBufferSize] = {};
+    char str[kBufferSize];
+    memset(str, 0x0, kBufferSize);
     snprintf(str, kBufferSize, "testdata%d", ++write_callback_count_);
     EXPECT_EQ(kBufferSize, static_cast<size_t>(UNSAFE_TODO(
                                mutable_file->Write(0, str, kBufferSize))));
@@ -91,8 +92,10 @@ class PnaclHostTest : public testing::Test {
     EXPECT_TRUE(mutable_file->GetInfo(&info));
     EXPECT_FALSE(info.is_directory);
     EXPECT_EQ(kBufferSize, static_cast<size_t>(info.size));
-    char data[kBufferSize] = {};
-    char str[kBufferSize] = {};
+    char data[kBufferSize];
+    memset(data, 0x0, kBufferSize);
+    char str[kBufferSize];
+    memset(str, 0x0, kBufferSize);
     snprintf(str, kBufferSize, "testdata%d", write_callback_count_);
     EXPECT_EQ(kBufferSize, static_cast<size_t>(UNSAFE_TODO(
                                mutable_file->Read(0, data, kBufferSize))));

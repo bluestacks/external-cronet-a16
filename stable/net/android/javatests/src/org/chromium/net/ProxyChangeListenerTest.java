@@ -181,8 +181,8 @@ public class ProxyChangeListenerTest {
         mListener.stop();
         Assert.assertEquals(
                 "All receivers should have been unregistered",
-                0,
-                mAppContext.getReceivers().size());
+                mAppContext.getReceivers().size(),
+                0);
     }
 
     @Test

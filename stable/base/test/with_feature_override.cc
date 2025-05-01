@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/test/with_feature_override.h"
-
 #include "base/task/thread_pool/thread_pool_instance.h"
 
-namespace base::test {
+namespace base {
+namespace test {
 
 WithFeatureOverride::WithFeatureOverride(const base::Feature& feature) {
   // Most other classes that tests inherit from start task environments. Verify
@@ -28,4 +28,5 @@ bool WithFeatureOverride::IsParamFeatureEnabled() const {
 
 WithFeatureOverride::~WithFeatureOverride() = default;
 
-}  // namespace base::test
+}  // namespace test
+}  // namespace base

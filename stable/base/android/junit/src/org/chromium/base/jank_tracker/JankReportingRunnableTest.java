@@ -103,7 +103,7 @@ public class JankReportingRunnableTest {
 
         JankEndScenarioTime endScenarioTime = JankEndScenarioTime.endAt(frameTime);
         Assert.assertTrue(endScenarioTime != null);
-        Assert.assertEquals(frameTime, endScenarioTime.endScenarioTimeNs);
+        Assert.assertEquals(endScenarioTime.endScenarioTimeNs, frameTime);
 
         JankReportingRunnable startReportingRunnable =
                 new JankReportingRunnable(

@@ -8,7 +8,8 @@
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -63,4 +64,5 @@ bool BindStateHolder::MaybeValid() const {
   return bind_state_->MaybeValid();
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

@@ -9,24 +9,18 @@ from typing import Iterable, Set
 import unittest
 from unittest import mock
 
-# vpython-provided modules.
-# pylint: disable=import-error
 import six
-from pyfakefs import fake_filesystem_unittest
-# pylint: enable=import-error
 
-# //testing imports.
+from pyfakefs import fake_filesystem_unittest
+
 from unexpected_passes_common import data_types
 from unexpected_passes_common import result_output
 from unexpected_passes_common import unittest_utils as uu
 
-# //third_party/blink/tools imports.
 from blinkpy.w3c import buganizer
 
 # Protected access is allowed for unittests.
 # pylint: disable=protected-access
-
-NON_WILDCARD = data_types.WildcardType.NON_WILDCARD
 
 def CreateTextOutputPermutations(text: str, inputs: Iterable[str]) -> Set[str]:
   """Creates permutations of |text| filled with the contents of |inputs|.
@@ -114,7 +108,7 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
         data_types.ExpectationBuilderMap({
             data_types.Expectation('foo/test', ['win', 'intel'], [
                                        'RetryOnFailure'
-                                   ], NON_WILDCARD):
+                                   ]):
             data_types.BuilderStepMap({
                 'builder':
                 data_types.StepBuildStatsMap({
@@ -128,7 +122,7 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
             }),
             data_types.Expectation('foo/test', ['linux', 'intel'], [
                                        'RetryOnFailure'
-                                   ], NON_WILDCARD):
+                                   ]):
             data_types.BuilderStepMap({
                 'builder':
                 data_types.StepBuildStatsMap({
@@ -138,7 +132,7 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
             }),
             data_types.Expectation('foo/test', ['mac', 'intel'], [
                                        'RetryOnFailure'
-                                   ], NON_WILDCARD):
+                                   ]):
             data_types.BuilderStepMap({
                 'builder':
                 data_types.StepBuildStatsMap({
@@ -245,13 +239,11 @@ class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
     unused = {
         'foo_file': [
             data_types.Expectation('foo/test', ['win', 'nvidia'],
-                                   ['Failure', 'Timeout'], NON_WILDCARD),
+                                   ['Failure', 'Timeout']),
         ],
         'bar_file': [
-            data_types.Expectation('bar/test', ['win'], ['Failure'],
-                                   NON_WILDCARD),
-            data_types.Expectation('bar/test2', ['win'], ['RetryOnFailure'],
-                                   NON_WILDCARD)
+            data_types.Expectation('bar/test', ['win'], ['Failure']),
+            data_types.Expectation('bar/test2', ['win'], ['RetryOnFailure'])
         ],
     }
     if six.PY2:
@@ -556,12 +548,10 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
 
   def testOutputResultsSmoketest(self) -> None:
     """Test that nothing blows up when outputting."""
-    # yapf: disable
     expectation_map = data_types.TestExpectationMap({
         'foo':
         data_types.ExpectationBuilderMap({
-            data_types.Expectation(
-                'foo', ['win', 'intel'], 'RetryOnFailure', NON_WILDCARD):
+            data_types.Expectation('foo', ['win', 'intel'], 'RetryOnFailure'):
             data_types.BuilderStepMap({
                 'stale':
                 data_types.StepBuildStatsMap({
@@ -569,7 +559,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                     uu.CreateStatsWithPassFails(2, 0),
                 }),
             }),
-            data_types.Expectation('foo', ['linux'], 'Failure', NON_WILDCARD):
+            data_types.Expectation('foo', ['linux'], 'Failure'):
             data_types.BuilderStepMap({
                 'semi_stale':
                 data_types.StepBuildStatsMap({
@@ -581,7 +571,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                     uu.CreateStatsWithPassFails(0, 2),
                 }),
             }),
-            data_types.Expectation('foo', ['mac'], 'Failure', NON_WILDCARD):
+            data_types.Expectation('foo', ['mac'], 'Failure'):
             data_types.BuilderStepMap({
                 'active':
                 data_types.StepBuildStatsMap({
@@ -591,7 +581,6 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
             }),
         }),
     })
-    # yapf: enable
     unmatched_results = {
         'builder': [
             data_types.Result('foo', ['win', 'intel'], 'Failure', 'step_name',
@@ -600,8 +589,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
     }
     unmatched_expectations = {
         'foo_file': [
-            data_types.Expectation('foo', ['linux'], 'RetryOnFailure',
-                                   NON_WILDCARD),
+            data_types.Expectation('foo', ['linux'], 'RetryOnFailure'),
         ],
     }
 
@@ -643,7 +631,6 @@ class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
         'https://crbug.com/angleproject/1234',
         'http://crbug.com/2345',
         'crbug.com/3456',
-        'b/9999',
     ]
     orphaned_urls = ['https://crbug.com/1234', 'crbug.com/3456']
     result_output._OutputAffectedUrls(urls, orphaned_urls, self._file_handle)
@@ -653,8 +640,7 @@ class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
                                   'https://crbug.com/1234 '
                                   'https://crbug.com/angleproject/1234 '
                                   'http://crbug.com/2345 '
-                                  'https://crbug.com/3456 '
-                                  'https://b/9999\n'
+                                  'https://crbug.com/3456\n'
                                   'Closable bugs: '
                                   'https://crbug.com/1234 '
                                   'https://crbug.com/3456\n'))
@@ -671,13 +657,12 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     urls = [
         'crbug.com/1234',
         'https://crbug.com/angleproject/2345',
-        'b/9999',
     ]
     result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 9999, 1234, angleproject:2345\n'))
+                                  'Bug: 1234, angleproject:2345\n'))
 
   def testBugLimit(self) -> None:
     """Tests that only a certain number of bugs are allowed per line."""

@@ -5,7 +5,6 @@
 #ifndef NET_BASE_SCHEMEFUL_SITE_H_
 #define NET_BASE_SCHEMEFUL_SITE_H_
 
-#include <compare>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -76,15 +75,6 @@ class NET_EXPORT SchemefulSite {
 
   SchemefulSite& operator=(const SchemefulSite& other);
   SchemefulSite& operator=(SchemefulSite&& other) noexcept;
-
-  // These methods match the spec algorithm
-  // https://html.spec.whatwg.org/multipage/browsers.html#concept-site-same-site
-  // in an efficient way without allocating the SchemefulSite directly.
-  // They exactly match the semantics of SchemefulSite(a) == SchemefulSite(b).
-  static bool IsSameSite(const url::Origin& a, const url::Origin& b);
-  bool IsSameSiteWith(const url::Origin& other) const;
-  static bool IsSameSite(const GURL& a, const GURL& b);
-  bool IsSameSiteWith(const GURL& other) const;
 
   // Tries to construct an instance from a (potentially untrusted) value of the
   // internal `site_as_origin_` that got received over an RPC.
@@ -158,10 +148,11 @@ class NET_EXPORT SchemefulSite {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  friend bool operator==(const SchemefulSite& left,
-                         const SchemefulSite& right) = default;
-  friend auto operator<=>(const SchemefulSite& left,
-                          const SchemefulSite& right) = default;
+  bool operator==(const SchemefulSite& other) const;
+
+  bool operator!=(const SchemefulSite& other) const;
+
+  bool operator<(const SchemefulSite& other) const;
 
  private:
   // IPC serialization code needs to access internal origin.
@@ -214,7 +205,7 @@ class NET_EXPORT SchemefulSite {
   // Returns the host of the underlying `origin`, which will usually be the
   // registrable domain. This is private because if it were public, it would
   // trivially allow circumvention of the "Schemeful"-ness of this class.
-  const std::string& registrable_domain_or_host() const {
+  std::string registrable_domain_or_host() const {
     return site_as_origin_.host();
   }
 

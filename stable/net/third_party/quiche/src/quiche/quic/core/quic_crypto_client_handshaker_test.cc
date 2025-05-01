@@ -103,7 +103,7 @@ class DummyProofSource : public ProofSource {
     callback->Run(true, "Dummy signature", /*details=*/nullptr);
   }
 
-  QuicSignatureAlgorithmVector SupportedTlsSignatureAlgorithms()
+  absl::InlinedVector<uint16_t, 8> SupportedTlsSignatureAlgorithms()
       const override {
     return {};
   }

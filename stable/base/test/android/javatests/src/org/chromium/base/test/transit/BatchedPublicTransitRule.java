@@ -42,10 +42,8 @@ public class BatchedPublicTransitRule<T extends Station<?>> implements TestRule 
                 try {
                     testName = desc.getMethodName();
                     TrafficControl.onTestStarted(testName);
-                    if (mExpectResetByTest) {
-                        TransitAsserts.assertCurrentStationType(
-                                mHomeStationType, "beginning of test", true);
-                    }
+                    TransitAsserts.assertCurrentStationType(
+                            mHomeStationType, "beginning of test", true);
                     base.evaluate();
                     if (mExpectResetByTest) {
                         TransitAsserts.assertCurrentStationType(

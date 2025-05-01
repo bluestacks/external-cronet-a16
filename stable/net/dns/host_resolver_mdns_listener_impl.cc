@@ -4,14 +4,10 @@
 
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 
-#include <memory>
-#include <utility>
-
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/ip_endpoint.h"
-#include "net/dns/host_resolver_internal_result.h"
+#include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/record_parsed.h"
@@ -65,45 +61,35 @@ void HostResolverMdnsListenerImpl::OnRecordUpdate(
     net::MDnsListener::UpdateType update,
     const RecordParsed* record) {
   DCHECK(delegate_);
-  CHECK(record);
 
-  std::unique_ptr<HostResolverInternalResult> parsed_entry =
-      HostResolverMdnsTask::ParseResult(OK, query_host_.host(), query_type_,
-                                        record);
-  if (parsed_entry->type() == HostResolverInternalResult::Type::kError) {
+  HostCache::Entry parsed_entry =
+      HostResolverMdnsTask::ParseResult(OK, query_type_, record,
+                                        query_host_.host())
+          .CopyWithDefaultPort(query_host_.port());
+  if (parsed_entry.error() != OK) {
     delegate_->OnUnhandledResult(ConvertUpdateType(update), query_type_);
     return;
   }
-  CHECK_EQ(parsed_entry->type(), HostResolverInternalResult::Type::kData);
 
   switch (query_type_) {
     case DnsQueryType::UNSPECIFIED:
     case DnsQueryType::HTTPS:
       NOTREACHED();
     case DnsQueryType::A:
-    case DnsQueryType::AAAA: {
-      CHECK_EQ(1u, parsed_entry->AsData().endpoints().size());
-      IPEndPoint endpoint = parsed_entry->AsData().endpoints().front();
-      if (endpoint.port() == 0) {
-        endpoint = IPEndPoint(endpoint.address(), query_host_.port());
-      }
+    case DnsQueryType::AAAA:
+      DCHECK_EQ(1u, parsed_entry.ip_endpoints().size());
       delegate_->OnAddressResult(ConvertUpdateType(update), query_type_,
-                                 endpoint);
+                                 parsed_entry.ip_endpoints().front());
       break;
-    }
     case DnsQueryType::TXT:
       delegate_->OnTextResult(ConvertUpdateType(update), query_type_,
-                              parsed_entry->AsData().strings());
+                              parsed_entry.text_records());
       break;
     case DnsQueryType::PTR:
     case DnsQueryType::SRV:
-      DCHECK(!parsed_entry->AsData().hosts().empty());
-      HostPortPair host = parsed_entry->AsData().hosts().front();
-      if (host.port() == 0) {
-        host.set_port(query_host_.port());
-      }
+      DCHECK(!parsed_entry.hostnames().empty());
       delegate_->OnHostnameResult(ConvertUpdateType(update), query_type_,
-                                  std::move(host));
+                                  parsed_entry.hostnames().front());
       break;
   }
 }

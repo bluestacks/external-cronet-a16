@@ -36,9 +36,7 @@
 #include <memory>
 #include <string>
 
-#include "gmock/gmock.h"
 #include "test/gmock-matchers_test.h"
-#include "gtest/gtest.h"
 
 // Silence warning C4244: 'initializing': conversion from 'int' to 'short',
 // possible loss of data and C4100, unreferenced local parameter
@@ -561,9 +559,10 @@ TEST_P(AllOfTestP, ExplainsResult) {
   Matcher<int> m;
 
   // Successful match.  Both matchers need to explain.  The second
-  // matcher doesn't give an explanation, so the matcher description is used.
+  // matcher doesn't give an explanation, so only the first matcher's
+  // explanation is printed.
   m = AllOf(GreaterThan(10), Lt(30));
-  EXPECT_EQ("which is 15 more than 10, and is < 30", Explain(m, 25));
+  EXPECT_EQ("which is 15 more than 10", Explain(m, 25));
 
   // Successful match.  Both matchers need to explain.
   m = AllOf(GreaterThan(10), GreaterThan(20));
@@ -573,9 +572,8 @@ TEST_P(AllOfTestP, ExplainsResult) {
   // Successful match.  All matchers need to explain.  The second
   // matcher doesn't given an explanation.
   m = AllOf(GreaterThan(10), Lt(30), GreaterThan(20));
-  EXPECT_EQ(
-      "which is 15 more than 10, and is < 30, and which is 5 more than 20",
-      Explain(m, 25));
+  EXPECT_EQ("which is 15 more than 10, and which is 5 more than 20",
+            Explain(m, 25));
 
   // Successful match.  All matchers need to explain.
   m = AllOf(GreaterThan(10), GreaterThan(20), GreaterThan(30));
@@ -590,10 +588,10 @@ TEST_P(AllOfTestP, ExplainsResult) {
   EXPECT_EQ("which is 5 less than 10", Explain(m, 5));
 
   // Failed match.  The second matcher, which failed, needs to
-  // explain.  Since it doesn't given an explanation, the matcher text is
+  // explain.  Since it doesn't given an explanation, nothing is
   // printed.
   m = AllOf(GreaterThan(10), Lt(30));
-  EXPECT_EQ("which doesn't match (is < 30)", Explain(m, 40));
+  EXPECT_EQ("", Explain(m, 40));
 
   // Failed match.  The second matcher, which failed, needs to
   // explain.
@@ -776,43 +774,45 @@ TEST(AnyOfTest, AnyOfMatcherSafelyCastsMonomorphicMatchers) {
 TEST_P(AnyOfTestP, ExplainsResult) {
   Matcher<int> m;
 
-  // Failed match. The second matcher have no explanation (description is used).
+  // Failed match.  Both matchers need to explain.  The second
+  // matcher doesn't give an explanation, so only the first matcher's
+  // explanation is printed.
   m = AnyOf(GreaterThan(10), Lt(0));
-  EXPECT_EQ("which is 5 less than 10, and isn't < 0", Explain(m, 5));
+  EXPECT_EQ("which is 5 less than 10", Explain(m, 5));
 
-  // Failed match. Both matchers have explanations.
+  // Failed match.  Both matchers need to explain.
   m = AnyOf(GreaterThan(10), GreaterThan(20));
   EXPECT_EQ("which is 5 less than 10, and which is 15 less than 20",
             Explain(m, 5));
 
-  // Failed match. The middle matcher have no explanation.
+  // Failed match.  All matchers need to explain.  The second
+  // matcher doesn't given an explanation.
   m = AnyOf(GreaterThan(10), Gt(20), GreaterThan(30));
-  EXPECT_EQ(
-      "which is 5 less than 10, and isn't > 20, and which is 25 less than 30",
-      Explain(m, 5));
+  EXPECT_EQ("which is 5 less than 10, and which is 25 less than 30",
+            Explain(m, 5));
 
-  // Failed match. All three matchers have explanations.
+  // Failed match.  All matchers need to explain.
   m = AnyOf(GreaterThan(10), GreaterThan(20), GreaterThan(30));
   EXPECT_EQ(
       "which is 5 less than 10, and which is 15 less than 20, "
       "and which is 25 less than 30",
       Explain(m, 5));
 
-  // Successful match. The first macher succeeded and has explanation.
+  // Successful match.  The first matcher, which succeeded, needs to
+  // explain.
   m = AnyOf(GreaterThan(10), GreaterThan(20));
   EXPECT_EQ("which is 5 more than 10", Explain(m, 15));
 
-  // Successful match. The second matcher succeeded and has explanation.
+  // Successful match.  The second matcher, which succeeded, needs to
+  // explain.  Since it doesn't given an explanation, nothing is
+  // printed.
+  m = AnyOf(GreaterThan(10), Lt(30));
+  EXPECT_EQ("", Explain(m, 0));
+
+  // Successful match.  The second matcher, which succeeded, needs to
+  // explain.
   m = AnyOf(GreaterThan(30), GreaterThan(20));
   EXPECT_EQ("which is 5 more than 20", Explain(m, 25));
-
-  // Successful match. The first matcher succeeded and has no explanation.
-  m = AnyOf(Gt(10), Lt(20));
-  EXPECT_EQ("which matches (is > 10)", Explain(m, 15));
-
-  // Successful match. The second matcher succeeded and has no explanation.
-  m = AnyOf(Gt(30), Gt(20));
-  EXPECT_EQ("which matches (is > 20)", Explain(m, 25));
 }
 
 // The following predicate function and predicate functor are for

@@ -168,8 +168,7 @@ add_libc_test(
     .strtol_test_support
 )
 
-if(LIBC_CONF_PRINTF_FLOAT_TO_STR_USE_DYADIC_FLOAT OR
-    LIBC_CONF_PRINTF_FLOAT_TO_STR_USE_FLOAT320)
+if(LIBC_CONF_PRINTF_FLOAT_TO_STR_USE_DYADIC_FLOAT)
   list(APPEND strfrom_test_copts "-DLIBC_COPT_FLOAT_TO_STR_REDUCED_PRECISION")
 endif()
 
@@ -219,27 +218,6 @@ add_libc_test(
     libc.src.stdlib.strfroml
   COMPILE_OPTIONS
     ${strfrom_test_copts}
-)
-
-add_libc_test(
-  a64l_test
-  SUITE
-    libc-stdlib-tests
-  SRCS
-    a64l_test.cpp
-  DEPENDS
-    libc.src.stdlib.a64l
-)
-
-add_libc_test(
-  l64a_test
-  SUITE
-    libc-stdlib-tests
-  SRCS
-    l64a_test.cpp
-  DEPENDS
-    libc.src.stdlib.l64a
-    libc.src.__support.CPP.limits
 )
 
 add_libc_test(
@@ -323,6 +301,18 @@ add_libc_test(
 )
 
 add_libc_test(
+  quick_sort_test
+  SUITE
+    libc-stdlib-tests
+  SRCS
+    quick_sort_test.cpp
+  HDRS
+    SortingTest.h
+  DEPENDS
+    libc.src.stdlib.qsort_util
+)
+
+add_libc_test(
   heap_sort_test
   SUITE
     libc-stdlib-tests
@@ -331,15 +321,15 @@ add_libc_test(
   HDRS
     SortingTest.h
   DEPENDS
-    libc.src.stdlib.qsort
+    libc.src.stdlib.qsort_util
 )
 
 add_libc_test(
-  quick_sort_test
+  qsort_test
   SUITE
     libc-stdlib-tests
   SRCS
-    quick_sort_test.cpp
+    qsort_test.cpp
   HDRS
     SortingTest.h
   DEPENDS
@@ -441,9 +431,8 @@ if(LLVM_LIBC_FULL_BUILD)
       libc.src.stdlib.quick_exit
   )
 
-  # Only baremetal and GPU has an in-tree 'malloc' implementation.
-  if((LIBC_TARGET_OS_IS_BAREMETAL OR LIBC_TARGET_OS_IS_GPU) AND
-      NOT LIBC_TARGET_ARCHITECTURE_IS_NVPTX)
+  # Only the GPU has an in-tree 'malloc' implementation.
+  if(LIBC_TARGET_OS_IS_GPU)
     add_libc_test(
       malloc_test
       HERMETIC_TEST_ONLY

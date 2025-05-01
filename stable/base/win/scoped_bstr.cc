@@ -35,9 +35,8 @@ BSTR AllocBstrOrDie(std::wstring_view non_bstr) {
 
 BSTR AllocBstrBytesOrDie(size_t bytes) {
   BSTR result = ::SysAllocStringByteLen(nullptr, checked_cast<UINT>(bytes));
-  if (!result) {
+  if (!result)
     base::TerminateBecauseOutOfMemory(bytes + sizeof(wchar_t));
-  }
   return result;
 }
 

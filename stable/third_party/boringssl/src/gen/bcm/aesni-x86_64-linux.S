@@ -24,12 +24,12 @@ _CET_ENDBR
 	leaq	32(%rdx),%rdx
 	xorps	%xmm0,%xmm2
 .Loop_enc1_1:
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	decl	%eax
 	movups	(%rdx),%xmm1
 	leaq	16(%rdx),%rdx
 	jnz	.Loop_enc1_1
-	aesenclast	%xmm1,%xmm2
+.byte	102,15,56,221,209
 	pxor	%xmm0,%xmm0
 	pxor	%xmm1,%xmm1
 	movups	%xmm2,(%rsi)
@@ -52,12 +52,12 @@ _CET_ENDBR
 	leaq	32(%rdx),%rdx
 	xorps	%xmm0,%xmm2
 .Loop_dec1_2:
-	aesdec	%xmm1,%xmm2
+.byte	102,15,56,222,209
 	decl	%eax
 	movups	(%rdx),%xmm1
 	leaq	16(%rdx),%rdx
 	jnz	.Loop_dec1_2
-	aesdeclast	%xmm1,%xmm2
+.byte	102,15,56,223,209
 	pxor	%xmm0,%xmm0
 	pxor	%xmm1,%xmm1
 	movups	%xmm2,(%rsi)
@@ -80,19 +80,19 @@ _aesni_encrypt2:
 	addq	$16,%rax
 
 .Lenc_loop2:
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Lenc_loop2
 
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenclast	%xmm0,%xmm2
-	aesenclast	%xmm0,%xmm3
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,221,208
+.byte	102,15,56,221,216
 	ret
 .cfi_endproc	
 .size	_aesni_encrypt2,.-_aesni_encrypt2
@@ -111,19 +111,19 @@ _aesni_decrypt2:
 	addq	$16,%rax
 
 .Ldec_loop2:
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Ldec_loop2
 
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdeclast	%xmm0,%xmm2
-	aesdeclast	%xmm0,%xmm3
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,223,208
+.byte	102,15,56,223,216
 	ret
 .cfi_endproc	
 .size	_aesni_decrypt2,.-_aesni_decrypt2
@@ -143,23 +143,23 @@ _aesni_encrypt3:
 	addq	$16,%rax
 
 .Lenc_loop3:
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
-	aesenc	%xmm0,%xmm4
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
+.byte	102,15,56,220,224
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Lenc_loop3
 
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenclast	%xmm0,%xmm2
-	aesenclast	%xmm0,%xmm3
-	aesenclast	%xmm0,%xmm4
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,221,208
+.byte	102,15,56,221,216
+.byte	102,15,56,221,224
 	ret
 .cfi_endproc	
 .size	_aesni_encrypt3,.-_aesni_encrypt3
@@ -179,23 +179,23 @@ _aesni_decrypt3:
 	addq	$16,%rax
 
 .Ldec_loop3:
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Ldec_loop3
 
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdeclast	%xmm0,%xmm2
-	aesdeclast	%xmm0,%xmm3
-	aesdeclast	%xmm0,%xmm4
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,223,208
+.byte	102,15,56,223,216
+.byte	102,15,56,223,224
 	ret
 .cfi_endproc	
 .size	_aesni_decrypt3,.-_aesni_decrypt3
@@ -217,27 +217,27 @@ _aesni_encrypt4:
 	addq	$16,%rax
 
 .Lenc_loop4:
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Lenc_loop4
 
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
-	aesenclast	%xmm0,%xmm2
-	aesenclast	%xmm0,%xmm3
-	aesenclast	%xmm0,%xmm4
-	aesenclast	%xmm0,%xmm5
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
+.byte	102,15,56,221,208
+.byte	102,15,56,221,216
+.byte	102,15,56,221,224
+.byte	102,15,56,221,232
 	ret
 .cfi_endproc	
 .size	_aesni_encrypt4,.-_aesni_encrypt4
@@ -259,27 +259,27 @@ _aesni_decrypt4:
 	addq	$16,%rax
 
 .Ldec_loop4:
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Ldec_loop4
 
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdeclast	%xmm0,%xmm2
-	aesdeclast	%xmm0,%xmm3
-	aesdeclast	%xmm0,%xmm4
-	aesdeclast	%xmm0,%xmm5
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,223,208
+.byte	102,15,56,223,216
+.byte	102,15,56,223,224
+.byte	102,15,56,223,232
 	ret
 .cfi_endproc	
 .size	_aesni_decrypt4,.-_aesni_decrypt4
@@ -293,49 +293,49 @@ _aesni_encrypt6:
 	xorps	%xmm0,%xmm2
 	pxor	%xmm0,%xmm3
 	pxor	%xmm0,%xmm4
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	leaq	32(%rcx,%rax,1),%rcx
 	negq	%rax
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,217
 	pxor	%xmm0,%xmm5
 	pxor	%xmm0,%xmm6
-	aesenc	%xmm1,%xmm4
+.byte	102,15,56,220,225
 	pxor	%xmm0,%xmm7
 	movups	(%rcx,%rax,1),%xmm0
 	addq	$16,%rax
 	jmp	.Lenc_loop6_enter
 .align	16
 .Lenc_loop6:
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
 .Lenc_loop6_enter:
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Lenc_loop6
 
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenclast	%xmm0,%xmm2
-	aesenclast	%xmm0,%xmm3
-	aesenclast	%xmm0,%xmm4
-	aesenclast	%xmm0,%xmm5
-	aesenclast	%xmm0,%xmm6
-	aesenclast	%xmm0,%xmm7
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,15,56,221,208
+.byte	102,15,56,221,216
+.byte	102,15,56,221,224
+.byte	102,15,56,221,232
+.byte	102,15,56,221,240
+.byte	102,15,56,221,248
 	ret
 .cfi_endproc	
 .size	_aesni_encrypt6,.-_aesni_encrypt6
@@ -349,49 +349,49 @@ _aesni_decrypt6:
 	xorps	%xmm0,%xmm2
 	pxor	%xmm0,%xmm3
 	pxor	%xmm0,%xmm4
-	aesdec	%xmm1,%xmm2
+.byte	102,15,56,222,209
 	leaq	32(%rcx,%rax,1),%rcx
 	negq	%rax
-	aesdec	%xmm1,%xmm3
+.byte	102,15,56,222,217
 	pxor	%xmm0,%xmm5
 	pxor	%xmm0,%xmm6
-	aesdec	%xmm1,%xmm4
+.byte	102,15,56,222,225
 	pxor	%xmm0,%xmm7
 	movups	(%rcx,%rax,1),%xmm0
 	addq	$16,%rax
 	jmp	.Ldec_loop6_enter
 .align	16
 .Ldec_loop6:
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
 .Ldec_loop6_enter:
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Ldec_loop6
 
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdeclast	%xmm0,%xmm2
-	aesdeclast	%xmm0,%xmm3
-	aesdeclast	%xmm0,%xmm4
-	aesdeclast	%xmm0,%xmm5
-	aesdeclast	%xmm0,%xmm6
-	aesdeclast	%xmm0,%xmm7
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,15,56,223,208
+.byte	102,15,56,223,216
+.byte	102,15,56,223,224
+.byte	102,15,56,223,232
+.byte	102,15,56,223,240
+.byte	102,15,56,223,248
 	ret
 .cfi_endproc	
 .size	_aesni_decrypt6,.-_aesni_decrypt6
@@ -409,55 +409,55 @@ _aesni_encrypt8:
 	pxor	%xmm0,%xmm6
 	leaq	32(%rcx,%rax,1),%rcx
 	negq	%rax
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	pxor	%xmm0,%xmm7
 	pxor	%xmm0,%xmm8
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,217
 	pxor	%xmm0,%xmm9
 	movups	(%rcx,%rax,1),%xmm0
 	addq	$16,%rax
 	jmp	.Lenc_loop8_inner
 .align	16
 .Lenc_loop8:
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
 .Lenc_loop8_inner:
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 .Lenc_loop8_enter:
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
-	aesenc	%xmm0,%xmm8
-	aesenc	%xmm0,%xmm9
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
+.byte	102,68,15,56,220,192
+.byte	102,68,15,56,220,200
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Lenc_loop8
 
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
-	aesenclast	%xmm0,%xmm2
-	aesenclast	%xmm0,%xmm3
-	aesenclast	%xmm0,%xmm4
-	aesenclast	%xmm0,%xmm5
-	aesenclast	%xmm0,%xmm6
-	aesenclast	%xmm0,%xmm7
-	aesenclast	%xmm0,%xmm8
-	aesenclast	%xmm0,%xmm9
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
+.byte	102,15,56,221,208
+.byte	102,15,56,221,216
+.byte	102,15,56,221,224
+.byte	102,15,56,221,232
+.byte	102,15,56,221,240
+.byte	102,15,56,221,248
+.byte	102,68,15,56,221,192
+.byte	102,68,15,56,221,200
 	ret
 .cfi_endproc	
 .size	_aesni_encrypt8,.-_aesni_encrypt8
@@ -475,55 +475,55 @@ _aesni_decrypt8:
 	pxor	%xmm0,%xmm6
 	leaq	32(%rcx,%rax,1),%rcx
 	negq	%rax
-	aesdec	%xmm1,%xmm2
+.byte	102,15,56,222,209
 	pxor	%xmm0,%xmm7
 	pxor	%xmm0,%xmm8
-	aesdec	%xmm1,%xmm3
+.byte	102,15,56,222,217
 	pxor	%xmm0,%xmm9
 	movups	(%rcx,%rax,1),%xmm0
 	addq	$16,%rax
 	jmp	.Ldec_loop8_inner
 .align	16
 .Ldec_loop8:
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
 .Ldec_loop8_inner:
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
 .Ldec_loop8_enter:
 	movups	(%rcx,%rax,1),%xmm1
 	addq	$32,%rax
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
-	aesdec	%xmm0,%xmm8
-	aesdec	%xmm0,%xmm9
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
+.byte	102,68,15,56,222,192
+.byte	102,68,15,56,222,200
 	movups	-16(%rcx,%rax,1),%xmm0
 	jnz	.Ldec_loop8
 
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
-	aesdeclast	%xmm0,%xmm2
-	aesdeclast	%xmm0,%xmm3
-	aesdeclast	%xmm0,%xmm4
-	aesdeclast	%xmm0,%xmm5
-	aesdeclast	%xmm0,%xmm6
-	aesdeclast	%xmm0,%xmm7
-	aesdeclast	%xmm0,%xmm8
-	aesdeclast	%xmm0,%xmm9
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
+.byte	102,15,56,223,208
+.byte	102,15,56,223,216
+.byte	102,15,56,223,224
+.byte	102,15,56,223,232
+.byte	102,15,56,223,240
+.byte	102,15,56,223,248
+.byte	102,68,15,56,223,192
+.byte	102,68,15,56,223,200
 	ret
 .cfi_endproc	
 .size	_aesni_decrypt8,.-_aesni_decrypt8
@@ -635,12 +635,12 @@ _CET_ENDBR
 	leaq	32(%rcx),%rcx
 	xorps	%xmm0,%xmm2
 .Loop_enc1_3:
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	decl	%eax
 	movups	(%rcx),%xmm1
 	leaq	16(%rcx),%rcx
 	jnz	.Loop_enc1_3
-	aesenclast	%xmm1,%xmm2
+.byte	102,15,56,221,209
 	movups	%xmm2,(%rsi)
 	jmp	.Lecb_ret
 .align	16
@@ -796,12 +796,12 @@ _CET_ENDBR
 	leaq	32(%rcx),%rcx
 	xorps	%xmm0,%xmm2
 .Loop_dec1_4:
-	aesdec	%xmm1,%xmm2
+.byte	102,15,56,222,209
 	decl	%eax
 	movups	(%rcx),%xmm1
 	leaq	16(%rcx),%rcx
 	jnz	.Loop_dec1_4
-	aesdeclast	%xmm1,%xmm2
+.byte	102,15,56,223,209
 	movups	%xmm2,(%rsi)
 	pxor	%xmm2,%xmm2
 	jmp	.Lecb_ret
@@ -896,12 +896,12 @@ _CET_ENDBR
 	leaq	32(%rcx),%rcx
 	xorps	%xmm0,%xmm2
 .Loop_enc1_5:
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	decl	%edx
 	movups	(%rcx),%xmm1
 	leaq	16(%rcx),%rcx
 	jnz	.Loop_enc1_5
-	aesenclast	%xmm1,%xmm2
+.byte	102,15,56,221,209
 	pxor	%xmm0,%xmm0
 	pxor	%xmm1,%xmm1
 	xorps	%xmm3,%xmm2
@@ -944,17 +944,17 @@ _CET_ENDBR
 	bswapl	%edx
 	xorl	%ebp,%eax
 	xorl	%ebp,%edx
-	pinsrd	$3,%eax,%xmm3
+.byte	102,15,58,34,216,3
 	leaq	3(%r8),%rax
 	movdqa	%xmm3,16(%rsp)
-	pinsrd	$3,%edx,%xmm4
+.byte	102,15,58,34,226,3
 	bswapl	%eax
 	movq	%r10,%rdx
 	leaq	4(%r8),%r10
 	movdqa	%xmm4,32(%rsp)
 	xorl	%ebp,%eax
 	bswapl	%r10d
-	pinsrd	$3,%eax,%xmm5
+.byte	102,15,58,34,232,3
 	xorl	%ebp,%r10d
 	movdqa	%xmm5,48(%rsp)
 	leaq	5(%r8),%r9
@@ -988,163 +988,163 @@ _CET_ENDBR
 .Lctr32_loop8:
 	addl	$8,%r8d
 	movdqa	96(%rsp),%xmm8
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	movl	%r8d,%r9d
 	movdqa	112(%rsp),%xmm9
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,217
 	bswapl	%r9d
 	movups	32-128(%rcx),%xmm0
-	aesenc	%xmm1,%xmm4
+.byte	102,15,56,220,225
 	xorl	%ebp,%r9d
 	nop
-	aesenc	%xmm1,%xmm5
+.byte	102,15,56,220,233
 	movl	%r9d,0+12(%rsp)
 	leaq	1(%r8),%r9
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 	movups	48-128(%rcx),%xmm1
 	bswapl	%r9d
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
 	xorl	%ebp,%r9d
 .byte	0x66,0x90
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
 	movl	%r9d,16+12(%rsp)
 	leaq	2(%r8),%r9
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
-	aesenc	%xmm0,%xmm8
-	aesenc	%xmm0,%xmm9
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
+.byte	102,68,15,56,220,192
+.byte	102,68,15,56,220,200
 	movups	64-128(%rcx),%xmm0
 	bswapl	%r9d
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
 	xorl	%ebp,%r9d
 .byte	0x66,0x90
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
 	movl	%r9d,32+12(%rsp)
 	leaq	3(%r8),%r9
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 	movups	80-128(%rcx),%xmm1
 	bswapl	%r9d
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
 	xorl	%ebp,%r9d
 .byte	0x66,0x90
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
 	movl	%r9d,48+12(%rsp)
 	leaq	4(%r8),%r9
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
-	aesenc	%xmm0,%xmm8
-	aesenc	%xmm0,%xmm9
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
+.byte	102,68,15,56,220,192
+.byte	102,68,15,56,220,200
 	movups	96-128(%rcx),%xmm0
 	bswapl	%r9d
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
 	xorl	%ebp,%r9d
 .byte	0x66,0x90
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
 	movl	%r9d,64+12(%rsp)
 	leaq	5(%r8),%r9
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 	movups	112-128(%rcx),%xmm1
 	bswapl	%r9d
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
 	xorl	%ebp,%r9d
 .byte	0x66,0x90
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
 	movl	%r9d,80+12(%rsp)
 	leaq	6(%r8),%r9
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
-	aesenc	%xmm0,%xmm8
-	aesenc	%xmm0,%xmm9
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
+.byte	102,68,15,56,220,192
+.byte	102,68,15,56,220,200
 	movups	128-128(%rcx),%xmm0
 	bswapl	%r9d
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
 	xorl	%ebp,%r9d
 .byte	0x66,0x90
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
 	movl	%r9d,96+12(%rsp)
 	leaq	7(%r8),%r9
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 	movups	144-128(%rcx),%xmm1
 	bswapl	%r9d
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
-	aesenc	%xmm0,%xmm4
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
+.byte	102,15,56,220,224
 	xorl	%ebp,%r9d
 	movdqu	0(%rdi),%xmm10
-	aesenc	%xmm0,%xmm5
+.byte	102,15,56,220,232
 	movl	%r9d,112+12(%rsp)
 	cmpl	$11,%eax
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
-	aesenc	%xmm0,%xmm8
-	aesenc	%xmm0,%xmm9
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
+.byte	102,68,15,56,220,192
+.byte	102,68,15,56,220,200
 	movups	160-128(%rcx),%xmm0
 
 	jb	.Lctr32_enc_done
 
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 	movups	176-128(%rcx),%xmm1
 
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
-	aesenc	%xmm0,%xmm8
-	aesenc	%xmm0,%xmm9
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
+.byte	102,68,15,56,220,192
+.byte	102,68,15,56,220,200
 	movups	192-128(%rcx),%xmm0
 	je	.Lctr32_enc_done
 
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 	movups	208-128(%rcx),%xmm1
 
-	aesenc	%xmm0,%xmm2
-	aesenc	%xmm0,%xmm3
-	aesenc	%xmm0,%xmm4
-	aesenc	%xmm0,%xmm5
-	aesenc	%xmm0,%xmm6
-	aesenc	%xmm0,%xmm7
-	aesenc	%xmm0,%xmm8
-	aesenc	%xmm0,%xmm9
+.byte	102,15,56,220,208
+.byte	102,15,56,220,216
+.byte	102,15,56,220,224
+.byte	102,15,56,220,232
+.byte	102,15,56,220,240
+.byte	102,15,56,220,248
+.byte	102,68,15,56,220,192
+.byte	102,68,15,56,220,200
 	movups	224-128(%rcx),%xmm0
 	jmp	.Lctr32_enc_done
 
@@ -1163,35 +1163,35 @@ _CET_ENDBR
 	prefetcht0	448(%rdi)
 	prefetcht0	512(%rdi)
 	pxor	%xmm0,%xmm15
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
-	aesenc	%xmm1,%xmm9
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
+.byte	102,68,15,56,220,201
 	movdqu	96(%rdi),%xmm1
 	leaq	128(%rdi),%rdi
 
-	aesenclast	%xmm10,%xmm2
+.byte	102,65,15,56,221,210
 	pxor	%xmm0,%xmm1
 	movdqu	112-128(%rdi),%xmm10
-	aesenclast	%xmm11,%xmm3
+.byte	102,65,15,56,221,219
 	pxor	%xmm0,%xmm10
 	movdqa	0(%rsp),%xmm11
-	aesenclast	%xmm12,%xmm4
-	aesenclast	%xmm13,%xmm5
+.byte	102,65,15,56,221,228
+.byte	102,65,15,56,221,237
 	movdqa	16(%rsp),%xmm12
 	movdqa	32(%rsp),%xmm13
-	aesenclast	%xmm14,%xmm6
-	aesenclast	%xmm15,%xmm7
+.byte	102,65,15,56,221,246
+.byte	102,65,15,56,221,255
 	movdqa	48(%rsp),%xmm14
 	movdqa	64(%rsp),%xmm15
-	aesenclast	%xmm1,%xmm8
+.byte	102,68,15,56,221,193
 	movdqa	80(%rsp),%xmm0
 	movups	16-128(%rcx),%xmm1
-	aesenclast	%xmm10,%xmm9
+.byte	102,69,15,56,221,202
 
 	movups	%xmm2,(%rsi)
 	movdqa	%xmm11,%xmm2
@@ -1230,19 +1230,19 @@ _CET_ENDBR
 	pxor	%xmm9,%xmm9
 
 	movups	16(%rcx),%xmm0
-	aesenc	%xmm1,%xmm2
-	aesenc	%xmm1,%xmm3
+.byte	102,15,56,220,209
+.byte	102,15,56,220,217
 	leaq	32-16(%rcx,%rax,1),%rcx
 	negq	%rax
-	aesenc	%xmm1,%xmm4
+.byte	102,15,56,220,225
 	addq	$16,%rax
 	movups	(%rdi),%xmm10
-	aesenc	%xmm1,%xmm5
-	aesenc	%xmm1,%xmm6
+.byte	102,15,56,220,233
+.byte	102,15,56,220,241
 	movups	16(%rdi),%xmm11
 	movups	32(%rdi),%xmm12
-	aesenc	%xmm1,%xmm7
-	aesenc	%xmm1,%xmm8
+.byte	102,15,56,220,249
+.byte	102,68,15,56,220,193
 
 	call	.Lenc_loop8_enter
 
@@ -1273,20 +1273,20 @@ _CET_ENDBR
 
 .align	32
 .Lctr32_loop4:
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	leaq	16(%rcx),%rcx
 	decl	%eax
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
-	aesenc	%xmm1,%xmm5
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
+.byte	102,15,56,220,233
 	movups	(%rcx),%xmm1
 	jnz	.Lctr32_loop4
-	aesenclast	%xmm1,%xmm2
-	aesenclast	%xmm1,%xmm3
+.byte	102,15,56,221,209
+.byte	102,15,56,221,217
 	movups	(%rdi),%xmm10
 	movups	16(%rdi),%xmm11
-	aesenclast	%xmm1,%xmm4
-	aesenclast	%xmm1,%xmm5
+.byte	102,15,56,221,225
+.byte	102,15,56,221,233
 	movups	32(%rdi),%xmm12
 	movups	48(%rdi),%xmm13
 
@@ -1302,16 +1302,16 @@ _CET_ENDBR
 
 .align	32
 .Lctr32_loop3:
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	leaq	16(%rcx),%rcx
 	decl	%eax
-	aesenc	%xmm1,%xmm3
-	aesenc	%xmm1,%xmm4
+.byte	102,15,56,220,217
+.byte	102,15,56,220,225
 	movups	(%rcx),%xmm1
 	jnz	.Lctr32_loop3
-	aesenclast	%xmm1,%xmm2
-	aesenclast	%xmm1,%xmm3
-	aesenclast	%xmm1,%xmm4
+.byte	102,15,56,221,209
+.byte	102,15,56,221,217
+.byte	102,15,56,221,225
 
 	movups	(%rdi),%xmm10
 	xorps	%xmm10,%xmm2
@@ -1394,12 +1394,12 @@ _CET_ENDBR
 	leaq	32(%rcx),%rcx
 	xorps	%xmm3,%xmm2
 .Loop_enc1_6:
-	aesenc	%xmm1,%xmm2
+.byte	102,15,56,220,209
 	decl	%eax
 	movups	(%rcx),%xmm1
 	leaq	16(%rcx),%rcx
 	jnz	.Loop_enc1_6
-	aesenclast	%xmm1,%xmm2
+.byte	102,15,56,221,209
 	movl	%r10d,%eax
 	movq	%r11,%rcx
 	movups	%xmm2,0(%rsi)
@@ -1445,12 +1445,12 @@ _CET_ENDBR
 	leaq	32(%rcx),%rcx
 	xorps	%xmm0,%xmm2
 .Loop_dec1_7:
-	aesdec	%xmm1,%xmm2
+.byte	102,15,56,222,209
 	decl	%r10d
 	movups	(%rcx),%xmm1
 	leaq	16(%rcx),%rcx
 	jnz	.Loop_dec1_7
-	aesdeclast	%xmm1,%xmm2
+.byte	102,15,56,223,209
 	pxor	%xmm0,%xmm0
 	pxor	%xmm1,%xmm1
 	movdqu	%xmm4,(%r8)
@@ -1509,166 +1509,166 @@ _CET_ENDBR
 	pxor	%xmm0,%xmm7
 	pxor	%xmm0,%xmm8
 
-	aesdec	%xmm1,%xmm2
+.byte	102,15,56,222,209
 	pxor	%xmm0,%xmm9
 	movups	32-112(%rcx),%xmm0
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
 	adcq	$0,%rbp
 	andq	$128,%rbp
-	aesdec	%xmm1,%xmm9
+.byte	102,68,15,56,222,201
 	addq	%rdi,%rbp
 	movups	48-112(%rcx),%xmm1
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
-	aesdec	%xmm0,%xmm8
-	aesdec	%xmm0,%xmm9
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
+.byte	102,68,15,56,222,192
+.byte	102,68,15,56,222,200
 	movups	64-112(%rcx),%xmm0
 	nop
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
 	movups	80-112(%rcx),%xmm1
 	nop
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
-	aesdec	%xmm0,%xmm8
-	aesdec	%xmm0,%xmm9
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
+.byte	102,68,15,56,222,192
+.byte	102,68,15,56,222,200
 	movups	96-112(%rcx),%xmm0
 	nop
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
 	movups	112-112(%rcx),%xmm1
 	nop
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
-	aesdec	%xmm0,%xmm8
-	aesdec	%xmm0,%xmm9
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
+.byte	102,68,15,56,222,192
+.byte	102,68,15,56,222,200
 	movups	128-112(%rcx),%xmm0
 	nop
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
 	movups	144-112(%rcx),%xmm1
 	cmpl	$11,%eax
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
-	aesdec	%xmm0,%xmm8
-	aesdec	%xmm0,%xmm9
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
+.byte	102,68,15,56,222,192
+.byte	102,68,15,56,222,200
 	movups	160-112(%rcx),%xmm0
 	jb	.Lcbc_dec_done
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
 	movups	176-112(%rcx),%xmm1
 	nop
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
-	aesdec	%xmm0,%xmm8
-	aesdec	%xmm0,%xmm9
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
+.byte	102,68,15,56,222,192
+.byte	102,68,15,56,222,200
 	movups	192-112(%rcx),%xmm0
 	je	.Lcbc_dec_done
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
 	movups	208-112(%rcx),%xmm1
 	nop
-	aesdec	%xmm0,%xmm2
-	aesdec	%xmm0,%xmm3
-	aesdec	%xmm0,%xmm4
-	aesdec	%xmm0,%xmm5
-	aesdec	%xmm0,%xmm6
-	aesdec	%xmm0,%xmm7
-	aesdec	%xmm0,%xmm8
-	aesdec	%xmm0,%xmm9
+.byte	102,15,56,222,208
+.byte	102,15,56,222,216
+.byte	102,15,56,222,224
+.byte	102,15,56,222,232
+.byte	102,15,56,222,240
+.byte	102,15,56,222,248
+.byte	102,68,15,56,222,192
+.byte	102,68,15,56,222,200
 	movups	224-112(%rcx),%xmm0
 	jmp	.Lcbc_dec_done
 .align	16
 .Lcbc_dec_done:
-	aesdec	%xmm1,%xmm2
-	aesdec	%xmm1,%xmm3
+.byte	102,15,56,222,209
+.byte	102,15,56,222,217
 	pxor	%xmm0,%xmm10
 	pxor	%xmm0,%xmm11
-	aesdec	%xmm1,%xmm4
-	aesdec	%xmm1,%xmm5
+.byte	102,15,56,222,225
+.byte	102,15,56,222,233
 	pxor	%xmm0,%xmm12
 	pxor	%xmm0,%xmm13
-	aesdec	%xmm1,%xmm6
-	aesdec	%xmm1,%xmm7
+.byte	102,15,56,222,241
+.byte	102,15,56,222,249
 	pxor	%xmm0,%xmm14
 	pxor	%xmm0,%xmm15
-	aesdec	%xmm1,%xmm8
-	aesdec	%xmm1,%xmm9
+.byte	102,68,15,56,222,193
+.byte	102,68,15,56,222,201
 	movdqu	80(%rdi),%xmm1
 
-	aesdeclast	%xmm10,%xmm2
+.byte	102,65,15,56,223,210
 	movdqu	96(%rdi),%xmm10
 	pxor	%xmm0,%xmm1
-	aesdeclast	%xmm11,%xmm3
+.byte	102,65,15,56,223,219
 	pxor	%xmm0,%xmm10
 	movdqu	112(%rdi),%xmm0
-	aesdeclast	%xmm12,%xmm4
+.byte	102,65,15,56,223,228
 	leaq	128(%rdi),%rdi
 	movdqu	0(%rbp),%xmm11
-	aesdeclast	%xmm13,%xmm5
-	aesdeclast	%xmm14,%xmm6
+.byte	102,65,15,56,223,237
+.byte	102,65,15,56,223,246
 	movdqu	16(%rbp),%xmm12
 	movdqu	32(%rbp),%xmm13
-	aesdeclast	%xmm15,%xmm7
-	aesdeclast	%xmm1,%xmm8
+.byte	102,65,15,56,223,255
+.byte	102,68,15,56,223,193
 	movdqu	48(%rbp),%xmm14
 	movdqu	64(%rbp),%xmm15
-	aesdeclast	%xmm10,%xmm9
+.byte	102,69,15,56,223,202
 	movdqa	%xmm0,%xmm10
 	movdqu	80(%rbp),%xmm1
 	movups	-112(%rcx),%xmm0
@@ -1812,12 +1812,12 @@ _CET_ENDBR
 	leaq	32(%rcx),%rcx
 	xorps	%xmm0,%xmm2
 .Loop_dec1_8:
-	aesdec	%xmm1,%xmm2
+.byte	102,15,56,222,209
 	decl	%eax
 	movups	(%rcx),%xmm1
 	leaq	16(%rcx),%rcx
 	jnz	.Loop_dec1_8
-	aesdeclast	%xmm1,%xmm2
+.byte	102,15,56,223,209
 	xorps	%xmm10,%xmm2
 	movaps	%xmm11,%xmm10
 	jmp	.Lcbc_dec_tail_collected
@@ -1928,8 +1928,8 @@ _CET_ENDBR
 .Ldec_key_inverse:
 	movups	(%rdi),%xmm0
 	movups	(%rdx),%xmm1
-	aesimc	%xmm0,%xmm0
-	aesimc	%xmm1,%xmm1
+.byte	102,15,56,219,192
+.byte	102,15,56,219,201
 	leaq	16(%rdi),%rdi
 	leaq	-16(%rdx),%rdx
 	movups	%xmm0,16(%rdx)
@@ -1938,7 +1938,7 @@ _CET_ENDBR
 	ja	.Ldec_key_inverse
 
 	movups	(%rdi),%xmm0
-	aesimc	%xmm0,%xmm0
+.byte	102,15,56,219,192
 	pxor	%xmm1,%xmm1
 	movups	%xmm0,(%rdx)
 	pxor	%xmm0,%xmm0
@@ -1974,25 +1974,25 @@ _CET_ENDBR
 	movl	$9,%esi
 
 	movups	%xmm0,(%rdx)
-	aeskeygenassist	$0x1,%xmm0,%xmm1
+.byte	102,15,58,223,200,1
 	call	.Lkey_expansion_128_cold
-	aeskeygenassist	$0x2,%xmm0,%xmm1
+.byte	102,15,58,223,200,2
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x4,%xmm0,%xmm1
+.byte	102,15,58,223,200,4
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x8,%xmm0,%xmm1
+.byte	102,15,58,223,200,8
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x10,%xmm0,%xmm1
+.byte	102,15,58,223,200,16
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x20,%xmm0,%xmm1
+.byte	102,15,58,223,200,32
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x40,%xmm0,%xmm1
+.byte	102,15,58,223,200,64
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x80,%xmm0,%xmm1
+.byte	102,15,58,223,200,128
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x1b,%xmm0,%xmm1
+.byte	102,15,58,223,200,27
 	call	.Lkey_expansion_128
-	aeskeygenassist	$0x36,%xmm0,%xmm1
+.byte	102,15,58,223,200,54
 	call	.Lkey_expansion_128
 	movups	%xmm0,(%rax)
 	movl	%esi,80(%rax)
@@ -2005,21 +2005,21 @@ _CET_ENDBR
 	movl	$11,%esi
 
 	movups	%xmm0,(%rdx)
-	aeskeygenassist	$0x1,%xmm2,%xmm1
+.byte	102,15,58,223,202,1
 	call	.Lkey_expansion_192a_cold
-	aeskeygenassist	$0x2,%xmm2,%xmm1
+.byte	102,15,58,223,202,2
 	call	.Lkey_expansion_192b
-	aeskeygenassist	$0x4,%xmm2,%xmm1
+.byte	102,15,58,223,202,4
 	call	.Lkey_expansion_192a
-	aeskeygenassist	$0x8,%xmm2,%xmm1
+.byte	102,15,58,223,202,8
 	call	.Lkey_expansion_192b
-	aeskeygenassist	$0x10,%xmm2,%xmm1
+.byte	102,15,58,223,202,16
 	call	.Lkey_expansion_192a
-	aeskeygenassist	$0x20,%xmm2,%xmm1
+.byte	102,15,58,223,202,32
 	call	.Lkey_expansion_192b
-	aeskeygenassist	$0x40,%xmm2,%xmm1
+.byte	102,15,58,223,202,64
 	call	.Lkey_expansion_192a
-	aeskeygenassist	$0x80,%xmm2,%xmm1
+.byte	102,15,58,223,202,128
 	call	.Lkey_expansion_192b
 	movups	%xmm0,(%rax)
 	movl	%esi,48(%rax)
@@ -2034,31 +2034,31 @@ _CET_ENDBR
 
 	movups	%xmm0,(%rdx)
 	movups	%xmm2,16(%rdx)
-	aeskeygenassist	$0x1,%xmm2,%xmm1
+.byte	102,15,58,223,202,1
 	call	.Lkey_expansion_256a_cold
-	aeskeygenassist	$0x1,%xmm0,%xmm1
+.byte	102,15,58,223,200,1
 	call	.Lkey_expansion_256b
-	aeskeygenassist	$0x2,%xmm2,%xmm1
+.byte	102,15,58,223,202,2
 	call	.Lkey_expansion_256a
-	aeskeygenassist	$0x2,%xmm0,%xmm1
+.byte	102,15,58,223,200,2
 	call	.Lkey_expansion_256b
-	aeskeygenassist	$0x4,%xmm2,%xmm1
+.byte	102,15,58,223,202,4
 	call	.Lkey_expansion_256a
-	aeskeygenassist	$0x4,%xmm0,%xmm1
+.byte	102,15,58,223,200,4
 	call	.Lkey_expansion_256b
-	aeskeygenassist	$0x8,%xmm2,%xmm1
+.byte	102,15,58,223,202,8
 	call	.Lkey_expansion_256a
-	aeskeygenassist	$0x8,%xmm0,%xmm1
+.byte	102,15,58,223,200,8
 	call	.Lkey_expansion_256b
-	aeskeygenassist	$0x10,%xmm2,%xmm1
+.byte	102,15,58,223,202,16
 	call	.Lkey_expansion_256a
-	aeskeygenassist	$0x10,%xmm0,%xmm1
+.byte	102,15,58,223,200,16
 	call	.Lkey_expansion_256b
-	aeskeygenassist	$0x20,%xmm2,%xmm1
+.byte	102,15,58,223,202,32
 	call	.Lkey_expansion_256a
-	aeskeygenassist	$0x20,%xmm0,%xmm1
+.byte	102,15,58,223,200,32
 	call	.Lkey_expansion_256b
-	aeskeygenassist	$0x40,%xmm2,%xmm1
+.byte	102,15,58,223,202,64
 	call	.Lkey_expansion_256a
 	movups	%xmm0,(%rax)
 	movl	%esi,16(%rax)
@@ -2196,8 +2196,8 @@ _CET_ENDBR
 
 .align	16
 .Loop_key128:
-	pshufb	%xmm5,%xmm0
-	aesenclast	%xmm4,%xmm0
+.byte	102,15,56,0,197
+.byte	102,15,56,221,196
 	pslld	$1,%xmm4
 	leaq	16(%rax),%rax
 
@@ -2218,8 +2218,8 @@ _CET_ENDBR
 
 	movdqa	.Lkey_rcon1b(%rip),%xmm4
 
-	pshufb	%xmm5,%xmm0
-	aesenclast	%xmm4,%xmm0
+.byte	102,15,56,0,197
+.byte	102,15,56,221,196
 	pslld	$1,%xmm4
 
 	movdqa	%xmm2,%xmm3
@@ -2234,8 +2234,8 @@ _CET_ENDBR
 	movdqu	%xmm0,(%rax)
 
 	movdqa	%xmm0,%xmm2
-	pshufb	%xmm5,%xmm0
-	aesenclast	%xmm4,%xmm0
+.byte	102,15,56,0,197
+.byte	102,15,56,221,196
 
 	movdqa	%xmm2,%xmm3
 	pslldq	$4,%xmm2
@@ -2266,8 +2266,8 @@ _CET_ENDBR
 .Loop_key192:
 	movq	%xmm2,0(%rax)
 	movdqa	%xmm2,%xmm1
-	pshufb	%xmm5,%xmm2
-	aesenclast	%xmm4,%xmm2
+.byte	102,15,56,0,213
+.byte	102,15,56,221,212
 	pslld	$1,%xmm4
 	leaq	24(%rax),%rax
 
@@ -2310,8 +2310,8 @@ _CET_ENDBR
 
 .align	16
 .Loop_key256:
-	pshufb	%xmm5,%xmm2
-	aesenclast	%xmm4,%xmm2
+.byte	102,15,56,0,213
+.byte	102,15,56,221,212
 
 	movdqa	%xmm0,%xmm3
 	pslldq	$4,%xmm0
@@ -2330,7 +2330,7 @@ _CET_ENDBR
 
 	pshufd	$0xff,%xmm0,%xmm2
 	pxor	%xmm3,%xmm3
-	aesenclast	%xmm3,%xmm2
+.byte	102,15,56,221,211
 
 	movdqa	%xmm1,%xmm3
 	pslldq	$4,%xmm1

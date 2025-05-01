@@ -28,9 +28,9 @@ class NET_EXPORT RegistrationRequestParam {
 
   ~RegistrationRequestParam();
 
-  static RegistrationRequestParam CreateForRegistration(
+  static RegistrationRequestParam Create(
       RegistrationFetcherParam&& fetcher_param);
-  static RegistrationRequestParam CreateForRefresh(const Session& session);
+  static RegistrationRequestParam Create(const Session& session);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
   const std::optional<std::string>& session_identifier() const {
@@ -52,7 +52,7 @@ class NET_EXPORT RegistrationRequestParam {
 
   static RegistrationRequestParam CreateForTesting(
       const GURL& registration_endpoint,
-      std::optional<std::string> session_identifier,
+      std::string session_identifier,
       std::optional<std::string> challenge);
 
  private:

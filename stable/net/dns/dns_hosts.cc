@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/dns/dns_hosts.h"
 
 #include <string>
@@ -31,6 +36,7 @@ class HostsParser {
  public:
   explicit HostsParser(std::string_view text, ParseHostsCommaMode comma_mode)
       : text_(text),
+        data_(text.data()),
         end_(text.size()),
         comma_mode_(comma_mode) {}
 
@@ -73,7 +79,8 @@ class HostsParser {
           SkipToken();
           size_t token_end = (pos_ == std::string::npos) ? end_ : pos_;
 
-          token_ = text_.substr(token_start, token_end - token_start);
+          token_ =
+              std::string_view(data_ + token_start, token_end - token_start);
           token_is_ip_ = next_is_ip;
 
           return true;
@@ -123,6 +130,7 @@ class HostsParser {
   }
 
   const std::string_view text_;
+  const char* data_;
   const size_t end_;
 
   size_t pos_ = 0;

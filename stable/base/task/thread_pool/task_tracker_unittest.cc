@@ -41,7 +41,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -170,9 +171,8 @@ class ThreadPoolTaskTrackerTest
   RegisteredTaskSource WillPostTaskAndQueueTaskSource(
       Task task,
       const TaskTraits& traits) {
-    if (!tracker_.WillPostTask(&task, traits.shutdown_behavior())) {
+    if (!tracker_.WillPostTask(&task, traits.shutdown_behavior()))
       return nullptr;
-    }
     auto sequence = test::CreateSequenceWithTask(std::move(task), traits);
     return tracker_.RegisterTaskSource(std::move(sequence));
   }
@@ -331,9 +331,8 @@ TEST_P(ThreadPoolTaskTrackerTest, WillPostAndRunLongTaskBeforeShutdown) {
   thread_running_task.Join();
 
   // Shutdown should now complete for a non CONTINUE_ON_SHUTDOWN task.
-  if (GetParam() != TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN) {
+  if (GetParam() != TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN)
     WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
-  }
 }
 
 // Posting a BLOCK_SHUTDOWN task after shutdown must be allowed from a
@@ -874,9 +873,8 @@ TEST_P(ThreadPoolTaskTrackerTest, RunDelayedTaskDuringFlushAsyncForTesting) {
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, FlushAfterShutdown) {
-  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN) {
+  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN)
     return;
-  }
 
   // Simulate posting a task.
   Task undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta());
@@ -892,9 +890,8 @@ TEST_P(ThreadPoolTaskTrackerTest, FlushAfterShutdown) {
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, FlushAfterShutdownAsync) {
-  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN) {
+  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN)
     return;
-  }
 
   // Simulate posting a task.
   Task undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta());
@@ -914,9 +911,8 @@ TEST_P(ThreadPoolTaskTrackerTest, FlushAfterShutdownAsync) {
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, ShutdownDuringFlush) {
-  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN) {
+  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN)
     return;
-  }
 
   // Simulate posting a task.
   Task undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta());
@@ -938,9 +934,8 @@ TEST_P(ThreadPoolTaskTrackerTest, ShutdownDuringFlush) {
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, ShutdownDuringFlushAsyncForTesting) {
-  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN) {
+  if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN)
     return;
-  }
 
   // Simulate posting a task.
   Task undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta());
@@ -1065,9 +1060,8 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunBeforeShutdown) {
     threads.back()->Start();
   }
 
-  for (const auto& thread : threads) {
+  for (const auto& thread : threads)
     thread->Join();
-  }
 
   // Expect all tasks to be executed.
   EXPECT_EQ(kLoadTestNumIterations * 3, NumTasksExecuted());
@@ -1120,9 +1114,8 @@ TEST_F(ThreadPoolTaskTrackerTest,
     }
   }
 
-  for (const auto& thread : post_threads) {
+  for (const auto& thread : post_threads)
     thread->Join();
-  }
 
   // Start shutdown and try to complete shutdown asynchronously.
   tracker_.StartShutdown();
@@ -1144,9 +1137,8 @@ TEST_F(ThreadPoolTaskTrackerTest,
     run_threads.back()->Start();
   }
 
-  for (const auto& thread : run_threads) {
+  for (const auto& thread : run_threads)
     thread->Join();
-  }
 
   WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
 
@@ -1197,9 +1189,8 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
     threads.back()->Start();
   }
 
-  for (const auto& thread : threads) {
+  for (const auto& thread : threads)
     thread->Join();
-  }
 
   // Expect BLOCK_SHUTDOWN tasks to have been executed.
   EXPECT_EQ(kLoadTestNumIterations, NumTasksExecuted());
@@ -1303,4 +1294,5 @@ TEST(ThreadPoolTaskTrackerWaitAllowedTest, WaitAllowed) {
   wait_allowed_test_thread.Join();
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

@@ -4,15 +4,11 @@
 
 package org.chromium.base.shared_preferences;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import com.google.common.collect.Sets;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,18 +18,16 @@ import java.util.Set;
 /**
  * Ensures that all {@link PreferenceKeyRegistry}s used are known.
  *
- * <p>A complement to ChromePreferenceKeysTest, which ensures that preference keys across all known
+ * A complement to ChromePreferenceKeysTest, which ensures that preference keys across all known
  * registries are unique.
  *
- * <p>This checking is done in tests in which |initializeKnownRegistries()| is called, which happens
+ * This checking is done in tests in which |initializeKnownRegistries()| is called, which happens
  * during browser process initialization.
  */
 @CheckDiscard("Preference key checking should only happen on build with asserts")
-@NullMarked
 public class KnownPreferenceKeyRegistries {
-    private static @Nullable Set<PreferenceKeyRegistry> sKnownRegistries;
-    private static @Nullable Set<PreferenceKeyRegistry> sRegistriesUsedBeforeInitialization =
-            new HashSet<>();
+    private static Set<PreferenceKeyRegistry> sKnownRegistries;
+    private static Set<PreferenceKeyRegistry> sRegistriesUsedBeforeInitialization = new HashSet<>();
 
     public static void onRegistryUsed(PreferenceKeyRegistry registry) {
         if (!BuildConfig.ENABLE_ASSERTS) {
@@ -42,7 +36,7 @@ public class KnownPreferenceKeyRegistries {
 
         if (sKnownRegistries == null) {
             // Before initialization, keep track of registries used.
-            assumeNonNull(sRegistriesUsedBeforeInitialization).add(registry);
+            sRegistriesUsedBeforeInitialization.add(registry);
         } else {
             // After initialization, check if registry is known.
             if (!sKnownRegistries.contains(registry)) {
@@ -68,9 +62,7 @@ public class KnownPreferenceKeyRegistries {
 
         // Check that each registry already used is known; assert otherwise.
         Set<PreferenceKeyRegistry> unknownRegistries =
-                Sets.difference(
-                        assumeNonNull(sRegistriesUsedBeforeInitialization),
-                        knownRegistries);
+                Sets.difference(sRegistriesUsedBeforeInitialization, knownRegistries);
         if (!unknownRegistries.isEmpty()) {
             List<String> unknownRegistryNames = new ArrayList<>();
             for (PreferenceKeyRegistry unknownRegistry : unknownRegistries) {

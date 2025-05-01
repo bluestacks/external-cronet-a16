@@ -10,8 +10,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <iterator>
-#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -72,7 +70,7 @@ class TextureLayerImpl;
 namespace base::internal {
 class DelayTimerBase;
 class JobTaskSource;
-}  // namespace base::internal
+}
 namespace base::test {
 struct RawPtrCountingImplForTest;
 }
@@ -1066,32 +1064,51 @@ PA_ALWAYS_INLINE constexpr bool operator>=(const raw_ptr<U, Traits1>& lhs,
 #endif
 
 template <typename T>
-inline constexpr bool IsRawPtr = false;
+struct IsRawPtr : std::false_type {};
+
 template <typename T, RawPtrTraits Traits>
-inline constexpr bool IsRawPtr<raw_ptr<T, Traits>> = true;
+struct IsRawPtr<raw_ptr<T, Traits>> : std::true_type {};
 
 template <typename T>
-inline constexpr bool IsRawPtrMayDangle = false;
+inline constexpr bool IsRawPtrV = IsRawPtr<T>::value;
+
+template <typename T>
+inline constexpr bool IsRawPtrMayDangleV = false;
+
 template <typename T, RawPtrTraits Traits>
-inline constexpr bool IsRawPtrMayDangle<raw_ptr<T, Traits>> =
+inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, Traits>> =
     partition_alloc::internal::ContainsFlags(Traits, RawPtrTraits::kMayDangle);
 
+// Template helpers for working with T* or raw_ptr<T>.
 template <typename T>
-inline constexpr bool IsPointerOrRawPtr = std::is_pointer_v<T>;
-template <typename T, RawPtrTraits Traits>
-inline constexpr bool IsPointerOrRawPtr<raw_ptr<T, Traits>> = true;
+struct IsRawPointerHelper : std::false_type {};
 
-// Like `std::remove_pointer_t<>`, but also converts `raw_ptr<T>` => `T`.
 template <typename T>
-struct RemovePointer {
-  using type = std::remove_pointer_t<T>;
-};
+struct IsRawPointerHelper<T*> : std::true_type {};
+
 template <typename T, RawPtrTraits Traits>
-struct RemovePointer<raw_ptr<T, Traits>> {
+struct IsRawPointerHelper<raw_ptr<T, Traits>> : std::true_type {};
+
+template <typename T>
+inline constexpr bool IsRawPointer = IsRawPointerHelper<T>::value;
+
+template <typename T>
+struct RemoveRawPointer {
   using type = T;
 };
+
 template <typename T>
-using RemovePointerT = typename RemovePointer<T>::type;
+struct RemoveRawPointer<T*> {
+  using type = T;
+};
+
+template <typename T, RawPtrTraits Traits>
+struct RemoveRawPointer<raw_ptr<T, Traits>> {
+  using type = T;
+};
+
+template <typename T>
+using RemoveRawPointerT = typename RemoveRawPointer<T>::type;
 
 }  // namespace base
 
@@ -1254,34 +1271,6 @@ struct pointer_traits<::raw_ptr<T, Traits>> {
     return p.get();
   }
 };
-
-#if PA_BUILDFLAG(ASSERT_CPP_20)
-// Mark `raw_ptr<T>` and `T*` as having a common reference type (the type to
-// which both can be converted or bound) of `T*`. This makes them satisfy
-// `std::equality_comparable`, which allows usage like:
-// ```
-//   std::vector<raw_ptr<T>> v;
-//   T* e;
-//   auto it = std::ranges::find(v, e);
-// ```
-// Without this, the `find()` call above would fail to compile with a cryptic
-// error about being unable to invoke `std::ranges::equal_to()`.
-template <typename T,
-          base::RawPtrTraits Traits,
-          template <typename> typename TQ,
-          template <typename> typename UQ>
-struct basic_common_reference<raw_ptr<T, Traits>, T*, TQ, UQ> {
-  using type = T*;
-};
-
-template <typename T,
-          base::RawPtrTraits Traits,
-          template <typename> typename TQ,
-          template <typename> typename UQ>
-struct basic_common_reference<T*, raw_ptr<T, Traits>, TQ, UQ> {
-  using type = T*;
-};
-#endif  // PA_BUILDFLAG(ASSERT_CPP_20)
 
 }  // namespace std
 

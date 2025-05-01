@@ -4,9 +4,6 @@
 
 package org.chromium.base;
 
-import org.chromium.build.annotations.NullMarked;
-
-@NullMarked
 public class JavaUtils {
     private JavaUtils() {}
 

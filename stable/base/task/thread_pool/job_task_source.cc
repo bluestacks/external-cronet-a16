@@ -21,7 +21,8 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -258,9 +259,8 @@ size_t JobTaskSource::GetRemainingConcurrency() const {
   }
   const size_t max_concurrency = GetMaxConcurrency(state.worker_count());
   // Avoid underflows.
-  if (state.worker_count() > max_concurrency) {
+  if (state.worker_count() > max_concurrency)
     return 0;
-  }
   return max_concurrency - state.worker_count();
 }
 
@@ -414,4 +414,5 @@ std::optional<Task> JobTaskSource::Clear(TaskSource::Transaction* transaction) {
   return std::nullopt;
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

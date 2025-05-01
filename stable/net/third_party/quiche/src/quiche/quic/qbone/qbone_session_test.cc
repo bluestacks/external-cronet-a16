@@ -113,7 +113,7 @@ class IndirectionProofSource : public ProofSource {
                                        std::move(callback));
   }
 
-  QuicSignatureAlgorithmVector SupportedTlsSignatureAlgorithms()
+  absl::InlinedVector<uint16_t, 8> SupportedTlsSignatureAlgorithms()
       const override {
     if (!proof_source_) {
       return {};

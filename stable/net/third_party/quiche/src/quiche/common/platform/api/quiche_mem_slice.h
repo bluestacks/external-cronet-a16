@@ -7,6 +7,9 @@
 
 #include <cstddef>
 #include <memory>
+#include <utility>
+
+#include "quiche_platform_impl/quiche_mem_slice_impl.h"
 
 #include "absl/strings/string_view.h"
 #include "quiche/common/platform/api/quiche_export.h"
@@ -15,56 +18,62 @@
 
 namespace quiche {
 
-// QuicheMemSlice is a memory buffer with a type-erased deleter callback.
+// QuicheMemSlice is a wrapper around a platform-specific I/O buffer type. It
+// may be reference counted, though QUICHE itself does not rely on that.
 class QUICHE_EXPORT QuicheMemSlice {
  public:
-  using ReleaseCallback = SingleUseCallback<void(absl::string_view)>;
-
   // Constructs a empty QuicheMemSlice with no underlying data.
   QuicheMemSlice() = default;
 
   // Constructs a QuicheMemSlice that takes ownership of |buffer|.  The length
   // of the |buffer| must not be zero.  To construct an empty QuicheMemSlice,
   // use the zero-argument constructor instead.
-  explicit QuicheMemSlice(QuicheBuffer buffer);
+  explicit QuicheMemSlice(QuicheBuffer buffer) : impl_(std::move(buffer)) {}
 
   // Constructs a QuicheMemSlice that takes ownership of |buffer| allocated on
   // heap.  |length| must not be zero.
-  QuicheMemSlice(std::unique_ptr<char[]> buffer, size_t length);
+  QuicheMemSlice(std::unique_ptr<char[]> buffer, size_t length)
+      : impl_(std::move(buffer), length) {}
 
-  // Constructs a QuicheMemSlice with a custom deleter callback.
   QuicheMemSlice(const char* buffer, size_t length,
-                 ReleaseCallback done_callback);
+                 quiche::SingleUseCallback<void(const char*)> done_callback)
+      : impl_(buffer, length, std::move(done_callback)) {}
+
+  // Ensures the use of the in-place constructor (below) is intentional.
+  struct InPlace {};
+
+  // Constructs a QuicheMemSlice by constructing |impl_| in-place.
+  template <typename... Args>
+  explicit QuicheMemSlice(InPlace, Args&&... args)
+      : impl_{std::forward<Args>(args)...} {}
 
   QuicheMemSlice(const QuicheMemSlice& other) = delete;
   QuicheMemSlice& operator=(const QuicheMemSlice& other) = delete;
 
   // Move constructors. |other| will not hold a reference to the data buffer
   // after this call completes.
-  QuicheMemSlice(QuicheMemSlice&& other);
-  QuicheMemSlice& operator=(QuicheMemSlice&& other);
+  QuicheMemSlice(QuicheMemSlice&& other) = default;
+  QuicheMemSlice& operator=(QuicheMemSlice&& other) = default;
 
-  ~QuicheMemSlice();
+  ~QuicheMemSlice() = default;
 
   // Release the underlying reference. Further access the memory will result in
   // undefined behavior.
-  void Reset();
+  void Reset() { impl_.Reset(); }
 
   // Returns a const char pointer to underlying data buffer.
-  const char* data() const { return data_; }
+  const char* data() const { return impl_.data(); }
   // Returns the length of underlying data buffer.
-  size_t length() const { return size_; }
+  size_t length() const { return impl_.length(); }
   // Returns the representation of the underlying data as a string view.
   absl::string_view AsStringView() const {
-    return absl::string_view(data_, size_);
+    return absl::string_view(data(), length());
   }
 
-  bool empty() const { return size_ == 0; }
+  bool empty() const { return impl_.empty(); }
 
  private:
-  const char* data_ = nullptr;
-  size_t size_ = 0;
-  ReleaseCallback done_callback_ = nullptr;
+  QuicheMemSliceImpl impl_;
 };
 
 }  // namespace quiche

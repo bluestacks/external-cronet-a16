@@ -7,9 +7,6 @@ package org.chromium.base;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.NullMarked;
-
-@NullMarked
 @JNINamespace("base::android")
 public class BaseFeatureMap extends FeatureMap {
     private static final BaseFeatureMap sInstance = new BaseFeatureMap();

@@ -5,7 +5,6 @@
 #include "base/task/thread_pool/test_utils.h"
 
 #include <utility>
-#include <variant>
 
 #include "base/check.h"
 #include "base/debug/leak_annotations.h"
@@ -19,8 +18,11 @@
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/threading/thread_restrictions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace base::internal::test {
+namespace base {
+namespace internal {
+namespace test {
 
 namespace {
 
@@ -90,18 +92,16 @@ void MockWorkerThreadObserver::AllowCallsOnMainExit(int num_calls) {
 
 void MockWorkerThreadObserver::WaitCallsOnMainExit() {
   CheckedAutoLock auto_lock(lock_);
-  while (allowed_calls_on_main_exit_ != 0) {
+  while (allowed_calls_on_main_exit_ != 0)
     on_main_exit_cv_.Wait();
-  }
 }
 
 void MockWorkerThreadObserver::OnWorkerThreadMainExit() {
   CheckedAutoLock auto_lock(lock_);
   EXPECT_GE(allowed_calls_on_main_exit_, 0);
   --allowed_calls_on_main_exit_;
-  if (allowed_calls_on_main_exit_ == 0) {
+  if (allowed_calls_on_main_exit_ == 0)
     on_main_exit_cv_.Signal();
-  }
 }
 
 scoped_refptr<Sequence> CreateSequenceWithTask(
@@ -207,9 +207,8 @@ void MockPooledTaskRunnerDelegate::PostTaskWithSequenceNow(
   if (sequence_should_be_queued) {
     task_source = task_tracker_->RegisterTaskSource(std::move(sequence));
     // We shouldn't push |task| if we're not allowed to queue |task_source|.
-    if (!task_source) {
+    if (!task_source)
       return;
-    }
   }
   transaction.PushImmediateTask(std::move(task));
   if (task_source) {
@@ -231,9 +230,8 @@ bool MockPooledTaskRunnerDelegate::EnqueueJobTaskSource(
 
   auto registered_task_source =
       task_tracker_->RegisterTaskSource(std::move(task_source));
-  if (!registered_task_source) {
+  if (!registered_task_source)
     return false;
-  }
   auto transaction = registered_task_source->BeginTransaction();
   thread_group_->PushTaskSourceAndWakeUpWorkers(
       {std::move(registered_task_source), std::move(transaction)});
@@ -270,12 +268,12 @@ MockJobTask::MockJobTask(
     size_t num_tasks_to_run)
     : task_(std::move(worker_task)),
       remaining_num_tasks_to_run_(num_tasks_to_run) {
-  CHECK(!std::get<decltype(worker_task)>(task_).is_null());
+  CHECK(!absl::get<decltype(worker_task)>(task_).is_null());
 }
 
 MockJobTask::MockJobTask(base::OnceClosure worker_task)
     : task_(std::move(worker_task)), remaining_num_tasks_to_run_(1) {
-  CHECK(!std::get<decltype(worker_task)>(task_).is_null());
+  CHECK(!absl::get<decltype(worker_task)>(task_).is_null());
 }
 
 void MockJobTask::SetNumTasksToRun(size_t num_tasks_to_run) {
@@ -283,7 +281,7 @@ void MockJobTask::SetNumTasksToRun(size_t num_tasks_to_run) {
     remaining_num_tasks_to_run_ = 0;
     return;
   }
-  if (auto* closure = std::get_if<base::OnceClosure>(&task_); closure) {
+  if (auto* closure = absl::get_if<base::OnceClosure>(&task_); closure) {
     // 0 is already handled above, so this can only be an attempt to set to
     // a non-zero value for a OnceClosure. In that case, the only permissible
     // value is 1, and the closure must not be null.
@@ -301,7 +299,7 @@ size_t MockJobTask::GetMaxConcurrency(size_t /* worker_count */) const {
 }
 
 void MockJobTask::Run(JobDelegate* delegate) {
-  std::visit(
+  absl::visit(
       base::Overloaded{
           [](OnceClosure& closure) { std::move(closure).Run(); },
           [delegate](const RepeatingCallback<void(JobDelegate*)>& callback) {
@@ -337,4 +335,6 @@ void ShutdownTaskTracker(TaskTracker* task_tracker) {
   task_tracker->CompleteShutdown();
 }
 
-}  // namespace base::internal::test
+}  // namespace test
+}  // namespace internal
+}  // namespace base

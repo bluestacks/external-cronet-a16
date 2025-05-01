@@ -32,7 +32,7 @@ namespace base {
 
 class BASE_EXPORT BucketRanges {
  public:
-  typedef std::vector<HistogramBase::Sample32> Ranges;
+  typedef std::vector<HistogramBase::Sample> Ranges;
 
   explicit BucketRanges(size_t num_ranges);
 
@@ -42,8 +42,8 @@ class BASE_EXPORT BucketRanges {
   ~BucketRanges();
 
   size_t size() const { return ranges_.size(); }
-  HistogramBase::Sample32 range(size_t i) const { return ranges_[i]; }
-  void set_range(size_t i, HistogramBase::Sample32 value) {
+  HistogramBase::Sample range(size_t i) const { return ranges_[i]; }
+  void set_range(size_t i, HistogramBase::Sample value) {
     DCHECK_LT(i, ranges_.size());
     DCHECK_GE(value, 0);
     ranges_[i] = value;

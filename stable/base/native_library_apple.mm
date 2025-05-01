@@ -84,7 +84,11 @@ std::string GetNativeLibraryName(std::string_view name) {
   DCHECK(IsStringASCII(name));
 #if BUILDFLAG(IS_IOS)
   // Returns mylib.framework/mylib
-  return FilePath().Append(name).AddExtension("framework").Append(name).value();
+  return FilePath()
+      .Append(name)
+      .AddExtension("framework")
+      .Append(name)
+      .value();
 #else
   return StrCat({"lib", name, ".dylib"});
 #endif
@@ -94,7 +98,10 @@ std::string GetLoadableModuleName(std::string_view name) {
   DCHECK(IsStringASCII(name));
 #if BUILDFLAG(IS_IOS)
   // Returns mylib.framework
-  return FilePath().Append(name).AddExtension("framework").value();
+  return FilePath()
+      .Append(name)
+      .AddExtension("framework")
+      .value();
 #else
   return StrCat({name, ".so"});
 #endif

@@ -21,9 +21,9 @@ package {
     ],
 }
 
-// GN: //build/android/gtest_apk:native_test_instrumentation_test_runner_java__compile_java__testing
+// GN: //build/android/gtest_apk:native_test_instrumentation_test_runner_java__testing
 java_library {
-    name: "stable_cronet_build_android_gtest_apk_native_test_instrumentation_test_runner_java__compile_java__testing",
+    name: "stable_cronet_build_android_gtest_apk_native_test_instrumentation_test_runner_java__testing",
     srcs: [
         "java/src/org/chromium/build/gtest_apk/NativeTestInstrumentationTestRunner.java",
         "java/src/org/chromium/build/gtest_apk/NativeTestIntent.java",
@@ -34,28 +34,9 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    libs: [
-        "stable_cronet_build_android_build_java__compile_java__testing",
-    ],
     sdk_version: "current",
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-}
-
-// GN: //build/android/gtest_apk:native_test_instrumentation_test_runner_java__testing
-java_library {
-    name: "stable_cronet_build_android_gtest_apk_native_test_instrumentation_test_runner_java__testing",
-    static_libs: [
-        "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_build_android_gtest_apk_native_test_instrumentation_test_runner_java__process_device__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
+    jarjar_rules: ":remove_gen_jni_jarjar_rules",
 }

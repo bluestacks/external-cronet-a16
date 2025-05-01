@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -85,8 +84,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   LoadState GetLoadState() const override;
   void SetQuicServerInfo(QuicServerInfo* quic_server_info) override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
-  void PopulateLoadTimingInternalInfo(
-      LoadTimingInternalInfo* load_timing_internal_info) const override;
   bool GetRemoteEndpoint(IPEndPoint* endpoint) const override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
   void SetPriority(RequestPriority priority) override;
@@ -353,10 +350,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   void ResumeAfterConnected(int result);
 
-  void RecordStreamRequestResult(int result);
-
-  void ProcessAltSvcHeader();
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class QuicProtocolErrorRetryStatus {
@@ -371,8 +364,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   static void SetProxyInfoInResponse(const ProxyInfo& proxy_info,
                                      HttpResponseInfo* response_info);
 
-  std::array<scoped_refptr<HttpAuthController>, HttpAuth::AUTH_NUM_TARGETS>
-      auth_controllers_;
+  scoped_refptr<HttpAuthController>
+      auth_controllers_[HttpAuth::AUTH_NUM_TARGETS];
 
   // Whether this transaction is waiting for proxy auth, server auth, or is
   // not waiting for any auth at all. |pending_auth_target_| is read and
@@ -385,8 +378,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   raw_ptr<HttpNetworkSession> session_;
 
   NetLogWithSource net_log_;
-
-  base::TimeTicks start_timeticks_;
 
   // Reset to null at the start of the Read state machine.
   raw_ptr<const HttpRequestInfo> request_ = nullptr;
@@ -432,6 +423,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   std::string request_referrer_;
   std::string request_user_agent_;
   int request_reporting_upload_depth_ = 0;
+  base::TimeTicks start_timeticks_;
 #endif
 
   // The size in bytes of the buffer we use to drain the response body that
@@ -459,10 +451,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // until |SendRequest()| is called on |stream_|, and reset for auth restarts.
   base::TimeTicks send_start_time_;
   base::TimeTicks send_end_time_;
-
-  // When the connection and request headers are reset, and the request is
-  // resent.
-  base::TimeTicks reset_connection_and_request_for_resend_start_time_;
 
   // The next state in the state machine.
   State next_state_ = STATE_NONE;
@@ -501,7 +489,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   IPEndPoint remote_endpoint_;
   // Network error details for this transaction.
   NetErrorDetails net_error_details_;
-  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // Number of retries made for network errors like ERR_HTTP2_PING_FAILED,
   // ERR_HTTP2_SERVER_REFUSED_STREAM, ERR_QUIC_HANDSHAKE_FAILED and
@@ -524,10 +511,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // using DNS times coming from the established stream.
   base::TimeTicks dns_resolution_start_time_override_;
   base::TimeTicks dns_resolution_end_time_override_;
-
-  // The time at which initialize stream started / ended.
-  base::TimeTicks initialize_stream_start_time_;
-  base::TimeTicks initialize_stream_end_time_;
 
   base::TimeTicks blocked_initialize_stream_start_time_;
   base::TimeTicks blocked_generate_proxy_auth_token_start_time_;

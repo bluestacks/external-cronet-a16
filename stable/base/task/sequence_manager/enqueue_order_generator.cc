@@ -4,11 +4,15 @@
 
 #include "base/task/sequence_manager/enqueue_order_generator.h"
 
-namespace base::sequence_manager::internal {
+namespace base {
+namespace sequence_manager {
+namespace internal {
 
 EnqueueOrderGenerator::EnqueueOrderGenerator()
     : counter_(EnqueueOrder::kFirst) {}
 
 EnqueueOrderGenerator::~EnqueueOrderGenerator() = default;
 
-}  // namespace base::sequence_manager::internal
+}  // namespace internal
+}  // namespace sequence_manager
+}  // namespace base

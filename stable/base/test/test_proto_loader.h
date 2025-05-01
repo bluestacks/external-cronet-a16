@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-
 #include "base/files/file_path.h"
 
 namespace base {

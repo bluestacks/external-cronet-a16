@@ -11,6 +11,7 @@
 #include <compare>
 #include <iosfwd>
 #include <string_view>
+#include <tuple>
 
 #include "base/base_export.h"
 #include "base/check.h"

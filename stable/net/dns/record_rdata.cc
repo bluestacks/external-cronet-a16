@@ -30,7 +30,7 @@ static const size_t kSrvRecordMinimumSize = 6;
 // Minimal HTTPS rdata is 2 octets priority + 1 octet empty name.
 static constexpr size_t kHttpsRdataMinimumSize = 3;
 
-bool RecordRdata::HasValidSize(base::span<const uint8_t> data, uint16_t type) {
+bool RecordRdata::HasValidSize(std::string_view data, uint16_t type) {
   switch (type) {
     case dns_protocol::kTypeSRV:
       return data.size() >= kSrvRecordMinimumSize;
@@ -57,18 +57,14 @@ SrvRecordRdata::SrvRecordRdata() = default;
 
 SrvRecordRdata::~SrvRecordRdata() = default;
 
-std::unique_ptr<SrvRecordRdata> SrvRecordRdata::CreateInstance() {
-  return base::WrapUnique(new SrvRecordRdata());
-}
-
 // static
 std::unique_ptr<SrvRecordRdata> SrvRecordRdata::Create(
-    base::span<const uint8_t> data,
+    std::string_view data,
     const DnsRecordParser& parser) {
   if (!HasValidSize(data, kType))
     return nullptr;
 
-  auto rdata = SrvRecordRdata::CreateInstance();
+  auto rdata = base::WrapUnique(new SrvRecordRdata());
 
   auto reader = base::SpanReader(base::as_byte_span(data));
   // 2 bytes for priority, 2 bytes for weight, 2 bytes for port.
@@ -76,7 +72,7 @@ std::unique_ptr<SrvRecordRdata> SrvRecordRdata::Create(
   reader.ReadU16BigEndian(rdata->weight_);
   reader.ReadU16BigEndian(rdata->port_);
 
-  if (!parser.ReadName(data.subspan(kSrvRecordMinimumSize).data(),
+  if (!parser.ReadName(data.substr(kSrvRecordMinimumSize).data(),
                        &rdata->target_)) {
     return nullptr;
   }
@@ -91,26 +87,24 @@ uint16_t SrvRecordRdata::Type() const {
 bool SrvRecordRdata::IsEqual(const RecordRdata* other) const {
   if (other->Type() != Type()) return false;
   const SrvRecordRdata* srv_other = static_cast<const SrvRecordRdata*>(other);
-  return weight_ == srv_other->weight_ && port_ == srv_other->port_ &&
-         priority_ == srv_other->priority_ && target_ == srv_other->target_;
+  return weight_ == srv_other->weight_ &&
+      port_ == srv_other->port_ &&
+      priority_ == srv_other->priority_ &&
+      target_ == srv_other->target_;
 }
 
 ARecordRdata::ARecordRdata() = default;
 
 ARecordRdata::~ARecordRdata() = default;
 
-std::unique_ptr<ARecordRdata> ARecordRdata::CreateInstance() {
-  return base::WrapUnique(new ARecordRdata());
-}
-
 // static
 std::unique_ptr<ARecordRdata> ARecordRdata::Create(
-    base::span<const uint8_t> data,
+    std::string_view data,
     const DnsRecordParser& parser) {
   if (!HasValidSize(data, kType))
     return nullptr;
 
-  auto rdata = ARecordRdata::CreateInstance();
+  auto rdata = base::WrapUnique(new ARecordRdata());
   rdata->address_ = IPAddress(base::as_byte_span(data));
   return rdata;
 }
@@ -129,18 +123,14 @@ AAAARecordRdata::AAAARecordRdata() = default;
 
 AAAARecordRdata::~AAAARecordRdata() = default;
 
-std::unique_ptr<AAAARecordRdata> AAAARecordRdata::CreateInstance() {
-  return base::WrapUnique(new AAAARecordRdata());
-}
-
 // static
 std::unique_ptr<AAAARecordRdata> AAAARecordRdata::Create(
-    base::span<const uint8_t> data,
+    std::string_view data,
     const DnsRecordParser& parser) {
   if (!HasValidSize(data, kType))
     return nullptr;
 
-  auto rdata = AAAARecordRdata::CreateInstance();
+  auto rdata = base::WrapUnique(new AAAARecordRdata());
   rdata->address_ = IPAddress(base::as_byte_span(data));
   return rdata;
 }
@@ -150,9 +140,7 @@ uint16_t AAAARecordRdata::Type() const {
 }
 
 bool AAAARecordRdata::IsEqual(const RecordRdata* other) const {
-  if (other->Type() != Type()) {
-    return false;
-  }
+  if (other->Type() != Type()) return false;
   const AAAARecordRdata* a_other = static_cast<const AAAARecordRdata*>(other);
   return address_ == a_other->address_;
 }
@@ -161,15 +149,11 @@ CnameRecordRdata::CnameRecordRdata() = default;
 
 CnameRecordRdata::~CnameRecordRdata() = default;
 
-std::unique_ptr<CnameRecordRdata> CnameRecordRdata::CreateInstance() {
-  return base::WrapUnique(new CnameRecordRdata());
-}
-
 // static
 std::unique_ptr<CnameRecordRdata> CnameRecordRdata::Create(
-    base::span<const uint8_t> data,
+    std::string_view data,
     const DnsRecordParser& parser) {
-  auto rdata = CnameRecordRdata::CreateInstance();
+  auto rdata = base::WrapUnique(new CnameRecordRdata());
 
   if (!parser.ReadName(data.data(), &rdata->cname_)) {
     return nullptr;
@@ -193,15 +177,11 @@ PtrRecordRdata::PtrRecordRdata() = default;
 
 PtrRecordRdata::~PtrRecordRdata() = default;
 
-std::unique_ptr<PtrRecordRdata> PtrRecordRdata::CreateInstance() {
-  return base::WrapUnique(new PtrRecordRdata());
-}
-
 // static
 std::unique_ptr<PtrRecordRdata> PtrRecordRdata::Create(
-    base::span<const uint8_t> data,
+    std::string_view data,
     const DnsRecordParser& parser) {
-  auto rdata = PtrRecordRdata::CreateInstance();
+  auto rdata = base::WrapUnique(new PtrRecordRdata());
 
   if (!parser.ReadName(data.data(), &rdata->ptrdomain_)) {
     return nullptr;
@@ -224,24 +204,20 @@ TxtRecordRdata::TxtRecordRdata() = default;
 
 TxtRecordRdata::~TxtRecordRdata() = default;
 
-std::unique_ptr<TxtRecordRdata> TxtRecordRdata::CreateInstance() {
-  return base::WrapUnique(new TxtRecordRdata());
-}
 // static
 std::unique_ptr<TxtRecordRdata> TxtRecordRdata::Create(
-    base::span<const uint8_t> data,
+    std::string_view data,
     const DnsRecordParser& parser) {
-  auto rdata = TxtRecordRdata::CreateInstance();
+  auto rdata = base::WrapUnique(new TxtRecordRdata());
 
-  for (size_t i = 0; i < data.size();) {
+  for (size_t i = 0; i < data.size(); ) {
     uint8_t length = data[i];
 
-    if (i + length >= data.size()) {
+    if (i + length >= data.size())
       return nullptr;
-    }
 
-    rdata->texts_.emplace_back(
-        base::as_string_view(base::as_chars(data.subspan(i + 1, length))));
+    rdata->texts_.push_back(std::string(data.substr(i + 1, length)));
+
     // Move to the next string.
     i += length + 1;
   }
@@ -263,15 +239,11 @@ NsecRecordRdata::NsecRecordRdata() = default;
 
 NsecRecordRdata::~NsecRecordRdata() = default;
 
-std::unique_ptr<NsecRecordRdata> NsecRecordRdata::CreateInstance() {
-  return base::WrapUnique(new NsecRecordRdata());
-}
-
 // static
 std::unique_ptr<NsecRecordRdata> NsecRecordRdata::Create(
-    base::span<const uint8_t> data,
+    std::string_view data,
     const DnsRecordParser& parser) {
-  auto rdata = NsecRecordRdata::CreateInstance();
+  auto rdata = base::WrapUnique(new NsecRecordRdata());
 
   // Read the "next domain". This part for the NSEC record format is
   // ignored for mDNS, since it has no semantic meaning.
@@ -279,32 +251,32 @@ std::unique_ptr<NsecRecordRdata> NsecRecordRdata::Create(
 
   // If we did not succeed in getting the next domain or the data length
   // is too short for reading the bitmap header, return.
-  if (next_domain_length == 0 || data.size() < next_domain_length + 2) {
+  if (next_domain_length == 0 || data.length() < next_domain_length + 2)
     return nullptr;
-  }
 
   struct BitmapHeader {
     uint8_t block_number;  // The block number should be zero.
     uint8_t length;        // Bitmap length in bytes. Between 1 and 32.
   };
 
-  const BitmapHeader* header =
-      reinterpret_cast<const BitmapHeader*>(data.data() + next_domain_length);
+  const BitmapHeader* header = reinterpret_cast<const BitmapHeader*>(
+      data.data() + next_domain_length);
 
   // The block number must be zero in mDns-specific NSEC records. The bitmap
   // length must be between 1 and 32.
   if (header->block_number != 0 || header->length == 0 || header->length > 32)
     return nullptr;
 
-  base::span<const uint8_t> bitmap_data = data.subspan(next_domain_length + 2);
+  std::string_view bitmap_data = data.substr(next_domain_length + 2);
 
-  // Since we may only have one block, the data length must be exactly equal
-  // to the domain length plus bitmap size.
-  if (bitmap_data.size() != header->length) {
+  // Since we may only have one block, the data length must be exactly equal to
+  // the domain length plus bitmap size.
+  if (bitmap_data.length() != header->length)
     return nullptr;
-  }
 
-  rdata->bitmap_.assign(bitmap_data.begin(), bitmap_data.end());
+  rdata->bitmap_.insert(rdata->bitmap_.begin(),
+                        bitmap_data.begin(),
+                        bitmap_data.end());
 
   return rdata;
 }
@@ -322,7 +294,7 @@ bool NsecRecordRdata::IsEqual(const RecordRdata* other) const {
 }
 
 bool NsecRecordRdata::GetBit(unsigned i) const {
-  unsigned byte_num = i / 8;
+  unsigned byte_num = i/8;
   if (bitmap_.size() < byte_num + 1)
     return false;
 

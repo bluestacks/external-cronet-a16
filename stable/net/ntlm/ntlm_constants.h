@@ -7,9 +7,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-#include <array>
 #include <type_traits>
+
 #include <vector>
 
 #include "net/base/net_export.h"
@@ -134,9 +133,6 @@ struct NET_EXPORT_PRIVATE AvPair {
   AvPair();
   AvPair(TargetInfoAvId avid, uint16_t avlen);
   AvPair(TargetInfoAvId avid, std::vector<uint8_t> buffer);
-  template <size_t N>
-  AvPair(TargetInfoAvId avid, std::array<uint8_t, N> buffer)
-      : buffer(buffer.begin(), buffer.end()), avid(avid), avlen(N) {}
   AvPair(const AvPair& other);
   AvPair(AvPair&& other);
   ~AvPair();
@@ -145,10 +141,10 @@ struct NET_EXPORT_PRIVATE AvPair {
   AvPair& operator=(AvPair&& other);
 
   std::vector<uint8_t> buffer;
-  uint64_t timestamp = 0;
-  TargetInfoAvFlags flags = TargetInfoAvFlags::kNone;
-  TargetInfoAvId avid = TargetInfoAvId::kEol;
-  uint16_t avlen = 0;
+  uint64_t timestamp;
+  TargetInfoAvFlags flags;
+  TargetInfoAvId avid;
+  uint16_t avlen;
 };
 
 static constexpr uint8_t kSignature[] = "NTLMSSP";

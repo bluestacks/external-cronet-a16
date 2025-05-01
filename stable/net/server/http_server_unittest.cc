@@ -1019,9 +1019,7 @@ class MockStreamSocket : public StreamSocket {
   }
   const NetLogWithSource& NetLog() const override { return net_log_; }
   bool WasEverUsed() const override { return true; }
-  NextProto GetNegotiatedProtocol() const override {
-    return NextProto::kProtoUnknown;
-  }
+  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();

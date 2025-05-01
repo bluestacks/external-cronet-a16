@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/task_environment.h"
 #include "base/test/test_trace_processor.h"
+
+#include "base/test/task_environment.h"
 #include "base/test/trace_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace base::test {
+
 
 class TestTraceProcessorExample : public ::testing::Test {
  private:
@@ -68,5 +70,6 @@ TEST_F(TestTraceProcessorExample, BasicTraceConfig) {
               ::testing::ElementsAre(std::vector<std::string>{"name"},
                                      std::vector<std::string>{"test_event"}));
 }
+
 
 }  // namespace base::test

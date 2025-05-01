@@ -87,8 +87,6 @@ std::string CreateReasonToString(
       // TODO(crbug.com/40238818): Give more insight here (e.g. "independent log
       // generated from pma file").
       return "Reason: Independent log";
-    case MetricsLogsEventManager::CreateReason::kOutOfBand:
-      return "Reason: Manually triggered by client";
   }
 }
 

@@ -9,7 +9,7 @@ This is a guide on writing your first test with Public Transit.
 This can be in any instrumentation test target. The naming convention is to use
 the suffix `PTTest.java`. I'll create as an example
 `chrome/android/javatests/src/org/chromium/chrome/browser/MyPTTest.java` and add
-it to `chrome/android/javatests/BUILD.gn`
+it to `chrome/android/chrome_test_java_sources.gni`
 
 If you're using a new `"javatests"` target instead, you need to add BUILD.gn
 deps on:
@@ -27,18 +27,25 @@ package org.chromium.chrome.browser;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)  // Batching is recommended for faster tests.
+@Batch(Batch.PER_CLASS)
 public class MyPTTest {
-    // Reuse the Activity between test cases when possible so the batched test
-    // runs faster.
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    // Recommend to batch whenever possible so the test runs faster.
+    // Omit this rule in a non-batched test.
     @Rule
-    public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
-            ChromeTransitTestRules.blankPageStartReusedActivityRule();
+    public BatchedPublicTransitRule<PageStation> mBatchedRule =
+            new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
+
+    ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
+            new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
 
     @Test
     @LargeTest
     public void testOpenBlankPage() {
-        PageStation page = mCtaTestRule.start();
+        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
         TransitAsserts.assertFinalDestination(page);
     }
 }
@@ -143,7 +150,7 @@ public class MyPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testOneTab_I_render() throws IOException {
-        PageStation page = mCtaTestRule.start();
+        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
         mRenderTestRule.render(page.getTabSwitcherButton(), "1_tab");
         TransitAsserts.assertFinalDestination(page);
     }
@@ -191,7 +198,7 @@ guide, but the render test is a very good way of testing this too.
 ```java
 public class MyPTTest {
     public void testOneTab_I() {
-        PageStation page = mCtaTestRule.start();
+        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
 
         ImageButton tabSwitcherButton = page.getTabSwitcherButton();
         TabSwitcherDrawable tabSwitcherDrawable = (TabSwitcherDrawable) tabSwitcherButton.getDrawable();
@@ -208,7 +215,7 @@ Let's add a second test case:
 ```java
 public class MyPTTest {
     public void testTwoTabs_II() {
-        PageStation page = mCtaTestRule.start();
+        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
         NewTabPageStation ntp = page.openGenericAppMenu().openNewTab();
 
         ImageButton tabSwitcherButton = ntp.getTabSwitcherButton();
@@ -254,27 +261,30 @@ public class MyPTTest {
 }
 ```
 
-### Option 2: Reset State with AutoResetCtaTransitTestRule
+### Option 2: Reset State with BlankCTATabInitialStatePublicTransitRule
 
 Manually resetting in each test doesn't scale very well in many cases. There are
 some shortcuts for undoing state set during a test, and for tabs specifically,
-we are going to use `AutoResetCtaTransitTestRule`, which resets
+we are going to use `BlankCTATabInitialStatePublicTransitRule`, which resets
 Chrome to a single blank page at the start of each test:
 
 ```java
 public class MyPTTest {
 -   @Rule
--   public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
--           ChromeTransitTestRules.blankPageStartReusedActivityRule();
+-   public BatchedPublicTransitRule<PageStation> mBatchedRule =
+-           new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
+-
+-   ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
+-           new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
 
 +   @Rule
-+   public AutoResetCtaTransitTestRule mCtaTestRule =
-+       new ChromeTransitTestRules.autoResetCtaActivityRule();
++   public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
++       new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
     public void testTwoTabs_II() {
--       PageStation page = mCtaTestRule.start();
+-       PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
 
-+       PageStation page = mCtaTestRule.startOnBlankPage();
++       PageStation page = mInitialStateRule.startOnBlankPage();
         [...]
     }
 }
@@ -288,7 +298,7 @@ of tabs, but `Journeys` is a handy, faster shortcut.
 ```java
 public class MyPTTest {
     public void testFiveTabs_V() {
-        PageStation page = mCtaTestRule.startOnBlankPage();
+        PageStation page = mInitialStateRule.startOnBlankPage();
         page = Journeys.prepareTabs(page, 5, 0, "about:blank");
 
         ImageButton tabSwitcherButton = page.getTabSwitcherButton();
@@ -370,7 +380,7 @@ Facility is returned to the test, ready to be used:
 ```java
 public class MyPTTest {
     public void testOneTab_I() {
-        PageStation page = mCtaTestRule.startOnBlankPage();
+        PageStation page = mInitialStateRule.startOnBlankPage();
 
         TabSwitcherButtonFacility tabSwitcherButton = page.focusOnTabSwitcherButton();
         assertEquals("I", tabSwitcherButton.getTextRendered());
@@ -438,7 +448,7 @@ assert:
 ```java
 public class MyPTTest {
     public void testOneTab_I() {
-        PageStation page = mCtaTestRule.startOnBlankPage();
+        PageStation page = mInitialStateRule.startOnBlankPage();
         TabSwitcherButtonFacility tabSwitcherButton = page.focusOnTabSwitcherButton("I");
 +       TransitAsserts.assertFinalDestination(page);
     }

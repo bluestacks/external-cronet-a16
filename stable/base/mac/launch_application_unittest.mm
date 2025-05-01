@@ -9,7 +9,6 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -70,7 +69,7 @@ void ReadLaunchEventsFromFifo(
       // No data was read, wait for the file descriptor to become readable
       // again.
       fd_set fds;
-      UNSAFE_TODO(FD_ZERO(&fds));
+      FD_ZERO(&fds);
       FD_SET(f.GetPlatformFile(), &fds);
       select(FD_SETSIZE, &fds, nullptr, nullptr, nullptr);
     }

@@ -248,7 +248,7 @@ $L$copy:
 
 	mov	rsi,QWORD[8+r9*8+rsp]
 
-
+	mov	rax,1
 	mov	r15,QWORD[((-48))+rsi]
 
 	mov	r14,QWORD[((-40))+rsi]
@@ -664,7 +664,7 @@ $L$sub4x:
 	sbb	rax,0
 	mov	QWORD[24+r14*8+rdi],rbp
 	pxor	xmm0,xmm0
-	movq	xmm4,rax
+DB	102,72,15,110,224
 	pcmpeqd	xmm5,xmm5
 	pshufd	xmm4,xmm4,0
 	mov	r15,r9
@@ -694,7 +694,7 @@ $L$copy4x:
 	jnz	NEAR $L$copy4x
 	mov	rsi,QWORD[8+r9*8+rsp]
 
-
+	mov	rax,1
 	mov	r15,QWORD[((-48))+rsi]
 
 	mov	r14,QWORD[((-40))+rsi]
@@ -809,10 +809,10 @@ $L$sqr8x_page_walk_done:
 
 $L$sqr8x_body:
 
-	movq	xmm2,rcx
+DB	102,72,15,110,209
 	pxor	xmm0,xmm0
-	movq	xmm1,rdi
-	movq	xmm3,r10
+DB	102,72,15,110,207
+DB	102,73,15,110,218
 	test	rdx,rdx
 	jz	NEAR $L$sqr8x_nox
 
@@ -824,7 +824,7 @@ $L$sqr8x_body:
 	lea	rbx,[rcx*1+r8]
 	mov	r9,rcx
 	mov	rdx,rcx
-	movq	rdi,xmm1
+DB	102,72,15,126,207
 	sar	rcx,3+2
 	jmp	NEAR $L$sqr8x_sub
 
@@ -838,7 +838,7 @@ $L$sqr8x_nox:
 	lea	rbx,[r9*1+rdi]
 	mov	rcx,r9
 	mov	rdx,r9
-	movq	rdi,xmm1
+DB	102,72,15,126,207
 	sar	rcx,3+2
 	jmp	NEAR $L$sqr8x_sub
 
@@ -866,7 +866,7 @@ $L$sqr8x_sub:
 	lea	rbx,[r9*1+rbx]
 	lea	rdi,[r9*1+rdi]
 
-	movq	xmm1,rax
+DB	102,72,15,110,200
 	pxor	xmm0,xmm0
 	pshufd	xmm1,xmm1,0
 	mov	rsi,QWORD[40+rsp]
@@ -898,7 +898,7 @@ $L$sqr8x_cond_copy:
 	add	r9,32
 	jnz	NEAR $L$sqr8x_cond_copy
 
-
+	mov	rax,1
 	mov	r15,QWORD[((-48))+rsi]
 
 	mov	r14,QWORD[((-40))+rsi]
@@ -1237,7 +1237,7 @@ $L$mulx4x_sub:
 	lea	rbx,[64+rsp]
 	sub	rdi,rdx
 
-	movq	xmm1,r15
+DB	102,73,15,110,207
 	pxor	xmm0,xmm0
 	pshufd	xmm1,xmm1,0
 	mov	rsi,QWORD[40+rsp]
@@ -1269,7 +1269,7 @@ $L$mulx4x_cond_copy:
 
 	mov	QWORD[rbx],rdx
 
-
+	mov	rax,1
 	mov	r15,QWORD[((-48))+rsi]
 
 	mov	r14,QWORD[((-40))+rsi]

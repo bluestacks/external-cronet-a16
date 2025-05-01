@@ -10,7 +10,8 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 namespace {
 
@@ -27,9 +28,8 @@ bool CanUseBackgroundThreadTypeForWorkerThreadImpl() {
   // WorkerThread with a normal priority to avoid priority inversion when a
   // thread running with a normal priority tries to acquire a lock held by a
   // thread running with a background priority.
-  if (!Lock::HandlesMultipleThreadPriorities()) {
+  if (!Lock::HandlesMultipleThreadPriorities())
     return false;
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // When thread type can't be increased to kNormal, run all threads with a
@@ -39,9 +39,8 @@ bool CanUseBackgroundThreadTypeForWorkerThreadImpl() {
   //
   // This is ignored on Android, because it doesn't have a clean shutdown phase.
   if (!PlatformThread::CanChangeThreadType(ThreadType::kBackground,
-                                           ThreadType::kDefault)) {
+                                           ThreadType::kDefault))
     return false;
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
@@ -51,9 +50,8 @@ bool CanUseUtilityThreadTypeForWorkerThreadImpl() {
 #if !BUILDFLAG(IS_ANDROID)
   // Same as CanUseBackgroundThreadTypeForWorkerThreadImpl()
   if (!PlatformThread::CanChangeThreadType(ThreadType::kUtility,
-                                           ThreadType::kDefault)) {
+                                           ThreadType::kDefault))
     return false;
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
@@ -73,4 +71,5 @@ bool CanUseUtilityThreadTypeForWorkerThread() {
   return can_use_utility_thread_type_for_worker_thread;
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

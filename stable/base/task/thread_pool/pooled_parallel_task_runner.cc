@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
-
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
+
 #include "base/task/thread_pool/sequence.h"
 
-namespace base::internal {
+namespace base {
+namespace internal {
 
 PooledParallelTaskRunner::PooledParallelTaskRunner(
     const TaskTraits& traits,
@@ -34,4 +35,5 @@ bool PooledParallelTaskRunner::PostDelayedTask(const Location& from_here,
       std::move(sequence));
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace base

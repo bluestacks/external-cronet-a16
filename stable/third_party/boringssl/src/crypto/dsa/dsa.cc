@@ -1,16 +1,61 @@
-// Copyright 1995-2016 The OpenSSL Project Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+ * All rights reserved.
+ *
+ * This package is an SSL implementation written
+ * by Eric Young (eay@cryptsoft.com).
+ * The implementation was written so as to conform with Netscapes SSL.
+ *
+ * This library is free for commercial and non-commercial use as long as
+ * the following conditions are aheared to.  The following conditions
+ * apply to all code found in this distribution, be it the RC4, RSA,
+ * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+ * included with this distribution is covered by the same copyright terms
+ * except that the holder is Tim Hudson (tjh@cryptsoft.com).
+ *
+ * Copyright remains Eric Young's, and as such any Copyright notices in
+ * the code are not to be removed.
+ * If this package is used in a product, Eric Young should be given attribution
+ * as the author of the parts of the library used.
+ * This can be in the form of a textual message at program startup or
+ * in documentation (online or textual) provided with the package.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *    "This product includes cryptographic software written by
+ *     Eric Young (eay@cryptsoft.com)"
+ *    The word 'cryptographic' can be left out if the rouines from the library
+ *    being used are not cryptographic related :-).
+ * 4. If you include any Windows specific code (or a derivative thereof) from
+ *    the apps directory (application code) you must include an acknowledgement:
+ *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+ *
+ * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * The licence and distribution terms for any publically available version or
+ * derivative of this code cannot be changed.  i.e. this code cannot simply be
+ * copied and put under another distribution licence
+ * [including the GNU Public Licence.]
+ *
+ * The DSS routines are based on patches supplied by
+ * Steven Schoch <schoch@sheba.arc.nasa.gov>. */
 
 #include <openssl/dsa.h>
 
@@ -32,10 +77,6 @@
 #include "../internal.h"
 #include "internal.h"
 
-
-static_assert(OPENSSL_DSA_MAX_MODULUS_BITS <=
-                  BN_MONTGOMERY_MAX_WORDS * BN_BITS2,
-              "Max DSA size too big for Montgomery arithmetic");
 
 // Primality test according to FIPS PUB 186[-1], Appendix 2.1: 50 rounds of
 // Miller-Rabin.
@@ -171,14 +212,17 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
     return 0;
   }
 
+  int ok = 0;
   unsigned char seed[SHA256_DIGEST_LENGTH];
   unsigned char md[SHA256_DIGEST_LENGTH];
   unsigned char buf[SHA256_DIGEST_LENGTH], buf2[SHA256_DIGEST_LENGTH];
   BIGNUM *r0, *W, *X, *c, *test;
   BIGNUM *g = NULL, *q = NULL, *p = NULL;
+  BN_MONT_CTX *mont = NULL;
   int k, n = 0, m = 0;
   int counter = 0;
   int r = 0;
+  BN_CTX *ctx = NULL;
   unsigned int h = 2;
   const EVP_MD *evpmd;
 
@@ -202,23 +246,23 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
     OPENSSL_memcpy(seed, seed_in, seed_len);
   }
 
-  bssl::UniquePtr<BN_CTX> ctx(BN_CTX_new());
-  if (ctx == nullptr) {
-    return 0;
+  ctx = BN_CTX_new();
+  if (ctx == NULL) {
+    goto err;
   }
-  bssl::BN_CTXScope scope(ctx.get());
+  BN_CTX_start(ctx);
 
-  r0 = BN_CTX_get(ctx.get());
-  g = BN_CTX_get(ctx.get());
-  W = BN_CTX_get(ctx.get());
-  q = BN_CTX_get(ctx.get());
-  X = BN_CTX_get(ctx.get());
-  c = BN_CTX_get(ctx.get());
-  p = BN_CTX_get(ctx.get());
-  test = BN_CTX_get(ctx.get());
+  r0 = BN_CTX_get(ctx);
+  g = BN_CTX_get(ctx);
+  W = BN_CTX_get(ctx);
+  q = BN_CTX_get(ctx);
+  X = BN_CTX_get(ctx);
+  c = BN_CTX_get(ctx);
+  p = BN_CTX_get(ctx);
+  test = BN_CTX_get(ctx);
 
   if (test == NULL || !BN_lshift(test, BN_value_one(), bits - 1)) {
-    return 0;
+    goto err;
   }
 
   for (;;) {
@@ -226,13 +270,13 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
     for (;;) {
       // step 1
       if (!BN_GENCB_call(cb, BN_GENCB_GENERATED, m++)) {
-        return 0;
+        goto err;
       }
 
       int use_random_seed = (seed_in == NULL);
       if (use_random_seed) {
         if (!RAND_bytes(seed, qsize)) {
-          return 0;
+          goto err;
         }
         // DSA parameters are public.
         CONSTTIME_DECLASSIFY(seed, qsize);
@@ -253,7 +297,7 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
       // step 2
       if (!EVP_Digest(seed, qsize, md, NULL, evpmd, NULL) ||
           !EVP_Digest(buf, qsize, buf2, NULL, evpmd, NULL)) {
-        return 0;
+        goto err;
       }
       for (size_t i = 0; i < qsize; i++) {
         md[i] ^= buf2[i];
@@ -263,17 +307,17 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
       md[0] |= 0x80;
       md[qsize - 1] |= 0x01;
       if (!BN_bin2bn(md, qsize, q)) {
-        return 0;
+        goto err;
       }
 
       // step 4
-      r = BN_is_prime_fasttest_ex(q, DSS_prime_checks, ctx.get(),
-                                  use_random_seed, cb);
+      r = BN_is_prime_fasttest_ex(q, DSS_prime_checks, ctx, use_random_seed,
+                                  cb);
       if (r > 0) {
         break;
       }
       if (r != 0) {
-        return 0;
+        goto err;
       }
 
       // do a callback call
@@ -281,7 +325,7 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
     }
 
     if (!BN_GENCB_call(cb, 2, 0) || !BN_GENCB_call(cb, 3, 0)) {
-      return 0;
+      goto err;
     }
 
     // step 6
@@ -292,7 +336,7 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
 
     for (;;) {
       if ((counter != 0) && !BN_GENCB_call(cb, BN_GENCB_GENERATED, counter)) {
-        return 0;
+        goto err;
       }
 
       // step 7
@@ -308,36 +352,36 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
         }
 
         if (!EVP_Digest(buf, qsize, md, NULL, evpmd, NULL)) {
-          return 0;
+          goto err;
         }
 
         // step 8
         if (!BN_bin2bn(md, qsize, r0) || !BN_lshift(r0, r0, (qsize << 3) * k) ||
             !BN_add(W, W, r0)) {
-          return 0;
+          goto err;
         }
       }
 
       // more of step 8
       if (!BN_mask_bits(W, bits - 1) || !BN_copy(X, W) || !BN_add(X, X, test)) {
-        return 0;
+        goto err;
       }
 
       // step 9
-      if (!BN_lshift1(r0, q) || !BN_mod(c, X, r0, ctx.get()) ||
+      if (!BN_lshift1(r0, q) || !BN_mod(c, X, r0, ctx) ||
           !BN_sub(r0, c, BN_value_one()) || !BN_sub(p, X, r0)) {
-        return 0;
+        goto err;
       }
 
       // step 10
       if (BN_cmp(p, test) >= 0) {
         // step 11
-        r = BN_is_prime_fasttest_ex(p, DSS_prime_checks, ctx.get(), 1, cb);
+        r = BN_is_prime_fasttest_ex(p, DSS_prime_checks, ctx, 1, cb);
         if (r > 0) {
           goto end;  // found it
         }
         if (r != 0) {
-          return 0;
+          goto err;
         }
       }
 
@@ -353,56 +397,68 @@ int DSA_generate_parameters_ex(DSA *dsa, unsigned bits, const uint8_t *seed_in,
   }
 end:
   if (!BN_GENCB_call(cb, 2, 1)) {
-    return 0;
+    goto err;
   }
 
   // We now need to generate g
   // Set r0=(p-1)/q
-  if (!BN_sub(test, p, BN_value_one()) ||
-      !BN_div(r0, NULL, test, q, ctx.get())) {
-    return 0;
+  if (!BN_sub(test, p, BN_value_one()) || !BN_div(r0, NULL, test, q, ctx)) {
+    goto err;
   }
 
-  bssl::UniquePtr<BN_MONT_CTX> mont(BN_MONT_CTX_new_for_modulus(p, ctx.get()));
-  if (mont == nullptr || !BN_set_word(test, h)) {
-    return 0;
+  mont = BN_MONT_CTX_new_for_modulus(p, ctx);
+  if (mont == NULL || !BN_set_word(test, h)) {
+    goto err;
   }
 
   for (;;) {
     // g=test^r0%p
-    if (!BN_mod_exp_mont(g, test, r0, p, ctx.get(), mont.get())) {
-      return 0;
+    if (!BN_mod_exp_mont(g, test, r0, p, ctx, mont)) {
+      goto err;
     }
     if (!BN_is_one(g)) {
       break;
     }
     if (!BN_add(test, test, BN_value_one())) {
-      return 0;
+      goto err;
     }
     h++;
   }
 
   if (!BN_GENCB_call(cb, 3, 1)) {
-    return 0;
+    goto err;
   }
 
-  BN_free(dsa->p);
-  BN_free(dsa->q);
-  BN_free(dsa->g);
-  dsa->p = BN_dup(p);
-  dsa->q = BN_dup(q);
-  dsa->g = BN_dup(g);
-  if (dsa->p == NULL || dsa->q == NULL || dsa->g == NULL) {
-    return 0;
-  }
-  if (out_counter != NULL) {
-    *out_counter = counter;
-  }
-  if (out_h != NULL) {
-    *out_h = h;
+  ok = 1;
+
+err:
+  if (ok) {
+    BN_free(dsa->p);
+    BN_free(dsa->q);
+    BN_free(dsa->g);
+    dsa->p = BN_dup(p);
+    dsa->q = BN_dup(q);
+    dsa->g = BN_dup(g);
+    if (dsa->p == NULL || dsa->q == NULL || dsa->g == NULL) {
+      ok = 0;
+      goto err;
+    }
+    if (out_counter != NULL) {
+      *out_counter = counter;
+    }
+    if (out_h != NULL) {
+      *out_h = h;
+    }
   }
 
-  return 1;
+  if (ctx) {
+    BN_CTX_end(ctx);
+    BN_CTX_free(ctx);
+  }
+
+  BN_MONT_CTX_free(mont);
+
+  return ok;
 }
 
 DSA *DSAparams_dup(const DSA *dsa) {
@@ -518,13 +574,14 @@ int DSA_SIG_set0(DSA_SIG *sig, BIGNUM *r, BIGNUM *s) {
 // neither inputs nor outputs are in Montgomery form.
 static int mod_mul_consttime(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
                              const BN_MONT_CTX *mont, BN_CTX *ctx) {
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   BIGNUM *tmp = BN_CTX_get(ctx);
   // |BN_mod_mul_montgomery| removes a factor of R, so we cancel it with a
   // single |BN_to_montgomery| which adds one factor of R.
-  return tmp != nullptr &&  //
-         BN_to_montgomery(tmp, a, mont, ctx) &&
-         BN_mod_mul_montgomery(r, tmp, b, mont, ctx);
+  int ok = tmp != NULL && BN_to_montgomery(tmp, a, mont, ctx) &&
+           BN_mod_mul_montgomery(r, tmp, b, mont, ctx);
+  BN_CTX_end(ctx);
+  return ok;
 }
 
 DSA_SIG *DSA_do_sign(const uint8_t *digest, size_t digest_len, const DSA *dsa) {

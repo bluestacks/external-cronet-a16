@@ -7,13 +7,12 @@ package org.chromium.base.metrics;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,8 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
  * Stores metrics until given an {@link UmaRecorder} to forward the samples to. After flushing, no
  * longer stores metrics, instead immediately forwards them to the given {@link UmaRecorder}.
  */
-/* package */ @NullMarked
-final class CachingUmaRecorder implements UmaRecorder {
+/* package */ final class CachingUmaRecorder implements UmaRecorder {
     private static final String TAG = "CachingUmaRecorder";
 
     /**
@@ -242,10 +240,12 @@ final class CachingUmaRecorder implements UmaRecorder {
      * The read lock must be held while invoking methods on {@code mDelegate}.
      */
     @GuardedBy("mRwLock")
-    private @Nullable UmaRecorder mDelegate;
+    @Nullable
+    private UmaRecorder mDelegate;
 
     @GuardedBy("mRwLock")
-    private @Nullable List<Callback<String>> mUserActionCallbacksForTesting;
+    @Nullable
+    private List<Callback<String>> mUserActionCallbacksForTesting;
 
     /**
      * Sets the current delegate to {@code recorder}. Forwards and clears all cached metrics if
@@ -254,7 +254,7 @@ final class CachingUmaRecorder implements UmaRecorder {
      * @param recorder new delegate.
      * @return the previous delegate.
      */
-    public @Nullable UmaRecorder setDelegate(@Nullable final UmaRecorder recorder) {
+    public UmaRecorder setDelegate(@Nullable final UmaRecorder recorder) {
         UmaRecorder previous;
         Map<String, Histogram> histogramCache = null;
         int droppedHistogramSampleCount = 0;

@@ -1,3 +1,14 @@
+add_object_library(
+  time_utils
+  SRCS
+    time_utils.cpp
+  HDRS
+    time_utils.h
+  DEPENDS
+    libc.hdr.types.clock_t
+    libc.hdr.time_macros
+)
+
 add_entrypoint_object(
   clock
   SRCS
@@ -7,8 +18,7 @@ add_entrypoint_object(
   DEPENDS
     libc.include.time
     libc.src.__support.GPU.utils
-    libc.src.__support.time.clock_gettime
-    libc.src.__support.time.gpu.time_utils
+    .time_utils
 )
 
 add_entrypoint_object(
@@ -20,7 +30,19 @@ add_entrypoint_object(
   DEPENDS
     libc.include.time
     libc.src.__support.GPU.utils
-    libc.src.__support.time.gpu.time_utils
+    .time_utils
+)
+
+add_entrypoint_object(
+  clock_gettime
+  SRCS
+    clock_gettime.cpp
+  HDRS
+    ../clock_gettime.h
+  DEPENDS
+    libc.hdr.types.clockid_t
+    libc.hdr.types.struct_timespec
+    .time_utils
 )
 
 add_entrypoint_object(
@@ -32,19 +54,5 @@ add_entrypoint_object(
   DEPENDS
     libc.hdr.time_macros
     libc.hdr.types.struct_timespec
-    libc.src.__support.time.gpu.time_utils
-)
-
-add_entrypoint_object(
-  clock_gettime
-  SRCS
-    clock_gettime.cpp
-  HDRS
-    ../clock_gettime.h
-  DEPENDS
-    libc.hdr.time_macros
-    libc.hdr.types.clockid_t
-    libc.hdr.types.struct_timespec
-    libc.src.__support.time.gpu.time_utils
-    libc.src.__support.time.clock_gettime
+    .time_utils
 )

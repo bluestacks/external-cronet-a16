@@ -61,11 +61,11 @@
 
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
-#if PA_BUILDFLAG(IS_DEBUG)
+#if !defined(NDEBUG)
 #define PA_SCAN_DCHECK_IS_ON() PA_BUILDFLAG(DCHECKS_ARE_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
-#endif  // PA_BUILDFLAG(IS_DEBUG)
+#endif
 
 #if PA_SCAN_DCHECK_IS_ON()
 #define PA_SCAN_DCHECK(expr) PA_DCHECK(expr)

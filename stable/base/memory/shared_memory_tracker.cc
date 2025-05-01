@@ -101,9 +101,8 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
   const std::string dump_name = GetDumpNameForTracing(mapped_id);
   trace_event::MemoryAllocatorDump* local_dump =
       pmd->GetAllocatorDump(dump_name);
-  if (local_dump) {
+  if (local_dump)
     return local_dump;
-  }
 
   size_t virtual_size = mapped_size;
   // If resident size is not available, a virtual size is used as fallback.
@@ -112,9 +111,8 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
   std::optional<size_t> resident_size =
       trace_event::ProcessMemoryDump::CountResidentBytesInSharedMemory(
           mapped_memory, mapped_size);
-  if (resident_size.has_value()) {
+  if (resident_size.has_value())
     size = resident_size.value();
-  }
 #endif
 
   local_dump = pmd->CreateAllocatorDump(dump_name);
@@ -138,4 +136,4 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
-}  // namespace base
+}  // namespace

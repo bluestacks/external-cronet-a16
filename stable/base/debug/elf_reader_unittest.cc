@@ -24,7 +24,8 @@
 
 extern char __executable_start;
 
-namespace base::debug {
+namespace base {
+namespace debug {
 
 namespace {
 constexpr uint8_t kBuildIdBytes[] = {0xab, 0xcd, 0x12, 0x34};
@@ -235,4 +236,5 @@ TEST(ElfReaderTestWithCurrentImage, ReadElfBuildId) {
 #endif
 }
 
-}  // namespace base::debug
+}  // namespace debug
+}  // namespace base

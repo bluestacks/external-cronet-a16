@@ -9,10 +9,8 @@ import tempfile
 import typing
 import unittest
 
-# vpython-provided modules.
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
-# //testing imports.
 from flake_suppressor_common import result_output
 
 

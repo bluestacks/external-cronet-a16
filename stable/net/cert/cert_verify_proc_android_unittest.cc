@@ -108,8 +108,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 // Tests that if the certificate does not contain an AIA URL, no AIA fetch
 // occurs.
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching, NoAIAURL) {
-  leaf_->SetCaIssuersAndOCSPUrls(/*ca_issuers_urls=*/std::vector<GURL>(),
-                                 /*ocsp_urls=*/std::vector<GURL>());
+  leaf_->SetCaIssuersAndOCSPUrls(/*ca_issuers_urls=*/{}, /*ocsp_urls=*/{});
   TrustTestRoot();
   scoped_refptr<CertVerifyProcAndroid> proc =
       base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_,

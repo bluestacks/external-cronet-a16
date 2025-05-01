@@ -10,10 +10,10 @@ namespace metrics::structured {
 StructuredMetricsScheduler::StructuredMetricsScheduler(
     const base::RepeatingClosure& rotation_callback,
     const base::RepeatingCallback<base::TimeDelta(void)>& interval_callback,
-    bool fast_startup)
+    bool fast_startup_for_testing)
     : metrics::MetricsRotationScheduler(rotation_callback,
                                         interval_callback,
-                                        fast_startup) {}
+                                        fast_startup_for_testing) {}
 
 StructuredMetricsScheduler::~StructuredMetricsScheduler() = default;
 

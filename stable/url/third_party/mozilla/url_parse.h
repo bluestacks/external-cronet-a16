@@ -26,23 +26,25 @@ enum class ParserMode { kSpecialURL, kNonSpecialURL };
 
 // Represents a substring for URL parsing.
 struct Component {
-  constexpr Component() : begin(0), len(-1) {}
+  Component() : begin(0), len(-1) {}
 
   // Normal constructor: takes an offset and a length.
-  constexpr Component(int b, int l) : begin(b), len(l) {}
+  Component(int b, int l) : begin(b), len(l) {}
 
-  constexpr int end() const { return begin + len; }
+  int end() const {
+    return begin + len;
+  }
 
   // Returns true if this component is valid, meaning the length is given.
   // Valid components may be empty to record the fact that they exist.
-  constexpr bool is_valid() const { return len >= 0; }
+  bool is_valid() const { return len >= 0; }
 
   // Determine if the component is empty or not. Empty means the length is
   // zero or the component is invalid.
-  constexpr bool is_empty() const { return len <= 0; }
-  constexpr bool is_nonempty() const { return len > 0; }
+  bool is_empty() const { return len <= 0; }
+  bool is_nonempty() const { return len > 0; }
 
-  constexpr void reset() {
+  void reset() {
     begin = 0;
     len = -1;
   }

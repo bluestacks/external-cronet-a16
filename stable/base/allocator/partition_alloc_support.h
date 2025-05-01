@@ -49,9 +49,7 @@ class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
-
-    // TODO(https://crbug.com/371135823): Remove after the investigation.
-    size_t extra_extras_size = 0;
+    bool process_affected_by_brp_flag = false;
   };
 
   // Reconfigure* functions re-configure PartitionAlloc. It is impossible to

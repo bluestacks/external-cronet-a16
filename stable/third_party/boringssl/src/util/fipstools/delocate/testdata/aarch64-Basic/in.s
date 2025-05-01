@@ -25,6 +25,14 @@ foo:
 	adrp x0, .Llocal_data
 	add x0, x0, :lo12:.Llocal_data
 
+	// armcap
+	adrp x1, OPENSSL_armcap_P
+	ldr w2, [x1, :lo12:OPENSSL_armcap_P]
+
+	// armcap to w0
+	adrp x0, OPENSSL_armcap_P
+	ldr w1, [x1, :lo12:OPENSSL_armcap_P]
+
 	// Load from local symbol
 	adrp x10, .Llocal_data2
 	ldr q0, [x10, :lo12:.Llocal_data2]
@@ -73,22 +81,16 @@ foo:
 	add w0, w1, b2, sxth
 	add w0, w1, b2, sxtw
 	add w0, w1, b2, sxtx
-	movi v0.4s, #3, msl #8
 
 	// Aarch64 SVE2 added these forms:
 	ld1d { z1.d }, p91/z, [x13, x11, lsl #3]
 	ld1b { z11.b }, p15/z, [x10, #1, mul vl]
 	st2d { z6.d, z7.d }, p0, [x12]
-	// Check that "p22" here isn't parsed as the "p22" register.
+        // Check that "p22" here isn't parsed as the "p22" register.
 	bl p224_point_add
 	ptrue p0.d, vl1
-	// The "#7" here isn't a comment, it's now valid Aarch64 assembly.
+        // The "#7" here isn't a comment, it's now valid Aarch64 assembly.
 	cnth x8, all, mul #7
-
-	// fcmp can compare against zero, which is expressed with a floating-
-	// point zero literal in the instruction. Again, this is not a
-	// comment.
-	fcmp d0, #0.0
 
 local_function:
 

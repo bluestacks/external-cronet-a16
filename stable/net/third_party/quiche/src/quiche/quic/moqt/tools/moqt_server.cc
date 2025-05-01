@@ -21,17 +21,16 @@ namespace moqt {
 
 namespace {
 quic::WebTransportRequestCallback CreateWebTransportCallback(
-    MoqtIncomingSessionCallback callback, quic::QuicServer* server) {
-  return [server = server, callback = std::move(callback)](
-             absl::string_view path, webtransport::Session* session)
+    MoqtIncomingSessionCallback callback) {
+  return [callback = std::move(callback)](absl::string_view path,
+                                          webtransport::Session* session)
              -> absl::StatusOr<std::unique_ptr<webtransport::SessionVisitor>> {
     absl::StatusOr<MoqtConfigureSessionCallback> configurator = callback(path);
     if (!configurator.ok()) {
       return configurator.status();
     }
     MoqtSessionParameters parameters(quic::Perspective::IS_SERVER);
-    auto moqt_session = std::make_unique<MoqtSession>(
-        session, parameters, server->event_loop()->CreateAlarmFactory());
+    auto moqt_session = std::make_unique<MoqtSession>(session, parameters);
     std::move (*configurator)(moqt_session.get());
     return moqt_session;
   };
@@ -40,7 +39,7 @@ quic::WebTransportRequestCallback CreateWebTransportCallback(
 
 MoqtServer::MoqtServer(std::unique_ptr<quic::ProofSource> proof_source,
                        MoqtIncomingSessionCallback callback)
-    : backend_(CreateWebTransportCallback(std::move(callback), &server_)),
+    : backend_(CreateWebTransportCallback(std::move(callback))),
       server_(std::move(proof_source), &backend_) {}
 
 }  // namespace moqt

@@ -44,7 +44,7 @@ static void test_basic() {
     file_status es = e.status(eec);
     assert(ps.type() == es.type());
     assert(ps.permissions() == es.permissions());
-    assert(pec.default_error_condition() == eec.default_error_condition());
+    assert(pec == eec);
   }
   for (const auto& p : TestCases) {
     const directory_entry e(p);

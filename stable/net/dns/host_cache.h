@@ -17,7 +17,6 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -40,6 +39,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log_capture_mode.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -57,7 +57,7 @@ class NET_EXPORT HostCache {
     // Hostnames in `host` must not be IP literals. IP literals should be
     // resolved directly to the IP address and not be stored/queried in
     // HostCache.
-    Key(std::variant<url::SchemeHostPort, std::string> host,
+    Key(absl::variant<url::SchemeHostPort, std::string> host,
         DnsQueryType dns_query_type,
         HostResolverFlags host_resolver_flags,
         HostResolverSource host_resolver_source,
@@ -89,7 +89,7 @@ class NET_EXPORT HostCache {
       return GetTuple(this) < GetTuple(&other);
     }
 
-    std::variant<url::SchemeHostPort, std::string> host;
+    absl::variant<url::SchemeHostPort, std::string> host;
     DnsQueryType dns_query_type = DnsQueryType::UNSPECIFIED;
     HostResolverFlags host_resolver_flags = 0;
     HostResolverSource host_resolver_source = HostResolverSource::ANY;
@@ -263,11 +263,6 @@ class NET_EXPORT HostCache {
     // Creates a copy of |this| with the port of all address and hostname values
     // set to |port| if the current port is 0. Preserves any non-zero ports.
     HostCache::Entry CopyWithDefaultPort(uint16_t port) const;
-
-    // Converts `this` to a vector of ServiceEndpoints. Converted IP endpoint's
-    // ports set to `port` if the current port is 0. Preserves any non-zero
-    // ports.
-    std::vector<ServiceEndpoint> ConvertToServiceEndpoints(uint16_t port) const;
 
     static std::optional<base::TimeDelta> TtlFromInternalResults(
         const std::set<std::unique_ptr<HostResolverInternalResult>>& results,

@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "quiche/common/platform/api/quiche_test.h"
 
@@ -487,6 +486,9 @@ TEST(HeaderValidatorTest, InvalidPathPseudoHeader) {
   }
   EXPECT_FALSE(v.FinishHeaderBlock(HeaderType::REQUEST));
 
+  // The remainder of the checks require enabling path validation.
+  v.SetValidatePath();
+
   // A path that does not start with a slash should fail on finish.
   v.StartHeaderBlock();
   for (Header to_add : kSampleRequestPseudoheaders) {
@@ -501,11 +503,12 @@ TEST(HeaderValidatorTest, InvalidPathPseudoHeader) {
   EXPECT_FALSE(v.FinishHeaderBlock(HeaderType::REQUEST));
 
   // Various valid path characters.
-  for (const absl::string_view c : {"/", "?", "_", "'", "9", "&", "(", "@", ":",
-                                    "<", ">", "\\", "[", "}", "`", "\\", "#"}) {
+  for (const absl::string_view c :
+       {"/", "?", "_", "'", "9", "&", "(", "@", ":"}) {
     const std::string value = absl::StrCat("/shawa", c, "rma");
 
     HeaderValidator validator;
+    validator.SetValidatePath();
     validator.StartHeaderBlock();
     for (Header to_add : kSampleRequestPseudoheaders) {
       if (to_add.first == ":path") {
@@ -521,36 +524,11 @@ TEST(HeaderValidatorTest, InvalidPathPseudoHeader) {
   }
 
   // Various invalid path characters.
-  for (const absl::string_view c : {"\n", "\r", " ", "\t"}) {
-    SCOPED_TRACE(absl::StrCat("char: ", absl::CEscape(c)));
-
-    const std::string value = absl::StrCat("/shawa", c, "rma");
-
-    HeaderValidator validator;
-    validator.StartHeaderBlock();
-    for (Header to_add : kSampleRequestPseudoheaders) {
-      if (to_add.first == ":path") {
-        EXPECT_EQ(HeaderValidator::HEADER_FIELD_INVALID,
-                  validator.ValidateSingleHeader(to_add.first, value));
-      } else {
-        EXPECT_EQ(HeaderValidator::HEADER_OK,
-                  validator.ValidateSingleHeader(to_add.first, to_add.second));
-      }
-    }
-    validator.FinishHeaderBlock(HeaderType::REQUEST);
-  }
-}
-
-TEST(HeaderValidatorTest, PathStrictValidation) {
-  // Various invalid path characters.
   for (const absl::string_view c : {"[", "<", "}", "`", "\\", " ", "\t", "#"}) {
     const std::string value = absl::StrCat("/shawa", c, "rma");
 
     HeaderValidator validator;
-
-    // Required for strict path validation.
     validator.SetValidatePath();
-
     validator.StartHeaderBlock();
     for (Header to_add : kSampleRequestPseudoheaders) {
       if (to_add.first == ":path") {
@@ -567,10 +545,7 @@ TEST(HeaderValidatorTest, PathStrictValidation) {
   // The fragment initial character can be explicitly allowed.
   {
     HeaderValidator validator;
-
-    // Required for strict path validation.
     validator.SetValidatePath();
-
     validator.SetAllowFragmentInPath();
     validator.StartHeaderBlock();
     for (Header to_add : kSampleRequestPseudoheaders) {

@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "components/nacl/loader/nacl_validation_db.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,8 +52,8 @@ class MockValidationDB : public NaClValidationDB {
     EXPECT_FALSE(did_query_);
     EXPECT_FALSE(did_set_);
     did_query_ = true;
-    UNSAFE_TODO(memcpy(query_signature_, signature.data(),
-                       NaClValidationQuery::kDigestLength));
+    memcpy(query_signature_, signature.data(),
+           NaClValidationQuery::kDigestLength);
     return status_;
   }
 
@@ -66,11 +65,11 @@ class MockValidationDB : public NaClValidationDB {
     EXPECT_TRUE(did_query_);
     EXPECT_FALSE(did_set_);
     did_set_ = true;
-    UNSAFE_TODO(memcpy(set_signature_, signature.data(),
-                       NaClValidationQuery::kDigestLength));
+    memcpy(set_signature_, signature.data(),
+           NaClValidationQuery::kDigestLength);
     // Signatures should be the same.
-    EXPECT_EQ(0, UNSAFE_TODO(memcmp(query_signature_, set_signature_,
-                                    NaClValidationQuery::kDigestLength)));
+    EXPECT_EQ(0, memcmp(query_signature_, set_signature_,
+                        NaClValidationQuery::kDigestLength));
   }
 
   bool did_query_;
@@ -108,17 +107,17 @@ class NaClValidationQueryTest : public ::testing::Test {
   void AssertQuerySame() {
     ASSERT_TRUE(query1->db->did_query_);
     ASSERT_TRUE(query2->db->did_query_);
-    ASSERT_EQ(0, UNSAFE_TODO(memcmp(query1->db->query_signature_,
-                                    query2->db->query_signature_,
-                                    NaClValidationQuery::kDigestLength)));
+    ASSERT_EQ(0, memcmp(query1->db->query_signature_,
+                        query2->db->query_signature_,
+                        NaClValidationQuery::kDigestLength));
   }
 
   void AssertQueryDifferent() {
     ASSERT_TRUE(query1->db->did_query_);
     ASSERT_TRUE(query2->db->did_query_);
-    ASSERT_NE(0, UNSAFE_TODO(memcmp(query1->db->query_signature_,
-                                    query2->db->query_signature_,
-                                    NaClValidationQuery::kDigestLength)));
+    ASSERT_NE(0, memcmp(query1->db->query_signature_,
+                        query2->db->query_signature_,
+                        NaClValidationQuery::kDigestLength));
   }
 };
 

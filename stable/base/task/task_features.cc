@@ -24,49 +24,52 @@ namespace base {
 
 BASE_FEATURE(kUseUtilityThreadGroup,
              "UseUtilityThreadGroup",
-             FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDelayFirstWorkerWake,
+             "DelayFirstWorkerWake",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddTaskLeewayFeature,
              "AddTaskLeeway",
-             FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Note: Do not use the prepared macro as of no need for a local cache.
-constinit const FeatureParam<TimeDelta> kTaskLeewayParam{
-    &kAddTaskLeewayFeature, "leeway", kDefaultLeeway};
-BASE_FEATURE_PARAM(TimeDelta,
-                   kMaxPreciseDelay,
-                   &kAddTaskLeewayFeature,
-                   "max_precise_delay",
-                   kDefaultMaxPreciseDelay);
+const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
+                                                     "leeway", kDefaultLeeway};
+const base::FeatureParam<TimeDelta> kMaxPreciseDelay{
+    &kAddTaskLeewayFeature, "max_precise_delay", kDefaultMaxPreciseDelay};
 
-BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTimerSlackMac, "TimerSlackMac", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTimerSlackMac,
+             "TimerSlackMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExplicitHighResolutionTimerWin,
              "ExplicitHighResolutionTimerWin",
-             FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUIPumpImprovementsWin,
              "UIPumpImprovementsWin",
-             FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPumpFastToSleepAndroid,
              "PumpFastToSleepAndroid",
-             FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-             FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-             FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kThreadPoolCap2, "ThreadPoolCap2", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kThreadPoolCap2,
+             "ThreadPoolCap2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Note: Do not use the prepared macro as of no need for a local cache.
-constinit const FeatureParam<int> kThreadPoolCapRestrictedCount{
+const base::FeatureParam<int> kThreadPoolCapRestrictedCount{
     &kThreadPoolCap2, "restricted_count", 3};
 
 }  // namespace base

@@ -18,6 +18,7 @@
 
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
+using ::testing::HasSubstr;
 
 namespace http2 {
 namespace test {

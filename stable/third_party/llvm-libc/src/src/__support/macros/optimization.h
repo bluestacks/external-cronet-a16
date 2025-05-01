@@ -45,11 +45,10 @@ LIBC_INLINE constexpr bool expects_bool_condition(T value, T expected) {
 #define LIBC_MATH_FAST                                                         \
   (LIBC_MATH_SKIP_ACCURATE_PASS | LIBC_MATH_SMALL_TABLES |                     \
    LIBC_MATH_NO_ERRNO | LIBC_MATH_NO_EXCEPT)
-#define LIBC_MATH_INTERMEDIATE_COMP_IN_FLOAT 0x10
 
 #ifndef LIBC_MATH
 #define LIBC_MATH 0
-#endif // LIBC_MATH
+#else
 
 #if (LIBC_MATH & LIBC_MATH_SKIP_ACCURATE_PASS)
 #define LIBC_MATH_HAS_SKIP_ACCURATE_PASS
@@ -59,8 +58,6 @@ LIBC_INLINE constexpr bool expects_bool_condition(T value, T expected) {
 #define LIBC_MATH_HAS_SMALL_TABLES
 #endif
 
-#if (LIBC_MATH & LIBC_MATH_INTERMEDIATE_COMP_IN_FLOAT)
-#define LIBC_MATH_HAS_INTERMEDIATE_COMP_IN_FLOAT
-#endif
+#endif // LIBC_MATH
 
 #endif // LLVM_LIBC_SRC___SUPPORT_MACROS_OPTIMIZATION_H

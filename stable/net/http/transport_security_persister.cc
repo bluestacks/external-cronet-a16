@@ -47,18 +47,10 @@ constexpr base::TimeDelta kMinCommitInterval = base::Seconds(10);
 constexpr base::TimeDelta kMaxCommitInterval = base::Minutes(10);
 
 // Overrides the default commit interval for the ImportantFileWriter.
-//
-// go/transport-security-file-writer-schedule-impact explains why the value
-// varies by platform.
 const base::FeatureParam<base::TimeDelta> kCommitIntervalParam(
     &kTransportSecurityFileWriterSchedule,
     "commit_interval",
-#if BUILDFLAG(IS_ANDROID)
-    kMinCommitInterval
-#else
-    kMaxCommitInterval
-#endif
-);
+    kMinCommitInterval);
 
 constexpr const char* kHistogramSuffix = "TransportSecurityPersister";
 
@@ -306,26 +298,25 @@ void TransportSecurityPersister::Deserialize(
     const std::string& serialized,
     TransportSecurityState* state,
     bool& contains_legacy_expect_ct_data) {
-  std::optional<base::Value::Dict> value =
-      base::JSONReader::ReadDict(serialized);
-  if (!value) {
+  std::optional<base::Value> value = base::JSONReader::Read(serialized);
+  if (!value || !value->is_dict())
     return;
-  }
 
-  std::optional<int> version = value->FindInt(kVersionKey);
+  base::Value::Dict& dict = value->GetDict();
+  std::optional<int> version = dict.FindInt(kVersionKey);
 
   // Stop if the data is out of date (or in the previous format that didn't have
   // a version number).
   if (!version || *version != kCurrentVersionValue)
     return;
 
-  base::Value* sts_value = value->Find(kSTSKey);
+  base::Value* sts_value = dict.Find(kSTSKey);
   if (sts_value)
     DeserializeSTSData(*sts_value, state);
 
   // If an Expect-CT key is found on deserialization, record this so that a
   // write can be scheduled to clear it from disk.
-  contains_legacy_expect_ct_data = !!value->Find(kExpectCTKey);
+  contains_legacy_expect_ct_data = !!dict.Find(kExpectCTKey);
 }
 
 void TransportSecurityPersister::CompleteLoad(const std::string& state) {

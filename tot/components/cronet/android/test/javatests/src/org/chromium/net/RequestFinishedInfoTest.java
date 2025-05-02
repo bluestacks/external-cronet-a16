@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.build.BuildConfig;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -460,7 +459,7 @@ public class RequestFinishedInfoTest {
         var oldMessage = "Invalid header =";
         var newMessage = "Invalid header with headername: ";
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
-                && !BuildConfig.CRONET_FOR_AOSP_BUILD) {
+                && !mTestRule.isRunningInAOSP()) {
             // We may be running against an HttpEngine backed by an old version of Cronet, so accept
             // both the old and new variants of the message.
             assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);

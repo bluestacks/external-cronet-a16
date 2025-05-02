@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {AreaSelection, AreaSelectionAggregator} from '../../public/selection';
-import {ColumnDef, Sorting} from '../../public/aggregation';
-import {CPU_SLICE_TRACK_KIND} from '../../public/track_kinds';
-import {Engine} from '../../trace_processor/engine';
 import {exists} from '../../base/utils';
+import {ColumnDef, Sorting} from '../../public/aggregation';
+import {AreaSelection} from '../../public/selection';
+import {Engine} from '../../trace_processor/engine';
 import {NUM} from '../../trace_processor/query_result';
+import {CPU_SLICE_TRACK_KIND} from '../../public/track_kinds';
+import {AreaSelectionAggregator} from '../../public/selection';
 
 export class WattsonPackageSelectionAggregator
   implements AreaSelectionAggregator

@@ -39,7 +39,7 @@
 #include "./common/defs.h"
 #include "./common/logging.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 void UpdateFeatures(const ByteArray& content, FeatureVec& features) {
@@ -168,4 +168,4 @@ bool CustomizedCallbacks::Execute(std::string_view binary,
   return retval == 0;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

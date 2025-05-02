@@ -231,7 +231,8 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   // On Android 11 RTM_GETLINK (used by AddressTrackerLinux) no longer works as
   // per https://developer.android.com/preview/privacy/mac-address so instead
   // use getifaddrs() which is supported since Android N.
-  if (__builtin_available(android 24, *)) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_NOUGAT) {
     // Some Samsung devices with MediaTek processors are with
     // a buggy getifaddrs() implementation,
     // so use a Chromium's own implementation to workaround.

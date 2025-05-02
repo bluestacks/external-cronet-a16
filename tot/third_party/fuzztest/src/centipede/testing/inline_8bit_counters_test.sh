@@ -20,25 +20,25 @@ set -eu
 
 source "$(dirname "$0")/../test_util.sh"
 
-CENTIPEDE_TEST_SRCDIR="$(fuzztest::internal::get_centipede_test_srcdir)"
+CENTIPEDE_TEST_SRCDIR="$(centipede::get_centipede_test_srcdir)"
 
-fuzztest::internal::maybe_set_var_to_executable_path \
+centipede::maybe_set_var_to_executable_path \
   CENTIPEDE_BINARY "${CENTIPEDE_TEST_SRCDIR}/centipede"
 
-fuzztest::internal::maybe_set_var_to_executable_path \
+centipede::maybe_set_var_to_executable_path \
   TARGET_BINARY "${CENTIPEDE_TEST_SRCDIR}/testing/abort_fuzz_target_inline_8bit_counters"
 
 # Run fuzzing until the first crash.
 WD="${TEST_TMPDIR}/WD"
 LOG="${TEST_TMPDIR}/log"
-fuzztest::internal::ensure_empty_dir "${WD}"
+centipede::ensure_empty_dir "${WD}"
 "${CENTIPEDE_BINARY}" --binary="${TARGET_BINARY}" --workdir="${WD}" \
   --exit_on_crash=1 --seed=1 \
   2>&1 |tee "${LOG}"
 
 # Check that we observe the edge coverage, not just random features.
-fuzztest::internal::assert_regex_in_file "cov: [3456] " "${LOG}"
+centipede::assert_regex_in_file "cov: [3456] " "${LOG}"
 # Check that we found the crashy input.
-fuzztest::internal::assert_regex_in_file "Input bytes.*: AbOrT" "${LOG}"
+centipede::assert_regex_in_file "Input bytes.*: AbOrT" "${LOG}"
 
 echo "PASS"

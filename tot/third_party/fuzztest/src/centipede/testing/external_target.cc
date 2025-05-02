@@ -49,10 +49,9 @@ void sendall(int sock, const uint8_t* data, size_t size) {
   }
 }
 
-class ExternalTargetRunnerCallbacks
-    : public fuzztest::internal::RunnerCallbacks {
+class ExternalTargetRunnerCallbacks : public centipede::RunnerCallbacks {
  public:
-  bool Execute(fuzztest::internal::ByteSpan input) override {
+  bool Execute(centipede::ByteSpan input) override {
     const char* port_env = getenv("TARGET_PORT");
     int port = 0;
     CHECK(port_env && absl::SimpleAtoi(port_env, &port))
@@ -100,7 +99,7 @@ class ExternalTargetRunnerCallbacks
 
 }  // namespace
 
-int main(int argc, char** absl_nonnull argv) {
+int main(int argc, absl::Nonnull<char**> argv) {
   ExternalTargetRunnerCallbacks runner_callbacks;
-  return fuzztest::internal::RunnerMain(argc, argv, runner_callbacks);
+  return centipede::RunnerMain(argc, argv, runner_callbacks);
 }

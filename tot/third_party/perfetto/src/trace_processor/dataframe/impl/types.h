@@ -199,8 +199,8 @@ class Storage {
   Variant data_;
 };
 
-// Stores any information about nulls in the column.
-class NullStorage {
+// Provides overlay data for columns with special properties (e.g. nullability).
+class Overlay {
  private:
   template <typename T>
   static constexpr uint32_t TypeIndex() {
@@ -208,27 +208,23 @@ class NullStorage {
   }
 
  public:
-  // Used for non-null columns which don't need any storage for nulls.
-  struct NonNull {};
+  // No overlay data (for columns with default properties).
+  struct NoOverlay {};
 
-  // Used for nullable columns where nulls do *not* reserve a slot in `Storage`.
+  // Sparse null overlay data (for columns with sparse NULL values).
   struct SparseNull {
-    // 1 = non-null element in storage.
-    // 0 = null with no corresponding entry in storage.
     BitVector bit_vector;
   };
 
-  // Used for nullable columns where nulls reserve a slot in `Storage`.
+  // Dense null overlay data (for columns with dense NULL values).
   struct DenseNull {
-    // 1 = non-null element in storage.
-    // 0 = null with entry in storage with unspecified value
     BitVector bit_vector;
   };
 
-  NullStorage(NonNull n) : nullability_(dataframe::NonNull{}), data_(n) {}
-  NullStorage(SparseNull s)
+  Overlay(NoOverlay n) : nullability_(dataframe::NonNull{}), data_(n) {}
+  Overlay(SparseNull s)
       : nullability_(dataframe::SparseNull{}), data_(std::move(s)) {}
-  NullStorage(DenseNull d)
+  Overlay(DenseNull d)
       : nullability_(dataframe::DenseNull{}), data_(std::move(d)) {}
 
   // Type-safe unchecked access to variant data.
@@ -267,15 +263,17 @@ class NullStorage {
 
  private:
   // Variant containing all possible overlay types.
-  using Variant = std::variant<NonNull, SparseNull, DenseNull>;
+  using Variant = std::variant<NoOverlay, SparseNull, DenseNull>;
   Nullability nullability_;
   Variant data_;
 };
 
+// Combines column specification with storage implementation.
 // Represents a complete column in the dataframe.
 struct Column {
+  std::string name;
   Storage storage;
-  NullStorage null_storage;
+  Overlay overlay;
   SortState sort_state;
 };
 

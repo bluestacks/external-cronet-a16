@@ -236,21 +236,20 @@ class NET_EXPORT CookieMonster : public CookieStore {
   void FlushStore(base::OnceClosure callback) override;
   void SetForceKeepSessionState() override;
   CookieChangeDispatcher& GetChangeDispatcher() override;
-  void SetCookieableSchemes(std::vector<std::string> schemes,
+  void SetCookieableSchemes(const std::vector<std::string>& schemes,
                             SetCookieableSchemesCallback callback) override;
   std::optional<bool> SiteHasCookieInOtherPartition(
       const net::SchemefulSite& site,
-      const CookiePartitionKey& partition_key) const override;
+      const std::optional<CookiePartitionKey>& partition_key) const override;
 
   // Enables writing session cookies into the cookie database. If this this
   // method is called, it must be called before first use of the instance
   // (i.e. as part of the instance initialization process).
   void SetPersistSessionCookies(bool persist_session_cookies);
 
-  // The default list of schemes the cookie monster can handle. Returns a vector
-  // of strings rather than a span of string_views for easy use with
-  // SetCookieableSchemes().
-  static std::vector<std::string> GetDefaultCookieableSchemes();
+  // The default list of schemes the cookie monster can handle.
+  static const char* const kDefaultCookieableSchemes[];
+  static const int kDefaultCookieableSchemesCount;
 
   // Find a key based on the given domain, which will be used to find all
   // cookies potentially relevant to it. This is used for lookup in cookies_ as
@@ -574,14 +573,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // is the iterator of the CookieMap in |partitioned_cookies_| we should search
   // for duplicates.
   //
-  // The return value is true if the new equivalent `cookie_being_set` results
-  // in a web-observable change. This can occur when inserting a new cookie or
-  // overwriting an existing cookie with new properties observable to the web
-  // platform. It is false when the new cookie does not result in any changes
-  // that are observable to the web platform.
-  //
   // NOTE: There should never be more than a single matching equivalent cookie.
-  bool MaybeDeleteEquivalentCookieAndUpdateStatus(
+  void MaybeDeleteEquivalentCookieAndUpdateStatus(
       const std::string& key,
       const CanonicalCookie& cookie_being_set,
       bool allowed_to_set_secure_cookie,
@@ -600,8 +593,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
       std::unique_ptr<CanonicalCookie> cc,
       bool sync_to_store,
       const CookieAccessResult& access_result,
-      bool dispatch_change = true,
-      bool is_no_change_overwrite = false);
+      bool dispatch_change = true);
 
   // Returns true if the cookie should be (or is already) synced to the store.
   // Used for cookies during insertion and deletion into the in-memory store.
@@ -614,8 +606,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
       std::unique_ptr<CanonicalCookie> cc,
       bool sync_to_store,
       const CookieAccessResult& access_result,
-      bool dispatch_change = true,
-      bool is_no_change_overwrite = false);
+      bool dispatch_change = true);
 
   // Sets all cookies from |list| after deleting any equivalent cookie.
   // For data gathering purposes, this routine is treated as if it is

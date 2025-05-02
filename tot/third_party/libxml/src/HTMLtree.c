@@ -333,19 +333,74 @@ htmlIsBooleanAttr(const xmlChar *name)
 #ifdef LIBXML_OUTPUT_ENABLED
 /************************************************************************
  *									*
+ *			Output error handlers				*
+ *									*
+ ************************************************************************/
+
+/**
+ * htmlSaveErr:
+ * @code:  the error number
+ * @node:  the location of the error.
+ * @extra:  extra information
+ *
+ * Handle an out of memory condition
+ */
+static void
+htmlSaveErr(int code, xmlNodePtr node, const char *extra)
+{
+    const char *msg = NULL;
+    int res;
+
+    switch(code) {
+        case XML_SAVE_NOT_UTF8:
+	    msg = "string is not in UTF-8\n";
+	    break;
+	case XML_SAVE_CHAR_INVALID:
+	    msg = "invalid character value\n";
+	    break;
+	case XML_SAVE_UNKNOWN_ENCODING:
+	    msg = "unknown encoding %s\n";
+	    break;
+	case XML_SAVE_NO_DOCTYPE:
+	    msg = "HTML has no DOCTYPE\n";
+	    break;
+	default:
+	    msg = "unexpected error number\n";
+    }
+
+    res = xmlRaiseError(NULL, NULL, NULL, NULL, node,
+                        XML_FROM_OUTPUT, code, XML_ERR_ERROR, NULL, 0,
+                        extra, NULL, NULL, 0, 0,
+                        msg, extra);
+    if (res < 0)
+        xmlRaiseMemoryError(NULL, NULL, NULL, XML_FROM_OUTPUT, NULL);
+}
+
+/************************************************************************
+ *									*
  *		Dumping HTML tree content to a simple buffer		*
  *									*
  ************************************************************************/
 
-static xmlParserErrors
-htmlFindOutputEncoder(const char *encoding, xmlCharEncodingHandler **out) {
-    /*
-     * Fallback to HTML if the encoding is unspecified
-     */
-    if (encoding == NULL)
-        encoding = "HTML";
+static xmlCharEncodingHandler *
+htmlFindOutputEncoder(const char *encoding) {
+    xmlCharEncodingHandler *handler = NULL;
 
-    return(xmlOpenCharEncodingHandler(encoding, /* output */ 1, out));
+    if (encoding != NULL) {
+        int res;
+
+        res = xmlOpenCharEncodingHandler(encoding, /* output */ 1,
+                                         &handler);
+        if (res != XML_ERR_OK)
+            htmlSaveErr(XML_SAVE_UNKNOWN_ENCODING, NULL, encoding);
+    } else {
+        /*
+         * Fallback to HTML when the encoding is unspecified
+         */
+        xmlOpenCharEncodingHandler("HTML", /* output */ 1, &handler);
+    }
+
+    return(handler);
 }
 
 /**
@@ -453,11 +508,10 @@ htmlNodeDumpFileFormat(FILE *out, xmlDocPtr doc,
     /*
      * save the content to a temp buffer.
      */
-    if (htmlFindOutputEncoder(encoding, &handler) != XML_ERR_OK)
-        return(-1);
+    handler = htmlFindOutputEncoder(encoding);
     buf = xmlOutputBufferCreateFile(out, handler);
     if (buf == NULL)
-        return(-1);
+        return(0);
 
     htmlNodeDumpFormatOutput(buf, doc, cur, NULL, format);
 
@@ -505,8 +559,7 @@ htmlDocDumpMemoryFormat(xmlDocPtr cur, xmlChar**mem, int *size, int format) {
 	return;
 
     encoding = (const char *) htmlGetMetaEncoding(cur);
-    if (htmlFindOutputEncoder(encoding, &handler) != XML_ERR_OK)
-        return;
+    handler = htmlFindOutputEncoder(encoding);
     buf = xmlAllocOutputBuffer(handler);
     if (buf == NULL)
 	return;
@@ -564,8 +617,10 @@ htmlDtdDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
 	          const char *encoding ATTRIBUTE_UNUSED) {
     xmlDtdPtr cur = doc->intSubset;
 
-    if (cur == NULL)
+    if (cur == NULL) {
+	htmlSaveErr(XML_SAVE_NO_DOCTYPE, (xmlNodePtr) doc, NULL);
 	return;
+    }
     xmlOutputBufferWriteString(buf, "<!DOCTYPE ");
     xmlOutputBufferWriteString(buf, (const char *)cur->name);
     if (cur->ExternalID != NULL) {
@@ -970,8 +1025,7 @@ htmlDocDump(FILE *f, xmlDocPtr cur) {
     }
 
     encoding = (const char *) htmlGetMetaEncoding(cur);
-    if (htmlFindOutputEncoder(encoding, &handler) != XML_ERR_OK)
-        return(-1);
+    handler = htmlFindOutputEncoder(encoding);
     buf = xmlOutputBufferCreateFile(f, handler);
     if (buf == NULL)
         return(-1);
@@ -1003,11 +1057,10 @@ htmlSaveFile(const char *filename, xmlDocPtr cur) {
     xmlInitParser();
 
     encoding = (const char *) htmlGetMetaEncoding(cur);
-    if (htmlFindOutputEncoder(encoding, &handler) != XML_ERR_OK)
-        return(-1);
+    handler = htmlFindOutputEncoder(encoding);
     buf = xmlOutputBufferCreateFilename(filename, handler, cur->compression);
     if (buf == NULL)
-        return(-1);
+        return(0);
 
     htmlDocContentDumpOutput(buf, cur, NULL);
 
@@ -1038,8 +1091,7 @@ htmlSaveFileFormat(const char *filename, xmlDocPtr cur,
 
     xmlInitParser();
 
-    if (htmlFindOutputEncoder(encoding, &handler) != XML_ERR_OK)
-        return(-1);
+    handler = htmlFindOutputEncoder(encoding);
     if (handler != NULL)
         htmlSetMetaEncoding(cur, (const xmlChar *) handler->name);
     else

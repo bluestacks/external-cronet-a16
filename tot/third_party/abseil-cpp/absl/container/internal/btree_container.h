@@ -25,7 +25,6 @@
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/container/internal/btree.h"  // IWYU pragma: export
 #include "absl/container/internal/common.h"
-#include "absl/hash/internal/weakly_mixed_integer.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 
@@ -268,8 +267,7 @@ class btree_container {
     for (const auto &v : b) {
       h = State::combine(std::move(h), v);
     }
-    return State::combine(std::move(h),
-                          hash_internal::WeaklyMixedInteger{b.size()});
+    return State::combine(std::move(h), b.size());
   }
 
  protected:

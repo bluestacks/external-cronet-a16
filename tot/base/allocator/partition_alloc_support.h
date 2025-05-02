@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/lightweight_quarantine_support.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/thread_cache.h"
 
@@ -117,7 +116,6 @@ class BASE_EXPORT PartitionAllocSupport {
   // Returns quarantine configuration for `process_name` and `branch_type`.
   static ::partition_alloc::internal::SchedulerLoopQuarantineConfig
   GetSchedulerLoopQuarantineConfiguration(
-      const std::string& process_type,
       features::internal::SchedulerLoopQuarantineBranchType branch_type);
 
  private:
@@ -172,8 +170,6 @@ class BASE_EXPORT MemoryReclaimerSupport {
 // This is useful if you want to investigate crashes at `free()`,
 // to know which point at execution it goes wrong.
 BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
-
-using partition_alloc::ScopedSchedulerLoopQuarantineExclusion;
 
 }  // namespace base::allocator
 

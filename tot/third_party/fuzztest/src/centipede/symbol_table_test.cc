@@ -19,7 +19,7 @@
 
 #include "gtest/gtest.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(SymbolTableTest, SerializesAndDeserializesCorrectly) {
@@ -68,4 +68,4 @@ TEST(SymbolTableTest, SerializesEmptyOutput) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

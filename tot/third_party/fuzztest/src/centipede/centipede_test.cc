@@ -48,7 +48,7 @@
 #include "./common/logging.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 using ::testing::AllOf;
@@ -57,9 +57,7 @@ using ::testing::Each;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
-using ::testing::Le;
 using ::testing::Not;
-using ::testing::SizeIs;
 
 // A mock for CentipedeCallbacks.
 class CentipedeMock : public CentipedeCallbacks {
@@ -137,7 +135,7 @@ class CentipedeMock : public CentipedeCallbacks {
 class MockFactory : public CentipedeCallbacksFactory {
  public:
   explicit MockFactory(CentipedeCallbacks &cb) : cb_(cb) {}
-  CentipedeCallbacks *absl_nonnull create(const Environment &env) override {
+  absl::Nonnull<CentipedeCallbacks *> create(const Environment &env) override {
     return &cb_;
   }
   void destroy(CentipedeCallbacks *cb) override { EXPECT_EQ(cb, &cb_); }
@@ -452,25 +450,6 @@ TEST_F(CentipedeWithTemporaryLocalDir, MutateViaExternalBinary) {
       EXPECT_THAT(result.mutants(), AllOf(IsSupersetOf(all_expected_mutants),
                                           Each(Not(IsEmpty()))));
     }
-  }
-
-  // Test with a max_len of 10
-  {
-    Environment env;
-    env.max_len = 10;
-    MutateCallbacks callbacks(env);
-    const MutationResult result = callbacks.MutateViaExternalBinary(
-        binary_with_custom_mutator, GetMutationInputRefsFromDataInputs(inputs),
-        10000);
-    EXPECT_EQ(result.exit_code(), EXIT_SUCCESS);
-    EXPECT_TRUE(result.has_custom_mutator());
-    EXPECT_THAT(result.mutants(), AllOf(IsSupersetOf(all_expected_mutants),
-                                        Each(Not(IsEmpty()))));
-    EXPECT_THAT(result.mutants(),
-                AllOf(IsSupersetOf(all_expected_mutants), Each(Not(IsEmpty())),
-                      // The byte_array_mutator may insert up to 20 bytes to an
-                      // input, which may push the size over the max_len.
-                      Each(SizeIs(Le(30)))));
   }
 
   // Test with crossover disabled.
@@ -824,11 +803,11 @@ class UndetectedCrashingInputMock : public CentipedeCallbacks {
           //  that Centipede engine *expects* to have been read from *the
           //  current BatchResult* by the *particular* implementation of
           //  `CentipedeCallbacks` (and `DefaultCentipedeCallbacks` fits the
-          //  bill). `fuzztest::internal::ReportCrash()` then uses this value as
-          //  a hint for the crashing input's index, and in our case saves the
-          //  batch's inputs from 0 up to and including the crasher to a subdir.
-          //  See the bug for details. All of this is horribly convoluted and
-          //  misplaced here. Implement a cleaner solution.
+          //  bill). `Centipede::ReportCrash()` then uses this value as a hint
+          //  for the crashing input's index, and in our case saves the batch's
+          //  inputs from 0 up to and including the crasher to a subdir. See the
+          //  bug for details. All of this is horribly convoluted and misplaced
+          //  here. Implement a cleaner solution.
           batch_result.num_outputs_read() =
               crashing_input_idx_ % env_.batch_size;
           res = false;
@@ -1132,4 +1111,4 @@ TEST_F(CentipedeWithTemporaryLocalDir, HangingFuzzTargetExitsAfterTimeout) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

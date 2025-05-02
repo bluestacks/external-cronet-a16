@@ -630,8 +630,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   url::Component canon_path_component;
   url::CanonicalizePath(cookie_path.data(), path_component, &canon_path,
                         &canon_path_component);
-  std::string_view encoded_cookie_path = canon_path.view().substr(
-      canon_path_component.begin, canon_path_component.len);
+  std::string encoded_cookie_path =
+      std::string(UNSAFE_TODO(canon_path.data() + canon_path_component.begin),
+                  canon_path_component.len);
 
   if (!path.empty()) {
     if (cookie_path != path) {
@@ -682,7 +683,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   auto cc = std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), name, value,
       std::move(cookie_domain).value_or(std::string()),
-      std::string(encoded_cookie_path), creation_time, expiration_time,
+      std::move(encoded_cookie_path), creation_time, expiration_time,
       last_access_time,
       /*last_update=*/base::Time::Now(), secure, http_only, same_site, priority,
       partition_key, source_scheme, source_port, CookieSourceType::kOther);
@@ -827,13 +828,6 @@ bool CanonicalCookie::IsProbablyEquivalentTo(
 bool CanonicalCookie::HasEquivalentDataMembers(
     const CanonicalCookie& other) const {
   return IsProbablyEquivalentTo(other) && Value() == other.Value();
-}
-
-bool CanonicalCookie::IsWebEquivalentTo(const CanonicalCookie& other) const {
-  return IsEquivalent(other) && Value() == other.Value() &&
-         IsSecure() == other.IsSecure() && SameSite() == other.SameSite() &&
-         IsHttpOnly() == other.IsHttpOnly() &&
-         ExpiryDate() == other.ExpiryDate();
 }
 
 void CanonicalCookie::PostIncludeForRequestURL(

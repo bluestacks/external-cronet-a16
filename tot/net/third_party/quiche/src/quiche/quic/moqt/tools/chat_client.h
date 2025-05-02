@@ -92,13 +92,13 @@ class ChatClient {
     RemoteTrackVisitor(ChatClient* client) : client_(client) {}
 
     void OnReply(const moqt::FullTrackName& full_track_name,
-                 std::optional<Location> largest_id,
+                 std::optional<FullSequence> largest_id,
                  std::optional<absl::string_view> reason_phrase) override;
 
     void OnCanAckObjects(MoqtObjectAckFunction) override {}
 
     void OnObjectFragment(const moqt::FullTrackName& full_track_name,
-                          Location sequence,
+                          FullSequence sequence,
                           moqt::MoqtPriority publisher_priority,
                           moqt::MoqtObjectStatus status,
                           absl::string_view object,

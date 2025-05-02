@@ -26,10 +26,10 @@
 
 #include "absl/base/nullability.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // TODO(ussuri): Refactor `char *` into a `string_view`.
-static void ErrorOnFailure(bool condition, const char *absl_nonnull text) {
+static void ErrorOnFailure(bool condition, absl::Nonnull<const char *> text) {
   if (!condition) return;
   std::perror(text);
   abort();
@@ -185,4 +185,4 @@ size_t SharedMemoryBlobSequence::NumBytesUsed() const {
   return statbuf.st_blocks * S_BLKSIZE;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

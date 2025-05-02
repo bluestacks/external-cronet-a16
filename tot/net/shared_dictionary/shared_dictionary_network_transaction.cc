@@ -423,6 +423,11 @@ LoadState SharedDictionaryNetworkTransaction::GetLoadState() const {
   return network_transaction_->GetLoadState();
 }
 
+void SharedDictionaryNetworkTransaction::SetQuicServerInfo(
+    QuicServerInfo* quic_server_info) {
+  network_transaction_->SetQuicServerInfo(quic_server_info);
+}
+
 bool SharedDictionaryNetworkTransaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   return network_transaction_->GetLoadTimingInfo(load_timing_info);
@@ -454,6 +459,11 @@ void SharedDictionaryNetworkTransaction::
   network_transaction_->SetWebSocketHandshakeStreamCreateHelper(create_helper);
 }
 
+void SharedDictionaryNetworkTransaction::SetBeforeNetworkStartCallback(
+    BeforeNetworkStartCallback callback) {
+  network_transaction_->SetBeforeNetworkStartCallback(std::move(callback));
+}
+
 void SharedDictionaryNetworkTransaction::SetRequestHeadersCallback(
     RequestHeadersCallback callback) {
   network_transaction_->SetRequestHeadersCallback(std::move(callback));
@@ -472,6 +482,10 @@ void SharedDictionaryNetworkTransaction::SetEarlyResponseHeadersCallback(
 void SharedDictionaryNetworkTransaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
   connected_callback_ = callback;
+}
+
+int SharedDictionaryNetworkTransaction::ResumeNetworkStart() {
+  return network_transaction_->ResumeNetworkStart();
 }
 
 void SharedDictionaryNetworkTransaction::SetModifyRequestHeadersCallback(

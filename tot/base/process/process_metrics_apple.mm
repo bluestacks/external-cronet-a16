@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_math.h"
-#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -251,7 +250,8 @@ size_t GetSystemCommitCharge() {
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
-  meminfo->total = static_cast<int>(SysInfo::AmountOfPhysicalMemory() / 1024);
+  NSProcessInfo* process_info = [NSProcessInfo processInfo];
+  meminfo->total = static_cast<int>(process_info.physicalMemory / 1024);
 
   base::apple::ScopedMachSendRight host(mach_host_self());
   vm_statistics64_data_t vm_info;

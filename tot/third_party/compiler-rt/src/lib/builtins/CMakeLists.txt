@@ -104,7 +104,6 @@ set(GENERIC_SOURCES
   divti3.c
   extendsfdf2.c
   extendhfsf2.c
-  extendhfdf2.c
   ffsdi2.c
   ffssi2.c
   ffsti2.c
@@ -769,11 +768,6 @@ set(riscv64_SOURCES
 set(sparc_SOURCES ${GENERIC_SOURCES} ${GENERIC_TF_SOURCES})
 set(sparcv9_SOURCES ${GENERIC_SOURCES} ${GENERIC_TF_SOURCES})
 
-set(s390x_SOURCES
-  ${GENERIC_SOURCES}
-  ${GENERIC_TF_SOURCES}
-)
-
 set(wasm32_SOURCES
   ${GENERIC_TF_SOURCES}
   ${GENERIC_SOURCES}
@@ -877,7 +871,6 @@ else ()
       # For ARM archs, exclude any VFP builtins if VFP is not supported
       if (${arch} MATCHES "^(arm|armhf|armv7|armv7s|armv7k|armv7m|armv7em|armv8m.main|armv8.1m.main)$")
         check_compile_definition(__ARM_FP "${CMAKE_C_FLAGS}" COMPILER_RT_HAS_${arch}_VFP)
-        check_compile_definition(__ARM_PCS_VFP "${CMAKE_C_FLAGS}" COMPILER_RT_HAS_${arch}_ARMHF)
         if(NOT COMPILER_RT_HAS_${arch}_VFP)
           list(REMOVE_ITEM ${arch}_SOURCES ${arm_Thumb1_VFPv2_DP_SOURCES} ${arm_Thumb1_VFPv2_SP_SOURCES} ${arm_Thumb1_SjLj_EH_SOURCES})
         else()
@@ -909,7 +902,7 @@ else ()
 
       # Needed for clear_cache on debug mode, due to r7's usage in inline asm.
       # Release mode already sets it via -O2/3, Debug mode doesn't.
-      if (COMPILER_RT_HAS_${arch}_ARMHF)
+      if (${arch} STREQUAL "armhf")
         list(APPEND BUILTIN_CFLAGS_${arch} -fomit-frame-pointer -DCOMPILER_RT_ARMHF_TARGET)
       endif()
 

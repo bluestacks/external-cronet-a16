@@ -73,10 +73,11 @@ absl_cc_library(
   HDRS
     "nullability.h"
   SRCS
-    "internal/nullability_deprecated.h"
+    "internal/nullability_impl.h"
   DEPS
     absl::config
     absl::core_headers
+    absl::type_traits
   COPTS
     ${ABSL_DEFAULT_COPTS}
 )

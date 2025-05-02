@@ -435,7 +435,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
+        /*report_ecn=*/true, /*enable_origin_frame=*/true,
+        /*allow_server_preferred_address=*/true,
         MultiplexedSessionCreationInitiator::kUnknown,
         NetLogWithSource::Make(NetLogSourceType::NONE));
     session_->Initialize();

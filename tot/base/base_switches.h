@@ -38,7 +38,6 @@ extern const char kWaitForDebugger[];
 #if BUILDFLAG(IS_WIN)
 extern const char kDisableHighResTimer[];
 extern const char kDisableUsbKeyboardDetect[];
-extern const char kForceHighResTimeTicks[];
 #endif
 
 #if BUILDFLAG(IS_LINUX)

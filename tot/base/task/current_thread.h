@@ -324,8 +324,7 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
                            MessagePumpForIO::FdWatcher* delegate);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS))
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD))
   bool WatchMachReceivePort(
       mach_port_t port,
       MessagePumpForIO::MachPortWatchController* controller,

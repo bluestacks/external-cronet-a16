@@ -38,6 +38,7 @@
 #include "absl/base/call_once.h"
 #include "absl/base/casts.h"
 #include "absl/base/const_init.h"
+#include "absl/base/dynamic_annotations.h"
 #include "absl/base/optimization.h"
 #include "absl/base/thread_annotations.h"
 #include "absl/cleanup/cleanup.h"

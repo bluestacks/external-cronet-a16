@@ -40,14 +40,14 @@ TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
                                    IPEndPoint ip_endpoint,
                                    perfetto::Track track,
                                    HostPortPair host_port_pair,
-                                   Delegate* delegate)
+                                   SSLConfigProvider* ssl_config_provider)
     : StreamAttempt(params,
                     ip_endpoint,
                     track,
                     NetLogSourceType::TLS_STREAM_ATTEMPT,
                     NetLogEventType::TLS_STREAM_ATTEMPT_ALIVE),
       host_port_pair_(std::move(host_port_pair)),
-      delegate_(delegate) {}
+      ssl_config_provider_(ssl_config_provider) {}
 
 TlsStreamAttempt::~TlsStreamAttempt() {
   MaybeRecordTlsHandshakeEnd(ERR_ABORTED);
@@ -81,6 +81,15 @@ base::Value::Dict TlsStreamAttempt::GetInfoAsValue() const {
 
 scoped_refptr<SSLCertRequestInfo> TlsStreamAttempt::GetCertRequestInfo() {
   return ssl_cert_request_info_;
+}
+
+void TlsStreamAttempt::SetTcpHandshakeCompletionCallback(
+    CompletionOnceCallback callback) {
+  CHECK(!tls_handshake_started_);
+  CHECK(!tcp_handshake_completion_callback_);
+  if (next_state_ <= State::kTcpAttemptComplete) {
+    tcp_handshake_completion_callback_ = std::move(callback);
+  }
 }
 
 int TlsStreamAttempt::StartInternal() {
@@ -144,7 +153,9 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
   mutable_connect_timing().connect_start = nested_timing.connect_start;
 
   tcp_handshake_completed_ = true;
-  delegate_->OnTcpHandshakeComplete();
+  if (tcp_handshake_completion_callback_) {
+    std::move(tcp_handshake_completion_callback_).Run(rv);
+  }
 
   if (rv != OK) {
     return rv;
@@ -160,8 +171,9 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
     return OK;
   }
 
-  int ssl_config_ready_result = delegate_->WaitForSSLConfigReady(base::BindOnce(
-      &TlsStreamAttempt::OnIOComplete, weak_ptr_factory_.GetWeakPtr()));
+  int ssl_config_ready_result =
+      ssl_config_provider_->WaitForSSLConfigReady(base::BindOnce(
+          &TlsStreamAttempt::OnIOComplete, weak_ptr_factory_.GetWeakPtr()));
   if (ssl_config_ready_result == ERR_IO_PENDING) {
     TRACE_EVENT_INSTANT("net.stream", "WaitForSSLConfig", track());
   }
@@ -178,7 +190,12 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
   std::unique_ptr<StreamSocket> nested_socket =
       nested_attempt_->ReleaseStreamSocket();
   if (!ssl_config_) {
-    auto get_config_result = delegate_->GetSSLConfig();
+    CHECK(ssl_config_provider_);
+    auto get_config_result = ssl_config_provider_->GetSSLConfig();
+    // Clear `ssl_config_provider_` to avoid dangling pointer.
+    // TODO(bashi): Try not to clear the pointer. It seems that
+    // `ssl_config_provider_` should always outlive `this`.
+    ssl_config_provider_ = nullptr;
 
     if (get_config_result.has_value()) {
       ssl_config_ = *get_config_result;

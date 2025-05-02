@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
-#include "base/types/expected.h"
 
 namespace base {
 namespace subtle {
@@ -22,11 +21,11 @@ static constexpr int kNoWriteOrExec =
     ~(ZX_RIGHT_WRITE | ZX_RIGHT_EXECUTE | ZX_RIGHT_SET_PROPERTY);
 
 // static
-expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
-PlatformSharedMemoryRegion::TakeOrFail(zx::vmo handle,
-                                       Mode mode,
-                                       size_t size,
-                                       const UnguessableToken& guid) {
+PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
+    zx::vmo handle,
+    Mode mode,
+    size_t size,
+    const UnguessableToken& guid) {
   if (!handle.is_valid()) {
     return {};
   }
@@ -39,11 +38,10 @@ PlatformSharedMemoryRegion::TakeOrFail(zx::vmo handle,
     return {};
   }
 
-  return CheckPlatformHandlePermissionsCorrespondToMode(zx::unowned_vmo(handle),
-                                                        mode, size)
-      .transform([&] {
-        return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
-      });
+  CHECK(CheckPlatformHandlePermissionsCorrespondToMode(zx::unowned_vmo(handle),
+                                                       mode, size));
+
+  return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
 }
 
 zx::unowned_vmo PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -145,8 +143,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-expected<void, PlatformSharedMemoryRegion::TakeError>
-PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
@@ -156,18 +153,23 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   ZX_CHECK(status == ZX_OK, status) << "zx_object_get_info";
 
   if (basic.type != ZX_OBJ_TYPE_VMO) {
-    return unexpected(TakeError::kNotVmo);
+    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
+    LOG(ERROR) << "Received zircon handle is not a VMO";
+    return false;
   }
 
   bool is_read_only = (basic.rights & (ZX_RIGHT_WRITE | ZX_RIGHT_EXECUTE)) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
-                                         : TakeError::kExpectedWritableButNot);
+    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
+    LOG(ERROR) << "VMO object has wrong access rights: it is"
+               << (is_read_only ? " " : " not ") << "read-only but it should"
+               << (expected_read_only ? " " : " not ") << "be";
+    return false;
   }
 
-  return ok();
+  return true;
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

@@ -386,7 +386,6 @@ int SSL_set_max_proto_version(SSL *ssl, uint16_t version) {
 
 uint16_t SSL_get_min_proto_version(const SSL *ssl) {
   if (!ssl->config) {
-    assert(ssl->config);
     return 0;
   }
   return ssl->config->conf_min_version;
@@ -394,7 +393,6 @@ uint16_t SSL_get_min_proto_version(const SSL *ssl) {
 
 uint16_t SSL_get_max_proto_version(const SSL *ssl) {
   if (!ssl->config) {
-    assert(ssl->config);
     return 0;
   }
   return ssl->config->conf_max_version;

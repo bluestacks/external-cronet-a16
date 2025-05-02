@@ -26,10 +26,8 @@ enum class NetworkIsolationPartition : int32_t {
   // This use case isolates network state for Protected Audience seller
   // worklets.
   kProtectedAudienceSellerWorklet = 1,
-  // This use case isolates network state for FedCM-related requests.
-  kFedCmUncredentialedRequests = 2,
 
-  kMaxValue = kFedCmUncredentialedRequests
+  kMaxValue = kProtectedAudienceSellerWorklet
 };
 
 std::string NetworkIsolationPartitionToDebugString(

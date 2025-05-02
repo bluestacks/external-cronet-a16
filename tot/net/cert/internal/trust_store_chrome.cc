@@ -71,34 +71,17 @@ ChromeRootCertConstraints& ChromeRootCertConstraints::operator=(
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints)
-    : ChromeRootStoreData::Anchor::Anchor(
-          certificate,
-          constraints,
-          /*eutl=*/false,
-          /*enforce_anchor_expiry=*/false,
-          /*enforce_anchor_constraints=*/false) {}
+    : ChromeRootStoreData::Anchor::Anchor(certificate,
+                                          constraints,
+                                          /*eutl=*/false) {}
 
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints,
     bool eutl)
-    : ChromeRootStoreData::Anchor::Anchor(
-          certificate,
-          constraints,
-          eutl,
-          /*enforce_anchor_expiry=*/false,
-          /*enforce_anchor_constraints=*/false) {}
-ChromeRootStoreData::Anchor::Anchor(
-    std::shared_ptr<const bssl::ParsedCertificate> certificate,
-    std::vector<ChromeRootCertConstraints> constraints,
-    bool eutl,
-    bool enforce_anchor_expiry,
-    bool enforce_anchor_constraints)
     : certificate(std::move(certificate)),
       constraints(std::move(constraints)),
-      eutl(eutl),
-      enforce_anchor_expiry(enforce_anchor_expiry),
-      enforce_anchor_constraints(enforce_anchor_constraints) {}
+      eutl(eutl) {}
 ChromeRootStoreData::Anchor::~Anchor() = default;
 
 ChromeRootStoreData::Anchor::Anchor(const Anchor& other) = default;
@@ -173,8 +156,7 @@ std::optional<std::vector<ChromeRootStoreData::Anchor>> CreateAnchors(
           base::ToVector(constraint.permitted_dns_names()));
     }
     data_anchors.emplace_back(std::move(parsed), std::move(constraints),
-                              anchor.eutl(), anchor.enforce_anchor_expiry(),
-                              anchor.enforce_anchor_constraints());
+                              anchor.eutl());
   }
   return data_anchors;
 }
@@ -250,9 +232,7 @@ ChromeRootStoreData::ChromeRootStoreData(
     for (const auto& constraint : cert_info.constraints) {
       cert_constraints.emplace_back(constraint);
     }
-    trust_anchors_.emplace_back(std::move(parsed), std::move(cert_constraints),
-                                /*eutl=*/false, cert_info.enforce_anchor_expiry,
-                                cert_info.enforce_anchor_constraints);
+    trust_anchors_.emplace_back(std::move(parsed), std::move(cert_constraints));
   }
 
   for (const auto& cert_bytes : eutl_certs) {
@@ -290,21 +270,7 @@ TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data,
       constraints.emplace_back(anchor.certificate->der_cert().AsStringView(),
                                anchor.constraints);
     }
-
-    // If the anchor is configured to enforce expiry and/or X.509 constraints,
-    // tell BoringSSL to do so via CertificateTrust settings. Expiry and X.509
-    // constraints are enforced by BoringSSL, whereas other constraints in
-    // ChromeRootStoreConstraints are enforced by Chrome itself.
-    bssl::CertificateTrust certificate_trust =
-        bssl::CertificateTrust::ForTrustAnchor();
-    if (anchor.enforce_anchor_expiry) {
-      certificate_trust = certificate_trust.WithEnforceAnchorExpiry();
-    }
-    if (anchor.enforce_anchor_constraints) {
-      certificate_trust = certificate_trust.WithEnforceAnchorConstraints();
-    }
-    trust_store_.AddCertificate(anchor.certificate, certificate_trust);
-
+    trust_store_.AddTrustAnchor(anchor.certificate);
     if (anchor.eutl) {
       eutl_trust_store_.AddTrustAnchor(anchor.certificate);
     }

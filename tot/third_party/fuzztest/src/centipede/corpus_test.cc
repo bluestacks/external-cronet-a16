@@ -32,7 +32,7 @@
 #include "./common/defs.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(Corpus, GetCmpData) {
@@ -402,4 +402,4 @@ TEST(CoverageFrontierDeath, InvalidIndexToFrontier) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

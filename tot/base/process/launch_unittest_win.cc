@@ -28,8 +28,8 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_SuccessStdErrOutput) {
   cl.AppendArg("this-is-not-an-application");
   std::string output;
   int exit_code = 0;
-  ASSERT_TRUE(GetAppOutputWithExitCodeAndTimeout(
-      cl.GetCommandLineString(), true, &output, &exit_code, base::Seconds(5)));
+  ASSERT_TRUE(GetAppOutputWithExitCodeAndTimeout(cl, true, &output, &exit_code,
+                                                 base::Seconds(5)));
   ASSERT_GT(output.length(), 0);
   ASSERT_EQ(exit_code, 1);
 }
@@ -43,11 +43,8 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_SuccessOutput) {
   int exit_code = 0;
   TerminationStatus final_status = TERMINATION_STATUS_MAX_ENUM;
   int count = 0;
-  base::LaunchOptions options;
-  options.start_hidden = true;
   ASSERT_TRUE(GetAppOutputWithExitCodeAndTimeout(
-      cl.GetCommandLineString(), true, &output, &exit_code, base::Seconds(2),
-      options,
+      cl, true, &output, &exit_code, base::Seconds(2),
       [&](std::string_view partial_output) {
         ++count;
         partial_outputs.append(partial_output);
@@ -68,11 +65,8 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_TimeoutOutput) {
   int exit_code = 0;
   TerminationStatus final_status = TERMINATION_STATUS_MAX_ENUM;
   int count = 0;
-  base::LaunchOptions options;
-  options.start_hidden = true;
   ASSERT_FALSE(GetAppOutputWithExitCodeAndTimeout(
-      cl.GetCommandLineString(), true, &output, &exit_code, base::Seconds(1),
-      options,
+      cl, true, &output, &exit_code, base::Seconds(1),
       [&](std::string_view partial_output) {
         ++count;
         partial_outputs.append(partial_output);
@@ -94,11 +88,8 @@ TEST(LaunchWinTest, GetAppOutputWithExitCodeAndTimeout_StreamingOutput) {
   int exit_code = 0;
   TerminationStatus final_status = TERMINATION_STATUS_MAX_ENUM;
   int count = 0;
-  base::LaunchOptions options;
-  options.start_hidden = true;
   ASSERT_TRUE(GetAppOutputWithExitCodeAndTimeout(
-      cl.GetCommandLineString(), true, &output, &exit_code, TimeDelta::Max(),
-      options,
+      cl, true, &output, &exit_code, TimeDelta::Max(),
       [&](std::string_view partial_output) {
         ++count;
         partial_outputs.append(partial_output);

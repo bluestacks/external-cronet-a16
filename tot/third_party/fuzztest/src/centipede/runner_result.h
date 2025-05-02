@@ -28,7 +28,7 @@
 #include "./centipede/shared_memory_blob_sequence.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 inline constexpr std::string_view kExecutionFailurePerInputTimeout =
     "per-input-timeout-exceeded";
@@ -204,6 +204,6 @@ class MutationResult {
   std::vector<ByteArray> mutants_;
 };
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_EXECUTION_RESULT_H_

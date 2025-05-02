@@ -23,13 +23,13 @@ bool MessagePumpIOSForIO::FdWatchController::StopWatchingFileDescriptor() {
 
   CFFileDescriptorDisableCallBacks(fdref_.get(), callback_types_);
   if (pump_) {
-    pump_->RemoveRunLoopSource(fd_source_.get());
+    pump_->RemoveRunLoopSource(fd_source_);
   }
   fd_source_.reset();
   fdref_.reset();
   callback_types_ = 0;
   pump_.reset();
-  watcher_ = nullptr;
+  watcher_ = NULL;
   return true;
 }
 
@@ -94,21 +94,20 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
     apple::ScopedCFTypeRef<CFFileDescriptorRef> scoped_fdref(
         CFFileDescriptorCreate(kCFAllocatorDefault, fd, false, HandleFdIOEvent,
                                &source_context));
-    if (!scoped_fdref) {
+    if (scoped_fdref == NULL) {
       NOTREACHED() << "CFFileDescriptorCreate failed";
     }
 
-    CFFileDescriptorEnableCallBacks(scoped_fdref.get(), callback_types);
+    CFFileDescriptorEnableCallBacks(scoped_fdref, callback_types);
 
     // TODO(wtc): what should the 'order' argument be?
     apple::ScopedCFTypeRef<CFRunLoopSourceRef> scoped_fd_source(
-        CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault,
-                                            scoped_fdref.get(), 0));
-    if (!scoped_fd_source) {
+        CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, scoped_fdref,
+                                            0));
+    if (scoped_fd_source == NULL) {
       NOTREACHED() << "CFFileDescriptorCreateRunLoopSource failed";
     }
-    CFRunLoopAddSource(run_loop(), scoped_fd_source.get(),
-                       kCFRunLoopCommonModes);
+    CFRunLoopAddSource(run_loop(), scoped_fd_source, kCFRunLoopCommonModes);
 
     // Transfer ownership of scoped_fdref and fd_source to controller.
     controller->Init(scoped_fdref.release(), callback_types,

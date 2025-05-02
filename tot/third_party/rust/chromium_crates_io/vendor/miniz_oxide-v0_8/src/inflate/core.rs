@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 pub const TINFL_LZ_DICT_SIZE: usize = 32_768;
 
 /// A struct containing huffman code lengths and the huffman code tree used by the decompressor.
-#[cfg_attr(not(feature = "rustc-dep-of-std"), derive(Clone))]
+#[derive(Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 struct HuffmanTable {
     /// Fast lookup table for shorter huffman codes.
@@ -231,7 +231,7 @@ impl Default for BlockBoundaryState {
 
 /// Main decompression struct.
 ///
-#[cfg_attr(not(feature = "rustc-dep-of-std"), derive(Clone))]
+#[derive(Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct DecompressorOxide {
     /// Current state of the decompressor.
@@ -1046,11 +1046,8 @@ fn transfer(
     };
 
     // The last 3 bytes can wrap as those are dealt with separately at the end.
-    // Use wrapping_sub rather than saturating for performance reasons here as
-    // if source_pos + match_len  is < 3 we just want to jump to the end
-    // condition anyhow.
-    let not_wrapping = (out_buf_size_mask == usize::MAX)
-        || ((source_pos + match_len).wrapping_sub(3) < out_slice.len());
+    let not_wrapping =
+        (out_buf_size_mask == usize::MAX) || ((source_pos + match_len - 3) < out_slice.len());
 
     let end_pos = ((match_len >> 2) * 4) + out_pos;
     if not_wrapping && source_diff == 1 && out_pos > source_pos {
@@ -2058,7 +2055,7 @@ mod test {
         // This should fail with the out buffer being to small.
         let b_status = tinfl_decompress_oxide(&mut b, &encoded[..], &mut b_buf, flags);
 
-        assert!(b_status.0 == TINFLStatus::Failed);
+        assert_eq!(b_status.0, TINFLStatus::Failed);
 
         let flags = flags | TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF;
 
@@ -2068,7 +2065,7 @@ mod test {
         let b_status = tinfl_decompress_oxide(&mut b, &encoded[..], &mut b_buf, flags);
 
         assert_eq!(b_buf[..b_status.2], b"Hello, zlib!"[..]);
-        assert!(b_status.0 == TINFLStatus::Done);
+        assert_eq!(b_status.0, TINFLStatus::Done);
     }
 
     #[cfg(feature = "with-alloc")]
@@ -2246,7 +2243,7 @@ mod test {
         // Check that we handle an empty buffer properly and not panicking.
         // https://github.com/Frommi/miniz_oxide/issues/23
         let res = decompress(&mut r, &encoded, &mut output_buf, 0, flags);
-        assert!(res == (TINFLStatus::HasMoreOutput, 4, 0));
+        assert_eq!(res, (TINFLStatus::HasMoreOutput, 4, 0));
     }
 
     #[test]
@@ -2260,7 +2257,7 @@ mod test {
         // Check that we handle an empty buffer properly and not panicking.
         // https://github.com/Frommi/miniz_oxide/issues/23
         let res = decompress(&mut r, &encoded, &mut output_buf, 0, flags);
-        assert!(res == (TINFLStatus::HasMoreOutput, 2, 0));
+        assert_eq!(res, (TINFLStatus::HasMoreOutput, 2, 0));
     }
 
     #[test]

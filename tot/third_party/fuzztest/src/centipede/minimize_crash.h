@@ -19,7 +19,7 @@
 #include "./centipede/environment.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // Tries to minimize `crashy_input`.
 // Uses `callbacks_factory` to create `env.num_threads` workers.
@@ -31,6 +31,6 @@ namespace fuzztest::internal {
 int MinimizeCrash(ByteSpan crashy_input, const Environment &env,
                   CentipedeCallbacksFactory &callbacks_factory);
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_MINIMIZE_CRASH_H_

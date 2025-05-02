@@ -24,7 +24,7 @@
 #include "./centipede/shared_memory_blob_sequence.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace {
 
@@ -160,4 +160,4 @@ bool MutationResult::Read(size_t num_mutants, BlobSequence &blobseq) {
   return true;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

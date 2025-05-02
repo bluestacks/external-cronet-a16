@@ -572,6 +572,10 @@ TestNetworkDelegate::OnGetStorageAccessStatus(
   return storage_access_status_;
 }
 
+bool TestNetworkDelegate::OnIsStorageAccessHeaderEnabled() const {
+  return is_storage_access_header_enabled_;
+}
+
 FilteringTestNetworkDelegate::FilteringTestNetworkDelegate() = default;
 FilteringTestNetworkDelegate::~FilteringTestNetworkDelegate() = default;
 

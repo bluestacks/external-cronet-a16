@@ -45,7 +45,6 @@
 #include "net/cookies/cookie_monster.h"
 
 #include <algorithm>
-#include <array>
 #include <functional>
 #include <list>
 #include <map>
@@ -321,7 +320,7 @@ typedef struct ChangeCausePair_struct {
   CookieChangeCause cause;
   bool notify;
 } ChangeCausePair;
-constexpr auto kChangeCauseMapping = std::to_array<ChangeCausePair>({
+const ChangeCausePair kChangeCauseMapping[] = {
     // DELETE_COOKIE_EXPLICIT
     {CookieChangeCause::EXPLICIT, true},
     // DELETE_COOKIE_OVERWRITE
@@ -353,8 +352,7 @@ constexpr auto kChangeCauseMapping = std::to_array<ChangeCausePair>({
     // DELETE_COOKIE_ALIAS
     {CookieChangeCause::EVICTED, false},
     // DELETE_COOKIE_LAST_ENTRY
-    {CookieChangeCause::EXPLICIT, false},
-});
+    {CookieChangeCause::EXPLICIT, false}};
 
 bool IsCookieEligibleForEviction(CookiePriority current_priority_level,
                                  bool protect_secure_cookies,
@@ -485,7 +483,9 @@ CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
       store_(std::move(store)),
       last_access_threshold_(last_access_threshold),
       last_statistic_record_time_(base::Time::Now()) {
-  cookieable_schemes_ = GetDefaultCookieableSchemes();
+  cookieable_schemes_.insert(
+      cookieable_schemes_.begin(), kDefaultCookieableSchemes,
+      UNSAFE_TODO(kDefaultCookieableSchemes + kDefaultCookieableSchemesCount));
   net_log_.BeginEvent(NetLogEventType::COOKIE_STORE_ALIVE, [&] {
     return NetLogCookieMonsterConstructorParams(store_ != nullptr);
   });
@@ -654,7 +654,7 @@ void CookieMonster::DeleteMatchingCookiesAsync(
 }
 
 void CookieMonster::SetCookieableSchemes(
-    std::vector<std::string> schemes,
+    const std::vector<std::string>& schemes,
     SetCookieableSchemesCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -665,7 +665,7 @@ void CookieMonster::SetCookieableSchemes(
     return;
   }
 
-  cookieable_schemes_ = std::move(schemes);
+  cookieable_schemes_ = schemes;
   MaybeRunCookieCallback(std::move(callback), true);
 }
 
@@ -679,10 +679,10 @@ void CookieMonster::SetPersistSessionCookies(bool persist_session_cookies) {
   persist_session_cookies_ = persist_session_cookies;
 }
 
-// static
-std::vector<std::string> CookieMonster::GetDefaultCookieableSchemes() {
-  return std::vector<std::string>{"http", "https", "ws", "wss"};
-}
+const char* const CookieMonster::kDefaultCookieableSchemes[] = {"http", "https",
+                                                                "ws", "wss"};
+const int CookieMonster::kDefaultCookieableSchemesCount =
+    std::size(kDefaultCookieableSchemes);
 
 CookieChangeDispatcher& CookieMonster::GetChangeDispatcher() {
   return change_dispatcher_;
@@ -1465,7 +1465,7 @@ void CookieMonster::FilterCookiesWithOptions(
   }
 }
 
-bool CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
+void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     const std::string& key,
     const CanonicalCookie& cookie_being_set,
     bool allowed_to_set_secure_cookie,
@@ -1555,14 +1555,10 @@ bool CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     }
   }
 
-  bool is_web_observable_change = true;
   if (deletion_candidate_it != cookie_map->end()) {
     CanonicalCookie* deletion_candidate = deletion_candidate_it->second.get();
-    if (deletion_candidate->Value() == cookie_being_set.Value()) {
+    if (deletion_candidate->Value() == cookie_being_set.Value())
       creation_date_to_inherit = deletion_candidate->CreationDate();
-    }
-    is_web_observable_change =
-        !deletion_candidate->IsWebEquivalentTo(cookie_being_set);
     if (status.IsInclude()) {
       if (cookie_being_set.IsPartitioned()) {
         InternalDeletePartitionedCookie(
@@ -1592,7 +1588,6 @@ bool CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
           });
     }
   }
-  return is_web_observable_change;
 }
 
 CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
@@ -1600,8 +1595,7 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
     std::unique_ptr<CanonicalCookie> cc,
     bool sync_to_store,
     const CookieAccessResult& access_result,
-    bool dispatch_change,
-    bool is_web_observable_change) {
+    bool dispatch_change) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(cc);
   CanonicalCookie* cc_ptr = cc.get();
@@ -1624,10 +1618,7 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {
     change_dispatcher_.DispatchChange(
-        CookieChangeInfo(*cc_ptr, access_result,
-                         is_web_observable_change
-                             ? CookieChangeCause::INSERTED
-                             : CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE),
+        CookieChangeInfo(*cc_ptr, access_result, CookieChangeCause::INSERTED),
         true);
   }
 
@@ -1658,8 +1649,7 @@ CookieMonster::InternalInsertPartitionedCookie(
     std::unique_ptr<CanonicalCookie> cc,
     bool sync_to_store,
     const CookieAccessResult& access_result,
-    bool dispatch_change,
-    bool is_web_observable_change) {
+    bool dispatch_change) {
   DCHECK(cc);
   DCHECK(cc->IsPartitioned());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1708,10 +1698,7 @@ CookieMonster::InternalInsertPartitionedCookie(
   DCHECK(access_result.status.IsInclude());
   if (dispatch_change) {
     change_dispatcher_.DispatchChange(
-        CookieChangeInfo(*cc_ptr, access_result,
-                         is_web_observable_change
-                             ? CookieChangeCause::INSERTED
-                             : CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE),
+        CookieChangeInfo(*cc_ptr, access_result, CookieChangeCause::INSERTED),
         true);
   }
 
@@ -1776,13 +1763,11 @@ void CookieMonster::SetCanonicalCookie(
     }
   }
 
-  bool is_web_observable_change = true;
-
   // Iterates through existing cookies for the same eTLD+1, and potentially
   // deletes an existing cookie, so any ExclusionReasons in |status| that would
   // prevent such deletion should be finalized beforehand.
   if (should_try_to_delete_duplicates) {
-    is_web_observable_change = MaybeDeleteEquivalentCookieAndUpdateStatus(
+    MaybeDeleteEquivalentCookieAndUpdateStatus(
         key, *cc, access_result.is_allowed_to_access_secure_cookies,
         options.exclude_httponly(), already_expired, creation_date_to_inherit,
         access_result.status, cookie_partition_it);
@@ -1834,13 +1819,10 @@ void CookieMonster::SetCanonicalCookie(
       }
 
       if (cookie_partition_key.has_value()) {
-        InternalInsertPartitionedCookie(key, std::move(cc), true, access_result,
-                                        /*dispatch_change=*/true,
-                                        is_web_observable_change);
+        InternalInsertPartitionedCookie(key, std::move(cc), true,
+                                        access_result);
       } else {
-        InternalInsertCookie(key, std::move(cc), true, access_result,
-                             /*dispatch_change=*/true,
-                             is_web_observable_change);
+        InternalInsertCookie(key, std::move(cc), true, access_result);
       }
     } else {
       DVLOG(net::cookie_util::kVlogSetCookies)
@@ -1989,7 +1971,7 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
       << "InternalDeleteCookie()"
       << ", cause:" << deletion_cause << ", cc: " << cc->DebugString();
 
-  ChangeCausePair mapping = kChangeCauseMapping[deletion_cause];
+  ChangeCausePair mapping = UNSAFE_TODO(kChangeCauseMapping[deletion_cause]);
   if (deletion_cause != DELETE_COOKIE_DONT_RECORD) {
     net_log_.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_DELETED,
                       [&](NetLogCaptureMode capture_mode) {
@@ -2047,7 +2029,7 @@ void CookieMonster::InternalDeletePartitionedCookie(
       << "InternalDeletePartitionedCookie()"
       << ", cause:" << deletion_cause << ", cc: " << cc->DebugString();
 
-  ChangeCausePair mapping = kChangeCauseMapping[deletion_cause];
+  ChangeCausePair mapping = UNSAFE_TODO(kChangeCauseMapping[deletion_cause]);
   if (deletion_cause != DELETE_COOKIE_DONT_RECORD) {
     net_log_.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_DELETED,
                       [&](NetLogCaptureMode capture_mode) {
@@ -3045,20 +3027,27 @@ CookieMonster::IsCookieSentToSamePortThatSetIt(
 
 std::optional<bool> CookieMonster::SiteHasCookieInOtherPartition(
     const net::SchemefulSite& site,
-    const CookiePartitionKey& partition_key) const {
+    const std::optional<CookiePartitionKey>& partition_key) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // If the partition key is null, it implies the partitioned cookies feature is
+  // not enabled.
+  if (!partition_key)
+    return std::nullopt;
+
   std::string domain = site.GetURL().host();
   if (store_ && !finished_fetching_all_cookies_ &&
       !keys_loaded_.count(domain)) {
     return std::nullopt;
   }
 
-  return std::ranges::any_of(partitioned_cookies_, [&](const auto& pair) {
-    const auto& [other_key, cookie_map] = pair;
-    return other_key != partition_key &&
-           !CookiePartitionKey::HasNonce(other_key) &&
-           cookie_map->contains(domain);
-  });
+  for (const auto& it : partitioned_cookies_) {
+    if (it.first == partition_key || CookiePartitionKey::HasNonce(it.first))
+      continue;
+    if (it.second->find(domain) != it.second->end()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace net

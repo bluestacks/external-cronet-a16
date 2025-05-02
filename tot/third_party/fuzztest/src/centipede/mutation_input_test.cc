@@ -20,7 +20,7 @@
 #include "gtest/gtest.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(MutationInputTest, ConvertsDataToMutationInputRefsAndBack) {
@@ -34,4 +34,4 @@ TEST(MutationInputTest, ConvertsDataToMutationInputRefsAndBack) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

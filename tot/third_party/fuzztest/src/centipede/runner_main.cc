@@ -15,6 +15,6 @@
 #include "absl/base/nullability.h"
 #include "./centipede/runner_interface.h"
 
-int main(int argc, char** absl_nonnull argv) {
+int main(int argc, absl::Nonnull<char **> argv) {
   return LLVMFuzzerRunDriver(&argc, &argv, LLVMFuzzerTestOneInput);
 }

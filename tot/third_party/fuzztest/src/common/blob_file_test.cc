@@ -25,7 +25,7 @@
 #include "./common/defs.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 std::string TempFilePath() { return TempDir("test").GetFilePath("blob_file"); }
@@ -269,4 +269,4 @@ TEST(UtilTest, AppendFile) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

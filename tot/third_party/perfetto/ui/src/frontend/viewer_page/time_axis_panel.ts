@@ -18,6 +18,7 @@ import {Size2D} from '../../base/geom';
 import {assertUnreachable} from '../../base/logging';
 import {Time, time, toISODateOnly} from '../../base/time';
 import {TimeScale} from '../../base/time_scale';
+import {timestampFormat} from '../../core/timestamp_format';
 import {TimestampFormat} from '../../public/timeline';
 import {Trace} from '../../public/trace';
 import {TRACK_SHELL_WIDTH} from '../css_constants';
@@ -66,7 +67,7 @@ export class TimeAxisPanel {
       case TimestampFormat.Milliseconds:
       case TimestampFormat.Microseconds:
       case TimestampFormat.Timecode:
-        const width = this.renderTimestamp(ctx, offset, 6, 10, MIN_PX_PER_STEP);
+        const width = renderTimestamp(ctx, offset, 6, 10, MIN_PX_PER_STEP);
         ctx.fillText('+', 6 + width + 2, 10, 6);
         break;
       case TimestampFormat.UTC:
@@ -108,63 +109,51 @@ export class TimeAxisPanel {
           const position = Math.floor(timescale.timeToPx(time));
           ctx.fillRect(position, 0, 1, size.height);
           const domainTime = this.trace.timeline.toDomainTime(time);
-          this.renderTimestamp(
-            ctx,
-            domainTime,
-            position + 5,
-            10,
-            MIN_PX_PER_STEP,
-          );
+          renderTimestamp(ctx, domainTime, position + 5, 10, MIN_PX_PER_STEP);
         }
       }
     }
   }
+}
 
-  private renderTimestamp(
-    ctx: CanvasRenderingContext2D,
-    time: time,
-    x: number,
-    y: number,
-    minWidth: number,
-  ) {
-    const fmt = this.trace.timeline.timestampFormat;
-    switch (fmt) {
-      case TimestampFormat.UTC:
-      case TimestampFormat.TraceTz:
-      case TimestampFormat.Timecode:
-        return renderTimecode(ctx, time, x, y, minWidth);
-      case TimestampFormat.TraceNs:
-        return renderRawTimestamp(ctx, time.toString(), x, y, minWidth);
-      case TimestampFormat.TraceNsLocale:
-        return renderRawTimestamp(ctx, time.toLocaleString(), x, y, minWidth);
-      case TimestampFormat.Seconds:
-        return renderRawTimestamp(
-          ctx,
-          Time.formatSeconds(time),
-          x,
-          y,
-          minWidth,
-        );
-      case TimestampFormat.Milliseconds:
-        return renderRawTimestamp(
-          ctx,
-          Time.formatMilliseconds(time),
-          x,
-          y,
-          minWidth,
-        );
-      case TimestampFormat.Microseconds:
-        return renderRawTimestamp(
-          ctx,
-          Time.formatMicroseconds(time),
-          x,
-          y,
-          minWidth,
-        );
-      default:
-        const z: never = fmt;
-        throw new Error(`Invalid timestamp ${z}`);
-    }
+function renderTimestamp(
+  ctx: CanvasRenderingContext2D,
+  time: time,
+  x: number,
+  y: number,
+  minWidth: number,
+) {
+  const fmt = timestampFormat();
+  switch (fmt) {
+    case TimestampFormat.UTC:
+    case TimestampFormat.TraceTz:
+    case TimestampFormat.Timecode:
+      return renderTimecode(ctx, time, x, y, minWidth);
+    case TimestampFormat.TraceNs:
+      return renderRawTimestamp(ctx, time.toString(), x, y, minWidth);
+    case TimestampFormat.TraceNsLocale:
+      return renderRawTimestamp(ctx, time.toLocaleString(), x, y, minWidth);
+    case TimestampFormat.Seconds:
+      return renderRawTimestamp(ctx, Time.formatSeconds(time), x, y, minWidth);
+    case TimestampFormat.Milliseconds:
+      return renderRawTimestamp(
+        ctx,
+        Time.formatMilliseconds(time),
+        x,
+        y,
+        minWidth,
+      );
+    case TimestampFormat.Microseconds:
+      return renderRawTimestamp(
+        ctx,
+        Time.formatMicroseconds(time),
+        x,
+        y,
+        minWidth,
+      );
+    default:
+      const z: never = fmt;
+      throw new Error(`Invalid timestamp ${z}`);
   }
 }
 

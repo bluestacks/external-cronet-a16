@@ -20,7 +20,7 @@
 #include <utility>  // std::pair
 #include <vector>
 
-namespace fuzztest::internal {
+namespace centipede {
 
 class RunnerFlags {
  public:
@@ -88,6 +88,6 @@ class RunnerFlags {
   std::vector<std::pair<std::string, std::string>> flags_;
 };
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_RUNNER_FLAGS_H_

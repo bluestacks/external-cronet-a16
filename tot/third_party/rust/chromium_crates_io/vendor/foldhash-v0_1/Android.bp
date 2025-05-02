@@ -60,7 +60,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -82,7 +82,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -104,7 +104,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -126,7 +126,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -148,7 +148,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -171,7 +171,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -217,7 +217,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -239,7 +239,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -261,7 +261,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -283,7 +283,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",
@@ -305,7 +305,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
             ],
             features: [
                 "std",

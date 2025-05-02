@@ -22,7 +22,7 @@
 #include "./centipede/control_flow.h"
 #include "./centipede/pc_info.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 void CallGraph::InitializeCallGraph(const CFTable &cf_table,
                                     const PCTable &pc_table) {
@@ -67,4 +67,4 @@ void CallGraph::InitializeCallGraph(const CFTable &cf_table,
   CHECK(empty_.empty());
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

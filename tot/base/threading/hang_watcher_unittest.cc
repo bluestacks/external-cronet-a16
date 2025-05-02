@@ -462,14 +462,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
                                              "BrowserProcess.UIThread.Normal"),
               ElementsAre(base::Bucket(true, /*count=*/1)));
 
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "Any"),
-              ElementsAre(base::Bucket(true, /*count=*/1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "AnyCritical"),
-              ElementsAre(base::Bucket(true, /*count=*/1)));
-
   // Reset to attempt capture again.
   hang_event_.Reset();
   monitor_event_.Reset();
@@ -478,14 +470,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
   MonitorHangs();
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
                                              "BrowserProcess.UIThread.Normal"),
-              ElementsAre(base::Bucket(true, /*count=*/2)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "Any"),
-              ElementsAre(base::Bucket(true, /*count=*/2)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "AnyCritical"),
               ElementsAre(base::Bucket(true, /*count=*/2)));
 
   // Thread types that are not monitored should not get any samples.
@@ -522,14 +506,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
                                              "BrowserProcess.IOThread.Normal"),
               IsEmpty());
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "Any"),
-              ElementsAre(base::Bucket(false, /*count=*/1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "AnyCritical"),
-              ElementsAre(base::Bucket(false, /*count=*/1)));
   JoinThread();
 }
 

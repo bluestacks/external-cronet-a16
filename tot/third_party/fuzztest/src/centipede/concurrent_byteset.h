@@ -34,7 +34,7 @@
 
 #include "absl/base/const_init.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // TODO(kcc): replace the standalone ForEachNonZeroByte with code from here.
 // TODO(kcc): ConcurrentByteSet is an unoptimized single-layer byte set.
@@ -182,6 +182,6 @@ class TwoLayerConcurrentByteSet
             absl::kConstInit) {}
 };
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_CONCURRENT_BYTESET_H_

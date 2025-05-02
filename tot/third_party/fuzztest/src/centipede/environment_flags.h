@@ -20,13 +20,13 @@
 
 #include "./centipede/environment.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // Create an Environment object from command line flags defined in
 // environment_flags.cc.
 Environment CreateEnvironmentFromFlags(
     const std::vector<std::string> &argv = {});
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_ENVIRONMENT_FLAGS_H_

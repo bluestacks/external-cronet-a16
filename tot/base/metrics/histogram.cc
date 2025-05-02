@@ -157,12 +157,11 @@ class Histogram::Factory {
 };
 
 HistogramBase* Histogram::Factory::Build() {
-  uint64_t name_hash = HashMetricName(name_);
-  HistogramBase* histogram =
-      StatisticsRecorder::FindHistogram(name_hash, name_);
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name_);
   if (!histogram) {
+    // constructor. Refactor code to avoid the additional call.
     bool should_record = StatisticsRecorder::ShouldRecordHistogram(
-        ParseMetricHashTo32Bits(name_hash));
+        HashMetricNameAs32Bits(name_));
     if (!should_record) {
       return DummyHistogram::GetInstance();
     }
@@ -194,9 +193,6 @@ HistogramBase* Histogram::Factory::Build() {
     std::unique_ptr<HistogramBase> tentative_histogram;
     PersistentHistogramAllocator* allocator = GlobalHistogramAllocator::Get();
     if (allocator) {
-      // TODO(crbug.com/394149163): AllocateHistogram ends up calling
-      // CreateHistogram, which calls HashMetricName. We already have the hash,
-      // so we could pass it in.
       tentative_histogram = allocator->AllocateHistogram(
           histogram_type_, name_, minimum_, maximum_, registered_ranges, flags_,
           &histogram_ref);
@@ -207,10 +203,6 @@ HistogramBase* Histogram::Factory::Build() {
     if (!tentative_histogram) {
       DCHECK(!histogram_ref);  // Should never have been set.
       flags_ &= ~HistogramBase::kIsPersistent;
-      // TODO(crbug.com/394149163): HeapAlloc creates a new Histogram object,
-      // which calls HashMetricName. We already have the hash, so we could pass
-      // it in. We could also store it so we can use it directly in every
-      // HeapAlloc instead of passing it as a parameter.
       tentative_histogram = HeapAlloc(registered_ranges);
       tentative_histogram->SetFlags(flags_);
     }
@@ -241,7 +233,7 @@ HistogramBase* Histogram::Factory::Build() {
     // return would cause Chrome to crash; better to just record it for later
     // analysis.
     UmaHistogramSparse("Histogram.MismatchedConstructionArguments",
-                       static_cast<Sample32>(name_hash));
+                       static_cast<Sample32>(HashMetricName(name_)));
     DLOG(ERROR) << "Histogram " << name_
                 << " has mismatched construction arguments";
     return DummyHistogram::GetInstance();

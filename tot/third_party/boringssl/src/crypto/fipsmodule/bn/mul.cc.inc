@@ -137,14 +137,15 @@ int bn_abs_sub_consttime(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
   int cl = a->width < b->width ? a->width : b->width;
   int dl = a->width - b->width;
   int r_len = a->width < b->width ? b->width : a->width;
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   BIGNUM *tmp = BN_CTX_get(ctx);
-  if (tmp == nullptr || !bn_wexpand(r, r_len) || !bn_wexpand(tmp, r_len)) {
-    return 0;
+  int ok = tmp != NULL && bn_wexpand(r, r_len) && bn_wexpand(tmp, r_len);
+  if (ok) {
+    bn_abs_sub_part_words(r->d, a->d, b->d, cl, dl, tmp->d);
+    r->width = r_len;
   }
-  bn_abs_sub_part_words(r->d, a->d, b->d, cl, dl, tmp->d);
-  r->width = r_len;
-  return 1;
+  BN_CTX_end(ctx);
+  return ok;
 }
 
 // Karatsuba recursive multiplication algorithm
@@ -376,13 +377,13 @@ static int bn_mul_impl(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
     return 1;
   }
 
-  int i, top;
+  int ret = 0, i, top;
   BIGNUM *rr;
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   if (r == a || r == b) {
     rr = BN_CTX_get(ctx);
     if (rr == NULL) {
-      return 0;
+      goto err;
     }
   } else {
     rr = r;
@@ -393,7 +394,7 @@ static int bn_mul_impl(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
   if (i == 0) {
     if (al == 8) {
       if (!bn_wexpand(rr, 16)) {
-        return 0;
+        goto err;
       }
       rr->width = 16;
       bn_mul_comba8(rr->d, a->d, b->d);
@@ -420,7 +421,7 @@ static int bn_mul_impl(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
       assert(j <= al || j <= bl);
       BIGNUM *t = BN_CTX_get(ctx);
       if (t == NULL) {
-        return 0;
+        goto err;
       }
       if (al > j || bl > j) {
         // We know |al| and |bl| are at most one from each other, so if al > j,
@@ -431,7 +432,7 @@ static int bn_mul_impl(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
         // https://boringssl-review.googlesource.com/q/I0bd604e2cd6a75c266f64476c23a730ca1721ea6
         assert(al >= j && bl >= j);
         if (!bn_wexpand(t, j * 8) || !bn_wexpand(rr, j * 4)) {
-          return 0;
+          goto err;
         }
         bn_mul_part_recursive(rr->d, a->d, b->d, j, al - j, bl - j, t->d);
       } else {
@@ -439,7 +440,7 @@ static int bn_mul_impl(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
         // of al - j or bl - j is zero. The other, by the bound on |i| above, is
         // zero or -1. Thus, we can use |bn_mul_recursive|.
         if (!bn_wexpand(t, j * 4) || !bn_wexpand(rr, j * 2)) {
-          return 0;
+          goto err;
         }
         bn_mul_recursive(rr->d, a->d, b->d, j, al - j, bl - j, t->d);
       }
@@ -449,16 +450,20 @@ static int bn_mul_impl(BIGNUM *r, const BIGNUM *a, const BIGNUM *b,
   }
 
   if (!bn_wexpand(rr, top)) {
-    return 0;
+    goto err;
   }
   rr->width = top;
   bn_mul_normal(rr->d, a->d, al, b->d, bl);
 
 end:
   if (r != rr && !BN_copy(r, rr)) {
-    return 0;
+    goto err;
   }
-  return 1;
+  ret = 1;
+
+err:
+  BN_CTX_end(ctx);
+  return ret;
 }
 
 int BN_mul(BIGNUM *r, const BIGNUM *a, const BIGNUM *b, BN_CTX *ctx) {
@@ -622,16 +627,17 @@ int bn_sqr_consttime(BIGNUM *r, const BIGNUM *a, BN_CTX *ctx) {
     return 1;
   }
 
-  bssl::BN_CTXScope scope(ctx);
+  int ret = 0, max;
+  BN_CTX_start(ctx);
   BIGNUM *rr = (a != r) ? r : BN_CTX_get(ctx);
   BIGNUM *tmp = BN_CTX_get(ctx);
   if (!rr || !tmp) {
-    return 0;
+    goto err;
   }
 
-  int max = 2 * al;  // Non-zero (from above)
+  max = 2 * al;  // Non-zero (from above)
   if (!bn_wexpand(rr, max)) {
-    return 0;
+    goto err;
   }
 
   if (al == 4) {
@@ -652,12 +658,12 @@ int bn_sqr_consttime(BIGNUM *r, const BIGNUM *a, BN_CTX *ctx) {
       // cryptographic primitives.
       if (al != 0 && (al & (al - 1)) == 0) {
         if (!bn_wexpand(tmp, al * 4)) {
-          return 0;
+          goto err;
         }
         bn_sqr_recursive(rr->d, a->d, al, tmp->d);
       } else {
         if (!bn_wexpand(tmp, max)) {
-          return 0;
+          goto err;
         }
         bn_sqr_normal(rr->d, a->d, al, tmp->d);
       }
@@ -668,9 +674,13 @@ int bn_sqr_consttime(BIGNUM *r, const BIGNUM *a, BN_CTX *ctx) {
   rr->width = max;
 
   if (rr != r && !BN_copy(r, rr)) {
-    return 0;
+    goto err;
   }
-  return 1;
+  ret = 1;
+
+err:
+  BN_CTX_end(ctx);
+  return ret;
 }
 
 int BN_sqr(BIGNUM *r, const BIGNUM *a, BN_CTX *ctx) {

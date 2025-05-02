@@ -130,8 +130,8 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -304,8 +304,8 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
+        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",

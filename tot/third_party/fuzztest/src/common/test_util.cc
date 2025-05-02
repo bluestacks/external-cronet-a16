@@ -24,7 +24,7 @@
 #include "absl/strings/str_cat.h"
 #include "./common/logging.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 std::filesystem::path GetTestTempDir(std::string_view subdir) {
   const std::filesystem::path test_tempdir = ::testing::TempDir();
@@ -83,4 +83,4 @@ void PrependDirToPathEnvvar(std::string_view dir) {
   LOG(INFO) << "New PATH: " << new_path_envvar;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

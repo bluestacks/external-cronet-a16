@@ -622,7 +622,6 @@ xmlBufFromBuffer(xmlBufferPtr buffer) {
 /**
  * xmlBufBackToBuffer:
  * @buf: new buffer wrapping the old one
- * @ret: old buffer
  *
  * Function to be called once internal processing had been done to
  * update back the buffer provided by the user. This can lead to
@@ -630,7 +629,7 @@ xmlBufFromBuffer(xmlBufferPtr buffer) {
  * than what an xmlBuffer can support on 64 bits (INT_MAX)
  * The xmlBufPtr @buf wrapper is deallocated by this call in any case.
  *
- * Returns 0 on success, -1 on error.
+ * Returns the old xmlBufferPtr unless the call failed and NULL is returned
  */
 int
 xmlBufBackToBuffer(xmlBufPtr buf, xmlBufferPtr ret) {
@@ -1092,7 +1091,7 @@ xmlBufferResize(xmlBufferPtr buf, unsigned int size)
  * Add a string range to an XML buffer. if len == -1, the length of
  * str is recomputed.
  *
- * Returns a xmlParserErrors code.
+ * Returns a xmlParserError code.
  */
 int
 xmlBufferAdd(xmlBufferPtr buf, const xmlChar *str, int len) {
@@ -1124,7 +1123,7 @@ xmlBufferAdd(xmlBufferPtr buf, const xmlChar *str, int len) {
  * Add a string range to the beginning of an XML buffer.
  * if len == -1, the length of @str is recomputed.
  *
- * Returns a xmlParserErrors code.
+ * Returns a xmlParserError code.
  */
 int
 xmlBufferAddHead(xmlBufferPtr buf, const xmlChar *str, int len) {

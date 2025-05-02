@@ -18,7 +18,7 @@
 
 #include "gtest/gtest.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(PCTableTest, SerializesAndDeserializesPCInfoSuccessfully) {
@@ -33,4 +33,4 @@ TEST(PCTableTest, SerializesAndDeserializesPCInfoSuccessfully) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

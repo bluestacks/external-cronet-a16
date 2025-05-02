@@ -700,7 +700,7 @@ xmlDictLookupInternal(xmlDictPtr dict, const xmlChar *prefix,
                       const xmlChar *name, int maybeLen, int update) {
     xmlDictEntry *entry = NULL;
     const xmlChar *ret;
-    unsigned hashValue, newSize;
+    unsigned hashValue;
     size_t maxLen, len, plen, klen;
     int found = 0;
 
@@ -727,21 +727,10 @@ xmlDictLookupInternal(xmlDictPtr dict, const xmlChar *prefix,
     /*
      * Check for an existing entry
      */
-    if (dict->size == 0) {
-        newSize = MIN_HASH_SIZE;
-    } else {
+    if (dict->size > 0)
         entry = xmlDictFindEntry(dict, prefix, name, klen, hashValue, &found);
-        if (found)
-            return(entry);
-
-        if (dict->nbElems + 1 > dict->size / MAX_FILL_DENOM * MAX_FILL_NUM) {
-            if (dict->size >= MAX_HASH_SIZE)
-                return(NULL);
-            newSize = dict->size * 2;
-        } else {
-            newSize = 0;
-        }
-    }
+    if (found)
+        return(entry);
 
     if ((dict->subdict != NULL) && (dict->subdict->size > 0)) {
         xmlDictEntry *subEntry;
@@ -765,9 +754,16 @@ xmlDictLookupInternal(xmlDictPtr dict, const xmlChar *prefix,
     /*
      * Grow the hash table if needed
      */
-    if (newSize > 0) {
-        unsigned mask, displ, pos;
+    if (dict->nbElems + 1 > dict->size / MAX_FILL_DENOM * MAX_FILL_NUM) {
+        unsigned newSize, mask, displ, pos;
 
+        if (dict->size == 0) {
+            newSize = MIN_HASH_SIZE;
+        } else {
+            if (dict->size >= MAX_HASH_SIZE)
+                return(NULL);
+            newSize = dict->size * 2;
+        }
         if (xmlDictGrow(dict, newSize) != 0)
             return(NULL);
 
@@ -952,10 +948,6 @@ xmlInitRandom(void) {
     {
         int var;
 
-
-        /*
-         * TODO: Fallback to /dev/urandom for older POSIX systems.
-         */
         globalRngState[0] =
                 (unsigned) time(NULL) ^
                 HASH_ROL((unsigned) ((size_t) &xmlInitRandom & 0xFFFFFFFF), 8);
@@ -1016,6 +1008,10 @@ xmlGlobalRandom(void) {
  */
 unsigned
 xmlRandom(void) {
+#ifdef LIBXML_THREAD_ENABLED
     return(xoroshiro64ss(xmlGetLocalRngState()));
+#else
+    return(xmlGlobalRandom());
+#endif
 }
 

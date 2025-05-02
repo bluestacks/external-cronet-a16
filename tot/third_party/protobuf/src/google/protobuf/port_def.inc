@@ -573,6 +573,8 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
 #define PROTOBUF_FINAL final
 #endif
 
+
+
 // TODO: Enable the feature by default and remove this flag.
 #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
 #error PROTOBUF_PREFETCH_PARSE_TABLE was previously defined

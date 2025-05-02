@@ -33,7 +33,7 @@
 #include "./common/defs.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 using ::testing::ElementsAre;
@@ -216,4 +216,4 @@ TEST(ExecutionResult, ReadResultSucceedsOnlyWithInputBegin) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

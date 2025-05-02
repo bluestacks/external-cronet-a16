@@ -40,7 +40,7 @@
 
 #include "./centipede/rolling_hash.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // Fixed-size ring buffer that maintains a 32-bit hash of its elements.
 // Create objects of this type as zero-initialized globals or thread-locals.
@@ -81,6 +81,6 @@ class HashedRingBuffer {
   RollingHash hash_;
 };
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // THIRD_PARTY_CENTIPEDE_HASHED_RING_BUFFER_H_

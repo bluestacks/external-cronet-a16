@@ -61,7 +61,8 @@ std::string SiteForCookies::ToDebugString() const {
 }
 
 bool SiteForCookies::IsFirstParty(const GURL& url) const {
-  return IsFirstPartyWithSchemefulMode(url, /*compute_schemefully=*/true);
+  return IsFirstPartyWithSchemefulMode(
+      url, cookie_util::IsSchemefulSameSiteEnabled());
 }
 
 bool SiteForCookies::IsFirstPartyWithSchemefulMode(
@@ -80,7 +81,15 @@ bool SiteForCookies::IsEquivalent(const SiteForCookies& other) const {
     return IsNull() && other.IsNull();
   }
 
-  return site_ == other.site_;
+  // In the case where the site has no registrable domain or host, the scheme
+  // cannot be ws(s) or http(s), so equality of sites implies actual equality of
+  // schemes (not just modulo ws-http and wss-https compatibility).
+  if (cookie_util::IsSchemefulSameSiteEnabled() ||
+      !site_.has_registrable_domain_or_host()) {
+    return site_ == other.site_;
+  }
+
+  return site_.SchemelesslyEqual(other.site_);
 }
 
 bool SiteForCookies::CompareWithFrameTreeSiteAndRevise(
@@ -134,13 +143,17 @@ GURL SiteForCookies::RepresentativeUrl() const {
 }
 
 bool SiteForCookies::IsNull() const {
-  return site_.opaque() || !schemefully_same_;
+  if (cookie_util::IsSchemefulSameSiteEnabled())
+    return site_.opaque() || !schemefully_same_;
+
+  return site_.opaque();
 }
 
 bool SiteForCookies::IsSchemefullyFirstParty(const GURL& url) const {
-  if (IsNull() || !url.is_valid()) {
+  // Can't use IsNull() as we want the same behavior regardless of
+  // SchemefulSameSite feature status.
+  if (site_.opaque() || !schemefully_same_ || !url.is_valid())
     return false;
-  }
 
   SchemefulSite other_site(url);
   other_site.ConvertWebSocketToHttp();
@@ -148,6 +161,8 @@ bool SiteForCookies::IsSchemefullyFirstParty(const GURL& url) const {
 }
 
 bool SiteForCookies::IsSchemelesslyFirstParty(const GURL& url) const {
+  // Can't use IsNull() as we want the same behavior regardless of
+  // SchemefulSameSite feature status.
   if (site_.opaque() || !url.is_valid())
     return false;
 

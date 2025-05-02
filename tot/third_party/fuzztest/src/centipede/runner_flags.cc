@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace fuzztest::internal {
+namespace centipede {
 
 RunnerFlags::RunnerFlags(const std::string& runner_flags_string) {
   size_t pos = 0;
@@ -82,4 +82,4 @@ std::string RunnerFlags::ToString() const {
   return output;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

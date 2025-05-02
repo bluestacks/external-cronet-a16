@@ -31,7 +31,7 @@
 #include "./centipede/util.h"
 #include "./common/test_util.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 namespace {
 
 TEST(CommandTest, ToString) {
@@ -200,4 +200,4 @@ TEST(CommandTest, ForkServer) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede

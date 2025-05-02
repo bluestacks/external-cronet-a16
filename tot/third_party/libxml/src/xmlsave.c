@@ -83,10 +83,8 @@ xmlSaveErr(xmlOutputBufferPtr out, int code, xmlNodePtr node,
     const char *msg = NULL;
     int res;
 
-    /* Don't overwrite catastrophic errors */
-    if ((out != NULL) &&
-        (out->error != XML_ERR_OK) &&
-        (xmlIsCatastrophicError(XML_ERR_FATAL, out->error)))
+    /* Don't overwrite memory errors */
+    if ((out != NULL) && (out->error == XML_ERR_NO_MEMORY))
         return;
 
     if (code == XML_ERR_NO_MEMORY) {
@@ -319,7 +317,7 @@ xmlNewSaveCtxt(const char *encoding, int options)
     memset(ret, 0, sizeof(xmlSaveCtxt));
 
     if (encoding != NULL) {
-        xmlParserErrors res;
+        int res;
 
         res = xmlOpenCharEncodingHandler(encoding, /* output */ 1,
                                          &ret->handler);
@@ -771,7 +769,7 @@ static int xmlSaveSwitchEncoding(xmlSaveCtxtPtr ctxt, const char *encoding) {
 
     if ((encoding != NULL) && (buf->encoder == NULL) && (buf->conv == NULL)) {
         xmlCharEncodingHandler *handler;
-        xmlParserErrors res;
+        int res;
 
 	res = xmlOpenCharEncodingHandler(encoding, /* output */ 1, &handler);
         if (res != XML_ERR_OK) {
@@ -1713,14 +1711,10 @@ xhtmlNodeDumpOutput(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
                 tmp = cur->children;
                 while (tmp != NULL) {
                     if (xmlStrEqual(tmp->name, BAD_CAST"meta")) {
-                        int res;
                         xmlChar *httpequiv;
 
-                        res = xmlNodeGetAttrValue(tmp, BAD_CAST "http-equiv",
-                                                  NULL, &httpequiv);
-                        if (res < 0) {
-                            xmlSaveErrMemory(buf);
-                        } else if (res == 0) {
+                        httpequiv = xmlGetProp(tmp, BAD_CAST"http-equiv");
+                        if (httpequiv != NULL) {
                             if (xmlStrcasecmp(httpequiv,
                                         BAD_CAST"Content-Type") == 0) {
                                 xmlFree(httpequiv);
@@ -2196,21 +2190,15 @@ xmlSaveClose(xmlSaveCtxtPtr ctxt)
  *
  * Returns an xmlParserErrors code.
  */
-xmlParserErrors
+int
 xmlSaveFinish(xmlSaveCtxtPtr ctxt)
 {
     int ret;
 
     if (ctxt == NULL)
         return(XML_ERR_INTERNAL_ERROR);
-
-    ret = xmlOutputBufferClose(ctxt->buf);
-    ctxt->buf = NULL;
-    if (ret < 0)
-        ret = -ret;
-    else
-        ret = XML_ERR_OK;
-
+    xmlSaveFlush(ctxt);
+    ret = ctxt->buf->error;
     xmlFreeSaveCtxt(ctxt);
     return(ret);
 }
@@ -2549,7 +2537,7 @@ xmlDocDumpFormatMemoryEnc(xmlDocPtr out_doc, xmlChar **doc_txt_ptr,
     if (txt_encoding == NULL)
 	txt_encoding = (const char *) out_doc->encoding;
     if (txt_encoding != NULL) {
-        xmlParserErrors res;
+        int res;
 
 	res = xmlOpenCharEncodingHandler(txt_encoding, /* output */ 1,
                                          &conv_hdlr);
@@ -2671,7 +2659,7 @@ xmlDocFormatDump(FILE *f, xmlDocPtr cur, int format) {
     encoding = (const char *) cur->encoding;
 
     if (encoding != NULL) {
-        xmlParserErrors res;
+        int res;
 
 	res = xmlOpenCharEncodingHandler(encoding, /* output */ 1, &handler);
 	if (res != XML_ERR_OK) {
@@ -2817,7 +2805,7 @@ xmlSaveFormatFileEnc( const char * filename, xmlDocPtr cur,
 	encoding = (const char *) cur->encoding;
 
     if (encoding != NULL) {
-        xmlParserErrors res;
+        int res;
 
         res = xmlOpenCharEncodingHandler(encoding, /* output */ 1, &handler);
         if (res != XML_ERR_OK)

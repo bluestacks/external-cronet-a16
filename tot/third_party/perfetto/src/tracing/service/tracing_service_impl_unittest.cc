@@ -3038,8 +3038,8 @@ TEST_F(TracingServiceImplTest, CommitToForbiddenBufferIsDiscarded) {
   BufferID buf1 = ds2->target_buffer;
 
   // Try to write to the correct buffer.
-  std::unique_ptr<TraceWriter> writer = producer->endpoint()->CreateTraceWriter(
-      buf0, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer =
+      producer->endpoint()->CreateTraceWriter(buf0);
   {
     auto tp = writer->NewTracePacket();
     tp->set_for_testing()->set_str("good_payload");
@@ -3060,8 +3060,7 @@ TEST_F(TracingServiceImplTest, CommitToForbiddenBufferIsDiscarded) {
   ASSERT_TRUE(flush_request.WaitForReply());
 
   // Try to write to the wrong buffer.
-  writer = producer->endpoint()->CreateTraceWriter(
-      buf1, BufferExhaustedPolicy::kStall);
+  writer = producer->endpoint()->CreateTraceWriter(buf1);
   {
     auto tp = writer->NewTracePacket();
     tp->set_for_testing()->set_str("bad_payload");
@@ -3288,8 +3287,8 @@ TEST_F(TracingServiceImplTest, ScrapeBuffersOnProducerDisconnect) {
 
   const auto* ds_inst = producer->GetDataSourceInstance("data_source");
   ASSERT_NE(nullptr, ds_inst);
-  std::unique_ptr<TraceWriter> writer = shmem_arbiter->CreateTraceWriter(
-      ds_inst->target_buffer, BufferExhaustedPolicy::kStall);
+  std::unique_ptr<TraceWriter> writer =
+      shmem_arbiter->CreateTraceWriter(ds_inst->target_buffer);
   // Wait for the TraceWriter to be registered.
   task_runner.RunUntilIdle();
 
@@ -3417,8 +3416,7 @@ class TracingServiceImplScrapingWithSmbTest : public TracingServiceImplTest {
 
     target_buffer_ = ds->target_buffer;
 
-    writer_ = arbiter_->CreateTraceWriter(target_buffer_,
-                                          BufferExhaustedPolicy::kStall);
+    writer_ = arbiter_->CreateTraceWriter(target_buffer_);
     // Wait for the writer to be registered.
     task_runner.RunUntilIdle();
   }

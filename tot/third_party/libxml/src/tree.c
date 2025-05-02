@@ -38,11 +38,13 @@
 #ifdef LIBXML_HTML_ENABLED
 #include <libxml/HTMLtree.h>
 #endif
+#ifdef LIBXML_DEBUG_ENABLED
+#include <libxml/debugXML.h>
+#endif
 
 #include "private/buf.h"
 #include "private/entities.h"
 #include "private/error.h"
-#include "private/memory.h"
 #include "private/tree.h"
 
 /*
@@ -3303,7 +3305,7 @@ xmlAddChildList(xmlNodePtr parent, xmlNodePtr cur) {
  *
  * If @cur is an attribute node, it is appended to the attributes of
  * @parent. If the attribute list contains an attribute with a name
- * matching @cur, the old attribute is destroyed.
+ * matching @elem, the old attribute is destroyed.
  *
  * General notes:
  *
@@ -3330,7 +3332,7 @@ xmlAddChildList(xmlNodePtr parent, xmlNodePtr cur) {
  *
  * Moving DTDs between documents isn't supported.
  *
- * Returns @cur or a sibling if @cur was merged. Returns NULL
+ * Returns @elem or a sibling if @elem was merged. Returns NULL
  * if arguments are invalid or a memory allocation failed.
  */
 xmlNodePtr
@@ -4677,7 +4679,7 @@ xmlGetLineNoInternal(const xmlNode *node, int depth)
 	(node->type == XML_PI_NODE)) {
 	if (node->line == 65535) {
 	    if ((node->type == XML_TEXT_NODE) && (node->psvi != NULL))
-	        result = XML_PTR_TO_INT(node->psvi);
+	        result = (long) (ptrdiff_t) node->psvi;
 	    else if ((node->type == XML_ELEMENT_NODE) &&
 	             (node->children != NULL))
 	        result = xmlGetLineNoInternal(node->children, depth + 1);
@@ -4687,7 +4689,7 @@ xmlGetLineNoInternal(const xmlNode *node, int depth)
 	        result = xmlGetLineNoInternal(node->prev, depth + 1);
 	}
 	if ((result == -1) || (result == 65535))
-	    result = node->line;
+	    result = (long) node->line;
     } else if ((node->prev != NULL) &&
              ((node->prev->type == XML_ELEMENT_NODE) ||
 	      (node->prev->type == XML_TEXT_NODE) ||
@@ -4730,8 +4732,8 @@ xmlChar *
 xmlGetNodePath(const xmlNode *node)
 {
     const xmlNode *cur, *tmp, *next;
-    xmlChar *buffer = NULL;
-    size_t buf_len, len;
+    xmlChar *buffer = NULL, *temp;
+    size_t buf_len;
     xmlChar *buf;
     const char *sep;
     const char *name;
@@ -4928,36 +4930,23 @@ xmlGetNodePath(const xmlNode *node)
         /*
          * Make sure there is enough room
          */
-        len = strlen((const char *) buffer);
-        if (buf_len - len < sizeof(nametemp) + 20) {
-            xmlChar *temp;
-            int newSize;
-
-            if ((buf_len > SIZE_MAX / 2) ||
-                (2 * buf_len > SIZE_MAX - len - sizeof(nametemp) - 20)) {
-                xmlFree(buf);
-                xmlFree(buffer);
-                return (NULL);
-            }
-            newSize = 2 * buf_len + len + sizeof(nametemp) + 20;
-
-            temp = xmlRealloc(buffer, newSize);
+        if (xmlStrlen(buffer) + sizeof(nametemp) + 20 > buf_len) {
+            buf_len =
+                2 * buf_len + xmlStrlen(buffer) + sizeof(nametemp) + 20;
+            temp = (xmlChar *) xmlRealloc(buffer, buf_len);
             if (temp == NULL) {
                 xmlFree(buf);
                 xmlFree(buffer);
                 return (NULL);
             }
             buffer = temp;
-
-            temp = xmlRealloc(buf, newSize);
+            temp = (xmlChar *) xmlRealloc(buf, buf_len);
             if (temp == NULL) {
                 xmlFree(buf);
                 xmlFree(buffer);
                 return (NULL);
             }
             buf = temp;
-
-            buf_len = newSize;
         }
         if (occur == 0)
             snprintf((char *) buf, buf_len, "%s%s%s",
@@ -5790,21 +5779,15 @@ xmlNodeAddContent(xmlNodePtr cur, const xmlChar *content) {
  * @first:  the first text node
  * @second:  the second text node being merged
  *
- * Merge the second text node into the first. If @first is NULL,
- * @second is returned. Otherwise, the second node is unlinked and
- * freed.
+ * Merge the second text node into the first. The second node is
+ * unlinked and freed.
  *
  * Returns the first text node augmented or NULL in case of error.
  */
 xmlNodePtr
 xmlTextMerge(xmlNodePtr first, xmlNodePtr second) {
-    if (first == NULL)
-        return(second);
-    if (second == NULL)
-        return(first);
-
-    if ((first->type != XML_TEXT_NODE) ||
-        (second->type != XML_TEXT_NODE) ||
+    if ((first == NULL) || (first->type != XML_TEXT_NODE) ||
+        (second == NULL) || (second->type != XML_TEXT_NODE) ||
         (first == second) ||
         (first->name != second->name))
 	return(NULL);
@@ -5860,26 +5843,16 @@ xmlGetNsListSafe(const xmlDoc *doc ATTRIBUTE_UNUSED, const xmlNode *node,
                 if (i >= nbns) {
                     if (nbns >= maxns) {
                         xmlNsPtr *tmp;
-                        int newSize;
 
-                        newSize = xmlGrowCapacity(maxns, sizeof(tmp[0]),
-                                                  10, XML_MAX_ITEMS);
-                        if (newSize < 0) {
-                            xmlFree(namespaces);
-                            return(-1);
-                        }
-#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-                        if (newSize < 2)
-                            newSize = 2;
-#endif
-                        tmp = xmlRealloc(namespaces,
-                                         (newSize + 1) * sizeof(tmp[0]));
+                        maxns = maxns ? maxns * 2 : 10;
+                        tmp = (xmlNsPtr *) xmlRealloc(namespaces,
+                                                      (maxns + 1) *
+                                                      sizeof(xmlNsPtr));
                         if (tmp == NULL) {
                             xmlFree(namespaces);
                             return(-1);
                         }
                         namespaces = tmp;
-                        maxns = newSize;
                     }
                     namespaces[nbns++] = cur;
                     namespaces[nbns] = NULL;
@@ -6300,24 +6273,6 @@ typedef struct {
     xmlNsPtr newNs;
 } xmlNsCache;
 
-static int
-xmlGrowNsCache(xmlNsCache **cache, int *capacity) {
-    xmlNsCache *tmp;
-    int newSize;
-
-    newSize = xmlGrowCapacity(*capacity, sizeof(tmp[0]),
-                              10, XML_MAX_ITEMS);
-    if (newSize < 0)
-        return(-1);
-    tmp = xmlRealloc(*cache, newSize * sizeof(tmp[0]));
-    if (tmp == NULL)
-        return(-1);
-    *cache = tmp;
-    *capacity = newSize;
-
-    return(0);
-}
-
 /**
  * xmlReconciliateNs:
  * @doc:  the document
@@ -6368,10 +6323,19 @@ xmlReconciliateNs(xmlDocPtr doc, xmlNodePtr tree) {
 		    /*
 		     * check if we need to grow the cache buffers.
 		     */
-		    if ((sizeCache <= nbCache) &&
-                        (xmlGrowNsCache(&cache, &sizeCache) < 0)) {
-                        ret = -1;
-		    } else {
+		    if (sizeCache <= nbCache) {
+                        xmlNsCache *tmp;
+                        size_t newSize = sizeCache ? sizeCache * 2 : 10;
+
+			tmp = xmlRealloc(cache, newSize * sizeof(tmp[0]));
+		        if (tmp == NULL) {
+                            ret = -1;
+			} else {
+                            cache = tmp;
+                            sizeCache = newSize;
+                        }
+		    }
+		    if (nbCache < sizeCache) {
                         cache[nbCache].newNs = n;
                         cache[nbCache++].oldNs = node->ns;
                     }
@@ -6403,10 +6367,21 @@ xmlReconciliateNs(xmlDocPtr doc, xmlNodePtr tree) {
 			    /*
 			     * check if we need to grow the cache buffers.
 			     */
-                            if ((sizeCache <= nbCache) &&
-                                (xmlGrowNsCache(&cache, &sizeCache) < 0)) {
-                                ret = -1;
-                            } else {
+			    if (sizeCache <= nbCache) {
+                                xmlNsCache *tmp;
+                                size_t newSize = sizeCache ?
+                                        sizeCache * 2 : 10;
+
+                                tmp = xmlRealloc(cache,
+                                        newSize * sizeof(tmp[0]));
+                                if (tmp == NULL) {
+                                    ret = -1;
+                                } else {
+                                    cache = tmp;
+                                    sizeCache = newSize;
+                                }
+			    }
+			    if (nbCache < sizeCache) {
                                 cache[nbCache].newNs = n;
                                 cache[nbCache++].oldNs = attr->ns;
 			    }
@@ -7413,11 +7388,9 @@ xmlDOMWrapNSNormAddNsMapItem2(xmlNsPtr **list, int *size, int *number,
 {
     if (*number >= *size) {
         xmlNsPtr *tmp;
-        int newSize;
+        size_t newSize;
 
-        newSize = xmlGrowCapacity(*size, 2 * sizeof(tmp[0]), 3, XML_MAX_ITEMS);
-        if (newSize < 0)
-            return(-1);
+        newSize = *size ? *size * 2 : 3;
         tmp = xmlRealloc(*list, newSize * 2 * sizeof(tmp[0]));
         if (tmp == NULL)
             return(-1);
@@ -8632,7 +8605,8 @@ xmlDOMWrapCloneNode(xmlDOMWrapCtxtPtr ctxt,
 		/*
 		* Attributes (xmlAttr).
 		*/
-		clone = xmlMalloc(sizeof(xmlAttr));
+                /* Use xmlRealloc to avoid -Warray-bounds warning */
+		clone = (xmlNodePtr) xmlRealloc(NULL, sizeof(xmlAttr));
 		if (clone == NULL)
 		    goto internal_error;
 		memset(clone, 0, sizeof(xmlAttr));

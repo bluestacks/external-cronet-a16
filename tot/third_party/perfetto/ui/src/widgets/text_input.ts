@@ -39,9 +39,7 @@ export class TextInput implements m.ClassComponent<TextInputAttrs> {
 
     return m(
       '.pf-text-input', // Add a wrapper div
-      {
-        className,
-      },
+      className,
       leftIcon &&
         m(Icon, {icon: leftIcon, className: 'pf-text-input__left-icon'}), // Conditionally render icon
       m('input.pf-text-input__input', {

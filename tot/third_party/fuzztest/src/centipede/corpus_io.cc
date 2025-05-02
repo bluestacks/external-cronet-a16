@@ -36,7 +36,7 @@
 #include "./common/logging.h"
 #include "./common/remote_file.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 void ReadShard(std::string_view corpus_path, std::string_view features_path,
                const std::function<void(ByteArray, FeatureVec)> &callback) {
@@ -154,4 +154,4 @@ void ExportCorpus(absl::Span<const std::string> sharded_file_paths,
   }
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

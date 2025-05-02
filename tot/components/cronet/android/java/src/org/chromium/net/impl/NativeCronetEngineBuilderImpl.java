@@ -7,7 +7,6 @@ package org.chromium.net.impl;
 import android.content.Context;
 import android.os.SystemClock;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.impl.CronetLogger.CronetSource;
@@ -32,7 +31,7 @@ public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
 
     private static CronetSource computeCronetSource() {
         ClassLoader implClassLoader = CronetEngineBuilderImpl.class.getClassLoader();
-        if (BuildConfig.CRONET_FOR_AOSP_BUILD) {
+        if (implClassLoader.toString().startsWith("java.lang.BootClassLoader")) {
             return CronetSource.CRONET_SOURCE_PLATFORM;
         }
 

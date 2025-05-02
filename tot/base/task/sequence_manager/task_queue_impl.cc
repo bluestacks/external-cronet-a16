@@ -1548,24 +1548,30 @@ void TaskQueueImpl::RemoveCancelledTasks() {
   // acceptable not to have synchronization around the calls to set these crash
   // keys (and since this code only exists temporarily to diagnose a bug, it's
   // not worthwhile to add such synchronization).
-  static auto* pre_remove_cancelled_tasks_immediate_incoming_queue_size =
-      debug::AllocateCrashKeyString("pre_rct_immediate_incoming_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* pre_remove_cancelled_tasks_immediate_work_queue_size =
-      debug::AllocateCrashKeyString("pre_rct_immediate_work_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* pre_remove_cancelled_tasks_delayed_work_queue_size =
-      debug::AllocateCrashKeyString("pre_rct_delayed_work_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* post_remove_cancelled_tasks_immediate_incoming_queue_size =
-      debug::AllocateCrashKeyString("post_rct_immediate_incoming_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* post_remove_cancelled_tasks_immediate_work_queue_size =
-      debug::AllocateCrashKeyString("post_rct_immediate_work_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* post_remove_cancelled_tasks_delayed_work_queue_size =
-      debug::AllocateCrashKeyString("post_rct_delayed_work_queue_size",
-                                    debug::CrashKeySize::Size32);
+  static auto* before_remove_cancelled_tasks_immediate_incoming_queue_size =
+      debug::AllocateCrashKeyString(
+          "before_remove_cancelled_tasks_immediate_incoming_queue_size",
+          debug::CrashKeySize::Size32);
+  static auto* before_remove_cancelled_tasks_immediate_work_queue_size =
+      debug::AllocateCrashKeyString(
+          "before_remove_cancelled_tasks_immediate_work_queue_size",
+          debug::CrashKeySize::Size32);
+  static auto* before_remove_cancelled_tasks_delayed_work_queue_size =
+      debug::AllocateCrashKeyString(
+          "before_remove_cancelled_tasks_delayed_work_queue_size",
+          debug::CrashKeySize::Size32);
+  static auto* after_remove_cancelled_tasks_immediate_incoming_queue_size =
+      debug::AllocateCrashKeyString(
+          "after_remove_cancelled_tasks_immediate_incoming_queue_size",
+          debug::CrashKeySize::Size32);
+  static auto* after_remove_cancelled_tasks_immediate_work_queue_size =
+      debug::AllocateCrashKeyString(
+          "after_remove_cancelled_tasks_immediate_work_queue_size",
+          debug::CrashKeySize::Size32);
+  static auto* after_remove_cancelled_tasks_delayed_work_queue_size =
+      debug::AllocateCrashKeyString(
+          "after_remove_cancelled_tasks_delayed_work_queue_size",
+          debug::CrashKeySize::Size32);
 #endif  // !BUILDFLAG(IS_NACL)
 
   // Because callback destructors could have a side-effect of posting new tasks,
@@ -1577,7 +1583,7 @@ void TaskQueueImpl::RemoveCancelledTasks() {
 
 #if !BUILDFLAG(IS_NACL)
     debug::SetCrashKeyString(
-        pre_remove_cancelled_tasks_immediate_incoming_queue_size,
+        before_remove_cancelled_tasks_immediate_incoming_queue_size,
         NumberToString(any_thread_.immediate_incoming_queue.size()));
 #endif  // !BUILDFLAG(IS_NACL)
 
@@ -1591,32 +1597,32 @@ void TaskQueueImpl::RemoveCancelledTasks() {
 
 #if !BUILDFLAG(IS_NACL)
     debug::SetCrashKeyString(
-        post_remove_cancelled_tasks_immediate_incoming_queue_size,
+        after_remove_cancelled_tasks_immediate_incoming_queue_size,
         NumberToString(any_thread_.immediate_incoming_queue.size()));
 #endif  // !BUILDFLAG(IS_NACL)
   }
 
 #if !BUILDFLAG(IS_NACL)
   debug::SetCrashKeyString(
-      pre_remove_cancelled_tasks_immediate_work_queue_size,
+      before_remove_cancelled_tasks_immediate_work_queue_size,
       NumberToString(main_thread_only_.immediate_work_queue->Size()));
 #endif  // !BUILDFLAG(IS_NACL)
   main_thread_only_.immediate_work_queue->RemoveCancelledTasks(
       WorkQueue::RemoveCancelledTasksPolicy::kAll);
 #if !BUILDFLAG(IS_NACL)
   debug::SetCrashKeyString(
-      post_remove_cancelled_tasks_immediate_work_queue_size,
+      after_remove_cancelled_tasks_immediate_work_queue_size,
       NumberToString(main_thread_only_.immediate_work_queue->Size()));
 
   debug::SetCrashKeyString(
-      pre_remove_cancelled_tasks_delayed_work_queue_size,
+      before_remove_cancelled_tasks_delayed_work_queue_size,
       NumberToString(main_thread_only_.delayed_work_queue->Size()));
 #endif  // !BUILDFLAG(IS_NACL)
   main_thread_only_.delayed_work_queue->RemoveCancelledTasks(
       WorkQueue::RemoveCancelledTasksPolicy::kAll);
 #if !BUILDFLAG(IS_NACL)
   debug::SetCrashKeyString(
-      post_remove_cancelled_tasks_delayed_work_queue_size,
+      after_remove_cancelled_tasks_delayed_work_queue_size,
       NumberToString(main_thread_only_.delayed_work_queue->Size()));
 #endif  // !BUILDFLAG(IS_NACL)
 }

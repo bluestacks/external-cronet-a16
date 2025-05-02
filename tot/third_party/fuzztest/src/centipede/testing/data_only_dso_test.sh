@@ -19,21 +19,21 @@ set -eu
 
 source "$(dirname "$0")/../test_util.sh"
 
-CENTIPEDE_TEST_SRCDIR="$(fuzztest::internal::get_centipede_test_srcdir)"
+CENTIPEDE_TEST_SRCDIR="$(centipede::get_centipede_test_srcdir)"
 
-fuzztest::internal::maybe_set_var_to_executable_path \
+centipede::maybe_set_var_to_executable_path \
   CENTIPEDE_BINARY "${CENTIPEDE_TEST_SRCDIR}/centipede"
 
-fuzztest::internal::maybe_set_var_to_executable_path \
+centipede::maybe_set_var_to_executable_path \
   TARGET_BINARY "${CENTIPEDE_TEST_SRCDIR}/testing/data_only_dso_target"
 
-fuzztest::internal::maybe_set_var_to_executable_path \
-  LLVM_SYMBOLIZER "$(fuzztest::internal::get_llvm_symbolizer_path)"
+centipede::maybe_set_var_to_executable_path \
+  LLVM_SYMBOLIZER "$(centipede::get_llvm_symbolizer_path)"
 
 # Run fuzzing until the first crash.
 declare -r WD="${TEST_TMPDIR}/WD"
 declare -r LOG="${TEST_TMPDIR}/log"
-fuzztest::internal::ensure_empty_dir "${WD}"
+centipede::ensure_empty_dir "${WD}"
 
 "${CENTIPEDE_BINARY}" --binary="${TARGET_BINARY}" --workdir="${WD}" \
   --exit_on_crash=1 --seed=1 --log_features_shards=1 \
@@ -42,8 +42,8 @@ fuzztest::internal::ensure_empty_dir "${WD}"
 
 echo "Fuzzing DONE"
 
-fuzztest::internal::assert_regex_in_file "Batch execution failed:" "${LOG}"
-fuzztest::internal::assert_regex_in_file "Input bytes.*: GoCrash" "${LOG}"
-fuzztest::internal::assert_regex_in_file "Symbolizing 1 instrumented DSOs" "${LOG}"
+centipede::assert_regex_in_file "Batch execution failed:" "${LOG}"
+centipede::assert_regex_in_file "Input bytes.*: GoCrash" "${LOG}"
+centipede::assert_regex_in_file "Symbolizing 1 instrumented DSOs" "${LOG}"
 
 echo "PASS"

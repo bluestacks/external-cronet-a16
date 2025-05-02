@@ -156,7 +156,7 @@ class NET_EXPORT ParsedCookie {
   static bool CookieAttributeValueHasValidCharSet(const std::string& value);
 
   // Is the string less than the size limits set for attribute values?
-  static bool CookieAttributeValueHasValidSize(std::string_view value);
+  static bool CookieAttributeValueHasValidSize(const std::string& value);
 
   // Returns `true` if the name and value combination are valid. Calls
   // IsValidCookieName() and IsValidCookieValue() on `name` and `value`

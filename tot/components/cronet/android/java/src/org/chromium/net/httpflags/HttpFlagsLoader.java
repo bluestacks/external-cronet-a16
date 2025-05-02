@@ -10,11 +10,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.impl.CronetManifest;
 
@@ -78,16 +78,15 @@ public final class HttpFlagsLoader {
             if (providerApplicationInfo == null) return null;
             Log.d(
                     TAG,
-                    String.format(
-                            "Found application exporting HTTP flags: %s",
-                            providerApplicationInfo.packageName));
+                    "Found application exporting HTTP flags: %s",
+                    providerApplicationInfo.packageName);
 
             File flagsFile = getFlagsFileFromProvider(providerApplicationInfo);
-            Log.d(TAG, String.format("HTTP flags file path: %s", flagsFile.getAbsolutePath()));
+            Log.d(TAG, "HTTP flags file path: %s", flagsFile.getAbsolutePath());
 
             Flags flags = loadFlagsFile(flagsFile);
             if (flags == null) return null;
-            Log.d(TAG, String.format("Successfully loaded HTTP flags: %s", flags));
+            Log.d(TAG, "Successfully loaded HTTP flags: %s", flags);
 
             return flags;
         } catch (RuntimeException exception) {
@@ -132,9 +131,9 @@ public final class HttpFlagsLoader {
                 if (logMe != null) {
                     Log.i(
                             TAG,
-                            String.format(
-                                    "HTTP flags log line (%s): %s",
-                                    isLoadedFromApi ? "API" : "Impl", logMe.getStringValue()));
+                            "HTTP flags log line (%s): %s",
+                            isLoadedFromApi ? "API" : "Impl",
+                            logMe.getStringValue());
                 }
                 return sHttpFlags;
             }
@@ -185,10 +184,9 @@ public final class HttpFlagsLoader {
             } catch (FileNotFoundException exception) {
                 Log.i(
                         TAG,
-                        String.format(
-                                "HTTP flags file `%s` is missing. This is expected if HTTP flags"
-                                    + " functionality is currently disabled in the host system.",
-                                file.getPath()));
+                        "HTTP flags file `%s` is missing. This is expected if HTTP flags"
+                                + " functionality is currently disabled in the host system.",
+                        file.getPath());
                 return null;
             } catch (IOException exception) {
                 throw new RuntimeException("Unable to read HTTP flags file", exception);

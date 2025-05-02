@@ -25,10 +25,9 @@ ABSL_FLAG(bool, simulate_failure, false,
           "If true, the binary will return EXIT_FAILURE to simulate a "
           "failure.");
 
-using fuzztest::internal::ByteSpan;
+using ::centipede::ByteSpan;
 
-class FakeSerializedConfigRunnerCallbacks
-    : public fuzztest::internal::RunnerCallbacks {
+class FakeSerializedConfigRunnerCallbacks : public centipede::RunnerCallbacks {
  public:
   // Trivial implementations for the execution and mutation logic, even though
   // they should not be used in the tests that use this test binary.
@@ -40,11 +39,11 @@ class FakeSerializedConfigRunnerCallbacks
   }
 };
 
-int main(int argc, char** absl_nonnull argv) {
+int main(int argc, absl::Nonnull<char **> argv) {
   absl::ParseCommandLine(argc, argv);
   if (absl::GetFlag(FLAGS_simulate_failure)) {
     return EXIT_FAILURE;
   }
   FakeSerializedConfigRunnerCallbacks runner_callbacks;
-  return fuzztest::internal::RunnerMain(argc, argv, runner_callbacks);
+  return centipede::RunnerMain(argc, argv, runner_callbacks);
 }

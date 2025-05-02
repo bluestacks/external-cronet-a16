@@ -6,12 +6,14 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <ostream>
 #include <string>
 
 #include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/span.h"
 #include "openssl/siphash.h"
 #include "quiche/quic/core/crypto/quic_random.h"
 #include "quiche/common/platform/api/quiche_logging.h"
@@ -70,9 +72,6 @@ QuicConnectionId::QuicConnectionId(const char* data, uint8_t length) {
 QuicConnectionId::QuicConnectionId(const absl::Span<const uint8_t> data)
     : QuicConnectionId(reinterpret_cast<const char*>(data.data()),
                        data.length()) {}
-
-QuicConnectionId::QuicConnectionId(absl::string_view data)
-    : QuicConnectionId(data.data(), data.length()) {}
 
 QuicConnectionId::~QuicConnectionId() {
   if (length_ > sizeof(data_short_)) {

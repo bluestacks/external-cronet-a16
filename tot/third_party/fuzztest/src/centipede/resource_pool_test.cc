@@ -29,7 +29,7 @@
 #include "./centipede/thread_pool.h"
 #include "./common/logging.h"
 
-namespace fuzztest::internal {
+namespace centipede::perf {
 namespace {
 
 constexpr RUsageMemory MakeMemRss(MemSize mem_rss) {
@@ -152,4 +152,4 @@ TEST(ResourcePoolTest, Dynamic) {
 }
 
 }  // namespace
-}  // namespace fuzztest::internal
+}  // namespace centipede::perf

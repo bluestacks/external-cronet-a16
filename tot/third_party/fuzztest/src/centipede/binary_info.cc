@@ -32,7 +32,7 @@
 #include "./centipede/util.h"
 #include "./common/remote_file.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace {
 constexpr std::string_view kSymbolTableFileName = "symbol-table";
@@ -163,4 +163,4 @@ void BinaryInfo::Write(std::string_view dir) {
       cf_table_stream.str()));
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

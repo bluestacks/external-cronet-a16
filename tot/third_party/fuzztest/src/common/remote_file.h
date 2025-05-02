@@ -47,7 +47,7 @@
 #endif
 #endif
 
-namespace fuzztest::internal {
+namespace centipede {
 
 // An opaque file handle.
 struct RemoteFile {};
@@ -156,6 +156,6 @@ absl::StatusOr<std::unique_ptr<riegeli::Writer>> CreateRiegeliFileWriter(
     std::string_view file_path, bool append);
 #endif  // CENTIPEDE_DISABLE_RIEGELI
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // FUZZTEST_COMMON_REMOTE_FILE_H_

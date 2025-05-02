@@ -34,23 +34,16 @@ else:
   basestring_compat = str
 
 
-def GetProvisioningProfilesDirs():
+def GetProvisioningProfilesDir():
   """Returns the location of the installed mobile provisioning profiles.
 
   Returns:
-    The paths to the directory containing the installed mobile provisioning
+    The path to the directory containing the installed mobile provisioning
     profiles as a string.
   """
-  paths = []
-  paths.append(
-      os.path.join(os.environ['HOME'], 'Library', 'MobileDevice',
-                   'Provisioning Profiles'))
-  # For Xcode 16 and later, include the new location,
-  # `~/Library/Developer/Xcode/UserData/Provisioning Profiles`.
-  paths.append(
-      os.path.join(os.environ['HOME'], 'Library', 'Developer', 'Xcode',
-                   'UserData', 'Provisioning Profiles'))
-  return paths
+  return os.path.join(
+      os.environ['HOME'], 'Library', 'MobileDevice', 'Provisioning Profiles')
+
 
 def ReadPlistFromString(plist_bytes):
   """Parse property list from given |plist_bytes|.
@@ -309,9 +302,8 @@ def FindProvisioningProfile(provisioning_profile_paths, bundle_identifier,
     object or None if no matching provisioning profile was found.
   """
   if not provisioning_profile_paths:
-    for path in GetProvisioningProfilesDirs():
-      provisioning_profile_paths.extend(
-          glob.glob(os.path.join(path, '*.mobileprovision')))
+    provisioning_profile_paths = glob.glob(
+        os.path.join(GetProvisioningProfilesDir(), '*.mobileprovision'))
 
   # Iterate over all installed mobile provisioning profiles and filter those
   # that can be used to sign the bundle, ignoring expired ones.

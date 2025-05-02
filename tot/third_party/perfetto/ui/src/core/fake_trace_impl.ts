@@ -55,14 +55,11 @@ export function createFakeTraceImpl(args: FakeTraceImplArgs = {}) {
     cached: false,
     downloadable: false,
   };
-  AppImpl.instance.closeCurrentTrace();
-  const trace = TraceImpl.createInstanceForCore(
+  return TraceImpl.createInstanceForCore(
     AppImpl.instance,
     new FakeEngine(args.allowQueries ?? false),
     fakeTraceInfo,
   );
-  AppImpl.instance.setActiveTrace(trace);
-  return trace;
 }
 
 class FakeEngine extends EngineBase {

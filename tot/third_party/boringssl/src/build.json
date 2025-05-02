@@ -204,9 +204,7 @@
             "crypto/blake2/blake2.cc",
             "crypto/bn/bn_asn1.cc",
             "crypto/bn/convert.cc",
-            "crypto/bn/div.cc",
             "crypto/bn/exponentiation.cc",
-            "crypto/bn/sqrt.cc",
             "crypto/buf/buf.cc",
             "crypto/bytestring/asn1_compat.cc",
             "crypto/bytestring/ber.cc",
@@ -252,7 +250,6 @@
             "crypto/ec/hash_to_curve.cc",
             "crypto/ecdh/ecdh.cc",
             "crypto/ecdsa/ecdsa_asn1.cc",
-            "crypto/ecdsa/ecdsa_p1363.cc",
             "crypto/engine/engine.cc",
             "crypto/err/err.cc",
             "crypto/evp/evp.cc",
@@ -544,7 +541,6 @@
             "crypto/kyber/internal.h",
             "crypto/lhash/internal.h",
             "crypto/md5/internal.h",
-            "crypto/mem_internal.h",
             "crypto/obj/obj_dat.h",
             "crypto/pem/internal.h",
             "crypto/pkcs7/internal.h",
@@ -829,7 +825,6 @@
             "crypto/digest/digest_test.cc",
             "crypto/dsa/dsa_test.cc",
             "crypto/ecdh/ecdh_test.cc",
-            "crypto/ecdsa/ecdsa_p1363_test.cc",
             "crypto/err/err_test.cc",
             "crypto/evp/evp_extra_test.cc",
             "crypto/evp/evp_test.cc",
@@ -858,7 +853,6 @@
             "crypto/mlkem/mlkem_test.cc",
             "crypto/obj/obj_test.cc",
             "crypto/pem/pem_test.cc",
-            "crypto/mem_test.cc",
             "crypto/mldsa/mldsa_test.cc",
             "crypto/pkcs7/pkcs7_test.cc",
             "crypto/pkcs8/pkcs12_test.cc",
@@ -1059,15 +1053,6 @@
         "srcs": [
             "rust/bssl-crypto/src/*.rs",
             "rust/bssl-crypto/src/*/*.rs"
-        ]
-    },
-    "modulewrapper": {
-        "srcs": [
-            "util/fipstools/acvp/modulewrapper/main.cc",
-            "util/fipstools/acvp/modulewrapper/modulewrapper.cc"
-        ],
-        "internal_hdrs": [
-            "util/fipstools/acvp/modulewrapper/modulewrapper.h"
         ]
     }
 }

@@ -27,7 +27,7 @@
 #include "./centipede/mutation_input.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 namespace {
 
@@ -305,4 +305,4 @@ INSTANTIATE_TEST_SUITE_P(SkipsLongCmpEntry, MutationStepTest, Values([] {
 
 }  // namespace
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

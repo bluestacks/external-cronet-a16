@@ -44,40 +44,41 @@ static int marshal_integer(CBB *cbb, BIGNUM *bn) {
 }
 
 DH *DH_parse_parameters(CBS *cbs) {
-  bssl::UniquePtr<DH> ret(DH_new());
-  if (ret == nullptr) {
-    return nullptr;
+  DH *ret = DH_new();
+  if (ret == NULL) {
+    return NULL;
   }
 
   CBS child;
   if (!CBS_get_asn1(cbs, &child, CBS_ASN1_SEQUENCE) ||
       !parse_integer(&child, &ret->p) ||
       !parse_integer(&child, &ret->g)) {
-    OPENSSL_PUT_ERROR(DH, DH_R_DECODE_ERROR);
-    return nullptr;
+    goto err;
   }
 
   uint64_t priv_length;
   if (CBS_len(&child) != 0) {
     if (!CBS_get_asn1_uint64(&child, &priv_length) ||
         priv_length > UINT_MAX) {
-      OPENSSL_PUT_ERROR(DH, DH_R_DECODE_ERROR);
-      return nullptr;
+      goto err;
     }
     ret->priv_length = (unsigned)priv_length;
   }
 
   if (CBS_len(&child) != 0) {
-    OPENSSL_PUT_ERROR(DH, DH_R_DECODE_ERROR);
-    return nullptr;
+    goto err;
   }
 
-  if (!dh_check_params_fast(ret.get())) {
-    OPENSSL_PUT_ERROR(DH, DH_R_DECODE_ERROR);
-    return nullptr;
+  if (!dh_check_params_fast(ret)) {
+    goto err;
   }
 
-  return ret.release();
+  return ret;
+
+err:
+  OPENSSL_PUT_ERROR(DH, DH_R_DECODE_ERROR);
+  DH_free(ret);
+  return NULL;
 }
 
 int DH_marshal_parameters(CBB *cbb, const DH *dh) {

@@ -27,7 +27,6 @@ TEST(AndroidInputReceiverCompatTest, CanFindMethodsOnAndroidVPlus) {
   EXPECT_NE(instance.AInputReceiverCallbacks_createFn, nullptr);
   EXPECT_NE(instance.AInputReceiverCallbacks_releaseFn, nullptr);
   EXPECT_NE(instance.AInputReceiverCallbacks_setMotionEventCallbackFn, nullptr);
-  EXPECT_NE(instance.AInputReceiver_createBatchedInputReceiverFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_createUnbatchedInputReceiverFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_getInputTransferTokenFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_releaseFn, nullptr);

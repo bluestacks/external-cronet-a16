@@ -323,17 +323,4 @@ bool QuicChromiumPacketWriter::OnSocketClosed(DatagramClientSocket* socket) {
   return false;
 }
 
-void QuicChromiumPacketWriter::RegisterQuicConnectionClosePayload(
-    base::span<uint8_t> payload) {
-  if (socket_) {
-    socket_->RegisterQuicConnectionClosePayload(payload);
-  }
-}
-
-void QuicChromiumPacketWriter::UnregisterQuicConnectionClosePayload() {
-  if (socket_) {
-    socket_->UnregisterQuicConnectionClosePayload();
-  }
-}
-
 }  // namespace net

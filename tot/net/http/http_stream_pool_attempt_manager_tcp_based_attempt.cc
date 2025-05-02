@@ -33,20 +33,10 @@ namespace net {
 namespace {
 
 std::string_view GetResultHistogramSuffix(std::optional<int> result) {
-  if (!result.has_value()) {
-    return "Canceled";
+  if (result.has_value()) {
+    return *result == OK ? "Success" : "Failure";
   }
-
-  switch (*result) {
-    case OK:
-      return "Success";
-    case ERR_TIMED_OUT:
-      return "TimedOut";
-    case ERR_CONNECTION_TIMED_OUT:
-      return "ConnectionTimedOut";
-    default:
-      return "OtherFailure";
-  }
+  return "Canceled";
 }
 
 std::string_view GetHistogramSuffixForTcpBasedAttemptCancel(
@@ -77,6 +67,7 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
     bool using_tls,
     IPEndPoint ip_endpoint)
     : manager_(manager),
+      using_tls_(using_tls),
       track_(base::trace_event::GetNextGlobalTraceId()),
       flow_(perfetto::Flow::ProcessScoped(
           base::trace_event::GetNextGlobalTraceId())) {
@@ -84,12 +75,12 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
                       flow_);
   TRACE_EVENT_BEGIN("net.stream", "TcpBasedAttempt::TcpBasedAttempt", track_,
                     flow_, "ip_endpoint", ip_endpoint.ToString());
-  if (using_tls) {
+  if (using_tls_) {
     attempt_ = std::make_unique<TlsStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
         track_,
         HostPortPair::FromSchemeHostPort(manager_->stream_key().destination()),
-        /*delegate=*/this);
+        /*ssl_config_provider=*/this);
   } else {
     attempt_ = std::make_unique<TcpStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
@@ -99,26 +90,25 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
 
 HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
-  base::UmaHistogramTimes(
-      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptTime.",
-                    GetResultHistogramSuffix(result_)}),
-      elapsed);
+  // TODO(bashi): Rename following histograms to use TcpBased*.
+  base::UmaHistogramTimes(base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
+                                        GetResultHistogramSuffix(result_)}),
+                          elapsed);
 
   if (cancel_reason_.has_value()) {
     base::UmaHistogramEnumeration(
-        "Net.HttpStreamPool.TcpBasedAttemptCancelReason", *cancel_reason_);
+        "Net.HttpStreamPool.StreamAttemptCancelReason", *cancel_reason_);
 
     std::string_view suffix =
         GetHistogramSuffixForTcpBasedAttemptCancel(*cancel_reason_);
     CHECK(manager_->initial_attempt_state_.has_value());
     base::UmaHistogramEnumeration(
         base::StrCat(
-            {"Net.HttpStreamPool.TcpBasedAttemptCanceledInitialAttemptState.",
+            {"Net.HttpStreamPool.StreamAttemptCanceledInitialAttemptState.",
              suffix}),
         *manager_->initial_attempt_state_);
     base::UmaHistogramTimes(
-        base::StrCat(
-            {"Net.HttpStreamPool.TcpBasedAttemptCanceledTime.", suffix}),
+        base::StrCat({"Net.HttpStreamPool.StreamAttemptCanceledTime.", suffix}),
         elapsed);
   }
 
@@ -135,6 +125,8 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
   CHECK(attempt_);
+  TlsStreamAttempt* tls_attempt_ptr =
+      using_tls_ ? static_cast<TlsStreamAttempt*>(attempt_.get()) : nullptr;
   start_time_ = base::TimeTicks::Now();
   int rv = attempt_->Start(base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
                                           weak_ptr_factory_.GetWeakPtr()));
@@ -157,6 +149,14 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
     slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
                       base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
                                      base::Unretained(manager_), this));
+    if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {
+      // SAFETY: Unretained `manager_` is fine since the passed callback runs
+      // is invoked synchronously (without PostTask) when the TCP handshake
+      // completes. See TlsStreamAttempt::DoTcpAttemptComplete.
+      tls_attempt_ptr->SetTcpHandshakeCompletionCallback(
+          base::BindOnce(&AttemptManager::OnTcpBasedAttemptTcpHandshakeComplete,
+                         base::Unretained(manager_), this));
+    }
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
@@ -174,46 +174,24 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::SetCancelReason(
 
 int HttpStreamPool::AttemptManager::TcpBasedAttempt::WaitForSSLConfigReady(
     CompletionOnceCallback callback) {
-  if (manager_->service_endpoint_request()->EndpointsCryptoReady()) {
-    return OK;
+  int rv = manager_->WaitForSSLConfigReady();
+  if (rv == ERR_IO_PENDING) {
+    ssl_config_wait_start_time_ = base::TimeTicks::Now();
+    ssl_config_waiting_callback_ = std::move(callback);
   }
-
-  ssl_config_wait_start_time_ = base::TimeTicks::Now();
-  ssl_config_waiting_callback_ = std::move(callback);
-  return ERR_IO_PENDING;
+  return rv;
 }
 
 base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError>
 HttpStreamPool::AttemptManager::TcpBasedAttempt::GetSSLConfig() {
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> result =
-      manager_->GetSSLConfig(ip_endpoint());
-  if (!result.has_value()) {
-    is_aborted_ = true;
-  }
-
-  return result;
+  return manager_->GetSSLConfig(this);
 }
 
-std::optional<CompletionOnceCallback> HttpStreamPool::AttemptManager::
-    TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
-  if (ssl_config_waiting_callback_.is_null()) {
-    return std::nullopt;
-  }
-
+CompletionOnceCallback HttpStreamPool::AttemptManager::TcpBasedAttempt::
+    TakeSSLConfigWaitingCallback() {
   CHECK(!ssl_config_wait_start_time_.is_null());
-  base::UmaHistogramTimes("Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime",
+  base::UmaHistogramTimes("Net.HttpStreamPool.StreamAttemptSSLConfigWaitTime",
                           base::TimeTicks::Now() - ssl_config_wait_start_time_);
-
-  if (!is_slow_ && !slow_timer_.IsRunning()) {
-    // Resume the slow timer as `attempt_` will start a TLS handshake.
-    // TODO(crbug.com/346835898): Should we use a different delay other than
-    // the connection attempt delay?
-    // base::Unretained() is safe here because `manager_` owns `this` and
-    // `slow_timer_`.
-    slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
-                      base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
-                                     base::Unretained(manager_), this));
-  }
 
   return std::move(ssl_config_waiting_callback_);
 }
@@ -243,12 +221,6 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::GetInfoAsValue() const {
   }
   manager_->net_log().source().AddToEventParameters(dict);
   return dict;
-}
-
-void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnTcpHandshakeComplete() {
-  // Pause the slow timer until `attempt_` starts a TLS handshake to exclude the
-  // time spent waiting for SSLConfig from the time `this` is considered slow.
-  slow_timer_.Stop();
 }
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnAttemptComplete(

@@ -7,8 +7,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <array>
-
 // Tests for WebSocketBasicStream. Note that we do not attempt to verify that
 // frame parsing itself functions correctly, as that is covered by the
 // WebSocketFrameParser tests.
@@ -485,7 +483,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, ContinuationOpCodeUsed) {
   // separate chunks.
   CreateChunkedRead(ASYNC, kSampleFrame, kSampleFrameSize, kFirstChunkSize,
                     kChunkCount, LAST_FRAME_BIG);
-  std::array<TestCompletionCallback, kChunkCount> cb;
+  TestCompletionCallback cb[kChunkCount];
 
   ASSERT_THAT(stream_->ReadFrames(&frames, cb[0].callback()),
               IsError(ERR_IO_PENDING));

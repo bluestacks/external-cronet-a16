@@ -14,7 +14,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
@@ -196,7 +195,6 @@ public class ThreadUtils {
      * @param c The Callable to run
      * @return The result of the callable
      */
-    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     public static <T extends @Nullable Object> T runOnUiThreadBlocking(Callable<T> c) {
         return PostTask.runSynchronously(TaskTraits.UI_DEFAULT, c);
     }
@@ -208,7 +206,6 @@ public class ThreadUtils {
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     public static <T extends @Nullable Object> FutureTask<T> runOnUiThread(FutureTask<T> task) {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, task);
         return task;
@@ -231,7 +228,6 @@ public class ThreadUtils {
      * @param task The FutureTask to run
      * @return The queried task (to aid inline construction)
      */
-    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     public static <T extends @Nullable Object> FutureTask<T> postOnUiThread(FutureTask<T> task) {
         PostTask.postTask(TaskTraits.UI_DEFAULT, task);
         return task;

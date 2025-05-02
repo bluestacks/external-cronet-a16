@@ -29,10 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.RequiresRestart;
-import org.chromium.build.BuildConfig;
-import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.CronetImplementation;
-import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -43,7 +40,6 @@ import org.chromium.net.impl.BidirectionalStreamNetworkException;
 import org.chromium.net.impl.CronetBidirectionalStream;
 import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLogger.CronetSource;
-import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.TestLogger;
 import org.chromium.net.impl.UrlResponseInfoImpl;
@@ -264,10 +260,7 @@ public class BidirectionalStreamTest {
         testSimpleGet();
         mTestLogger.waitForLogCronetTrafficInfo();
         assertThat(mTestLogger.getLastCronetTrafficInfo().getCronetSource())
-                .isEqualTo(
-                        BuildConfig.CRONET_FOR_AOSP_BUILD
-                                ? CronetSource.CRONET_SOURCE_PLATFORM
-                                : CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
+                .isEqualTo(CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
     }
 
     @Test
@@ -297,64 +290,6 @@ public class BidirectionalStreamTest {
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
                 callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
-    }
-
-    @Test
-    @SmallTest
-    // HttpEngine is supported from Android U+
-    @RequiresMinAndroidApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Flags(boolFlags = {@BoolFlag(name = JavaCronetProvider.FORCE_HTTPENGINE_FLAG, value = true)})
-    public void testSimpleGetWithFallbackForcingHttpEngine() throws Exception {
-        // Since this is the first request on the connection, the expected received bytes count
-        // must account for an HPACK dynamic table size update.
-        int expectedReceivedBytes = 31;
-
-        String url = Http2TestServer.getEchoMethodUrl();
-        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
-        // Create stream.
-        BidirectionalStream stream =
-                new JavaCronetProvider(mTestRule.getTestFramework().getContext())
-                        .createBuilder()
-                        .build()
-                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
-                        .setHttpMethod("GET")
-                        .build();
-        stream.start();
-        callback.blockForDone();
-        assertThat(stream.isDone()).isTrue();
-        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        // Default method is 'GET'.
-        assertThat(callback.mResponseAsString).isEqualTo("GET");
-        UrlResponseInfo urlResponseInfo =
-                createUrlResponseInfo(
-                        new String[] {url}, "", 200, expectedReceivedBytes, ":status", "200");
-        mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
-        checkResponseInfo(
-                callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
-    }
-
-    @Test
-    @SmallTest
-    @Flags(boolFlags = {@BoolFlag(name = JavaCronetProvider.FORCE_HTTPENGINE_FLAG, value = false)})
-    public void testSimpleGetWithFallbackForcingHttpEngineDisabled() throws Exception {
-        String url = Http2TestServer.getEchoMethodUrl();
-        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
-        // Create stream.
-        UnsupportedOperationException e =
-                assertThrows(
-                        UnsupportedOperationException.class,
-                        () ->
-                                new JavaCronetProvider(mTestRule.getTestFramework().getContext())
-                                        .createBuilder()
-                                        .build()
-                                        .newBidirectionalStreamBuilder(
-                                                url, callback, callback.getExecutor())
-                                        .setHttpMethod("GET")
-                                        .build());
-        assertThat(e)
-                .hasMessageThat()
-                .contains(
-                        "The bidirectional stream API is not supported by the Java implementation");
     }
 
     @Test
@@ -1013,7 +948,7 @@ public class BidirectionalStreamTest {
         var oldMessage = "Invalid header header:name=headervalue";
         var newMessage = "Invalid header with headername: header:name";
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
-                && !BuildConfig.CRONET_FOR_AOSP_BUILD) {
+                && !mTestRule.isRunningInAOSP()) {
             // We may be running against an HttpEngine backed by an old version of Cronet, so accept
             // both the old and new variants of the message.
             assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);
@@ -1035,7 +970,7 @@ public class BidirectionalStreamTest {
         var oldMessage = "Invalid header headername=bad header\r\nvalue";
         var newMessage = "Invalid header with headername: headername";
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
-                && !BuildConfig.CRONET_FOR_AOSP_BUILD) {
+                && !mTestRule.isRunningInAOSP()) {
             // We may be running against an HttpEngine backed by an old version of Cronet, so accept
             // both the old and new variants of the message.
             assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);

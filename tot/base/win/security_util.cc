@@ -104,11 +104,6 @@ bool HasAccessToPath(const FilePath& path,
     return false;
   }
 
-  if (sd->dacl()->is_null()) {
-    // If the DACL is null, access is allowed.
-    return true;
-  }
-
   PACL pacl = sd->dacl()->get();
   // Verify that each SID has the specified access.
   // Note that this does not check for the presence of a deny ACE.

@@ -20,9 +20,9 @@
 #include "./centipede/runner_interface.h"
 #include "./common/defs.h"
 
-using fuzztest::internal::ByteSpan;
+using centipede::ByteSpan;
 
-class SeededRunnerCallbacks : public fuzztest::internal::RunnerCallbacks {
+class SeededRunnerCallbacks : public centipede::RunnerCallbacks {
  public:
   bool Execute(ByteSpan input) override {
     // Should not be called in the test, but return true anyway.
@@ -38,7 +38,7 @@ class SeededRunnerCallbacks : public fuzztest::internal::RunnerCallbacks {
   bool HasCustomMutator() const override { return false; }
 };
 
-int main(int argc, char** absl_nonnull argv) {
+int main(int argc, absl::Nonnull<char **> argv) {
   SeededRunnerCallbacks runner_callbacks;
-  return fuzztest::internal::RunnerMain(argc, argv, runner_callbacks);
+  return centipede::RunnerMain(argc, argv, runner_callbacks);
 }

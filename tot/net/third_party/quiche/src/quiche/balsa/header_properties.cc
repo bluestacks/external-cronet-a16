@@ -19,7 +19,6 @@ using MultivaluedHeadersSet =
 
 MultivaluedHeadersSet* buildMultivaluedHeaders() {
   MultivaluedHeadersSet* multivalued_headers = new MultivaluedHeadersSet({
-      // clang-format off
       "accept",
       "accept-charset",
       "accept-encoding",
@@ -60,7 +59,6 @@ MultivaluedHeadersSet* buildMultivaluedHeaders() {
       "x-forwarded-for",
       // Internal Google usage gives this cache-control syntax
       "x-go" /**/ "ogle-cache-control",
-      // clang-format on
   });
   return multivalued_headers;
 }

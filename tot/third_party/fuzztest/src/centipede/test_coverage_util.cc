@@ -26,7 +26,7 @@
 #include "./centipede/util.h"
 #include "./common/defs.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 std::vector<CorpusRecord> RunInputsAndCollectCorpusRecords(
     const Environment &env, const std::vector<std::string> &inputs) {
@@ -70,4 +70,4 @@ std::vector<FeatureVec> RunInputsAndCollectCoverage(
   return res;
 }
 
-}  // namespace fuzztest::internal
+}  // namespace centipede

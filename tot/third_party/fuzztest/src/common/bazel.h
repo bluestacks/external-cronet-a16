@@ -18,7 +18,7 @@
 #include "absl/status/status.h"
 #include "absl/time/time.h"
 
-namespace fuzztest::internal {
+namespace centipede {
 
 struct TestShard {
   int index = 0;
@@ -39,6 +39,6 @@ absl::Status VerifyBazelHasEnoughTimeToRunTest(absl::Time target_start_time,
                                                int executed_tests_in_shard,
                                                int fuzz_test_count);
 
-}  // namespace fuzztest::internal
+}  // namespace centipede
 
 #endif  // FUZZTEST_COMMON_BAZEL_H_

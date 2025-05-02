@@ -14,16 +14,8 @@
 
 import {assertTrue} from '../base/logging';
 import {Workspace, WorkspaceManager} from '../public/workspace';
-import {featureFlags} from './feature_flags';
 
 const DEFAULT_WORKSPACE_NAME = 'Default Workspace';
-const DEFAULT_WORKSPACE_EDITABLE_FLAG = featureFlags.register({
-  id: 'defaultWorkspaceEditable',
-  name: 'Enable Default Workspace Editing',
-  description:
-    'Allows tracks within the default workspace to be removed and rearranged using drag-and-drop operations.',
-  defaultValue: false,
-});
 
 export class WorkspaceManagerImpl implements WorkspaceManager {
   readonly defaultWorkspace = new Workspace();
@@ -32,7 +24,7 @@ export class WorkspaceManagerImpl implements WorkspaceManager {
 
   constructor() {
     this.defaultWorkspace.title = DEFAULT_WORKSPACE_NAME;
-    this.defaultWorkspace.userEditable = DEFAULT_WORKSPACE_EDITABLE_FLAG.get();
+    this.defaultWorkspace.userEditable = false;
     this._currentWorkspace = this.defaultWorkspace;
   }
 

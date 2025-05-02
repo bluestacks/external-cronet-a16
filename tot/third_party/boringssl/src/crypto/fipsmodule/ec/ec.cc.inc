@@ -655,10 +655,12 @@ static int arbitrary_bignum_to_scalar(const EC_GROUP *group, EC_SCALAR *out,
   ERR_clear_error();
 
   // This is an unusual input, so we do not guarantee constant-time processing.
-  bssl::BN_CTXScope scope(ctx);
+  BN_CTX_start(ctx);
   BIGNUM *tmp = BN_CTX_get(ctx);
-  return tmp != nullptr && BN_nnmod(tmp, in, EC_GROUP_get0_order(group), ctx) &&
-         ec_bignum_to_scalar(group, out, tmp);
+  int ok = tmp != NULL && BN_nnmod(tmp, in, EC_GROUP_get0_order(group), ctx) &&
+           ec_bignum_to_scalar(group, out, tmp);
+  BN_CTX_end(ctx);
+  return ok;
 }
 
 int ec_point_mul_no_self_test(const EC_GROUP *group, EC_POINT *r,

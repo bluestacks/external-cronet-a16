@@ -26,21 +26,31 @@ namespace moqt::test {
 
 struct MockSessionCallbacks {
   testing::MockFunction<void()> session_established_callback;
+  testing::MockFunction<void(absl::string_view)> goaway_received_callback;
   testing::MockFunction<void(absl::string_view)> session_terminated_callback;
   testing::MockFunction<void()> session_deleted_callback;
-  testing::MockFunction<std::optional<MoqtAnnounceErrorReason>(FullTrackName)>
+  testing::MockFunction<std::optional<MoqtAnnounceErrorReason>(
+      const FullTrackName&, AnnounceEvent)>
       incoming_announce_callback;
+  testing::MockFunction<std::optional<MoqtSubscribeErrorReason>(FullTrackName,
+                                                                SubscribeEvent)>
+      incoming_subscribe_announces_callback;
 
   MockSessionCallbacks() {
-    ON_CALL(incoming_announce_callback, Call(testing::_))
+    ON_CALL(incoming_announce_callback, Call(testing::_, testing::_))
         .WillByDefault(DefaultIncomingAnnounceCallback);
+    ON_CALL(incoming_subscribe_announces_callback, Call(testing::_, testing::_))
+        .WillByDefault(DefaultIncomingSubscribeAnnouncesCallback);
   }
 
   MoqtSessionCallbacks AsSessionCallbacks() {
-    return MoqtSessionCallbacks{session_established_callback.AsStdFunction(),
-                                session_terminated_callback.AsStdFunction(),
-                                session_deleted_callback.AsStdFunction(),
-                                incoming_announce_callback.AsStdFunction()};
+    return MoqtSessionCallbacks{
+        session_established_callback.AsStdFunction(),
+        goaway_received_callback.AsStdFunction(),
+        session_terminated_callback.AsStdFunction(),
+        session_deleted_callback.AsStdFunction(),
+        incoming_announce_callback.AsStdFunction(),
+        incoming_subscribe_announces_callback.AsStdFunction()};
   }
 };
 
@@ -90,6 +100,8 @@ class MockSubscribeRemoteTrackVisitor : public SubscribeRemoteTrack::Visitor {
               (const FullTrackName& full_track_name, FullSequence sequence,
                MoqtPriority publisher_priority, MoqtObjectStatus status,
                absl::string_view object, bool end_of_message),
+              (override));
+  MOCK_METHOD(void, OnSubscribeDone, (FullTrackName full_track_name),
               (override));
 };
 

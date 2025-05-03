@@ -48,8 +48,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-20-init-13894-g8cb44859-1\"",
-        "-DCR_LIBCXX_REVISION=6a91009985a46122b061d36bb27f2c94f99126df",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
+        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -128,8 +128,8 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-20-init-13894-g8cb44859-1\"",
-        "-DCR_LIBCXX_REVISION=6a91009985a46122b061d36bb27f2c94f99126df",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
+        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -217,7 +217,7 @@ cc_library_static {
         },
         host: {
             cflags: [
-                "-DCR_SYSROOT_KEY=20230611T210420Z-2",
+                "-DCR_SYSROOT_KEY=20250129T203412Z-1",
                 "-DNO_UNWIND_TABLES",
                 "-DUSE_AURA=1",
                 "-DUSE_OZONE=1",

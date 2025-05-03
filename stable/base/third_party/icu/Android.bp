@@ -31,6 +31,7 @@ license {
         "LICENSE",
     ],
     license_kinds: [
+        "SPDX-license-identifier-ICU",
         "SPDX-license-identifier-Unicode-DFS-2016",
     ],
 }

@@ -86,6 +86,8 @@ public abstract class CronetLogger {
         public Boolean httpFlagsSuccessful;
         public List<Long> httpFlagsNames;
         public List<Long> httpFlagsValues;
+        public String cronetImplVersion;
+        public CronetSource source = CronetSource.CRONET_SOURCE_UNSPECIFIED;
     }
 
     /** Aggregates the information about a CronetEngine configuration. */
@@ -226,6 +228,8 @@ public abstract class CronetLogger {
         private final @ConnectionCloseSource int mSource;
         private final RequestFailureReason mFailureReason;
         private final boolean mSocketReused;
+        private final String mCronetVersion;
+        private final CronetSource mCronetSource;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -249,7 +253,9 @@ public abstract class CronetLogger {
                 int quicErrorCode,
                 @ConnectionCloseSource int source,
                 RequestFailureReason failureReason,
-                boolean sockedReused) {
+                boolean sockedReused,
+                String cronetVersion,
+                CronetSource cronetSource) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -272,6 +278,8 @@ public abstract class CronetLogger {
             mSource = source;
             mFailureReason = failureReason;
             mSocketReused = sockedReused;
+            mCronetVersion = cronetVersion;
+            mCronetSource = cronetSource;
         }
 
         /**
@@ -382,6 +390,14 @@ public abstract class CronetLogger {
 
         public boolean getIsSocketReused() {
             return mSocketReused;
+        }
+
+        public String getCronetVersion() {
+            return mCronetVersion;
+        }
+
+        public CronetSource getCronetSource() {
+            return mCronetSource;
         }
     }
 

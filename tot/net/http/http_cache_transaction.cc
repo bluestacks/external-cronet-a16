@@ -529,9 +529,6 @@ LoadState HttpCache::Transaction::GetLoadState() const {
   return LOAD_STATE_IDLE;
 }
 
-void HttpCache::Transaction::SetQuicServerInfo(
-    QuicServerInfo* quic_server_info) {}
-
 bool HttpCache::Transaction::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
   const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();
@@ -615,12 +612,6 @@ void HttpCache::Transaction::SetWebSocketHandshakeStreamCreateHelper(
   }
 }
 
-void HttpCache::Transaction::SetBeforeNetworkStartCallback(
-    BeforeNetworkStartCallback callback) {
-  DCHECK(!network_trans_);
-  before_network_start_callback_ = std::move(callback);
-}
-
 void HttpCache::Transaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
   DCHECK(!network_trans_);
@@ -655,13 +646,6 @@ void HttpCache::Transaction::SetIsSharedDictionaryReadAllowedCallback(
     base::RepeatingCallback<bool()> callback) {
   DCHECK(!network_trans_);
   is_shared_dictionary_read_allowed_callback_ = std::move(callback);
-}
-
-int HttpCache::Transaction::ResumeNetworkStart() {
-  if (network_trans_) {
-    return network_trans_->ResumeNetworkStart();
-  }
-  return ERR_UNEXPECTED;
 }
 
 ConnectionAttempts HttpCache::Transaction::GetConnectionAttempts() const {
@@ -1589,9 +1573,18 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
       return ERR_CACHE_MISS;
     }
 
+    if (IsUsingURLFromNoVarySearchCache()) {
+      // The entry is probably fine, we just couldn't get a lock on it this
+      // time. The restarted request is permitted to attempt to get a cache lock
+      // for the original URL, and on successful completion may later replace
+      // the entry in the NoVarySearchCache.
+      return RestartWithoutNoVarySearchCache(
+          RestartCacheEntryAction::kDontErase,
+          NoVarySearchUseResult::kCacheLockTimeout);
+    }
+
     // The cache is busy, bypass it for this transaction.
     mode_ = NONE;
-    CHECK(!IsUsingURLFromNoVarySearchCache());
     TransitionToState(STATE_SEND_REQUEST);
     if (partial_) {
       partial_->RestoreHeaders(&mutable_request_->extra_headers);
@@ -1890,7 +1883,7 @@ int HttpCache::Transaction::DoCacheUpdateStaleWhileRevalidateTimeout() {
 
   // We shouldn't be using stale truncated entries; if we did, the false below
   // would be wrong.
-  DCHECK(!truncated_);
+  CHECK(!truncated_);
   return WriteResponseInfoToEntry(response_, false);
 }
 
@@ -1921,8 +1914,6 @@ int HttpCache::Transaction::DoSendRequest() {
     return rv;
   }
 
-  network_trans_->SetBeforeNetworkStartCallback(
-      std::move(before_network_start_callback_));
   network_trans_->SetConnectedCallback(connected_callback_);
   network_trans_->SetRequestHeadersCallback(request_headers_callback_);
   network_trans_->SetEarlyResponseHeadersCallback(
@@ -2806,8 +2797,11 @@ int HttpCache::Transaction::BeginCacheValidation() {
         NoVarySearchUseResult::kIncompleteBody);
   }
 
+  // Handle Stale-While-Revalidate if the client supports it.
+  // This is not done for truncated entries since they need validation in order
+  // to figure out how to deal with the missing part.
   if ((effective_load_flags_ & LOAD_SUPPORT_ASYNC_REVALIDATION) &&
-      required_validation == VALIDATION_ASYNCHRONOUS) {
+      required_validation == VALIDATION_ASYNCHRONOUS && !truncated_) {
     DCHECK_EQ(request_->method, "GET");
     skip_validation = true;
     response_.async_revalidation_requested = true;
@@ -4261,6 +4255,12 @@ int HttpCache::Transaction::RestartWithoutNoVarySearchCache(
   no_vary_search_cache_erase_handle_ = std::nullopt;
   // Don't try to use the NoVarySearchCache next time around.
   read_no_vary_search_cache_ = false;
+
+  // If we've locked `entry_` we need to unlock it and permit other transactions
+  // to proceed. `entry_is_complete` is true because we haven't modified the
+  // entry.
+  DoneWithEntry(/*entry_is_complete=*/true);
+
   // This will reset this object and send us back to the beginning of the
   // state machine to try again without using the NoVarySearchCache.
   TransitionToState(STATE_HEADERS_PHASE_CANNOT_PROCEED);
@@ -4294,6 +4294,8 @@ std::string_view HttpCache::Transaction::NoVarySearchUseResultToString(
       return "Validated";
     case kUpdated:
       return "Updated";
+    case kCacheLockTimeout:
+      return "CacheLockTimeout";
   }
 }
 

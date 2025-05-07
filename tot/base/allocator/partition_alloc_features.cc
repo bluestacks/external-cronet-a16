@@ -192,7 +192,7 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrEnabledProcesses,
                         kBackupRefPtrEnabledProcessesParam,
                         &kPartitionAllocBackupRefPtr,
                         kPAFeatureEnabledProcessesStr,
-#if PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(IS_ANDROID)
                         BackupRefPtrEnabledProcesses::kNonRenderer,
 #else
                         BackupRefPtrEnabledProcesses::kAllProcesses,
@@ -502,5 +502,11 @@ constinit const FeatureParam<ShadowMetadataEnabledProcesses>
         ShadowMetadataEnabledProcesses::kRendererOnly,
         &kShadowMetadataEnabledProcessesOptions};
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+BASE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks,
+             "PartitionAllocUsePriorityInheritanceLocks",
+             FEATURE_DISABLED_BY_DEFAULT);
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
 }  // namespace base::features

@@ -130,8 +130,8 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -304,8 +304,8 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -478,8 +478,8 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -534,13 +534,6 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }
 
 // GN: //third_party/perfetto/src/protozero/protoc_plugin:protozero_plugin__testing
@@ -652,8 +645,8 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -708,11 +701,4 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }

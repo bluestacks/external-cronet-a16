@@ -39,15 +39,32 @@ license {
 java_library {
     name: "tot_cronet_third_party_netty4_netty_all_java__testing",
     static_libs: [
-        "tot_cronet_third_party_netty4_netty_all_java__process_device__testing",
+        "tot_cronet_third_party_netty4_netty_all_java__testing__filtered",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
     ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
+    ],
+}
+
+// GN: //third_party/netty4:netty_all_java__testing
+java_import {
+    name: "tot_cronet_third_party_netty4_netty_all_java__testing__unfiltered",
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    jars: [
+        "src/jar/all-in-one/netty-all-4.1.9.Final.jar",
     ],
 }

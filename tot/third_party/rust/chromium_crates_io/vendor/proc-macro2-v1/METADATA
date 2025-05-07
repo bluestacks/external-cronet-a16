@@ -3,6 +3,6 @@
 name: "proc-macro2"
 third_party {
   license_type: NOTICE
-  version: "1.0.94"
+  version: "1.0.95"
   homepage: "https://crates.io/crates/proc-macro2"
 }

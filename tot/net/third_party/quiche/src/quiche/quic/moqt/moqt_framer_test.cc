@@ -52,12 +52,12 @@ std::vector<MoqtFramerTestParams> GetMoqtFramerTestParams() {
       MoqtMessageType::kSubscribeAnnouncesOk,
       MoqtMessageType::kSubscribeAnnouncesError,
       MoqtMessageType::kUnsubscribeAnnounces,
-      MoqtMessageType::kMaxSubscribeId,
+      MoqtMessageType::kMaxRequestId,
       MoqtMessageType::kFetch,
       MoqtMessageType::kFetchCancel,
       MoqtMessageType::kFetchOk,
       MoqtMessageType::kFetchError,
-      MoqtMessageType::kSubscribesBlocked,
+      MoqtMessageType::kRequestsBlocked,
       MoqtMessageType::kObjectAck,
       MoqtMessageType::kClientSetup,
       MoqtMessageType::kServerSetup,
@@ -184,9 +184,9 @@ class MoqtFramerTest
         auto data = std::get<MoqtUnsubscribeAnnounces>(structured_data);
         return framer_.SerializeUnsubscribeAnnounces(data);
       }
-      case moqt::MoqtMessageType::kMaxSubscribeId: {
-        auto data = std::get<MoqtMaxSubscribeId>(structured_data);
-        return framer_.SerializeMaxSubscribeId(data);
+      case moqt::MoqtMessageType::kMaxRequestId: {
+        auto data = std::get<MoqtMaxRequestId>(structured_data);
+        return framer_.SerializeMaxRequestId(data);
       }
       case moqt::MoqtMessageType::kFetch: {
         auto data = std::get<MoqtFetch>(structured_data);
@@ -204,9 +204,9 @@ class MoqtFramerTest
         auto data = std::get<MoqtFetchError>(structured_data);
         return framer_.SerializeFetchError(data);
       }
-      case moqt::MoqtMessageType::kSubscribesBlocked: {
-        auto data = std::get<MoqtSubscribesBlocked>(structured_data);
-        return framer_.SerializeSubscribesBlocked(data);
+      case moqt::MoqtMessageType::kRequestsBlocked: {
+        auto data = std::get<MoqtRequestsBlocked>(structured_data);
+        return framer_.SerializeRequestsBlocked(data);
       }
       case moqt::MoqtMessageType::kObjectAck: {
         auto data = std::get<MoqtObjectAck>(structured_data);
@@ -402,9 +402,9 @@ TEST_F(MoqtFramerSimpleTest, DatagramStatus) {
 }
 
 TEST_F(MoqtFramerSimpleTest, AllSubscribeInputs) {
-  for (std::optional<FullSequence> start :
-       {std::optional<FullSequence>(),
-        std::optional<FullSequence>(std::in_place, 4, 0)}) {
+  for (std::optional<Location> start :
+       {std::optional<Location>(),
+        std::optional<Location>(std::in_place, 4, 0)}) {
     for (std::optional<uint64_t> end_group :
          {std::optional<uint64_t>(), std::optional<uint64_t>(7)}) {
       MoqtSubscribe subscribe = {
@@ -415,8 +415,7 @@ TEST_F(MoqtFramerSimpleTest, AllSubscribeInputs) {
           /*group_order=*/std::nullopt,
           start,
           end_group,
-          MoqtSubscribeParameters{"bar", std::nullopt, std::nullopt,
-                                  std::nullopt},
+          VersionSpecificParameters(AuthTokenType::kOutOfBand, "bar"),
       };
       quiche::QuicheBuffer buffer;
       MoqtFilterType expected_filter_type = GetFilterType(subscribe);
@@ -442,9 +441,9 @@ TEST_F(MoqtFramerSimpleTest, SubscribeEndBeforeStart) {
       /*full_track_name=*/FullTrackName({"foo", "abcd"}),
       /*subscriber_priority=*/0x20,
       /*group_order=*/std::nullopt,
-      /*start=*/FullSequence(4, 3),
+      /*start=*/Location(4, 3),
       /*end_group=*/3,
-      MoqtSubscribeParameters{"bar", std::nullopt, std::nullopt, std::nullopt},
+      VersionSpecificParameters(AuthTokenType::kOutOfBand, "bar"),
   };
   quiche::QuicheBuffer buffer;
   EXPECT_QUIC_BUG(buffer = framer_.SerializeSubscribe(subscribe),
@@ -459,11 +458,11 @@ TEST_F(MoqtFramerSimpleTest, FetchEndBeforeStart) {
       /*group_order=*/MoqtDeliveryOrder::kAscending,
       /*joining_fetch=*/std::nullopt,
       /*full_track_name=*/FullTrackName{"foo", "bar"},
-      /*start_object=*/FullSequence{1, 2},
+      /*start_object=*/Location{1, 2},
       /*end_group=*/1,
       /*end_object=*/1,
       /*parameters=*/
-      MoqtSubscribeParameters{"baz", std::nullopt, std::nullopt, std::nullopt},
+      VersionSpecificParameters(AuthTokenType::kOutOfBand, "baz"),
   };
   quiche::QuicheBuffer buffer;
   EXPECT_QUIC_BUG(buffer = framer_.SerializeFetch(fetch),
@@ -479,11 +478,10 @@ TEST_F(MoqtFramerSimpleTest, FetchEndBeforeStart) {
 TEST_F(MoqtFramerSimpleTest, SubscribeUpdateEndGroupOnly) {
   MoqtSubscribeUpdate subscribe_update = {
       /*subscribe_id=*/3,
-      /*start=*/FullSequence(4, 3),
+      /*start=*/Location(4, 3),
       /*end_group=*/4,
       /*subscriber_priority=*/0xaa,
-      MoqtSubscribeParameters{std::nullopt, std::nullopt, std::nullopt,
-                              std::nullopt},
+      VersionSpecificParameters(),
   };
   quiche::QuicheBuffer buffer;
   buffer = framer_.SerializeSubscribeUpdate(subscribe_update);
@@ -495,11 +493,10 @@ TEST_F(MoqtFramerSimpleTest, SubscribeUpdateEndGroupOnly) {
 TEST_F(MoqtFramerSimpleTest, SubscribeUpdateIncrementsEnd) {
   MoqtSubscribeUpdate subscribe_update = {
       /*subscribe_id=*/3,
-      /*start=*/FullSequence(4, 3),
+      /*start=*/Location(4, 3),
       /*end_group=*/4,
       /*subscriber_priority=*/0xaa,
-      MoqtSubscribeParameters{std::nullopt, std::nullopt, std::nullopt,
-                              std::nullopt},
+      VersionSpecificParameters(),
   };
   quiche::QuicheBuffer buffer;
   buffer = framer_.SerializeSubscribeUpdate(subscribe_update);

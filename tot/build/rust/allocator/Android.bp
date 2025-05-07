@@ -46,7 +46,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -63,7 +63,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -80,7 +80,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -97,7 +97,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -114,7 +114,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -132,7 +132,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -179,7 +179,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -197,7 +197,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -215,7 +215,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -233,7 +233,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -251,7 +251,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"3f690c2257b7080cd3a8cce64e082fc972148990-1-llvmorg-21-init-6681-g5b36835d\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -272,6 +272,206 @@ rust_ffi_static {
     },
 }
 
+// GN: //build/rust/allocator:alloc_error_handler_impl
+cc_library_static {
+    name: "tot_cronet_build_rust_allocator_alloc_error_handler_impl",
+    srcs: [
+        "alias.cc",
+        "alloc_error_handler_impl.cc",
+    ],
+    host_cross_supported: false,
+    defaults: [
+        "tot_cronet_cc_defaults",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
+        "-DHAVE_SYS_UIO_H",
+        "-DNDEBUG",
+        "-DNVALGRIND",
+        "-DOFFICIAL_BUILD",
+        "-D_GNU_SOURCE",
+        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
+        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
+        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+        "-D__STDC_CONSTANT_MACROS",
+        "-D__STDC_FORMAT_MACROS",
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fstack-protector",
+        "-fvisibility-inlines-hidden",
+        "-fvisibility=hidden",
+        "-g1",
+    ],
+    include_dirs: [
+        "external/cronet/tot/",
+        "external/cronet/tot/buildtools/third_party/libc++/",
+        "external/cronet/tot/third_party/libc++/src/include",
+        "external/cronet/tot/third_party/libc++abi/src/include",
+    ],
+    cpp_std: "c++20",
+    ldflags: [
+        "-Wl,--as-needed",
+        "-Wl,--gc-sections",
+        "-Wl,--icf=all",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+    target: {
+        android_arm: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+            ],
+        },
+        android_arm64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ARM_NEON__=1",
+                "-O2",
+                "-mno-outline",
+            ],
+        },
+        android_x86: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-msse3",
+            ],
+        },
+        android_x86_64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-O2",
+                "-msse3",
+            ],
+        },
+    },
+}
+
+// GN: //build/rust/allocator:alloc_error_handler_impl__testing
+cc_library_static {
+    name: "tot_cronet_build_rust_allocator_alloc_error_handler_impl__testing",
+    srcs: [
+        "alias.cc",
+        "alloc_error_handler_impl.cc",
+    ],
+    host_supported: true,
+    host_cross_supported: false,
+    defaults: [
+        "tot_cronet_cc_defaults",
+    ],
+    cflags: [
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
+        "-DNDEBUG",
+        "-DNVALGRIND",
+        "-DOFFICIAL_BUILD",
+        "-D_GNU_SOURCE",
+        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
+        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
+        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D__STDC_CONSTANT_MACROS",
+        "-D__STDC_FORMAT_MACROS",
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fstack-protector",
+        "-fvisibility-inlines-hidden",
+        "-fvisibility=hidden",
+        "-g1",
+    ],
+    include_dirs: [
+        "external/cronet/tot/",
+        "external/cronet/tot/buildtools/third_party/libc++/",
+        "external/cronet/tot/third_party/libc++/src/include",
+        "external/cronet/tot/third_party/libc++abi/src/include",
+    ],
+    cpp_std: "c++20",
+    ldflags: [
+        "-Wl,--as-needed",
+        "-Wl,--gc-sections",
+        "-Wl,--icf=all",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+    target: {
+        android_arm: {
+            cflags: [
+                "-DANDROID",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
+                "-DHAVE_SYS_UIO_H",
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+            ],
+        },
+        android_arm64: {
+            cflags: [
+                "-DANDROID",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
+                "-DHAVE_SYS_UIO_H",
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+                "-D__ARM_NEON__=1",
+                "-O2",
+                "-mno-outline",
+            ],
+        },
+        android_riscv64: {
+            cflags: [
+                "-DANDROID",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
+                "-DHAVE_SYS_UIO_H",
+                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+            ],
+        },
+        android_x86: {
+            cflags: [
+                "-DANDROID",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
+                "-DHAVE_SYS_UIO_H",
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+                "-msse3",
+            ],
+        },
+        android_x86_64: {
+            cflags: [
+                "-DANDROID",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
+                "-DHAVE_SYS_UIO_H",
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+                "-O2",
+                "-msse3",
+            ],
+        },
+        host: {
+            cflags: [
+                "-DCR_SYSROOT_KEY=20250129T203412Z-1",
+                "-DNO_UNWIND_TABLES",
+                "-DUSE_AURA=1",
+                "-DUSE_OZONE=1",
+                "-DUSE_UDEV",
+                "-D_FILE_OFFSET_BITS=64",
+                "-D_FORTIFY_SOURCE=2",
+                "-D_LARGEFILE64_SOURCE",
+                "-D_LARGEFILE_SOURCE",
+                "-O2",
+                "-fno-asynchronous-unwind-tables",
+                "-fno-unwind-tables",
+                "-msse3",
+            ],
+        },
+    },
+}
+
 // GN: //build/rust/allocator:allocator_cxx_generated
 cc_library_static {
     name: "tot_cronet_build_rust_allocator_allocator_cxx_generated",
@@ -281,20 +481,18 @@ cc_library_static {
     host_cross_supported: false,
     generated_headers: [
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
-        "tot_cronet_build_rust_allocator_buildflags",
     ],
     export_generated_headers: [
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
-        "tot_cronet_build_rust_allocator_buildflags",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -370,18 +568,16 @@ cc_library_static {
     host_cross_supported: false,
     generated_headers: [
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
     ],
     export_generated_headers: [
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -419,7 +615,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -428,7 +624,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -440,7 +636,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -448,7 +644,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -458,219 +654,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
-                "-DHAVE_SYS_UIO_H",
-                "-D_FORTIFY_SOURCE=2",
-                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-                "-O2",
-                "-msse3",
-            ],
-        },
-        host: {
-            cflags: [
-                "-DCR_SYSROOT_KEY=20250129T203412Z-1",
-                "-DNO_UNWIND_TABLES",
-                "-DUSE_AURA=1",
-                "-DUSE_OZONE=1",
-                "-DUSE_UDEV",
-                "-D_FILE_OFFSET_BITS=64",
-                "-D_FORTIFY_SOURCE=2",
-                "-D_LARGEFILE64_SOURCE",
-                "-D_LARGEFILE_SOURCE",
-                "-O2",
-                "-fno-asynchronous-unwind-tables",
-                "-fno-unwind-tables",
-                "-msse3",
-            ],
-        },
-    },
-}
-
-// GN: //build/rust/allocator:allocator_impls
-cc_library_static {
-    name: "tot_cronet_build_rust_allocator_allocator_impls",
-    srcs: [
-        "alias.cc",
-        "allocator_impls.cc",
-    ],
-    host_cross_supported: false,
-    generated_headers: [
-        "tot_cronet_build_rust_allocator_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_rust_allocator_buildflags",
-    ],
-    defaults: [
-        "tot_cronet_cc_defaults",
-    ],
-    cflags: [
-        "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
-        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
-        "-DHAVE_SYS_UIO_H",
-        "-DNDEBUG",
-        "-DNVALGRIND",
-        "-DOFFICIAL_BUILD",
-        "-D_GNU_SOURCE",
-        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
-        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
-        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-        "-D__STDC_CONSTANT_MACROS",
-        "-D__STDC_FORMAT_MACROS",
-        "-fdata-sections",
-        "-ffunction-sections",
-        "-fstack-protector",
-        "-fvisibility-inlines-hidden",
-        "-fvisibility=hidden",
-        "-g1",
-    ],
-    include_dirs: [
-        "external/cronet/tot/",
-        "external/cronet/tot/buildtools/third_party/libc++/",
-        "external/cronet/tot/third_party/libc++/src/include",
-        "external/cronet/tot/third_party/libc++abi/src/include",
-    ],
-    cpp_std: "c++20",
-    ldflags: [
-        "-Wl,--as-needed",
-        "-Wl,--gc-sections",
-        "-Wl,--icf=all",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    target: {
-        android_arm: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-            ],
-        },
-        android_arm64: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-D__ARM_NEON__=1",
-                "-O2",
-                "-mno-outline",
-            ],
-        },
-        android_x86: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-msse3",
-            ],
-        },
-        android_x86_64: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-O2",
-                "-msse3",
-            ],
-        },
-    },
-}
-
-// GN: //build/rust/allocator:allocator_impls__testing
-cc_library_static {
-    name: "tot_cronet_build_rust_allocator_allocator_impls__testing",
-    srcs: [
-        "alias.cc",
-        "allocator_impls.cc",
-    ],
-    host_supported: true,
-    host_cross_supported: false,
-    generated_headers: [
-        "tot_cronet_build_rust_allocator_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_rust_allocator_buildflags__testing",
-    ],
-    defaults: [
-        "tot_cronet_cc_defaults",
-    ],
-    cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
-        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
-        "-DNDEBUG",
-        "-DNVALGRIND",
-        "-DOFFICIAL_BUILD",
-        "-D_GNU_SOURCE",
-        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
-        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
-        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D__STDC_CONSTANT_MACROS",
-        "-D__STDC_FORMAT_MACROS",
-        "-fdata-sections",
-        "-ffunction-sections",
-        "-fstack-protector",
-        "-fvisibility-inlines-hidden",
-        "-fvisibility=hidden",
-        "-g1",
-    ],
-    include_dirs: [
-        "external/cronet/tot/",
-        "external/cronet/tot/buildtools/third_party/libc++/",
-        "external/cronet/tot/third_party/libc++/src/include",
-        "external/cronet/tot/third_party/libc++abi/src/include",
-    ],
-    cpp_std: "c++20",
-    ldflags: [
-        "-Wl,--as-needed",
-        "-Wl,--gc-sections",
-        "-Wl,--icf=all",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    target: {
-        android_arm: {
-            cflags: [
-                "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
-                "-DHAVE_SYS_UIO_H",
-                "-D_FORTIFY_SOURCE=2",
-                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-            ],
-        },
-        android_arm64: {
-            cflags: [
-                "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
-                "-DHAVE_SYS_UIO_H",
-                "-D_FORTIFY_SOURCE=2",
-                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-                "-D__ARM_NEON__=1",
-                "-O2",
-                "-mno-outline",
-            ],
-        },
-        android_riscv64: {
-            cflags: [
-                "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
-                "-DHAVE_SYS_UIO_H",
-                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-            ],
-        },
-        android_x86: {
-            cflags: [
-                "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
-                "-DHAVE_SYS_UIO_H",
-                "-D_FORTIFY_SOURCE=2",
-                "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-                "-msse3",
-            ],
-        },
-        android_x86_64: {
-            cflags: [
-                "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",

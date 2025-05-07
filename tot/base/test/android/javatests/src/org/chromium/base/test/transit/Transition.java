@@ -68,7 +68,7 @@ public abstract class Transition {
         // At least one Condition should be not fulfilled, or this is likely an incorrectly
         // designed Transition. Exceptions to this rule:
         //     1. null Trigger, for example when focusing on secondary elements of a screen that
-        //        aren't declared in Station#declareElements().
+        //        aren't declared in the Station's constructor or in its declareElements().
         //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
         //        E.g. when not possible to determine whether the trigger needs to be run.
         return !mOptions.mPossiblyAlreadyFulfilled && mTrigger != null;
@@ -209,6 +209,11 @@ public abstract class Transition {
         return newOptions().withRetry().build();
     }
 
+    /** Convenience method equivalent to newOptions().withPossiblyAlreadyFulfilled().build(). */
+    public static TransitionOptions possiblyAlreadyFulfilledOption() {
+        return newOptions().withPossiblyAlreadyFulfilled().build();
+    }
+
     /** Convenience method equivalent to newOptions().withCondition().withCondition().build(). */
     public static TransitionOptions conditionOption(Condition... conditions) {
         TransitionOptions.Builder builder = newOptions();
@@ -281,6 +286,16 @@ public abstract class Transition {
                 mRunTriggerOnUiThread = true;
                 return this;
             }
+        }
+    }
+
+    protected String getStateListString(List<? extends ConditionalState> states) {
+        if (states.isEmpty()) {
+            return "<none>";
+        } else if (states.size() == 1) {
+            return states.get(0).toString();
+        } else {
+            return states.toString();
         }
     }
 }

@@ -15410,7 +15410,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1746615676",
+         "1746691405",
     host_cross_supported: false,
     out: [
         "base/generated_build_date.h",
@@ -15432,7 +15432,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1746615676",
+         "1746691405",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -23560,7 +23560,7 @@ cc_library_static {
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGTEST_API_=",
         "-DGTEST_HAS_ABSL",
@@ -25044,7 +25044,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCXX_RS_EXPORT=",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
@@ -25125,7 +25125,7 @@ cc_library_static {
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCXX_RS_EXPORT=",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -25348,7 +25348,7 @@ cc_library_static {
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXXABI_SILENT_TERMINATE",
         "-DNDEBUG",
@@ -25504,7 +25504,7 @@ cc_library_static {
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXXABI_SILENT_TERMINATE",
         "-DNDEBUG",
@@ -28251,7 +28251,7 @@ cc_library_shared {
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DGTEST_API_=",
@@ -43302,7 +43302,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGTEST_API_=",
         "-DGTEST_HAS_ABSL",
@@ -43739,7 +43739,7 @@ cc_library_static {
     cflags: [
         "-DBORINGSSL_IMPLEMENTATION",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -43972,7 +43972,7 @@ cc_library_static {
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",

@@ -3546,26 +3546,6 @@
             ]
         }
     ],
-    "ButterForPrefsAndThemesAndSearchEngines": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnablePreferencesAccountStorage",
-                        "SeparateLocalAndAccountSearchEngines",
-                        "SeparateLocalAndAccountThemes",
-                        "ThemesBatchUpload"
-                    ]
-                }
-            ]
-        }
-    ],
     "CCTEarlyNav": [
         {
             "platforms": [
@@ -6171,6 +6151,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CopyClientKeysCertsToChaps"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CpssUseTfliteSignatureRunnerKillSwitch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_CpssUseTfliteSignatureRunner",
+                    "disable_features": [
+                        "CpssUseTfliteSignatureRunner"
                     ]
                 }
             ]
@@ -8839,6 +8834,24 @@
             ]
         }
     ],
+    "EnterpriseFileSystemAccessDeepScan": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseFileSystemAccessDeepScan"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseUpdatedProfileCreationScreen": [
         {
             "platforms": [
@@ -10229,7 +10242,7 @@
             ]
         }
     ],
-    "GwpAsanAndroid2024": [
+    "GwpAsan2024Android": [
         {
             "platforms": [
                 "android",
@@ -10237,11 +10250,20 @@
             ],
             "experiments": [
                 {
-                    "name": "TripleBrowserReservation",
+                    "name": "CombinedGreedyArmForVariationsPresubmit",
                     "params": {
+                        "BrowserAllocationSamplingMultiplier": "1500",
+                        "BrowserAllocationSamplingRange": "16",
                         "BrowserMaxAllocations": "210",
                         "BrowserMaxMetadata": "765",
-                        "BrowserTotalPages": "1536"
+                        "BrowserTotalPages": "1536",
+                        "GpuAllocationSamplingMultiplier": "1500",
+                        "GpuAllocationSamplingRange": "16",
+                        "GpuMaxAllocations": "140",
+                        "GpuMaxMetadata": "510",
+                        "GpuTotalPages": "1024",
+                        "RendererAllocationSamplingMultiplier": "1500",
+                        "RendererAllocationSamplingRange": "12"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
@@ -10251,20 +10273,59 @@
             ]
         }
     ],
-    "GwpAsanDesktop2024": [
+    "GwpAsan2024LinuxCros": [
         {
             "platforms": [
                 "chromeos",
-                "linux",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "CombinedGreedyArmForVariationsPresubmit",
+                    "params": {
+                        "BrowserAllocationSamplingMultiplier": "1200",
+                        "BrowserAllocationSamplingRange": "10",
+                        "BrowserMaxAllocations": "150",
+                        "BrowserMaxMetadata": "630",
+                        "BrowserTotalPages": "6144",
+                        "GpuAllocationSamplingMultiplier": "1200",
+                        "GpuAllocationSamplingRange": "10",
+                        "GpuMaxAllocations": "100",
+                        "GpuMaxMetadata": "420",
+                        "GpuTotalPages": "4096",
+                        "RendererAllocationSamplingMultiplier": "800",
+                        "RendererAllocationSamplingRange": "10"
+                    },
+                    "enable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GwpAsan2024WinMac": [
+        {
+            "platforms": [
+                "windows",
                 "mac"
             ],
             "experiments": [
                 {
-                    "name": "TripleBrowserReservation",
+                    "name": "CombinedGreedyArmForVariationsPresubmit",
                     "params": {
+                        "BrowserAllocationSamplingMultiplier": "800",
+                        "BrowserAllocationSamplingRange": "10",
                         "BrowserMaxAllocations": "210",
                         "BrowserMaxMetadata": "765",
-                        "BrowserTotalPages": "6144"
+                        "BrowserTotalPages": "6144",
+                        "GpuAllocationSamplingMultiplier": "800",
+                        "GpuAllocationSamplingRange": "10",
+                        "GpuMaxAllocations": "140",
+                        "GpuMaxMetadata": "510",
+                        "GpuTotalPages": "4096",
+                        "RendererAllocationSamplingMultiplier": "600",
+                        "RendererAllocationSamplingRange": "10"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
@@ -13190,35 +13251,6 @@
             ]
         }
     ],
-    "LightweightUAFDetector": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240130",
-                    "params": {
-                        "AllocationSamplingMultiplier": "100",
-                        "EvictionTaskIntervalMs": "5000",
-                        "MaxAllocations": "1400",
-                        "MaxMetadata": "5100",
-                        "MaxTotalSize": "131072",
-                        "Mode": "Random",
-                        "TotalSizeHighWaterMark": "104857",
-                        "TotalSizeLowWaterMark": "91750"
-                    },
-                    "enable_features": [
-                        "LightweightUafDetector"
-                    ],
-                    "disable_features": [
-                        "GwpAsanMalloc",
-                        "GwpAsanPartitionAlloc"
-                    ]
-                }
-            ]
-        }
-    ],
     "LinkCrossDeviceDogFoodFeedback": [
         {
             "platforms": [
@@ -14618,6 +14650,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NoThrowForCSPBlockedWorker"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NonModalSignInPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NonModalSignInPromo"
                     ]
                 }
             ]
@@ -17340,6 +17387,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -19609,8 +19657,7 @@
                 {
                     "name": "RestrictAbusePorts",
                     "params": {
-                        "monitor_ports": "30986",
-                        "restrict_ports": "30987,30988,30989"
+                        "PortsToRestrictForAbuse": "30987,30988,30989"
                     },
                     "enable_features": [
                         "RestrictAbusePorts"
@@ -21296,6 +21343,32 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ClearCountryPrefForStoredUnknownCountry"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SearchEnginePreconnect2": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithbase_60_30_30_30__20250507",
+                    "params": {
+                        "IdleTimeoutInSeconds": "60",
+                        "MaxPreconnectRetryInterval": "30",
+                        "MaxShortSessionThreshold": "30",
+                        "PingIntervalInSeconds": "30"
+                    },
+                    "enable_features": [
+                        "SearchEnginePreconnect2"
                     ]
                 }
             ]
@@ -25051,6 +25124,19 @@
             "experiments": [
                 {
                     "name": "num_stddev_delay_clamp:5,num_stddev_delay_outlier:2,num_stddev_size_outlier:2,estimate_noise_when_congested:false,_20230118_BETA"
+                }
+            ]
+        }
+    ],
+    "WebRTC-NoSdpMangleUfragRestrictedAddresses": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "127.0.0.1:12345|127.0.0.1:23456|127.0.0.1:34567|127.0.0.1:45678|127.0.0.1:56789"
                 }
             ]
         }

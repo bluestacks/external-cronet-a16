@@ -44,7 +44,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -133,7 +133,7 @@ cc_library_static {
     ],
     cflags: [
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a9cc573e7c591795d11b72d8323ba0e573b55bd6",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",

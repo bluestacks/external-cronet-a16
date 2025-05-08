@@ -848,6 +848,12 @@ HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
   return MultiplexedSessionCreationInitiator::kUnknown;
 }
 
+void HttpStreamPool::AttemptManager::SetOnCompleteCallbackForTesting(
+    base::OnceClosure callback) {
+  CHECK(on_complete_callback_for_testing_.is_null());
+  on_complete_callback_for_testing_ = std::move(callback);
+}
+
 void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
   RestrictAllowedProtocols(job->allowed_alpns());
   UpdateTcpBasedAttemptState();
@@ -904,6 +910,9 @@ void HttpStreamPool::AttemptManager::
 }
 
 void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
+  CHECK(!is_failing_);
+  CHECK(service_endpoint_request_);
+
   // The order of the following checks is important, see the following comments.
   // TODO(crbug.com/383606724): Figure out a better design and algorithms to
   // handle attempts and existing sessions.
@@ -1414,6 +1423,8 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   CHECK(!final_error_to_notify_jobs_.has_value());
   final_error_to_notify_jobs_ = error;
   is_failing_ = true;
+  service_endpoint_request_.reset();
+
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE, [&] {
         base::Value::Dict dict = GetStatesAsNetLogParams();
@@ -2059,6 +2070,11 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
   CHECK(limit_ignoring_jobs_.empty());
   CHECK(ip_based_pooling_disabling_jobs_.empty());
   CHECK(alternative_service_disabling_jobs_.empty());
+
+  if (on_complete_callback_for_testing_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete_callback_for_testing_));
+  }
 
   group_->OnAttemptManagerComplete();
   // `this` is deleted.

@@ -154,7 +154,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -250,7 +249,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -588,10 +586,9 @@ cc_library_shared {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.138.0.7169.0",
+    stem: "libmainlinecronet.138.0.7171.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -936,10 +933,9 @@ cc_library_shared {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.138.0.7169.0",
+    stem: "libmainlinecronet.138.0.7171.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -1569,7 +1565,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -1835,7 +1830,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -2130,7 +2124,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -3589,7 +3582,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -3916,7 +3908,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -4545,10 +4536,9 @@ cc_library_shared {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.138.0.7169.0_for_testing",
+    stem: "libmainlinecronet.138.0.7171.0_for_testing",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -5012,7 +5002,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -5108,7 +5097,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",

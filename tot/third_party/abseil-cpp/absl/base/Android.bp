@@ -67,7 +67,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -133,6 +132,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -184,7 +186,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -250,6 +251,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -297,7 +301,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -363,6 +366,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -410,7 +416,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -476,6 +481,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -523,7 +531,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -589,6 +596,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -636,7 +646,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -702,6 +711,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -749,7 +761,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -815,6 +826,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -862,7 +876,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -928,6 +941,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -975,7 +991,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1041,6 +1056,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1088,7 +1106,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1154,6 +1171,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1201,7 +1221,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1267,6 +1286,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1314,7 +1336,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1380,6 +1401,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1427,7 +1451,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1493,6 +1516,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1540,7 +1566,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1606,6 +1631,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1653,7 +1681,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1719,6 +1746,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1766,7 +1796,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1832,6 +1861,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },

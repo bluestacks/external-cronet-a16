@@ -440,6 +440,22 @@
             ]
         }
     ],
+    "AndroidAutofillLazyFrameworkWrapper": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAutofillLazyFrameworkWrapper"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBookmarkBar": [
         {
             "platforms": [
@@ -11243,6 +11259,21 @@
             ]
         }
     ],
+    "IOSAutofillRefillForForms": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillRefillForFormsIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillThrottleDocumentFormScan": [
         {
             "platforms": [
@@ -11898,6 +11929,21 @@
                     },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSPartitionAllocMemoryReclaimer": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "PartitionAllocMemoryReclaimer"
                     ]
                 }
             ]
@@ -17398,7 +17444,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "NoSamePageFragmentPreloadingAnchorTracking"
+                        "PreloadingNoSamePageFragmentAnchorTracking"
                     ]
                 }
             ]
@@ -19562,6 +19608,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RendererSideContentDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ReportingEventsForAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseSecurityEventReportingOnAndroid"
                     ]
                 }
             ]
@@ -23882,7 +23943,6 @@
                 "android",
                 "android_webview",
                 "android_weblayer",
-                "chromeos",
                 "fuchsia",
                 "ios",
                 "linux",

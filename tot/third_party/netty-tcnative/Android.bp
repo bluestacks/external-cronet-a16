@@ -97,7 +97,6 @@ cc_library_shared {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     stem: "libnetty-tcnative",
     visibility: [

@@ -107,7 +107,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -183,6 +182,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -274,7 +276,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -351,6 +352,9 @@ cc_library_static {
                 "-fno-unwind-tables",
                 "-msse3",
             ],
+            ldflags: [
+                "-Wl,--icf=all",
+            ],
         },
     },
 }
@@ -417,7 +421,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -510,7 +513,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -590,6 +592,9 @@ cc_library_static {
             generated_headers: [
                 "tot_cronet_build_chromeos_buildflags__testing",
             ],
+            ldflags: [
+                "-Wl,--icf=all",
+            ],
         },
     },
 }
@@ -646,7 +651,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -722,6 +726,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -779,7 +786,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -855,6 +861,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -1100,7 +1109,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -1194,7 +1202,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1281,7 +1288,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1358,6 +1364,9 @@ cc_library_static {
                 "-fno-unwind-tables",
                 "-msse3",
             ],
+            ldflags: [
+                "-Wl,--icf=all",
+            ],
         },
     },
 }
@@ -1420,7 +1429,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1507,7 +1515,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1583,6 +1590,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },

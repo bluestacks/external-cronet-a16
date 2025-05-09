@@ -172,7 +172,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -354,7 +353,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -433,6 +431,9 @@ cc_library_static {
             ],
             generated_headers: [
                 "tot_cronet_build_chromeos_buildflags__testing",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },

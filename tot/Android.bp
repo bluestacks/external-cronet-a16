@@ -1430,6 +1430,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_cpp_gen",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1440,11 +1441,13 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_cppgen_plugin) " +
          "--plugin_out=wrapper_namespace=gen:$(genDir)/third_party/perfetto//",
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.gen.cc",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.gen.cc",
     ],
     apex_available: [
@@ -1459,6 +1462,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_cpp_gen__testing",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1469,12 +1473,14 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_cppgen_plugin__testing) " +
          "--plugin_out=wrapper_namespace=gen:$(genDir)/third_party/perfetto//",
     host_supported: true,
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.gen.cc",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.gen.cc",
     ],
     apex_available: [
@@ -1489,6 +1495,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_cpp_gen__testing_h",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1499,12 +1506,14 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_cppgen_plugin__testing) " +
          "--plugin_out=wrapper_namespace=gen:$(genDir)/third_party/perfetto//",
     host_supported: true,
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.gen.h",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.gen.h",
     ],
     export_include_dirs: [
@@ -1524,6 +1533,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_cpp_gen_h",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1534,11 +1544,13 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_cppgen_plugin) " +
          "--plugin_out=wrapper_namespace=gen:$(genDir)/third_party/perfetto//",
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.gen.h",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.gen.h",
     ],
     export_include_dirs: [
@@ -1558,6 +1570,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_lite_gen__testing",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1567,9 +1580,11 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.pb.cc",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.pb.cc",
     ],
     apex_available: [
@@ -1584,6 +1599,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_lite_gen__testing_h",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1593,9 +1609,11 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.pb.h",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.pb.h",
     ],
     export_include_dirs: [
@@ -1615,6 +1633,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_zero_gen",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1625,11 +1644,13 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_protozero_plugin) " +
          "--plugin_out=wrapper_namespace=pbzero:$(genDir)/third_party/perfetto//",
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.pbzero.cc",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.pbzero.cc",
     ],
     apex_available: [
@@ -1644,6 +1665,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_zero_gen__testing",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1654,12 +1676,14 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_protozero_plugin__testing) " +
          "--plugin_out=wrapper_namespace=pbzero:$(genDir)/third_party/perfetto//",
     host_supported: true,
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.pbzero.cc",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.pbzero.cc",
     ],
     apex_available: [
@@ -1674,6 +1698,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_zero_gen__testing_h",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1684,12 +1709,14 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_protozero_plugin__testing) " +
          "--plugin_out=wrapper_namespace=pbzero:$(genDir)/third_party/perfetto//",
     host_supported: true,
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.pbzero.h",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.pbzero.h",
     ],
     export_include_dirs: [
@@ -1709,6 +1736,7 @@ cc_genrule {
 cc_genrule {
     name: "tot_cronet_1baaa48e_ftrace_zero_gen_h",
     srcs: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/protobuf/src/google/protobuf/descriptor.proto",
     ],
@@ -1719,11 +1747,13 @@ cc_genrule {
     cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
          "--cpp_out=lite=true:$(genDir)/third_party/perfetto// " +
+         "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto " +
          "external/cronet/tot/third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto " +
          "--plugin=protoc-gen-plugin=$(location tot_cronet_third_party_perfetto_src_protozero_protoc_plugin_protozero_plugin) " +
          "--plugin_out=wrapper_namespace=pbzero:$(genDir)/third_party/perfetto//",
     host_cross_supported: false,
     out: [
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.pbzero.h",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.pbzero.h",
     ],
     export_include_dirs: [
@@ -7002,6 +7032,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7110,6 +7141,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7219,6 +7251,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7333,6 +7366,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7446,6 +7480,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7551,6 +7586,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7661,6 +7697,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7769,6 +7806,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7878,6 +7916,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -7992,6 +8031,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8105,6 +8145,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8200,6 +8241,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8296,6 +8338,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8397,6 +8440,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8497,6 +8541,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8592,6 +8637,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8688,6 +8734,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -8789,6 +8836,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9017,6 +9065,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9112,6 +9161,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9212,6 +9262,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9304,6 +9355,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9401,6 +9453,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9496,6 +9549,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9592,6 +9646,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9693,6 +9748,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -9793,6 +9849,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -10068,6 +10125,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -10348,6 +10406,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -10620,6 +10679,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -10897,6 +10957,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -11172,6 +11233,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -11448,6 +11510,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -11729,6 +11792,7 @@ cc_genrule {
         "third_party/perfetto/protos/perfetto/config/chrome/v8_config.proto",
         "third_party/perfetto/protos/perfetto/config/data_source_config.proto",
         "third_party/perfetto/protos/perfetto/config/etw/etw_config.proto",
+        "third_party/perfetto/protos/perfetto/config/ftrace/frozen_ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/ftrace/ftrace_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_counter_config.proto",
         "third_party/perfetto/protos/perfetto/config/gpu/gpu_renderstages_config.proto",
@@ -15410,7 +15474,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1746691405",
+         "1746771610",
     host_cross_supported: false,
     out: [
         "base/generated_build_date.h",
@@ -15432,7 +15496,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1746691405",
+         "1746771610",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -23618,7 +23682,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -25077,7 +25140,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -25156,7 +25218,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -25227,6 +25288,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -25378,7 +25442,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     cppflags: [
         "-fexceptions",
@@ -25471,6 +25534,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -25534,7 +25600,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     cppflags: [
         "-fexceptions",
@@ -25627,6 +25692,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -28313,7 +28381,6 @@ cc_library_shared {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     stem: "libcronet_unittests_android__library",
@@ -43343,7 +43410,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -43769,7 +43835,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -43832,6 +43897,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },
@@ -44002,7 +44070,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -44073,6 +44140,9 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
+            ],
+            ldflags: [
+                "-Wl,--icf=all",
             ],
         },
     },

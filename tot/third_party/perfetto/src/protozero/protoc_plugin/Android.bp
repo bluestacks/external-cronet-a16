@@ -534,13 +534,6 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }
 
 // GN: //third_party/perfetto/src/protozero/protoc_plugin:protozero_plugin__testing
@@ -708,11 +701,4 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }

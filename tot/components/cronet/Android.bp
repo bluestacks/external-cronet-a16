@@ -129,7 +129,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
-        "tot_cronet_build_rust_allocator_buildflags",
         "tot_cronet_components_cronet_cronet_buildflags",
         "tot_cronet_components_cronet_cronet_version_header_action",
         "tot_cronet_components_prefs_android_jni_headers__action",
@@ -259,7 +258,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
-        "tot_cronet_build_rust_allocator_buildflags",
         "tot_cronet_components_cronet_cronet_buildflags",
         "tot_cronet_components_cronet_cronet_version_header_action",
         "tot_cronet_components_prefs_android_jni_headers__action",
@@ -307,9 +305,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
@@ -350,7 +348,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -469,7 +466,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_robolectric_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_components_cronet_cronet_buildflags__testing",
         "tot_cronet_components_cronet_cronet_version_header_action__testing",
         "tot_cronet_components_prefs_android_jni_headers__action__testing",
@@ -577,7 +573,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_robolectric_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_components_cronet_cronet_buildflags__testing",
         "tot_cronet_components_cronet_cronet_version_header_action__testing",
         "tot_cronet_components_prefs_android_jni_headers__action__testing",
@@ -625,9 +620,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
@@ -668,7 +663,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -790,7 +784,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_robolectric_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_components_cronet_cronet_buildflags__testing",
         "tot_cronet_components_cronet_cronet_version_header_action__testing",
         "tot_cronet_components_prefs_android_jni_headers__action__testing",
@@ -904,7 +897,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_robolectric_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_components_cronet_cronet_buildflags__testing",
         "tot_cronet_components_cronet_cronet_version_header_action__testing",
         "tot_cronet_components_prefs_android_jni_headers__action__testing",
@@ -953,10 +945,10 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DGTEST_API_=",
@@ -1018,7 +1010,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -1069,9 +1060,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -1102,7 +1093,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1152,9 +1142,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -1185,7 +1175,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1320,7 +1309,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
-        "tot_cronet_build_rust_allocator_buildflags",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
         "tot_cronet_ff61d121_android_zero_gen_h",
@@ -1429,7 +1417,6 @@ cc_library_static {
         "tot_cronet_build_ios_buildflags",
         "tot_cronet_build_robolectric_buildflags",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen_header",
-        "tot_cronet_build_rust_allocator_buildflags",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
         "tot_cronet_ff61d121_android_zero_gen_h",
@@ -1459,9 +1446,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -1497,7 +1484,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
@@ -1607,7 +1593,6 @@ cc_library_static {
         "tot_cronet_build_config_compiler_compiler_buildflags__testing",
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -1693,7 +1678,6 @@ cc_library_static {
         "tot_cronet_build_config_compiler_compiler_buildflags__testing",
         "tot_cronet_build_ios_buildflags__testing",
         "tot_cronet_build_rust_allocator_allocator_cxx_generated_gen__testing_header",
-        "tot_cronet_build_rust_allocator_buildflags__testing",
         "tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         "tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -1723,9 +1707,9 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r27_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-6681-g5b36835d-1\"",
-        "-DCR_LIBCXX_REVISION=b2be7b0b0b578dc25297187f815f6b6c0d0cbbaa",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -1761,7 +1745,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [

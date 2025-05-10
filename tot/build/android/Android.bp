@@ -25,7 +25,7 @@ package {
 java_library {
     name: "tot_cronet_build_android_build_java",
     static_libs: [
-        "tot_cronet_build_android_build_java__process_device",
+        "tot_cronet_build_android_build_java__filtered",
     ],
     defaults: [
         "tot_cronet_java_framework_defaults",
@@ -39,9 +39,64 @@ java_library {
     ],
 }
 
-// GN: //build/android:build_java__compile_java
+// GN: //build/android:build_java__testing
 java_library {
-    name: "tot_cronet_build_android_build_java__compile_java",
+    name: "tot_cronet_build_android_build_java__testing",
+    static_libs: [
+        "tot_cronet_build_android_build_java__testing__filtered",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //build/android:build_java__testing
+java_library {
+    name: "tot_cronet_build_android_build_java__testing__unfiltered",
+    srcs: [
+        ":tot_cronet_build_android_native_libraries_gen__testing",
+        ":tot_cronet_build_android_placeholder_build_config_srcjar__testing",
+        "java/src/org/chromium/build/NullUtil.java",
+        "java/src/org/chromium/build/annotations/AlwaysInline.java",
+        "java/src/org/chromium/build/annotations/CheckDiscard.java",
+        "java/src/org/chromium/build/annotations/Contract.java",
+        "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
+        "java/src/org/chromium/build/annotations/DoNotInline.java",
+        "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
+        "java/src/org/chromium/build/annotations/EnsuresNonNull.java",
+        "java/src/org/chromium/build/annotations/EnsuresNonNullIf.java",
+        "java/src/org/chromium/build/annotations/IdentifierNameString.java",
+        "java/src/org/chromium/build/annotations/Initializer.java",
+        "java/src/org/chromium/build/annotations/MockedInTests.java",
+        "java/src/org/chromium/build/annotations/MonotonicNonNull.java",
+        "java/src/org/chromium/build/annotations/NullMarked.java",
+        "java/src/org/chromium/build/annotations/NullUnmarked.java",
+        "java/src/org/chromium/build/annotations/Nullable.java",
+        "java/src/org/chromium/build/annotations/OptimizeAsNonNull.java",
+        "java/src/org/chromium/build/annotations/RequiresNonNull.java",
+        "java/src/org/chromium/build/annotations/ServiceImpl.java",
+        "java/src/org/chromium/build/annotations/UsedByReflection.java",
+        "java/src/org/chromium/build/annotations/UsedReflectively.java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+}
+
+// GN: //build/android:build_java
+java_library {
+    name: "tot_cronet_build_android_build_java__unfiltered",
     srcs: [
         ":tot_cronet_build_android_native_libraries_gen",
         ":tot_cronet_build_android_placeholder_build_config_srcjar",
@@ -74,61 +129,4 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //build/android:build_java__compile_java__testing
-java_library {
-    name: "tot_cronet_build_android_build_java__compile_java__testing",
-    srcs: [
-        ":tot_cronet_build_android_native_libraries_gen__testing",
-        ":tot_cronet_build_android_placeholder_build_config_srcjar__testing",
-        "java/src/org/chromium/build/NullUtil.java",
-        "java/src/org/chromium/build/annotations/AlwaysInline.java",
-        "java/src/org/chromium/build/annotations/CheckDiscard.java",
-        "java/src/org/chromium/build/annotations/Contract.java",
-        "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
-        "java/src/org/chromium/build/annotations/DoNotInline.java",
-        "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
-        "java/src/org/chromium/build/annotations/EnsuresNonNull.java",
-        "java/src/org/chromium/build/annotations/EnsuresNonNullIf.java",
-        "java/src/org/chromium/build/annotations/IdentifierNameString.java",
-        "java/src/org/chromium/build/annotations/Initializer.java",
-        "java/src/org/chromium/build/annotations/MockedInTests.java",
-        "java/src/org/chromium/build/annotations/MonotonicNonNull.java",
-        "java/src/org/chromium/build/annotations/NullMarked.java",
-        "java/src/org/chromium/build/annotations/NullUnmarked.java",
-        "java/src/org/chromium/build/annotations/Nullable.java",
-        "java/src/org/chromium/build/annotations/OptimizeAsNonNull.java",
-        "java/src/org/chromium/build/annotations/RequiresNonNull.java",
-        "java/src/org/chromium/build/annotations/ServiceImpl.java",
-        "java/src/org/chromium/build/annotations/UsedByReflection.java",
-        "java/src/org/chromium/build/annotations/UsedReflectively.java",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //build/android:build_java__testing
-java_library {
-    name: "tot_cronet_build_android_build_java__testing",
-    static_libs: [
-        "tot_cronet_build_android_build_java__process_device__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
 }

@@ -98,9 +98,7 @@
 #include "./common/remote_file.h"
 #include "./common/status_macros.h"
 
-namespace centipede {
-
-using perf::RUsageProfiler;
+namespace fuzztest::internal {
 
 Centipede::Centipede(const Environment &env, CentipedeCallbacks &user_callbacks,
                      const BinaryInfo &binary_info,
@@ -127,7 +125,7 @@ Centipede::Centipede(const Environment &env, CentipedeCallbacks &user_callbacks,
         return Command{env_.input_filter, std::move(cmd_options)};
       }()},
       rusage_profiler_(
-          /*scope=*/perf::RUsageScope::ThisProcess(),
+          /*scope=*/RUsageScope::ThisProcess(),
           /*metrics=*/env.DumpRUsageTelemetryInThisShard()
               ? RUsageProfiler::kAllMetrics
               : RUsageProfiler::kMetricsOff,
@@ -219,9 +217,9 @@ void Centipede::UpdateAndMaybeLogStats(std::string_view log_type,
 
   // NOTE: For now, this will double-count rusage in every shard on the same
   // machine. The stats reporter knows and deals with that.
-  static const auto rusage_scope = perf::RUsageScope::ThisProcess();
-  const auto rusage_timing = perf::RUsageTiming::Snapshot(rusage_scope);
-  const auto rusage_memory = perf::RUsageMemory::Snapshot(rusage_scope);
+  static const auto rusage_scope = RUsageScope::ThisProcess();
+  const auto rusage_timing = RUsageTiming::Snapshot(rusage_scope);
+  const auto rusage_memory = RUsageMemory::Snapshot(rusage_scope);
 
   namespace fd = feature_domains;
 
@@ -374,9 +372,9 @@ size_t Centipede::AddPcPairFeatures(FeatureVec &fv) {
 
 bool Centipede::RunBatch(
     const std::vector<ByteArray> &input_vec,
-    absl::Nullable<BlobFileWriter *> corpus_file,
-    absl::Nullable<BlobFileWriter *> features_file,
-    absl::Nullable<BlobFileWriter *> unconditional_features_file) {
+    BlobFileWriter *absl_nullable corpus_file,
+    BlobFileWriter *absl_nullable features_file,
+    BlobFileWriter *absl_nullable unconditional_features_file) {
   BatchResult batch_result;
   bool success = ExecuteAndReportCrash(env_.binary, input_vec, batch_result);
   CHECK_EQ(input_vec.size(), batch_result.results().size());
@@ -688,8 +686,8 @@ void Centipede::ReloadAllShardsAndWriteDistilledCorpus() {
   }
 }
 
-void Centipede::LoadSeedInputs(absl::Nonnull<BlobFileWriter *> corpus_file,
-                               absl::Nonnull<BlobFileWriter *> features_file) {
+void Centipede::LoadSeedInputs(BlobFileWriter *absl_nonnull corpus_file,
+                               BlobFileWriter *absl_nonnull features_file) {
   std::vector<ByteArray> seed_inputs;
   const size_t num_seeds_available =
       user_callbacks_.GetSeeds(env_.batch_size, seed_inputs);
@@ -698,6 +696,8 @@ void Centipede::LoadSeedInputs(absl::Nonnull<BlobFileWriter *> corpus_file,
                  << num_seeds_available << " > " << env_.batch_size;
   }
   if (seed_inputs.empty()) {
+    QCHECK(!env_.require_seeds)
+        << "No seeds returned and --require_seeds=true, exiting early.";
     LOG(WARNING)
         << "No seeds returned - will use the default seed of single byte {0}";
     seed_inputs.push_back({0});
@@ -705,6 +705,8 @@ void Centipede::LoadSeedInputs(absl::Nonnull<BlobFileWriter *> corpus_file,
 
   RunBatch(seed_inputs, corpus_file, features_file,
            /*unconditional_features_file=*/nullptr);
+  LOG(INFO) << "Number of input seeds available: " << num_seeds_available
+            << ", number included in corpus: " << corpus_.NumTotal();
 
   // Forcely add all seed inputs to avoid empty corpus if none of them increased
   // coverage and passed the filters.
@@ -853,9 +855,9 @@ void Centipede::ReportCrash(std::string_view binary,
     LOG(FATAL) << "Terminating Centipede due to setup failure in the test.";
   }
 
-  // Skip reporting only if RequestEarlyStop is called with a failure exit code.
-  // Still report if time runs out.
-  if (ShouldStop() && ExitCode() != 0) return;
+  // Skip reporting only if RequestEarlyStop is called - still reporting if time
+  // runs out.
+  if (EarlyStopRequested()) return;
 
   if (++num_crashes_ > env_.max_num_crash_reports) return;
 
@@ -963,4 +965,4 @@ void Centipede::ReportCrash(std::string_view binary,
                                  batch_result.failure_description()));
 }
 
-}  // namespace centipede
+}  // namespace fuzztest::internal

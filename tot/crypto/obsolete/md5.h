@@ -13,6 +13,22 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace crypto::obsolete {
+class Md5;
+}
+
+namespace extensions::image_writer {
+crypto::obsolete::Md5 MakeMd5HasherForImageWriter();
+}
+
+namespace policy {
+crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
+}
+
+namespace web_app::internals {
+crypto::obsolete::Md5 MakeMd5HasherForWebAppShortcutIcon();
+}
+
+namespace crypto::obsolete {
 
 // This class is used for computing MD5 hashes, either one-shot via Md5::Hash(),
 // or streaming via constructing an Md5 instance, calling Update(), then calling
@@ -23,14 +39,31 @@ class CRYPTO_EXPORT Md5 {
  public:
   static constexpr size_t kSize = 16;
 
+  Md5(const Md5& other);
+  Md5(Md5&& other);
+  Md5& operator=(const Md5& other);
+  Md5& operator=(Md5&& other);
   ~Md5();
 
   void Update(base::span<const uint8_t> data);
 
   void Finish(base::span<uint8_t, kSize> result);
+  std::array<uint8_t, kSize> Finish();
+
+  Md5 MakeMd5HasherForTesting();
+  static std::array<uint8_t, kSize> HashForTesting(
+      base::span<const uint8_t> data);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(Md5Test, KnownAnswer);
+
+  // The friends listed here are the areas required to continue using MD5 for
+  // compatibility with existing specs, on-disk data, or similar.
+  friend Md5 policy::MakeMd5HasherForPolicyEventId();
+  friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
+
+  // TODO(https://crbug.com/416304903): get rid of this.
+  friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();
 
   Md5();
   static std::array<uint8_t, kSize> Hash(base::span<const uint8_t> data);

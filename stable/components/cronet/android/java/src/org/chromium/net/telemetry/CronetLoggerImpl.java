@@ -90,7 +90,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     longListToLongArray(info.httpFlagsNames),
                     longListToLongArray(info.httpFlagsValues),
                     info.cronetImplVersion,
-                    convertToProtoCronetEngineCreatedSource(info.source),
+                    convertToProtoCronetEngineBuilderInitializedSource(info.source),
                     Process.myUid());
         }
     }
@@ -225,7 +225,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     convertToProtoFailureReason(trafficInfo.getFailureReason()),
                     OptionalBoolean.fromBoolean(trafficInfo.getIsSocketReused()).getValue(),
                     trafficInfo.getCronetVersion(),
-                    convertToProtoCronetEngineCreatedSource(trafficInfo.getCronetSource()));
+                    convertToProtoCronetEngineBuilderInitializedSource(trafficInfo.getCronetSource()));
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);
@@ -320,6 +320,8 @@ public class CronetLoggerImpl extends CronetLogger {
                 return CronetStatsLog.CRONET_ENGINE_CREATED__SOURCE__CRONET_SOURCE_GMSCORE_DYNAMITE;
             case CRONET_SOURCE_FALLBACK:
                 return CronetStatsLog.CRONET_ENGINE_CREATED__SOURCE__CRONET_SOURCE_FALLBACK;
+            case CRONET_SOURCE_PLATFORM:
+                return CronetStatsLog.CRONET_ENGINE_CREATED__SOURCE__CRONET_SOURCE_PLATFORM;
             case CRONET_SOURCE_UNSPECIFIED:
                 return CronetStatsLog.CRONET_ENGINE_CREATED__SOURCE__CRONET_SOURCE_UNSPECIFIED;
             default:

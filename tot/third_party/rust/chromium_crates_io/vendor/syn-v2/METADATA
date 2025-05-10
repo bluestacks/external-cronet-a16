@@ -3,6 +3,6 @@
 name: "syn"
 third_party {
   license_type: NOTICE
-  version: "2.0.100"
+  version: "2.0.101"
   homepage: "https://crates.io/crates/syn"
 }

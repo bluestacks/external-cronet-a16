@@ -29,6 +29,7 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
@@ -53,10 +54,6 @@
 
 #ifdef ABSL_INTERNAL_STD_FILESYSTEM_PATH_HASH_AVAILABLE
 #include <filesystem>  // NOLINT
-#endif
-
-#ifdef ABSL_HAVE_STD_STRING_VIEW
-#include <string_view>
 #endif
 
 namespace {
@@ -191,9 +188,8 @@ TEST(HashValueTest, PointerAlignment) {
     // Limit the scope to the bits we would be using for Swisstable.
     constexpr size_t kMask = (1 << (kLog2NumValues + 7)) - 1;
     size_t stuck_bits = (~bits_or | bits_and) & kMask;
-    // Test that there are at most 2 stuck bits. Sometimes we see stuck_bits
-    // of 0x3.
-    EXPECT_LE(absl::popcount(stuck_bits), 2) << "0x" << std::hex << stuck_bits;
+    // Test that there are at most 3 stuck bits.
+    EXPECT_LE(absl::popcount(stuck_bits), 3) << "0x" << std::hex << stuck_bits;
   }
 }
 
@@ -496,22 +492,15 @@ TEST(HashValueTest, U32String) {
 }
 
 TEST(HashValueTest, WStringView) {
-#ifndef ABSL_HAVE_STD_STRING_VIEW
-  GTEST_SKIP();
-#else
   EXPECT_TRUE((is_hashable<std::wstring_view>::value));
 
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(std::make_tuple(
       std::wstring_view(), std::wstring_view(L"ABC"), std::wstring_view(L"ABC"),
       std::wstring_view(L"Some other different string_view"),
       std::wstring_view(L"Iñtërnâtiônàlizætiøn"))));
-#endif
 }
 
 TEST(HashValueTest, U16StringView) {
-#ifndef ABSL_HAVE_STD_STRING_VIEW
-  GTEST_SKIP();
-#else
   EXPECT_TRUE((is_hashable<std::u16string_view>::value));
 
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
@@ -519,13 +508,9 @@ TEST(HashValueTest, U16StringView) {
                       std::u16string_view(u"ABC"),
                       std::u16string_view(u"Some other different string_view"),
                       std::u16string_view(u"Iñtërnâtiônàlizætiøn"))));
-#endif
 }
 
 TEST(HashValueTest, U32StringView) {
-#ifndef ABSL_HAVE_STD_STRING_VIEW
-  GTEST_SKIP();
-#else
   EXPECT_TRUE((is_hashable<std::u32string_view>::value));
 
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
@@ -533,7 +518,6 @@ TEST(HashValueTest, U32StringView) {
                       std::u32string_view(U"ABC"),
                       std::u32string_view(U"Some other different string_view"),
                       std::u32string_view(U"Iñtërnâtiônàlizætiøn"))));
-#endif
 }
 
 TEST(HashValueTest, StdFilesystemPath) {
@@ -1222,6 +1206,22 @@ TEST(HashOf, MatchesTypeErasedHashState) {
   std::string s = "s";
   EXPECT_EQ(absl::HashOf(1, s), absl::Hash<TypeErasedHashStateUser>{}(
                                     TypeErasedHashStateUser{1, s}));
+}
+
+struct AutoReturnTypeUser {
+  int a;
+  std::string b;
+
+  template <typename H>
+  friend auto AbslHashValue(H state, const AutoReturnTypeUser& value) {
+    return H::combine(std::move(state), value.a, value.b);
+  }
+};
+
+TEST(HashOf, AutoReturnTypeUser) {
+  std::string s = "s";
+  EXPECT_EQ(absl::HashOf(1, s),
+            absl::Hash<AutoReturnTypeUser>{}(AutoReturnTypeUser{1, s}));
 }
 
 }  // namespace

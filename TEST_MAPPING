@@ -23,6 +23,18 @@
          "exclude-annotation": "androidx.test.filters.LargeTest"
        }
      ]
+    },
+    {
+      "name": "net_unittests_tester"
+    },
+    {
+      "name": "stable_net_unittests_tester"
+    },
+    {
+      "name": "cronet_unittests_tester"
+    },
+    {
+      "name": "stable_cronet_unittests_tester"
     }
   ],
   "presubmit": [

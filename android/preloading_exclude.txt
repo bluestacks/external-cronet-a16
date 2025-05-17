@@ -1,10 +1,14 @@
-# on-demand lazy initialization does not work when this class is preloaded because this class always
+# On-demand lazy initialization does not work when this class is preloaded because this class always
 # assumes that it's called through its parent's class method which means that the user has already
 # done some setup before calling it.
 org\.chromium\.base\.BuildInfo\$Holder
 org\.chromium\.base\.ContextUtils\$Holder
+
 # Tried to create a thread via static initializer which is prohibited.
+# TODO: drop the non-lifetime package version once stable Cronet contains
+# https://crrev.com/c/6533777.
 org\.chromium\.base\.LifetimeAssert\$WrappedReference
+org\.chromium\.base\.lifetime\.LifetimeAssert\$WrappedReference
 
 # Landroid/net/connectivity/org/chromium/base/TraceEvent$LooperMonitorHolder; failed initialization:
 # java.lang.NullPointerException: Attempt to invoke virtual method

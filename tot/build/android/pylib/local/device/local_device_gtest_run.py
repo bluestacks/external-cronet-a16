@@ -27,6 +27,7 @@ from devil.android.tools import system_app
 from devil.android.sdk import version_codes
 from devil.utils import reraiser_thread
 from incremental_install import installer
+from lib.common import google_storage_helper
 from lib.proto import exception_recorder
 from lib.proto import measures
 from pylib import constants
@@ -39,7 +40,6 @@ from pylib.local.device import local_device_test_run
 from pylib.symbols import stack_symbolizer
 from pylib.utils import code_coverage_utils
 from pylib.utils import device_dependencies
-from pylib.utils import google_storage_helper
 from pylib.utils import logdog_helper
 from py_trace_event import trace_event
 from py_utils import contextlib_ext
@@ -563,7 +563,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           arch_path = {abis.ARM_64: 'arm64', abis.ARM: 'arm'}.get(abi, abi)
 
           device_openxr_runtime_path = os.path.join(apk_dir, 'lib', arch_path,
-                                                    'libopenxrruntime.so')
+                                                    'libmockopenxrruntime.so')
           if not dev.PathExists(device_openxr_runtime_path, as_root=True):
             logging.exception('Could not locate OpenXr runtime on device. '
                               'Note that openxr deployment seems to fail with '

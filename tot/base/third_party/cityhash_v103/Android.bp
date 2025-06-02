@@ -48,8 +48,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=c2e409462f540d1798214848e23023dca51e3e15",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -80,6 +80,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -126,8 +127,8 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=c2e409462f540d1798214848e23023dca51e3e15",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -156,6 +157,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -226,9 +228,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },

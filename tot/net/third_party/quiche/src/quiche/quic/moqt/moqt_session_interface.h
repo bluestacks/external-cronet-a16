@@ -27,7 +27,7 @@ using MoqtOutgoingAnnounceCallback = quiche::MultiUseCallback<void(
     std::optional<MoqtAnnounceErrorReason> error)>;
 
 using MoqtOutgoingSubscribeAnnouncesCallback = quiche::SingleUseCallback<void(
-    FullTrackName track_namespace, std::optional<SubscribeErrorCode> error,
+    FullTrackName track_namespace, std::optional<RequestErrorCode> error,
     absl::string_view reason)>;
 
 class MoqtSessionInterface {
@@ -61,6 +61,18 @@ class MoqtSessionInterface {
   virtual bool SubscribeCurrentObject(const FullTrackName& name,
                                       SubscribeRemoteTrack::Visitor* visitor,
                                       VersionSpecificParameters parameters) = 0;
+  // Start with the first group after the current Largest Group/Object ID.
+  virtual bool SubscribeNextGroup(const FullTrackName& name,
+                                  SubscribeRemoteTrack::Visitor* visitor,
+                                  VersionSpecificParameters parameters) = 0;
+
+  // If an argument is nullopt, there is no change to the current value.
+  virtual bool SubscribeUpdate(const FullTrackName& name,
+                               std::optional<Location> start,
+                               std::optional<uint64_t> end_group,
+                               std::optional<MoqtPriority> subscriber_priority,
+                               std::optional<bool> forward,
+                               VersionSpecificParameters parameters) = 0;
 
   // Sends an UNSUBSCRIBE message and removes all of the state related to the
   // subscription.  Returns false if the subscription is not found.

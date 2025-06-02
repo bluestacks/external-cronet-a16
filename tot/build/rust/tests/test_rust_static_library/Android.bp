@@ -39,6 +39,7 @@ rust_ffi_static {
     crate_name: "build_srust_stests_stest_urust_ustatic_ulibrary_ctest_urust_ustatic_ulibrary",
     crate_root: "src/lib.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
         "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
@@ -48,7 +49,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -65,7 +66,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -82,7 +83,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -99,7 +100,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -116,7 +117,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -144,10 +145,7 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_rust_tests_test_rust_static_library_test_rust_static_library_cxx_generated_gen__testing_header",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_rust_tests_test_rust_static_library_test_rust_static_library_cxx_generated_gen__testing_header",
+        "tot_cronet_build_rust_tests_test_rust_static_library_test_rust_static_library_cxx_generated__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
@@ -155,8 +153,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=c2e409462f540d1798214848e23023dca51e3e15",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -187,6 +185,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",

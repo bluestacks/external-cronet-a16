@@ -18,10 +18,12 @@ ERRORPRONE_CHECKS_TO_APPLY = []
 
 # Checks to disable in tests.
 TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
-    # Too much effort to enable.
-    'UnusedVariable',
+    # Can hurt readability to enforce this on test classes.
+    'FieldCanBeStatic',
     # These are allowed in tests.
     'NoStreams',
+    # Too much effort to enable.
+    'UnusedVariable',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -48,6 +50,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InvalidInlineTag',
     'MalformedInlineTag',
     'MissingSummary',
+    'NotJavadoc',
     'UnescapedEntity',
     'UnrecognisedJavadocTag',
     # ^^^
@@ -132,6 +135,9 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'BinderIdentityRestoredDangerously',
     'EmptyIf',
     'EqualsBrokenForNull',
+    'FieldCanBeFinal',
+    'FieldCanBeLocal',
+    'FieldCanBeStatic',
     'InvalidThrows',
     'LongLiteralLowerCaseSuffix',
     'MultiVariableDeclaration',

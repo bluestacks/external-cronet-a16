@@ -16,8 +16,8 @@
 #include "quiche/quic/core/quic_time.h"
 #include "quiche/quic/moqt/moqt_messages.h"
 #include "quiche/quic/moqt/moqt_priority.h"
-#include "quiche/common/platform/api/quiche_mem_slice.h"
 #include "quiche/common/quiche_callbacks.h"
+#include "quiche/common/quiche_mem_slice.h"
 #include "quiche/web_transport/web_transport.h"
 
 namespace moqt {
@@ -166,10 +166,10 @@ class MoqtTrackPublisher {
 
   virtual absl::StatusOr<MoqtTrackStatusCode> GetTrackStatus() const = 0;
 
-  // Returns the largest sequence pair that has been published so far.
+  // Returns the largest (group, object) pair that has been published so far.
   // This method may only be called if
   // DoesTrackStatusImplyHavingData(GetTrackStatus()) is true.
-  virtual Location GetLargestSequence() const = 0;
+  virtual Location GetLargestLocation() const = 0;
 
   // Returns the forwarding preference of the track.
   // This method may only be called if

@@ -15,6 +15,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1306,8 +1307,9 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   header.table_len = DesiredIndexTableLen(max_size_);
   header.create_time = Time::Now().ToInternalValue();
 
-  if (!file->Write(&header, sizeof(header), 0))
+  if (!file->Write(&header, sizeof(header), 0)) {
     return false;
+  }
 
   size_t size = GetIndexSize(header.table_len);
   if (!file->SetLength(size))
@@ -1330,8 +1332,9 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
 
   for (size_t offset = kPageSize; offset < size; offset += kPageSize) {
     size_t end = std::min(offset + kPageSize, size);
-    if (!file->Write(page.get(), end - offset, offset))
+    if (!file->Write(page.get(), end - offset, offset)) {
       return false;
+    }
   }
   return true;
 }
@@ -1418,7 +1421,7 @@ bool BackendImpl::InitStats() {
       return false;
 
     data_->header.stats = address.value();
-    return stats_.Init(nullptr, 0, address);
+    return stats_.Init(base::span<uint8_t>(), address);
   }
 
   if (!address.is_block_file()) {
@@ -1431,14 +1434,16 @@ bool BackendImpl::InitStats() {
   if (!file)
     return false;
 
-  auto data = std::make_unique<char[]>(size);
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  if (!file->Read(data.get(), size, offset))
+  if (!file->Read(data.data(), size, offset)) {
     return false;
+  }
 
-  if (!stats_.Init(data.get(), size, address))
+  if (!stats_.Init(data.as_span(), address)) {
     return false;
+  }
   if (GetCacheType() == net::DISK_CACHE && ShouldUpdateStats()) {
     stats_.InitSizeHistogram();
   }
@@ -1447,9 +1452,9 @@ bool BackendImpl::InitStats() {
 
 void BackendImpl::StoreStats() {
   int size = stats_.StorageSize();
-  auto data = std::make_unique<char[]>(size);
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
   Addr address;
-  size = stats_.SerializeStats(data.get(), size, &address);
+  size = stats_.SerializeStats(data.as_span(), &address);
   DCHECK(size);
   if (!address.is_initialized())
     return;
@@ -1460,7 +1465,7 @@ void BackendImpl::StoreStats() {
 
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  file->Write(data.get(), size, offset);  // ignore result.
+  file->Write(data.data(), size, offset);  // ignore result.
 }
 
 void BackendImpl::RestartCache(bool failure) {
@@ -1634,7 +1639,11 @@ scoped_refptr<EntryImpl> BackendImpl::MatchEntry(const std::string& key,
       continue;
     }
 
-    DCHECK_EQ(hash & mask_, cache_entry->entry()->Data()->hash & mask_);
+    // This check is capped to 0xFFFFu to ignore a short canary regression where
+    // things were packed into the first 2^16 buckets.
+    // (See https://crbug.com/421211228)
+    DCHECK_EQ(hash & mask_ & 0xFFFFu,
+              cache_entry->entry()->Data()->hash & mask_ & 0xFFFFu);
     if (cache_entry->IsSameEntry(key, hash)) {
       if (!cache_entry->Update())
         cache_entry = nullptr;
@@ -1916,8 +1925,9 @@ bool BackendImpl::CheckIndex() {
     return false;
   }
 
-  if (!mask_)
+  if (!mask_) {
     mask_ = data_->header.table_len - 1;
+  }
 
   // Load the table into memory.
   return index_->Preload();
@@ -1970,8 +1980,9 @@ bool BackendImpl::CheckEntry(EntryImpl* cache_entry) {
   for (size_t i = 0; i < std::size(data->data_addr); i++) {
     if (data->data_addr[i]) {
       Addr address(data->data_addr[i]);
-      if (address.is_block_file())
+      if (address.is_block_file()) {
         ok = ok && block_files_.IsValid(address);
+      }
     }
   }
 

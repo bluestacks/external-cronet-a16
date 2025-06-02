@@ -12,6 +12,10 @@
 #include "net/base/cronet_buildflags.h"
 #include "net/net_buildflags.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace net::features {
 
 BASE_FEATURE(kAlpsForHttp2, "AlpsForHttp2", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -289,9 +293,15 @@ BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
              "EnableGetNetworkConnectivityHintAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableTcpPortRandomization,
-             "EnableTcpPortRandomization",
+BASE_FEATURE(kTcpPortRandomizationWin,
+             "TcpPortRandomizationWin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kTcpPortRandomizationWinVersionMinimum,
+                   &kTcpPortRandomizationWin,
+                   "TcpPortRandomizationWinVersionMinimum",
+                   static_cast<int>(base::win::Version::WIN10_20H1));
 
 BASE_FEATURE(kTcpSocketIoCompletionPortWin,
              "TcpSocketIoCompletionPortWin",
@@ -304,12 +314,6 @@ BASE_FEATURE(kAvoidEntryCreationForNoStore,
 const base::FeatureParam<int> kAvoidEntryCreationForNoStoreCacheSize{
     &kAvoidEntryCreationForNoStore, "AvoidEntryCreationForNoStoreCacheSize",
     1000};
-
-// Prefetch to follow normal semantics instead of 5-minute rule
-// https://crbug.com/1345207
-BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
-             "PrefetchFollowsNormalCacheSemantics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A flag for new Kerberos feature, that suggests new UI
 // when Kerberos authentication in browser fails on ChromeOS.
@@ -769,5 +773,9 @@ BASE_FEATURE(kIncludeDeprecatedClientCertLookup,
 BASE_FEATURE(kRestrictAbusePorts,
              "RestrictAbusePorts",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRestrictAbusePortsOnLocalhost,
+             "RestrictAbusePortsOnLocalhost",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features

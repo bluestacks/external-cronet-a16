@@ -352,7 +352,7 @@ void CommandLine::SetProgram(const FilePath& program) {
 }
 
 bool CommandLine::HasSwitch(std::string_view switch_string) const {
-  CHECK(IsSwitchNameValid(switch_string));
+  CHECK(IsSwitchNameValid(switch_string), base::NotFatalUntil::M134);
   return Contains(switches_, switch_string);
 }
 
@@ -401,7 +401,7 @@ FilePath CommandLine::GetSwitchValuePath(std::string_view switch_string) const {
 
 CommandLine::StringType CommandLine::GetSwitchValueNative(
     std::string_view switch_string) const {
-  CHECK(IsSwitchNameValid(switch_string));
+  CHECK(IsSwitchNameValid(switch_string), base::NotFatalUntil::M134);
 
   auto result = switches_.find(switch_string);
   return result == switches_.end() ? StringType() : result->second;
@@ -473,7 +473,8 @@ void CommandLine::RemoveSwitch(std::string_view switch_key_without_prefix) {
 #if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
   sequence_checker_.Check();
 #endif
-  CHECK(IsSwitchNameValid(switch_key_without_prefix));
+  CHECK(IsSwitchNameValid(switch_key_without_prefix),
+        base::NotFatalUntil::M134);
 
 #if BUILDFLAG(IS_WIN)
   StringType switch_key_native = UTF8ToWide(switch_key_without_prefix);

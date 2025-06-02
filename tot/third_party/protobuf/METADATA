@@ -3,10 +3,10 @@
 name: "Protocol Buffers"
 third_party {
   license_type: NOTICE
-  version: "31.0"
+  version: "30.2"
   identifier {
     value: "https://github.com/google/protobuf"
     type: "Git"
-    version: "31.0"
+    version: "30.2"
   }
 }

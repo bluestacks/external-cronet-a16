@@ -108,9 +108,7 @@ bool HasValidHostPrefixAttributes(const GURL& url,
                                   bool secure,
                                   const std::string& domain,
                                   const std::string& path) {
-  if (!secure ||
-      ProvisionalAccessScheme(url) == CookieAccessScheme::kNonCryptographic ||
-      path != "/") {
+  if (!secure || !url.SchemeIsCryptographic() || path != "/") {
     return false;
   }
   return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
@@ -394,29 +392,13 @@ std::optional<std::string> GetCookieDomainWithString(
   // exists. It should be treated as a host cookie.
   if (domain_string.empty() || (is_host_ip && domain_matches_host)) {
     std::string result;
-    if (url.IsStandard()) {
+    if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS()) {
       result = url_host;
     } else {
-      // TODO(crbug.com/403967933): Investigate how GetCookieDomainWithString
-      // is called for non-special URLs. There is no standard for canonicalizing
-      // an opaque hostname of non-special URLs. We need to call
-      // CanonicalizeHost for non-special URLs to handle cases like:
-      // - `git://HOST` => `host`. We should also investigate whether it's
-      // correct to use the host of the `url` parameter, or if we should be
-      // using the domain from the parsed cookie instead.
+      // If the URL uses an unknown scheme, we should ensure the host has been
+      // canonicalized.
       url::CanonHostInfo ignored;
       result = CanonicalizeHost(url_host, &ignored);
-
-      // The canonicalized result of an opaque hostname can have a leading dot
-      // which requires special handling, e.g. `git://%2ehost` => `.host`.
-      if (!result.empty() && result[0] == '.') {
-        return std::nullopt;
-      }
-
-      if (result.empty() && !url_host.empty()) {
-        // Reject non-special domains we fail to canonicalize.
-        return std::nullopt;
-      }
     }
     // TODO(crbug.com/40271909): Once empty label support is implemented we can
     // CHECK our assumptions here. For now, we DCHECK as DUMP_WILL_BE_CHECK is
@@ -780,8 +762,7 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
                          const std::string& domain,
                          const std::string& path) {
   if (prefix == COOKIE_PREFIX_SECURE) {
-    return secure && ProvisionalAccessScheme(url) !=
-                         CookieAccessScheme::kNonCryptographic;
+    return secure && url.SchemeIsCryptographic();
   }
   if (prefix == COOKIE_PREFIX_HOST) {
     return HasValidHostPrefixAttributes(url, secure, domain, path);

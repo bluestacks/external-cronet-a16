@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import z from 'zod';
 import {assertUnreachable} from '../base/logging';
 import {Time, time, TimeSpan} from '../base/time';
 import {HighPrecisionTimeSpan} from '../base/high_precision_time_span';
@@ -19,7 +20,7 @@ import {raf} from './raf_scheduler';
 import {HighPrecisionTime} from '../base/high_precision_time';
 import {DurationPrecision, Timeline, TimestampFormat} from '../public/timeline';
 import {TraceInfo} from '../public/trace_info';
-import {Setting} from '../public/settings';
+import {Setting, SettingsManager} from '../public/settings';
 
 const MIN_DURATION = 10;
 
@@ -83,15 +84,33 @@ export class TimelineImpl implements Timeline {
     raf.scheduleCanvasRedraw();
   }
 
+  private readonly _timestampFormat: Setting<TimestampFormat>;
+  private readonly _durationPrecision: Setting<DurationPrecision>;
+
   constructor(
     private readonly traceInfo: TraceInfo,
-    private readonly _timestampFormat: Setting<TimestampFormat>,
-    private readonly _durationPrecision: Setting<DurationPrecision>,
+    settings: SettingsManager,
   ) {
     this._visibleWindow = HighPrecisionTimeSpan.fromTime(
       traceInfo.start,
       traceInfo.end,
     );
+
+    this._timestampFormat = settings.register({
+      id: 'timestampFormat',
+      name: 'Timestamp format',
+      description: 'The format of timestamps throughout Perfetto.',
+      schema: z.nativeEnum(TimestampFormat),
+      defaultValue: TimestampFormat.Timecode,
+    });
+
+    this._durationPrecision = settings.register({
+      id: 'durationPrecision',
+      name: 'Duration precision',
+      description: 'The precision of durations throughout Perfetto.',
+      schema: z.nativeEnum(DurationPrecision),
+      defaultValue: DurationPrecision.Full,
+    });
   }
 
   // TODO: there is some redundancy in the fact that both |visibleWindowTime|

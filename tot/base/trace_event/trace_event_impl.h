@@ -47,6 +47,9 @@ struct TraceEventHandle {
 
 class BASE_EXPORT TraceEvent {
  public:
+  // TODO(crbug.com/40599662): Remove once all users have been updated.
+  using TraceValue = base::trace_event::TraceValue;
+
   TraceEvent();
 
   TraceEvent(PlatformThreadId thread_id,

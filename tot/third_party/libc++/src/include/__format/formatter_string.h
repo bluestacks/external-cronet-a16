@@ -10,7 +10,6 @@
 #ifndef _LIBCPP___FORMAT_FORMATTER_STRING_H
 #define _LIBCPP___FORMAT_FORMATTER_STRING_H
 
-#include <__assert>
 #include <__config>
 #include <__format/concepts.h>
 #include <__format/format_parse_context.h>
@@ -18,7 +17,6 @@
 #include <__format/formatter_output.h>
 #include <__format/parser_std_format_spec.h>
 #include <__format/write_escaped.h>
-#include <cstddef>
 #include <string>
 #include <string_view>
 
@@ -96,9 +94,7 @@ struct formatter<_CharT[_Size], _CharT> : public __formatter_string<_CharT> {
   template <class _FormatContext>
   _LIBCPP_HIDE_FROM_ABI typename _FormatContext::iterator
   format(const _CharT (&__str)[_Size], _FormatContext& __ctx) const {
-    const _CharT* const __pzero = char_traits<_CharT>::find(__str, _Size, _CharT{});
-    _LIBCPP_ASSERT_VALID_INPUT_RANGE(__pzero != nullptr, "formatting a non-null-terminated array");
-    return _Base::format(basic_string_view<_CharT>(__str, static_cast<size_t>(__pzero - __str)), __ctx);
+    return _Base::format(basic_string_view<_CharT>(__str, _Size), __ctx);
   }
 };
 

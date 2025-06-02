@@ -152,8 +152,6 @@ WindowManagerShellTransitionsTable::~WindowManagerShellTransitionsTable() =
     default;
 WindowManagerShellTransitionHandlersTable::
     ~WindowManagerShellTransitionHandlersTable() = default;
-WindowManagerShellTransitionParticipantsTable::
-    ~WindowManagerShellTransitionParticipantsTable() = default;
 WindowManagerShellTransitionProtosTable::
     ~WindowManagerShellTransitionProtosTable() = default;
 

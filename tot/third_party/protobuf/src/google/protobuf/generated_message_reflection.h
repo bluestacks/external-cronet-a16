@@ -59,13 +59,12 @@ class WeakFieldMap;  // weak_field_map.h
 // Tag used on offsets for fields that don't have a real offset.
 // For example, weak message fields go into the WeakFieldMap and not in an
 // actual field.
-inline constexpr uint32_t kInvalidFieldOffsetTag = 0x40000000u;
+constexpr uint32_t kInvalidFieldOffsetTag = 0x40000000u;
 
 // Mask used on offsets for split fields.
-inline constexpr uint32_t kSplitFieldOffsetMask = 0x80000000u;
-inline constexpr uint32_t kLazyMask = 0x1u;
-inline constexpr uint32_t kInlinedMask = 0x1u;
-inline constexpr uint32_t kMicroStringMask = 0x2u;
+constexpr uint32_t kSplitFieldOffsetMask = 0x80000000u;
+constexpr uint32_t kLazyMask = 0x1u;
+constexpr uint32_t kInlinedMask = 0x1u;
 
 // This struct describes the internal layout of the message, hence this is
 // used to act on the message reflectively.
@@ -142,10 +141,6 @@ struct ReflectionSchema {
     return Inlined(offsets_[field->index()], field->type());
   }
 
-  bool IsFieldMicroString(const FieldDescriptor* field) const {
-    return IsMicroString(offsets_[field->index()], field->type());
-  }
-
   uint32_t GetOneofCaseOffset(const OneofDescriptor* oneof_descriptor) const {
     return static_cast<uint32_t>(oneof_case_offset_) +
            static_cast<uint32_t>(
@@ -186,6 +181,14 @@ struct ReflectionSchema {
   uint32_t InlinedStringDonatedOffset() const {
     ABSL_DCHECK(HasInlinedString());
     return static_cast<uint32_t>(inlined_string_donated_offset_);
+  }
+
+  // The offset of the InternalMetadataWithArena member.
+  // For Lite this will actually be an InternalMetadataWithArenaLite.
+  // The schema doesn't contain enough information to distinguish between
+  // these two cases.
+  uint32_t GetMetadataOffset() const {
+    return static_cast<uint32_t>(metadata_offset_);
   }
 
   // Whether this message has an ExtensionSet.
@@ -250,6 +253,7 @@ struct ReflectionSchema {
   const uint32_t* offsets_;
   const uint32_t* has_bit_indices_;
   int has_bits_offset_;
+  int metadata_offset_;
   int extensions_offset_;
   int oneof_case_offset_;
   int object_size_;
@@ -265,8 +269,7 @@ struct ReflectionSchema {
     if (type == FieldDescriptor::TYPE_MESSAGE ||
         type == FieldDescriptor::TYPE_STRING ||
         type == FieldDescriptor::TYPE_BYTES) {
-      return v & ~kSplitFieldOffsetMask & ~kInlinedMask & ~kLazyMask &
-             ~kMicroStringMask;
+      return v & (~kSplitFieldOffsetMask) & (~kInlinedMask) & (~kLazyMask);
     }
     return v & (~kSplitFieldOffsetMask);
   }
@@ -280,13 +283,6 @@ struct ReflectionSchema {
       return false;
     }
   }
-
-  static bool IsMicroString(uint32_t v, FieldDescriptor::Type type) {
-    ABSL_DCHECK(type == FieldDescriptor::TYPE_STRING ||
-                type == FieldDescriptor::TYPE_BYTES)
-        << type;
-    return (v & kMicroStringMask) != 0u;
-  }
 };
 
 // Structs that the code generator emits directly to describe a message.
@@ -297,6 +293,8 @@ struct ReflectionSchema {
 // or merge with ReflectionSchema.
 struct MigrationSchema {
   int32_t offsets_index;
+  int32_t has_bit_indices_index;
+  int32_t inlined_string_indices_index;
   int object_size;
 };
 

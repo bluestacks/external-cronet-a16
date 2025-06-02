@@ -57,6 +57,8 @@ export class FrameSelectionAggregator implements AreaSelectionAggregator {
     return 'Frames';
   }
 
+  async getExtra() {}
+
   getDefaultSorting(): Sorting {
     return {column: 'occurrences', direction: 'DESC'};
   }

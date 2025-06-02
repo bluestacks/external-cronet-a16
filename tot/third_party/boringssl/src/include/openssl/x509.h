@@ -36,6 +36,7 @@
 #include <openssl/rsa.h>
 #include <openssl/sha.h>
 #include <openssl/stack.h>
+#include <openssl/thread.h>
 #include <openssl/x509v3_errors.h>  // IWYU pragma: export
 
 #if defined(__cplusplus)

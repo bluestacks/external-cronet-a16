@@ -24,6 +24,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -920,7 +921,7 @@ class ChannelAssociatedGroupController
       return true;
     }
 
-    CHECK(connector_->encountered_error());
+    CHECK(connector_->encountered_error(), base::NotFatalUntil::M135);
     return false;
   }
 

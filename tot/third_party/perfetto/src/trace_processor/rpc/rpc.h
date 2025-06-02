@@ -29,7 +29,6 @@
 #include "perfetto/ext/protozero/proto_ring_buffer.h"
 #include "perfetto/protozero/field.h"
 #include "perfetto/trace_processor/basic_types.h"
-#include "protos/perfetto/trace_processor/trace_processor.pbzero.h"
 
 namespace perfetto {
 
@@ -62,7 +61,7 @@ class Rpc {
   // The unique_ptr argument is optional. If non-null it will adopt the passed
   // instance and allow to directly query that. If null, a new instanace will be
   // created internally by calling Parse().
-  explicit Rpc(std::unique_ptr<TraceProcessor>, bool has_preloaded_eof);
+  explicit Rpc(std::unique_ptr<TraceProcessor>);
   Rpc();
   ~Rpc();
 
@@ -108,7 +107,6 @@ class Rpc {
   base::Status NotifyEndOfFile();
   std::string GetCurrentTraceName();
   std::vector<uint8_t> ComputeMetric(const uint8_t*, size_t);
-  std::vector<uint8_t> ComputeTraceSummary(const uint8_t*, size_t);
   void EnableMetatrace(const uint8_t*, size_t);
   std::vector<uint8_t> DisableAndReadMetatrace();
   std::vector<uint8_t> GetStatus();
@@ -140,9 +138,6 @@ class Rpc {
   void ComputeMetricInternal(const uint8_t*,
                              size_t,
                              protos::pbzero::ComputeMetricResult*);
-  void ComputeTraceSummaryInternal(const uint8_t*,
-                                   size_t,
-                                   protos::pbzero::TraceSummaryResult*);
   void DisableAndReadMetatraceInternal(
       protos::pbzero::DisableAndReadMetatraceResult*);
 

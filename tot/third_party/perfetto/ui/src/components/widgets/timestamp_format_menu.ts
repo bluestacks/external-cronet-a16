@@ -16,7 +16,6 @@ import m from 'mithril';
 import {MenuItem} from '../../widgets/menu';
 import {Trace} from '../../public/trace';
 import {TimestampFormat} from '../../public/timeline';
-import {Time} from '../../base/time';
 
 interface TimestampFormatMenuItemAttrs {
   trace: Trace;
@@ -36,8 +35,6 @@ export class TimestampFormatMenuItem
       });
     }
 
-    const timeZone = Time.formatTimezone(attrs.trace.traceInfo.tzOffMin);
-
     return m(
       MenuItem,
       {
@@ -45,10 +42,7 @@ export class TimestampFormatMenuItem
       },
       renderMenuItem(TimestampFormat.Timecode, 'Timecode'),
       renderMenuItem(TimestampFormat.UTC, 'Realtime (UTC)'),
-      renderMenuItem(
-        TimestampFormat.TraceTz,
-        `Realtime (Trace TZ - ${timeZone})`,
-      ),
+      renderMenuItem(TimestampFormat.TraceTz, 'Realtime (Trace TZ)'),
       renderMenuItem(TimestampFormat.Seconds, 'Seconds'),
       renderMenuItem(TimestampFormat.Milliseconds, 'Milliseconds'),
       renderMenuItem(TimestampFormat.Microseconds, 'Microseconds'),

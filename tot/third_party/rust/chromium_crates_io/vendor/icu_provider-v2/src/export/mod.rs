@@ -9,9 +9,7 @@
 
 mod payload;
 
-#[doc(hidden)] // macro
-pub use payload::ExportBox;
-pub use payload::ExportMarker;
+pub use payload::{ExportBox, ExportMarker};
 
 use crate::prelude::*;
 use alloc::collections::BTreeSet;

@@ -14,11 +14,11 @@
 
 @import "widgets/theme";
 
-.pf-metrics-page-picker {
+.metrics-page-picker {
   display: flex;
 }
 
-.pf-metrics-page-picker > * {
+.metrics-page-picker > * {
   margin-right: 1rem;
 }
 
@@ -42,11 +42,5 @@
     &.metric-error {
       color: #ef6c00;
     }
-  }
-}
-
-.pf-metricsv2-page {
-  &__metric_id_box {
-    margin-bottom: 1rem;
   }
 }

@@ -45,6 +45,11 @@ bool operator==(const MockPersistentNelStore::Command& lhs,
   }
 }
 
+bool operator!=(const MockPersistentNelStore::Command& lhs,
+                const MockPersistentNelStore::Command& rhs) {
+  return !(lhs == rhs);
+}
+
 MockPersistentNelStore::MockPersistentNelStore() = default;
 
 MockPersistentNelStore::~MockPersistentNelStore() = default;

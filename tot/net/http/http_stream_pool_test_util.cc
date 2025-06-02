@@ -30,109 +30,14 @@ IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port = 80) {
 
 }  // namespace
 
-FakeServiceEndpointResolution::FakeServiceEndpointResolution() = default;
-
-FakeServiceEndpointResolution::~FakeServiceEndpointResolution() = default;
-
-FakeServiceEndpointResolution::FakeServiceEndpointResolution(
-    const FakeServiceEndpointResolution&) = default;
-
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::operator=(
-    const FakeServiceEndpointResolution&) = default;
-
-FakeServiceEndpointResolution&
-FakeServiceEndpointResolution::CompleteStartSynchronously(int rv) {
-  start_result_ = rv;
-  endpoints_crypto_ready_ = true;
-  return *this;
-}
-
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_start_result(
-    int start_result) {
-  start_result_ = start_result;
-  return *this;
-}
-
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_endpoints(
-    std::vector<ServiceEndpoint> endpoints) {
-  endpoints_ = std::move(endpoints);
-  return *this;
-}
-
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::add_endpoint(
-    ServiceEndpoint endpoint) {
-  endpoints_.emplace_back(std::move(endpoint));
-  return *this;
-}
-
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_aliases(
-    std::set<std::string> aliases) {
-  aliases_ = std::move(aliases);
-  return *this;
-}
-
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_crypto_ready(
-    bool endpoints_crypto_ready) {
-  endpoints_crypto_ready_ = endpoints_crypto_ready;
-  return *this;
-}
-
-FakeServiceEndpointResolution&
-FakeServiceEndpointResolution::set_resolve_error_info(
-    ResolveErrorInfo resolve_error_info) {
-  resolve_error_info_ = resolve_error_info;
-  return *this;
-}
-
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_priority(
-    RequestPriority priority) {
-  priority_ = priority;
-  return *this;
-}
-
 FakeServiceEndpointRequest::FakeServiceEndpointRequest() = default;
 
 FakeServiceEndpointRequest::~FakeServiceEndpointRequest() = default;
 
-FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_endpoints(
-    std::vector<ServiceEndpoint> endpoints) {
-  resolution_.set_endpoints(std::move(endpoints));
-  return *this;
-}
-
-FakeServiceEndpointRequest& FakeServiceEndpointRequest::add_endpoint(
-    ServiceEndpoint endpoint) {
-  resolution_.add_endpoint(std::move(endpoint));
-  return *this;
-}
-
-FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_aliases(
-    std::set<std::string> aliases) {
-  resolution_.set_aliases(std::move(aliases));
-  return *this;
-}
-
-FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_crypto_ready(
-    bool endpoints_crypto_ready) {
-  resolution_.set_crypto_ready(endpoints_crypto_ready);
-  return *this;
-}
-
-FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_resolve_error_info(
-    ResolveErrorInfo resolve_error_info) {
-  resolution_.set_resolve_error_info(resolve_error_info);
-  return *this;
-}
-
-FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_priority(
-    RequestPriority priority) {
-  resolution_.set_priority(priority);
-  return *this;
-}
-
 FakeServiceEndpointRequest&
 FakeServiceEndpointRequest::CompleteStartSynchronously(int rv) {
-  resolution_.CompleteStartSynchronously(rv);
+  start_result_ = rv;
+  endpoints_crypto_ready_ = true;
   return *this;
 }
 
@@ -146,7 +51,7 @@ FakeServiceEndpointRequest::CallOnServiceEndpointsUpdated() {
 FakeServiceEndpointRequest&
 FakeServiceEndpointRequest::CallOnServiceEndpointRequestFinished(int rv) {
   CHECK(delegate_);
-  resolution_.set_crypto_ready(true);
+  endpoints_crypto_ready_ = true;
   delegate_->OnServiceEndpointRequestFinished(rv);
   return *this;
 }
@@ -155,24 +60,24 @@ int FakeServiceEndpointRequest::Start(Delegate* delegate) {
   CHECK(!delegate_);
   CHECK(delegate);
   delegate_ = delegate;
-  return resolution_.start_result();
+  return start_result_;
 }
 
 const std::vector<ServiceEndpoint>&
 FakeServiceEndpointRequest::GetEndpointResults() {
-  return resolution_.endpoints();
+  return endpoints_;
 }
 
 const std::set<std::string>& FakeServiceEndpointRequest::GetDnsAliasResults() {
-  return resolution_.aliases();
+  return aliases_;
 }
 
 bool FakeServiceEndpointRequest::EndpointsCryptoReady() {
-  return resolution_.endpoints_crypto_ready();
+  return endpoints_crypto_ready_;
 }
 
 ResolveErrorInfo FakeServiceEndpointRequest::GetResolveErrorInfo() {
-  return resolution_.resolve_error_info();
+  return resolve_error_info_;
 }
 
 const HostCache::EntryStaleness* FakeServiceEndpointRequest::GetStaleInfo()
@@ -186,7 +91,7 @@ bool FakeServiceEndpointRequest::IsStaleWhileRefresing() const {
 
 void FakeServiceEndpointRequest::ChangeRequestPriority(
     RequestPriority priority) {
-  resolution_.set_priority(priority);
+  priority_ = priority;
 }
 
 FakeServiceEndpointResolver::FakeServiceEndpointResolver() = default;
@@ -201,12 +106,6 @@ FakeServiceEndpointResolver::AddFakeRequest() {
       request->weak_ptr_factory_.GetWeakPtr();
   requests_.emplace_back(std::move(request));
   return weak_request;
-}
-
-FakeServiceEndpointResolution&
-FakeServiceEndpointResolver::ConfigureDefaultResolution() {
-  default_resolution_ = FakeServiceEndpointResolution();
-  return *default_resolution_;
 }
 
 void FakeServiceEndpointResolver::OnShutdown() {}
@@ -235,15 +134,7 @@ FakeServiceEndpointResolver::CreateServiceEndpointRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     ResolveHostParameters parameters) {
-  if (requests_.empty() && default_resolution_.has_value()) {
-    std::unique_ptr<FakeServiceEndpointRequest> request =
-        std::make_unique<FakeServiceEndpointRequest>();
-    request->resolution_ = *default_resolution_;
-    request->set_priority(parameters.initial_priority);
-    return request;
-  }
-
-  CHECK(!requests_.empty()) << "No FakeServiceEndpoint";
+  CHECK(!requests_.empty());
   std::unique_ptr<FakeServiceEndpointRequest> request =
       std::move(requests_.front());
   requests_.pop_front();

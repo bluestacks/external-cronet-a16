@@ -497,7 +497,7 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
   result.reserve(total_size);
 
   auto iter = parts.begin();
-  CHECK(iter != parts.end());
+  CHECK(iter != parts.end(), base::NotFatalUntil::M125);
   result.append(*iter);
   UNSAFE_TODO(++iter);
 

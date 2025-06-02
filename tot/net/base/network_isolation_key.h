@@ -78,12 +78,25 @@ class NET_EXPORT NetworkIsolationKey {
       const SchemefulSite& new_frame_site) const;
 
   // Compare keys for equality, true if all enabled fields are equal.
-  friend bool operator==(const NetworkIsolationKey&,
-                         const NetworkIsolationKey&) = default;
+  bool operator==(const NetworkIsolationKey& other) const {
+    return std::tie(top_frame_site_, frame_site_, nonce_,
+                    network_isolation_partition_) ==
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_,
+                    other.network_isolation_partition_);
+  }
+
+  // Compare keys for inequality, true if any enabled field varies.
+  bool operator!=(const NetworkIsolationKey& other) const {
+    return !(*this == other);
+  }
 
   // Provide an ordering for keys based on all enabled fields.
-  friend auto operator<=>(const NetworkIsolationKey&,
-                          const NetworkIsolationKey&) = default;
+  bool operator<(const NetworkIsolationKey& other) const {
+    return std::tie(top_frame_site_, frame_site_, nonce_,
+                    network_isolation_partition_) <
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_,
+                    other.network_isolation_partition_);
+  }
 
   // Returns the string representation of the key for use in string-keyed disk
   // cache. This is the string representation of each piece of the key separated

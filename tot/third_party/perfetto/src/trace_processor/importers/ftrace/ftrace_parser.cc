@@ -118,7 +118,6 @@
 #include "protos/perfetto/trace/ftrace/systrace.pbzero.h"
 #include "protos/perfetto/trace/ftrace/task.pbzero.h"
 #include "protos/perfetto/trace/ftrace/tcp.pbzero.h"
-#include "protos/perfetto/trace/ftrace/timer.pbzero.h"
 #include "protos/perfetto/trace/ftrace/trusty.pbzero.h"
 #include "protos/perfetto/trace/ftrace/ufs.pbzero.h"
 #include "protos/perfetto/trace/ftrace/vmscan.pbzero.h"
@@ -145,7 +144,7 @@ struct FtraceEventAndFieldId {
 // TODO(lalitm): going through this array is O(n) on a hot-path (see
 // ParseTypedFtraceToRaw). Consider changing this if we end up adding a lot of
 // events here.
-constexpr auto kKernelFunctionFields = std::array<FtraceEventAndFieldId, 7>{
+constexpr auto kKernelFunctionFields = std::array<FtraceEventAndFieldId, 6>{
     FtraceEventAndFieldId{
         protos::pbzero::FtraceEvent::kSchedBlockedReasonFieldNumber,
         protos::pbzero::SchedBlockedReasonFtraceEvent::kCallerFieldNumber},
@@ -163,10 +162,7 @@ constexpr auto kKernelFunctionFields = std::array<FtraceEventAndFieldId, 7>{
         protos::pbzero::FuncgraphExitFtraceEvent::kFuncFieldNumber},
     FtraceEventAndFieldId{
         protos::pbzero::FtraceEvent::kMmShrinkSlabStartFieldNumber,
-        protos::pbzero::MmShrinkSlabStartFtraceEvent::kShrinkFieldNumber},
-    FtraceEventAndFieldId{
-        protos::pbzero::FtraceEvent::kHrtimerExpireEntryFieldNumber,
-        protos::pbzero::HrtimerExpireEntryFtraceEvent::kFunctionFieldNumber}};
+        protos::pbzero::MmShrinkSlabStartFtraceEvent::kShrinkFieldNumber}};
 
 std::string GetUfsCmdString(uint32_t ufsopcode, uint32_t gid) {
   std::string buffer;
@@ -463,9 +459,7 @@ FtraceParser::FtraceParser(TraceProcessorContext* context)
       disp_vblank_irq_enable_id_(
           context_->storage->InternString("disp_vblank_irq_enable")),
       disp_vblank_irq_enable_output_id_arg_name_(
-          context_->storage->InternString("output_id")),
-      hrtimer_id_(context_->storage->InternString("hrtimer")),
-      local_timer_id_(context_->storage->InternString("IRQ (LocalTimer)")) {
+          context_->storage->InternString("output_id")) {
   // Build the lookup table for the strings inside ftrace events (e.g. the
   // name of ftrace event fields and the names of their args).
   for (size_t i = 0; i < GetDescriptorsSize(); i++) {
@@ -981,14 +975,6 @@ base::Status FtraceParser::ParseFtraceEvent(uint32_t cpu,
         ParseWorkqueueExecuteEnd(ts, pid, fld_bytes);
         break;
       }
-      case FtraceEvent::kLocalTimerEntryFieldNumber: {
-        ParseLocalTimerEntry(cpu, ts);
-        break;
-      }
-      case FtraceEvent::kLocalTimerExitFieldNumber: {
-        ParseLocalTimerExit(cpu, ts);
-        break;
-      }
       case FtraceEvent::kIrqHandlerEntryFieldNumber: {
         ParseIrqHandlerEntry(cpu, ts, fld_bytes);
         break;
@@ -1301,10 +1287,6 @@ base::Status FtraceParser::ParseFtraceEvent(uint32_t cpu,
         mali_gpu_event_tracker_.ParseMaliGpuMcuStateEvent(ts, fld.id());
         break;
       }
-      case FtraceEvent::kMaliGpuPowerStateFieldNumber: {
-        ParseMaliGpuPowerState(ts, fld_bytes);
-        break;
-      }
       case FtraceEvent::kTracingMarkWriteFieldNumber: {
         ParseMdssTracingMarkWrite(ts, pid, fld_bytes);
         break;
@@ -1383,14 +1365,6 @@ base::Status FtraceParser::ParseFtraceEvent(uint32_t cpu,
       }
       case FtraceEvent::kCpuhpExitFieldNumber: {
         ParseCpuhpExit(ts, fld_bytes);
-        break;
-      }
-      case FtraceEvent::kHrtimerExpireEntryFieldNumber: {
-        ParseHrtimerExpireEntry(cpu, ts, fld_bytes, seq_state);
-        break;
-      }
-      case FtraceEvent::kHrtimerExpireExitFieldNumber: {
-        ParseHrtimerExpireExit(cpu, ts, fld_bytes);
         break;
       }
       default:
@@ -2758,18 +2732,6 @@ void FtraceParser::ParseIrqHandlerExit(uint32_t cpu,
                          Variadic::String(context_->storage->InternString(
                              evt.ret() == 1 ? "handled" : "unhandled")));
       });
-}
-
-void FtraceParser::ParseLocalTimerEntry(uint32_t cpu, int64_t timestamp) {
-  TrackId track = context_->track_tracker->InternTrack(kIrqBlueprint,
-                                                       tracks::Dimensions(cpu));
-  context_->slice_tracker->Begin(timestamp, track, irq_id_, local_timer_id_);
-}
-
-void FtraceParser::ParseLocalTimerExit(uint32_t cpu, int64_t timestamp) {
-  TrackId track = context_->track_tracker->InternTrack(kIrqBlueprint,
-                                                       tracks::Dimensions(cpu));
-  context_->slice_tracker->End(timestamp, track, irq_id_, {});
 }
 
 namespace {
@@ -4145,53 +4107,5 @@ void FtraceParser::ParseCpuhpExit(int64_t ts, protozero::ConstBytes blob) {
   TrackId track_id = context_->track_tracker->InternTrack(
       kCpuHpBlueprint, tracks::Dimensions(cpuhp_event.cpu()));
   context_->slice_tracker->End(ts, track_id);
-}
-
-namespace {
-
-constexpr auto kHrtimerBlueprint = tracks::SliceBlueprint(
-    "cpu_hrtimer",
-    tracks::DimensionBlueprints(tracks::kCpuDimensionBlueprint),
-    tracks::FnNameBlueprint([](uint32_t cpu) {
-      return base::StackString<255>("Hrtimer Cpu %u", cpu);
-    }));
-
-}  // namespace
-
-void FtraceParser::ParseHrtimerExpireEntry(
-    uint32_t cpu,
-    int64_t timestamp,
-    protozero::ConstBytes blob,
-    PacketSequenceStateGeneration* seq_state) {
-  protos::pbzero::HrtimerExpireEntryFtraceEvent::Decoder evt(blob);
-
-  TrackId track = context_->track_tracker->InternTrack(kHrtimerBlueprint,
-                                                       tracks::Dimensions(cpu));
-  StringId slice_name_id =
-      InternedKernelSymbolOrFallback(evt.function(), seq_state);
-  context_->slice_tracker->Begin(timestamp, track, hrtimer_id_, slice_name_id);
-}
-
-void FtraceParser::ParseHrtimerExpireExit(uint32_t cpu,
-                                          int64_t timestamp,
-                                          protozero::ConstBytes blob) {
-  protos::pbzero::HrtimerExpireExitFtraceEvent::Decoder evt(blob);
-
-  TrackId track = context_->track_tracker->InternTrack(kHrtimerBlueprint,
-                                                       tracks::Dimensions(cpu));
-  context_->slice_tracker->End(timestamp, track, hrtimer_id_);
-}
-
-void FtraceParser::ParseMaliGpuPowerState(int64_t ts,
-                                          protozero::ConstBytes blob) {
-  static constexpr auto kMaliGpuPowerStateBlueprint = tracks::CounterBlueprint(
-      "mali_gpu_power_state", tracks::UnknownUnitBlueprint(),
-      tracks::DimensionBlueprints(),
-      tracks::StaticNameBlueprint("mali_gpu_power_state"));
-
-  protos::pbzero::MaliGpuPowerStateFtraceEvent::Decoder event(blob);
-  TrackId track =
-      context_->track_tracker->InternTrack(kMaliGpuPowerStateBlueprint);
-  context_->event_tracker->PushCounter(ts, event.to_state(), track);
 }
 }  // namespace perfetto::trace_processor

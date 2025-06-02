@@ -1189,7 +1189,6 @@ public class MapForProto2Test {
   }
 
   @Test
-  @SuppressWarnings("SelfAssertion")
   public void testGetMap() {
     TestMap.Builder builder = TestMap.newBuilder();
     setMapValuesUsingAccessors(builder);

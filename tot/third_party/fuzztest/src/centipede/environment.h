@@ -131,8 +131,6 @@ struct Environment {
   void UpdateTimeoutPerBatchIfEqualTo(size_t val);
   // If `binary_hash` is empty, updates it using the file in `coverage_binary`.
   void UpdateBinaryHashIfEmpty();
-
-  std::vector<std::string> CreateFlags() const;
 };
 
 }  // namespace fuzztest::internal

@@ -61,8 +61,8 @@ constexpr auto kEuropeanEconomicAreaCountries =
         "uk",  // United Kingdom
     });
 
-// One week or seven days represented in base::TimeDelta.
-const base::TimeDelta kOneWeek = base::Days(7);
+// Number of seconds in a week or seven days. (604800 = 7 * 24 * 60 * 60)
+const int kOneWeekInSeconds = base::Days(7).InSeconds();
 
 const size_t kMinLogQueueCount = 10;
 const size_t kMinLogQueueSizeBytes = 300 * 1024;  // 300 KiB
@@ -190,11 +190,11 @@ void DwaService::RecordCoarseSystemInformation(
         ::dwa::CoarseSystemInfo::GEO_DESIGNATION_ROW);
   }
 
-  base::TimeDelta time_since_install =
-      base::Time::Now() -
-      base::Time::FromTimeT(local_state.GetInt64(metrics::prefs::kInstallDate));
+  int64_t seconds_since_install =
+      MetricsLog::GetCurrentTime() -
+      local_state.GetInt64(metrics::prefs::kInstallDate);
   coarse_system_info->set_client_age(
-      time_since_install < kOneWeek
+      seconds_since_install < kOneWeekInSeconds
           ? ::dwa::CoarseSystemInfo::CLIENT_AGE_RECENT
           : ::dwa::CoarseSystemInfo::CLIENT_AGE_NOT_RECENT);
 

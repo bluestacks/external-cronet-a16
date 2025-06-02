@@ -21,9 +21,9 @@ fn bench_date<A: AsCalendar>(date: &mut Date<A>) {
     ));
 
     // Retrieving vals
-    let _ = black_box(date.year());
-    let _ = black_box(date.month());
-    let _ = black_box(date.day_of_month());
+    let _ = black_box(date.year().era_year_or_extended());
+    let _ = black_box(date.month().ordinal);
+    let _ = black_box(date.day_of_month().0);
 
     // Conversion to ISO.
     let _ = black_box(date.to_iso());
@@ -197,19 +197,13 @@ fn date_benches(c: &mut Criterion) {
         &mut group,
         "calendar/islamic/civil",
         &fxs,
-        icu::calendar::cal::HijriTabular::new(
-            icu::calendar::cal::HijriTabularLeapYears::TypeII,
-            icu::calendar::cal::HijriTabularEpoch::Friday,
-        ),
+        icu::calendar::cal::IslamicCivil::new(),
         |y, m, d| {
-            Date::try_new_hijri_tabular_with_calendar(
+            Date::try_new_islamic_civil_with_calendar(
                 y,
                 m,
                 d,
-                icu::calendar::cal::HijriTabular::new(
-                    icu::calendar::cal::HijriTabularLeapYears::TypeII,
-                    icu::calendar::cal::HijriTabularEpoch::Friday,
-                ),
+                icu::calendar::cal::IslamicCivil::new(),
             )
             .unwrap()
         },
@@ -219,19 +213,13 @@ fn date_benches(c: &mut Criterion) {
         &mut group,
         "calendar/islamic/tabular",
         &fxs,
-        icu::calendar::cal::HijriTabular::new(
-            icu::calendar::cal::HijriTabularLeapYears::TypeII,
-            icu::calendar::cal::HijriTabularEpoch::Thursday,
-        ),
+        icu::calendar::cal::IslamicTabular::new(),
         |y, m, d| {
-            Date::try_new_hijri_tabular_with_calendar(
+            Date::try_new_islamic_tabular_with_calendar(
                 y,
                 m,
                 d,
-                icu::calendar::cal::HijriTabular::new(
-                    icu::calendar::cal::HijriTabularLeapYears::TypeII,
-                    icu::calendar::cal::HijriTabularEpoch::Thursday,
-                ),
+                icu::calendar::cal::IslamicTabular::new(),
             )
             .unwrap()
         },
@@ -241,21 +229,29 @@ fn date_benches(c: &mut Criterion) {
         &mut group,
         "calendar/islamic/ummalqura",
         &fxs,
-        icu::calendar::cal::HijriUmmAlQura::new(),
-        |y, m, d| Date::try_new_ummalqura(y, m, d).unwrap(),
+        icu::calendar::cal::IslamicUmmAlQura::new_always_calculating(),
+        |y, m, d| {
+            Date::try_new_ummalqura_with_calendar(
+                y,
+                m,
+                d,
+                icu::calendar::cal::IslamicUmmAlQura::new_always_calculating(),
+            )
+            .unwrap()
+        },
     );
 
     bench_calendar(
         &mut group,
         "calendar/islamic/observational",
         &fxs,
-        icu::calendar::cal::HijriSimulated::new_mecca_always_calculating(),
+        icu::calendar::cal::IslamicObservational::new_always_calculating(),
         |y, m, d| {
-            Date::try_new_simulated_hijri_with_calendar(
+            Date::try_new_observational_islamic_with_calendar(
                 y,
                 m,
                 d,
-                icu::calendar::cal::HijriSimulated::new_mecca_always_calculating(),
+                icu::calendar::cal::IslamicObservational::new_always_calculating(),
             )
             .unwrap()
         },

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/nqe/observation_buffer.h"
 
 #include <float.h>
@@ -112,7 +117,7 @@ std::optional<int32_t> ObservationBuffer::GetPercentile(
 }
 
 void ObservationBuffer::RemoveObservationsWithSource(
-    const DeletedObservationSources& deleted_observation_sources) {
+    bool deleted_observation_sources[NETWORK_QUALITY_OBSERVATION_SOURCE_MAX]) {
   base::EraseIf(observations_,
                 [deleted_observation_sources](const Observation& observation) {
                   return deleted_observation_sources[static_cast<size_t>(

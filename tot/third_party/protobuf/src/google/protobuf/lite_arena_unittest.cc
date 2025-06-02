@@ -6,9 +6,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include "google/protobuf/arena_test_util.h"
-#include "google/protobuf/map_lite_unittest.pb.h"
-#include "google/protobuf/map_test_util.h"
-
+#include "google/protobuf/map_lite_test_util.h"
 #include <gtest/gtest.h>
 
 
@@ -42,13 +40,13 @@ TEST_F(LiteArenaTest, MapNoHeapAllocation) {
 
     proto2_unittest::TestArenaMapLite* from =
         Arena::Create<proto2_unittest::TestArenaMapLite>(arena_.get());
-    MapTestUtil::SetArenaMapFields(from);
+    MapLiteTestUtil::SetArenaMapFields(from);
     from->SerializeToString(&data);
 
     proto2_unittest::TestArenaMapLite* to =
         Arena::Create<proto2_unittest::TestArenaMapLite>(arena_.get());
     to->ParseFromString(data);
-    MapTestUtil::ExpectArenaMapFieldsSet(*to);
+    MapLiteTestUtil::ExpectArenaMapFieldsSet(*to);
   }
 }
 

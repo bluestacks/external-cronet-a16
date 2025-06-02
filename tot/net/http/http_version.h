@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <compare>
-
 namespace net {
 
 // Wrapper for an HTTP (major,minor) version pair.
@@ -34,10 +32,24 @@ class HttpVersion final {
 
   // Overloaded operators:
 
-  friend constexpr bool operator==(const HttpVersion&,
-                                   const HttpVersion&) = default;
-  friend constexpr auto operator<=>(const HttpVersion&,
-                                    const HttpVersion&) = default;
+  constexpr bool operator==(const HttpVersion& v) const {
+    return value_ == v.value_;
+  }
+  constexpr bool operator!=(const HttpVersion& v) const {
+    return value_ != v.value_;
+  }
+  constexpr bool operator>(const HttpVersion& v) const {
+    return value_ > v.value_;
+  }
+  constexpr bool operator>=(const HttpVersion& v) const {
+    return value_ >= v.value_;
+  }
+  constexpr bool operator<(const HttpVersion& v) const {
+    return value_ < v.value_;
+  }
+  constexpr bool operator<=(const HttpVersion& v) const {
+    return value_ <= v.value_;
+  }
 
  private:
   uint32_t value_;  // Packed as <major>:<minor>

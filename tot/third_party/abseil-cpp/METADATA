@@ -3,10 +3,10 @@
 name: "Abseil"
 third_party {
   license_type: NOTICE
-  version: "94be0866ac6e38b5ed34df55599f66a9cde4e06c"
+  version: "1b52dcb350289b262a105471a75ef6c001beecae"
   identifier {
     value: "https://github.com/abseil/abseil-cpp"
     type: "Git"
-    version: "94be0866ac6e38b5ed34df55599f66a9cde4e06c"
+    version: "1b52dcb350289b262a105471a75ef6c001beecae"
   }
 }

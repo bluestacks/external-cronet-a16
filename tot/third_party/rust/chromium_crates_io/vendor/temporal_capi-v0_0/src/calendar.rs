@@ -5,16 +5,14 @@ pub mod ffi {
     use crate::duration::ffi::Duration;
     use crate::error::ffi::TemporalError;
     use crate::iso::ffi::IsoDate;
-    use crate::options::ffi::{ArithmeticOverflow, Unit};
+    use crate::options::ffi::{ArithmeticOverflow, TemporalUnit};
     use crate::plain_date::ffi::{PartialDate, PlainDate};
     use crate::plain_month_day::ffi::PlainMonthDay;
     use crate::plain_year_month::ffi::PlainYearMonth;
-    use alloc::boxed::Box;
-    use core::fmt::Write;
     use diplomat_runtime::DiplomatStr;
-    use icu_calendar::preferences::CalendarAlgorithm;
+    use std::fmt::Write;
 
-    #[diplomat::enum_convert(icu_calendar::AnyCalendarKind, needs_wildcard)]
+    #[diplomat::enum_convert(icu_calendar::any_calendar::AnyCalendarKind, needs_wildcard)]
     pub enum AnyCalendarKind {
         Buddhist,
         Chinese,
@@ -25,10 +23,10 @@ pub mod ffi {
         Gregorian,
         Hebrew,
         Indian,
-        HijriTabularTypeIIFriday,
-        HijriSimulatedMecca,
-        HijriTabularTypeIIThursday,
-        HijriUmmAlQura,
+        IslamicCivil,
+        IslamicObservational,
+        IslamicTabular,
+        IslamicUmmAlQura,
         Iso,
         Japanese,
         JapaneseExtended,
@@ -37,16 +35,8 @@ pub mod ffi {
     }
 
     impl AnyCalendarKind {
-        pub fn get_for_str(s: &DiplomatStr) -> Option<Self> {
-            let value = icu_locale::extensions::unicode::Value::try_from_utf8(s).ok()?;
-            let algorithm = CalendarAlgorithm::try_from(&value).ok()?;
-            match icu_calendar::AnyCalendarKind::try_from(algorithm) {
-                Ok(c) => Some(c.into()),
-                Err(()) if algorithm == CalendarAlgorithm::Hijri(None) => {
-                    Some(Self::HijriTabularTypeIIFriday)
-                }
-                Err(()) => None,
-            }
+        pub fn get_for_bcp47_string(s: &DiplomatStr) -> Option<Self> {
+            icu_calendar::any_calendar::AnyCalendarKind::get_for_bcp47_bytes(s).map(Into::into)
         }
     }
 
@@ -60,7 +50,7 @@ pub mod ffi {
         }
 
         pub fn from_utf8(s: &DiplomatStr) -> Result<Box<Self>, TemporalError> {
-            temporal_rs::Calendar::try_from_utf8(s)
+            temporal_rs::Calendar::from_utf8(s)
                 .map(|c| Box::new(Calendar(c)))
                 .map_err(Into::into)
         }
@@ -119,7 +109,7 @@ pub mod ffi {
             &self,
             one: IsoDate,
             two: IsoDate,
-            largest_unit: Unit,
+            largest_unit: TemporalUnit,
         ) -> Result<Box<Duration>, TemporalError> {
             self.0
                 .date_until(&one.into(), &two.into(), largest_unit.into())
@@ -160,17 +150,17 @@ pub mod ffi {
         pub fn day(&self, date: IsoDate) -> u8 {
             self.0.day(&date.into())
         }
-        pub fn day_of_week(&self, date: IsoDate) -> Result<u16, TemporalError> {
-            self.0.day_of_week(&date.into()).map_err(Into::into)
+        pub fn day_of_week(&self, date: IsoDate) -> u16 {
+            self.0.day_of_week(&date.into())
         }
         pub fn day_of_year(&self, date: IsoDate) -> u16 {
             self.0.day_of_year(&date.into())
         }
-        pub fn week_of_year(&self, date: IsoDate) -> Option<u8> {
-            self.0.week_of_year(&date.into())
+        pub fn week_of_year(&self, date: IsoDate) -> Result<Option<u16>, TemporalError> {
+            self.0.week_of_year(&date.into()).map_err(Into::into)
         }
-        pub fn year_of_week(&self, date: IsoDate) -> Option<i32> {
-            self.0.year_of_week(&date.into())
+        pub fn year_of_week(&self, date: IsoDate) -> Result<Option<i32>, TemporalError> {
+            self.0.year_of_week(&date.into()).map_err(Into::into)
         }
         pub fn days_in_week(&self, date: IsoDate) -> Result<u16, TemporalError> {
             self.0.days_in_week(&date.into()).map_err(Into::into)

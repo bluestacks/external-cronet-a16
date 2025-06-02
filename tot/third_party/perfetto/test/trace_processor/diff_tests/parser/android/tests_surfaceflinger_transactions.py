@@ -183,7 +183,7 @@ class SurfaceFlingerTransactions(TestSuite):
         """,
         out=Csv("""
         "snapshot_id","arg_set_id","transaction_id","pid","uid","layer_id","display_id","flags_id"
-        2,42,10518374908660,3,415,"[NULL]",1234,1
+        2,42,10518374908660,3,415,"[NULL]",1234,"[NULL]"
         """))
 
   def test_surfaceflinger_transaction_display_change_args(self):
@@ -306,7 +306,7 @@ class SurfaceFlingerTransactions(TestSuite):
         """,
         out=Csv("""
         "snapshot_id","arg_set_id","transaction_id","pid","uid","layer_id","display_id","flags_id"
-        2,46,"[NULL]","[NULL]","[NULL]","[NULL]",5678,2
+        2,46,"[NULL]","[NULL]","[NULL]","[NULL]",5678,"[NULL]"
         """))
 
   def test_surfaceflinger_transaction_added_layer_args(self):

@@ -1479,6 +1479,9 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
 
+// Marks the start/end of a pause of an HttpStreamPool::Job.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_PAUSED)
+
 // Marks the start/end of a HttpStreamPool::Group.
 // The following parameters are attached:
 //   {
@@ -1486,6 +1489,16 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
 //      "force_quic": <True when QUIC is forced for the group>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
+
+// Emitted when an HttpStreamPool::Job is paused in an HttpStreamPool::Group.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_PAUSED)
+
+// Emitted when an HttpStreamPool::Job is resumed in an HttpStreamPool::Group.
+// The following parameters are attached:
+//   {
+//      "elapsed_ms": <Time taken for the job to resume in milliseconds>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_RESUMED)
 
 // Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
 // reference to HttpStreamPool::Group's net log.
@@ -1564,7 +1577,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 
 // Emitted when an HttpStreamPool::AttemptManager started a TcpBasedAttempt.
 // This event has the common event parameters (see above).
-EVENT_TYPE(HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::AttemptManager received completion from a
 // TcpBasedAttempt.
@@ -1574,7 +1587,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START)
 //   {
 //     "result": <String representation of the result>,
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_END)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_END)
 
 // Emitted when an HttpStreamPool::AttemptManager is going to notify failure.
 // In addition to the common event parameters, this event has the following

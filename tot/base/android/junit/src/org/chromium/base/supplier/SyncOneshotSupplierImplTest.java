@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Unit tests for {@link SyncOneshotSupplierImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SyncOneshotSupplierImplTest {
-    private final SyncOneshotSupplierImpl<Integer> mSupplier = new SyncOneshotSupplierImpl<>();
+    private SyncOneshotSupplierImpl<Integer> mSupplier = new SyncOneshotSupplierImpl<>();
 
-    private final AtomicInteger mValue1 = new AtomicInteger();
-    private final AtomicInteger mValue2 = new AtomicInteger();
+    private AtomicInteger mValue1 = new AtomicInteger();
+    private AtomicInteger mValue2 = new AtomicInteger();
 
     @Test
     @SmallTest

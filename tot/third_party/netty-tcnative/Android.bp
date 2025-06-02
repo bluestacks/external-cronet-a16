@@ -61,8 +61,8 @@ cc_library_shared {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=c2e409462f540d1798214848e23023dca51e3e15",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_OPENSSL",
         "-DHAVE_SYS_UIO_H",
@@ -97,7 +97,6 @@ cc_library_shared {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     stem: "libnetty-tcnative",
     visibility: [

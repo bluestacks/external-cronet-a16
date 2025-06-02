@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,53 +42,21 @@ namespace {
 
 // How many milliseconds we delay writing the index to disk since the last cache
 // operation has happened.
-constexpr int kWriteToDiskDelayMSecs = 20000;
-constexpr int kWriteToDiskOnBackgroundDelayMSecs = 100;
+const int kWriteToDiskDelayMSecs = 20000;
+const int kWriteToDiskOnBackgroundDelayMSecs = 100;
 
 // Divides the cache space into this amount of parts to evict when only one part
 // is left.
-constexpr uint32_t kEvictionMarginDivisor = 20;
+const uint32_t kEvictionMarginDivisor = 20;
 
-constexpr uint32_t kBytesInKb = 1024;
+const uint32_t kBytesInKb = 1024;
 
 // This is added to the size of each entry before using the size
 // to determine which entries to evict first. It's basically an
 // estimate of the filesystem overhead, but it also serves to flatten
 // the curve so that 1-byte entries and 2-byte entries are basically
 // treated the same.
-constexpr int kEstimatedEntryOverhead = 512;
-
-// On the disk, the entry info is filled in like following:
-// (upper bits)
-// 26 bits: empty
-// 30 bits: `entry_size_256b_chunks_`
-//  6 bits: empty
-//  2 bits: `in_memory_data_`
-// (lower bits)
-//
-// | 26 bits |         30 bits         | 6 bits  |     2 bits      |
-// | (empty) | entry_size_256b_chunks_ | (empty) | in_memory_data_ |
-uint64_t PackEntrySizeAndInMemoryData(uint32_t entry_size_256b_chunks,
-                                      uint8_t in_memory_data) {
-  return (static_cast<uint64_t>(entry_size_256b_chunks) << 8) |
-         static_cast<uint64_t>(in_memory_data);
-}
-
-struct EntryMetadataParams {
-  EntryMetadataParams(uint32_t entry_size_256b_chunks, uint8_t in_memory_data)
-      : entry_size_256b_chunks(entry_size_256b_chunks),
-        in_memory_data(in_memory_data) {}
-
-  uint32_t entry_size_256b_chunks;
-  uint8_t in_memory_data;
-};
-
-EntryMetadataParams UnpackEntrySizeAndInMemoryData(uint64_t tmp_entry_size) {
-  EntryMetadataParams params(static_cast<uint32_t>(tmp_entry_size >> 8),
-                             static_cast<uint8_t>(tmp_entry_size & 0x03));
-
-  return params;
-}
+static const int kEstimatedEntryOverhead = 512;
 
 }  // namespace
 
@@ -99,26 +68,20 @@ EntryMetadata::EntryMetadata()
       in_memory_data_(0) {}
 
 EntryMetadata::EntryMetadata(base::Time last_used_time,
-                             base::StrictNumeric<uint64_t> entry_size)
+                             base::StrictNumeric<uint32_t> entry_size)
     : last_used_time_seconds_since_epoch_(0),
       entry_size_256b_chunks_(0),
       in_memory_data_(0) {
-  CHECK(SetEntrySize(entry_size))
-      << "Failed to create EntryMetadata due to too large entry_size: "
-      << static_cast<uint64_t>(entry_size);
-
+  SetEntrySize(entry_size);  // to round/pack properly.
   SetLastUsedTime(last_used_time);
 }
 
 EntryMetadata::EntryMetadata(int32_t trailer_prefetch_size,
-                             base::StrictNumeric<uint64_t> entry_size)
+                             base::StrictNumeric<uint32_t> entry_size)
     : trailer_prefetch_size_(0),
       entry_size_256b_chunks_(0),
       in_memory_data_(0) {
-  CHECK(SetEntrySize(entry_size))
-      << "Failed to create EntryMetadata due to too large entry_size: "
-      << static_cast<uint64_t>(entry_size);
-
+  SetEntrySize(entry_size);  // to round/pack properly
   SetTrailerPrefetchSize(trailer_prefetch_size);
 }
 
@@ -155,32 +118,13 @@ void EntryMetadata::SetTrailerPrefetchSize(int32_t size) {
   trailer_prefetch_size_ = size;
 }
 
-uint64_t EntryMetadata::GetEntrySize() const {
-  return static_cast<uint64_t>(entry_size_256b_chunks_) << 8;
+uint32_t EntryMetadata::GetEntrySize() const {
+  return entry_size_256b_chunks_ << 8;
 }
 
-bool EntryMetadata::SetEntrySize(base::StrictNumeric<uint64_t> entry_size) {
+void EntryMetadata::SetEntrySize(base::StrictNumeric<uint32_t> entry_size) {
   // This should not overflow since we limit entries to 1/8th of the cache.
-  uint64_t rounded_chunk = (static_cast<uint64_t>(entry_size) + 255) >> 8;
-
-  // `entry_size_256b_chunks_` is a 30 bits field. Cannot be over the max.
-  if (rounded_chunk >> 30) {
-    return false;
-  }
-
-  entry_size_256b_chunks_ = rounded_chunk;
-  return true;
-}
-
-uint8_t EntryMetadata::GetInMemoryData() const {
-  return in_memory_data_;
-}
-
-void EntryMetadata::SetInMemoryData(uint8_t val) {
-  // Memory data should only use 2 bits.
-  CHECK_LE(val, 3);
-
-  in_memory_data_ = val;
+  entry_size_256b_chunks_ = (static_cast<uint32_t>(entry_size) + 255) >> 8;
 }
 
 void EntryMetadata::Serialize(net::CacheType cache_type,
@@ -188,10 +132,7 @@ void EntryMetadata::Serialize(net::CacheType cache_type,
   DCHECK(pickle);
   // If you modify the size of the size of the pickle, be sure to update
   // kOnDiskSizeBytes.
-
-  uint64_t packed_entry_info =
-      PackEntrySizeAndInMemoryData(entry_size_256b_chunks_, in_memory_data_);
-
+  uint32_t packed_entry_info = (entry_size_256b_chunks_ << 8) | in_memory_data_;
   if (cache_type == net::APP_CACHE) {
     pickle->WriteInt64(trailer_prefetch_size_);
   } else {
@@ -203,17 +144,15 @@ void EntryMetadata::Serialize(net::CacheType cache_type,
 
 bool EntryMetadata::Deserialize(net::CacheType cache_type,
                                 base::PickleIterator* it,
+                                bool has_entry_in_memory_data,
                                 bool app_cache_has_trailer_prefetch_size) {
   DCHECK(it);
   int64_t tmp_time_or_prefetch_size;
   uint64_t tmp_entry_size;
-
-  // The entry size must fit within 38 bits.
   if (!it->ReadInt64(&tmp_time_or_prefetch_size) ||
-      !it->ReadUInt64(&tmp_entry_size) || tmp_entry_size >> 38) {
+      !it->ReadUInt64(&tmp_entry_size) ||
+      tmp_entry_size > std::numeric_limits<uint32_t>::max())
     return false;
-  }
-
   if (cache_type == net::APP_CACHE) {
     if (app_cache_has_trailer_prefetch_size) {
       int32_t trailer_prefetch_size = 0;
@@ -225,13 +164,15 @@ bool EntryMetadata::Deserialize(net::CacheType cache_type,
   } else {
     SetLastUsedTime(base::Time::FromInternalValue(tmp_time_or_prefetch_size));
   }
-
-  // tmp_entry_size actually packs entry_size_256b_chunks_ and
-  // in_memory_data_.
-  auto params = UnpackEntrySizeAndInMemoryData(tmp_entry_size);
-  entry_size_256b_chunks_ = params.entry_size_256b_chunks;
-  SetInMemoryData(params.in_memory_data);
-
+  if (has_entry_in_memory_data) {
+    // tmp_entry_size actually packs entry_size_256b_chunks_ and
+    // in_memory_data_.
+    SetEntrySize(static_cast<uint32_t>(tmp_entry_size & 0xFFFFFF00));
+    SetInMemoryData(static_cast<uint8_t>(tmp_entry_size & 0xFF));
+  } else {
+    SetEntrySize(static_cast<uint32_t>(tmp_entry_size));
+    SetInMemoryData(0);
+  }
   return true;
 }
 
@@ -287,7 +228,7 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
     // be in a process where the base::android::ApplicationStatusListener::New
     // impl is unavailable.
     // (See https://crbug.com/881572)
-  } else if (base::android::IsJavaAvailable()) {
+  } else if (base::android::IsVMInitialized()) {
     owned_app_status_listener_ = base::android::ApplicationStatusListener::New(
         base::BindRepeating(&SimpleIndex::OnApplicationStateChange,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -396,7 +337,7 @@ base::Time SimpleIndex::GetLastUsedTime(uint64_t entry_hash) {
 void SimpleIndex::SetLastUsedTimeForTest(uint64_t entry_hash,
                                          const base::Time last_used) {
   auto it = entries_set_.find(entry_hash);
-  CHECK(it != entries_set_.end());
+  CHECK(it != entries_set_.end(), base::NotFatalUntil::M130);
   it->second.SetLastUsedTime(last_used);
 }
 
@@ -623,15 +564,8 @@ bool SimpleIndex::UpdateEntryIteratorSize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(cache_size_, (*it)->second.GetEntrySize());
   uint32_t original_size = (*it)->second.GetEntrySize();
-
-  // If SetEntrySize fails, we cannot update the entry iterator correctly.
-  if (!(*it)->second.SetEntrySize(entry_size)) {
-    LOG(ERROR) << "Could not set the given entry size as it is too large: "
-               << static_cast<uint64_t>(entry_size);
-    return false;
-  }
-
-  cache_size_ -= original_size;
+  cache_size_ -= (*it)->second.GetEntrySize();
+  (*it)->second.SetEntrySize(entry_size);
   // We use GetEntrySize to get consistent rounding.
   cache_size_ += (*it)->second.GetEntrySize();
   // Return true if the size of the entry actually changed.  Make sure to

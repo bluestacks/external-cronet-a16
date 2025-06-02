@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/cert/internal/trust_store_mac.h"
 
 #include <Security/Security.h>
@@ -26,7 +31,6 @@
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
-#include "crypto/hash.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
@@ -450,6 +454,12 @@ class TrustDomainCacheFullCerts {
   bssl::CertIssuerSourceStatic cert_issuer_source_;
 };
 
+SHA256HashValue CalculateFingerprint256(const bssl::der::Input& buffer) {
+  SHA256HashValue sha256;
+  SHA256(buffer.data(), buffer.size(), sha256.data());
+  return sha256;
+}
+
 // Watches macOS keychain for |event_mask| notifications, and notifies any
 // registered callbacks. This is necessary as the keychain callback API is
 // keyed only on the callback function pointer rather than function pointer +
@@ -616,7 +626,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
 
   // Returns the trust status for |cert|.
   TrustStatus IsCertTrusted(const bssl::ParsedCertificate* cert) override {
-    SHA256HashValue cert_hash = crypto::hash::Sha256(cert->der_cert());
+    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
 
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
@@ -675,7 +685,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       all_trusted_certs[cert->der_cert()] = std::move(cert);
     }
     for (const auto& [key, cert] : all_trusted_certs) {
-      SHA256HashValue cert_hash = crypto::hash::Sha256(cert->der_cert());
+      SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
       results.emplace_back(base::ToVector(cert->der_cert()),
                            TrustStatusToCertificateTrust(
                                IsCertTrustedImpl(cert.get(), cert_hash)));
@@ -869,7 +879,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
       const TrustImplKeychainCacheFullCerts&) = delete;
 
   TrustStatus IsCertTrusted(const bssl::ParsedCertificate* cert) override {
-    SHA256HashValue cert_hash = crypto::hash::Sha256(cert->der_cert());
+    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
 
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
@@ -905,7 +915,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
 
     std::vector<net::PlatformTrustStore::CertWithTrust> results;
     for (const auto& cert : cert_issuer_source_.Certs()) {
-      SHA256HashValue cert_hash = crypto::hash::Sha256(cert->der_cert());
+      SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
       results.emplace_back(
           base::ToVector(cert->der_cert()),
           TrustStatusToCertificateTrust(IsCertTrustedImpl(cert_hash)));

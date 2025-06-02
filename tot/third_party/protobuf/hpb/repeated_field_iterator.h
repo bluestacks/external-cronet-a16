@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef GOOGLE_PROTOBUF_HPB_REPEATED_FIELD_ITERATOR_H__
-#define GOOGLE_PROTOBUF_HPB_REPEATED_FIELD_ITERATOR_H__
+#ifndef PROTOBUF_HPB_REPEATED_FIELD_ITERATOR_H_
+#define PROTOBUF_HPB_REPEATED_FIELD_ITERATOR_H_
 
 #include <cstddef>
 #include <cstring>
@@ -368,4 +368,4 @@ struct MessageIteratorPolicy {
 }  // namespace internal
 }  // namespace hpb
 
-#endif  // GOOGLE_PROTOBUF_HPB_REPEATED_FIELD_ITERATOR_H__
+#endif  // PROTOBUF_HPB_REPEATED_FIELD_ITERATOR_H_

@@ -18,9 +18,9 @@ fn bench_calendar<C: Clone + Calendar>(
     group.bench_function(name, |b| {
         b.iter(|| {
             let converted = black_box(iso).to_calendar(Ref(&calendar));
-            let year = black_box(converted.year());
-            let month = black_box(converted.month());
-            let day = black_box(converted.day_of_month());
+            let year = black_box(converted.year().era_year_or_extended());
+            let month = black_box(converted.month().ordinal);
+            let day = black_box(converted.day_of_month().0);
             black_box((converted, year, month, day))
         })
     });
@@ -72,31 +72,25 @@ fn convert_benches(c: &mut Criterion) {
     bench_calendar(
         &mut group,
         "calendar/islamic/observational",
-        icu::calendar::cal::HijriSimulated::new_mecca_always_calculating(),
+        icu::calendar::cal::IslamicObservational::new_always_calculating(),
     );
 
     bench_calendar(
         &mut group,
         "calendar/islamic/civil",
-        icu::calendar::cal::HijriTabular::new(
-            icu::calendar::cal::HijriTabularLeapYears::TypeII,
-            icu::calendar::cal::HijriTabularEpoch::Friday,
-        ),
+        icu::calendar::cal::IslamicCivil::new(),
     );
 
     bench_calendar(
         &mut group,
         "calendar/islamic/ummalqura",
-        icu::calendar::cal::HijriUmmAlQura::new(),
+        icu::calendar::cal::IslamicUmmAlQura::new_always_calculating(),
     );
 
     bench_calendar(
         &mut group,
         "calendar/islamic/tabular",
-        icu::calendar::cal::HijriTabular::new(
-            icu::calendar::cal::HijriTabularLeapYears::TypeII,
-            icu::calendar::cal::HijriTabularEpoch::Thursday,
-        ),
+        icu::calendar::cal::IslamicTabular::new(),
     );
 
     group.finish();

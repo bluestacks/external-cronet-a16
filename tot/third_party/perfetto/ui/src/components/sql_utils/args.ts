@@ -23,7 +23,7 @@ import {
 import {ArgSetId, ArgsId, asArgId} from './core_types';
 
 export type ArgValue = bigint | string | number | boolean | null;
-export type ArgValueType =
+type ArgValueType =
   | 'int'
   | 'uint'
   | 'pointer'

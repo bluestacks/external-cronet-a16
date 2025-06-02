@@ -879,15 +879,6 @@ class TraceStorage {
     return &window_manager_shell_transition_handlers_table_;
   }
 
-  const tables::WindowManagerShellTransitionParticipantsTable&
-  window_manager_shell_transition_participants_table() const {
-    return window_manager_shell_transition_participants_table_;
-  }
-  tables::WindowManagerShellTransitionParticipantsTable*
-  mutable_window_manager_shell_transition_participants_table() {
-    return &window_manager_shell_transition_participants_table_;
-  }
-
   const tables::WindowManagerShellTransitionProtosTable&
   window_manager_shell_transition_protos_table() const {
     return window_manager_shell_transition_protos_table_;
@@ -1178,8 +1169,6 @@ class TraceStorage {
       window_manager_shell_transitions_table_{&string_pool_};
   tables::WindowManagerShellTransitionHandlersTable
       window_manager_shell_transition_handlers_table_{&string_pool_};
-  tables::WindowManagerShellTransitionParticipantsTable
-      window_manager_shell_transition_participants_table_{&string_pool_};
   tables::WindowManagerShellTransitionProtosTable
       window_manager_shell_transition_protos_table_{&string_pool_};
   tables::ProtoLogTable protolog_table_{&string_pool_};

@@ -27,8 +27,7 @@ class TraceProcessor;
 
 // Starts a RPC server that handles requests using protobuf-over-stdio.
 // Returns when the server completes.
-base::Status RunStdioRpcServer(std::unique_ptr<TraceProcessor>,
-                               bool is_preloaded_eof);
+base::Status RunStdioRpcServer(std::unique_ptr<TraceProcessor>);
 
 }  // namespace trace_processor
 }  // namespace perfetto

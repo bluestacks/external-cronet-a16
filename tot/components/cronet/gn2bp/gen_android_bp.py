@@ -16,7 +16,7 @@ from typing import List, Dict, Set, Union
 from pathlib import Path
 import hashlib
 import shlex
-import collections
+
 import gn_utils
 import targets as gn2bp_targets
 
@@ -30,8 +30,6 @@ import constants as license_constants
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 sys.path.insert(0, REPOSITORY_ROOT)
-
-import components.cronet.tools.utils as cronet_utils
 import build.gn_helpers
 
 CRONET_LICENSE_NAME = "external_cronet_license"
@@ -195,30 +193,6 @@ def initialize_globals(import_channel: str):
       [('export_include_dirs', {
           "base/allocator/partition_allocator/src/",
       })],
-      # Protobuf depends on Unsafe class which is used to perform unsafe native methods. This class is not
-      # available in the public API provided by the android platform. It's only available by compiling
-      # against `core_current` and adding `libcore_private.stubs` as a dependency.
-      # defaults have to be removed to prevent sdk_version collision.
-      f'{MODULE_PREFIX}third_party_protobuf_proto_runtime_lite_java__testing__unfiltered':
-      [
-          ('libs', {
-              "libcore_private.stubs",
-          }),
-          ('defaults', None),
-          ('sdk_version', 'core_current'),
-      ],
-      # Protobuf depends on Unsafe class which is used to perform unsafe native methods. This class is not
-      # available in the public API provided by the android platform. It's only available by compiling
-      # against `core_current` and adding `libcore_private.stubs` as a dependency.
-      # defaults have to be removed to prevent sdk_version collision.
-      f'{MODULE_PREFIX}third_party_protobuf_proto_runtime_lite_java__unfiltered':
-      [
-          ('libs', {
-              "libcore_private.stubs",
-          }),
-          ('defaults', None),
-          ('sdk_version', 'core_current'),
-      ],
       f'{MODULE_PREFIX}base_base_java_test_support__testing': [
           ('errorprone', ('javacflags', {
               "-Xep:ReturnValueIgnored:WARN",
@@ -235,10 +209,6 @@ def initialize_globals(import_channel: str):
           })
       ],
       # end export_include_dir.
-      # TODO: https://crbug.com/418746360 - Handle //base:build_date_internal
-      # for os:linux_glibc.
-      f'{MODULE_PREFIX}base_build_date_internal__testing': [('host_supported',
-                                                             True)],
   }
 
 
@@ -267,6 +237,8 @@ BLUEPRINTS_MAPPING = {
     # Moving is undergoing, see crbug/40273848
     "buildtools/third_party/libc++abi": "third_party/libc++abi",
 }
+
+_MIN_SDK_VERSION = 30
 
 # Path for the protobuf sources in the standalone build.
 buildtools_protobuf_src = '//buildtools/protobuf/src'
@@ -400,6 +372,14 @@ def add_androidx_annotation_java_deps(module, _):
   module.libs.add("androidx.annotation_annotation")
 
 
+def add_protobuf_lite_runtime_java_deps(module, _):
+  # TODO: this seems wrong - we are using Chromium's protoc, not AOSP's, so we
+  # should use the Chromium Java protobuf library as well. Otherwise protoc
+  # may generate Java code that is not compatible with AOSP's protobuf Java
+  # runtime library.
+  module.static_libs.add("libprotobuf-java-lite")
+
+
 def add_androidx_core_java_deps(module, _):
   module.libs.add("androidx.core_core")
 
@@ -524,6 +504,8 @@ _builtin_deps = {
     enable_zlib,
     '//third_party/androidx:androidx_annotation_annotation_java':
     add_androidx_annotation_java_deps,
+    '//third_party/android_deps:protobuf_lite_runtime_java':
+    add_protobuf_lite_runtime_java_deps,
     '//third_party/androidx:androidx_annotation_annotation_experimental_java':
     add_androidx_experimental_java_deps,
     '//third_party/androidx:androidx_core_core_java':
@@ -812,6 +794,7 @@ class Module:
     self.libs = set()
     self.stem = None
     self.compile_multilib = None
+    self.aidl = dict()
     self.plugins = set()
     self.processor_class = None
     self.sdk_version = None
@@ -841,18 +824,11 @@ class Module:
     self.handle_static_inline = None
     self.static_inline_library = ""
     self.jni_zero_target_type = None
-    self.unstable = ""
-    self.path = ""
-    self.post_processed = False
     # In the case of Java "top-level" modules, this points to the corresponding
     # "unfiltered" module. The top-level module is just a dependency holder;
     # it's the unfiltered module that does the actual compiling. For more
     # details, see `create_java_module()`.
     self.java_unfiltered_module = None
-    self.transitive_generated_headers_modules = collections.defaultdict(set)
-
-  def variant(self, arch_name):
-    return self if arch_name == 'common' else self.target[arch_name]
 
   def to_string(self, output):
     if self.comment:
@@ -897,11 +873,10 @@ class Module:
     self._output_field(output, 'linker_scripts')
     self._output_field(output, 'ldflags')
     self._output_field(output, 'cppflags')
-    self._output_field(output, 'unstable')
-    self._output_field(output, 'path')
     self._output_field(output, 'libs')
     self._output_field(output, 'stem')
     self._output_field(output, 'compile_multilib')
+    self._output_field(output, 'aidl')
     self._output_field(output, 'plugins')
     self._output_field(output, 'processor_class')
     self._output_field(output, 'sdk_version')
@@ -989,8 +964,7 @@ class Module:
       return True
     # Allow cc_static_library with export_generated_headers as those are crucial for
     # the depending modules
-    return len(self.export_generated_headers) > 0 or len(
-        self.generated_headers) > 0
+    return len(self.export_generated_headers) > 0
 
   def is_java_top_level_module(self):
     return self.java_unfiltered_module is not None
@@ -1998,40 +1972,6 @@ class WriteNativeLibrariesJavaSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
 
-class CopyActionSanitizer(BaseActionSanitizer):
-
-  def get_tool_files(self):
-    # CopyAction makes use of no tools, it simply relies on cp.
-    return set()
-
-  def get_cmd(self):
-    return (super().get_pre_cmd() + ['cp'] +
-            [shlex.quote(arg) for arg in self.target.args])
-
-  def get_srcs(self):
-    srcs = super().get_srcs()
-    if srcs:
-      raise Exception(
-          f'CopyAction {self.target.name} specifies {srcs=}. Only deps are supported'
-      )
-    deps = self.get_deps()
-    if len(deps) > 1:
-      raise Exception(
-          f'CopyAction {self.target.name} specifies multiple {deps=}. Only a single dep is supported'
-      )
-    return set(f':{label_to_module_name(dep)}' for dep in deps)
-
-  def sanitize(self):
-    # By convention, copy targets use their deps as args for the copy (see get_srcs).
-    if len(self.target.args) > 1:
-      raise Exception(
-          f'CopyAction {self.target.name} specifies {self.target.args=}. Only deps are supported'
-      )
-    self.target.args = [f'$(location {src})' for src in self.get_srcs()]
-    self.target.args.append('$(out)')
-    super().sanitize()
-
-
 class ProtocJavaSanitizer(BaseActionSanitizer):
 
   def __init__(self, target, arch, gn):
@@ -2088,8 +2028,6 @@ def get_action_sanitizer(gn, target, gn_type, arch, is_test_target):
     return JavaCppStringSanitizer(target, arch)
   if target.script == '//build/android/gyp/write_native_libraries_java.py':
     return WriteNativeLibrariesJavaSanitizer(target, arch)
-  if target.script == '//cp':
-    return CopyActionSanitizer(target, arch)
   if target.script == '//build/gn_run_binary.py':
     return GnRunBinarySanitizer(target, arch)
   if target.script == '//build/protoc_java.py':
@@ -2269,7 +2207,7 @@ def merge_modules(modules, genrule_type):
 def create_java_module(bp_module_name, target, blueprint):
 
   def add_java_library_properties(module):
-    module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    module.min_sdk_version = _MIN_SDK_VERSION
     module.apex_available = [tethering_apex]
     module.defaults.add(java_framework_defaults_module)
     module.build_file_path = target.build_file_path
@@ -2313,6 +2251,12 @@ def create_java_module(bp_module_name, target, blueprint):
     unfiltered_module.jars = [
         gn_utils.label_to_path(source) for source in sources
     ]
+  if gn_utils.contains_aidl(sources):
+    # frameworks/base/core/java includes the source files that are used to compile framework.aidl.
+    # framework.aidl is added implicitly as a dependency to every AIDL GN action, this can be
+    # identified by third_party/android_sdk/public/platforms/android-34/framework.aidl.
+    unfiltered_module.aidl["include_dirs"] = {"frameworks/base/core/java/"}
+    unfiltered_module.aidl["local_include_dirs"] = target.local_aidl_includes
   blueprint.add_module(unfiltered_module)
 
   # Potential optimization opportunity: we could skip the filtered module if
@@ -2467,7 +2411,7 @@ def create_bindgen_module(blueprint: Blueprint, target,
   # to already be present in AOSP (currently, in Android.extras.bp). See
   # https://r.android.com/3413202.
   module.header_libs = {f"{MODULE_PREFIX}repository_root_include_dirs_anchor"}
-  module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+  module.min_sdk_version = _MIN_SDK_VERSION
   module.apex_available = [tethering_apex]
   blueprint.add_module(module)
   return module
@@ -2563,45 +2507,6 @@ def _set_linker_script(module, libs):
       module.ldflags.add(get_linker_script_ldflag(gn_utils.label_to_path(lib)))
 
 
-def create_concatenated_generated_headers_module(bp_module_name,
-                                                 headers_modules, blueprint,
-                                                 gn_target_name):
-  """Aggregates the output of multiple generated_headers genrules into a single
-  one. This is created to shorten the command-line length of the build command
-  as to not exceed the allowed length. Instead of exposing each generated header
-  individually, they're combined into a single target and only that target is
-  exposed.
-
-  Args:
-    bp_module_name: Name of the aggregated module generated.
-    headers_modules: Set of generated headers modules that will be aggregated.
-    gn_target_name: Name of the original GN target. This is usually the name
-    of the cc_library_static that is being processed.
-
-  Returns:
-    A Soong Module that aggregates all of the headers.
-  """
-  module = Module("cc_genrule", bp_module_name, gn_target_name)
-  module.cmd = [
-      "python $(location components/cronet/gn2bp/headers_copy.py) --gen-dir $(genDir) --headers"
-  ]
-  module.tool_files.add("components/cronet/gn2bp/headers_copy.py")
-  for headers_module_name in sorted(headers_modules):
-    headers_module_str = f":{headers_module_name}"
-    headers_module = blueprint.modules[headers_module_name]
-    module.tool_files.add(headers_module_str)
-    module.export_include_dirs.update(headers_module.export_include_dirs)
-    module.cmd.append(f"$(locations {headers_module_str})")
-    # We have to copy-over some .cc files due to some C++ code doing #include "file.cc". See
-    # crbug.com/421139881 for more information.
-    module.out.update([
-        output for output in headers_module.out
-        if output.endswith(".h") or output.endswith(".cc")
-    ])
-  module.apex_available.add(tethering_apex)
-  blueprint.add_module(module)
-  return module
-
 def set_module_flags(module, cflags, defines, ldflags, libs):
   module.cflags.update(_get_cflags(cflags, defines))
   module.ldflags.update({
@@ -2624,14 +2529,6 @@ def set_module_include_dirs(module, cflags, include_dirs):
       module.include_dirs.add(
           f"external/cronet/{IMPORT_CHANNEL}/{flag[len('-isystem../../'):]}")
 
-  depends_on_binder_ndk = any("libbinder_ndk_cpp" in include_dir
-                              for include_dir in include_dirs)
-  if depends_on_binder_ndk:
-    module.shared_libs.add("libbinder_ndk")
-    include_dirs = [
-        include_dir for include_dir in include_dirs
-        if "libbinder_ndk_cpp" not in include_dir
-    ]
   # Adding include_dirs is necessary due to source_sets / filegroups
   # which do not properly propagate include directories.
   # Filter any directory inside //out as a) this directory does not exist for
@@ -2649,40 +2546,6 @@ def set_module_include_dirs(module, cflags, include_dirs):
       d for d in module.include_dirs if d not in include_dirs_denylist
   ]
 
-
-def create_aidl_module(bp_module_name, target, blueprint):
-  module = Module("aidl_interface", bp_module_name, target.name)
-  module.unstable = True
-  module.include_dirs = [
-      f"external/cronet/{IMPORT_CHANNEL}/{path}"
-      for path in sorted(target.aidl_includes)
-  ]
-  # This is necessary as Soong adds a dependency behind the scenes ;(
-  # https://cs.android.com/android/platform/superproject/main/+/main:system/tools/aidl/build/aidl_interface_backends.go;l=162
-  module.visibility.add("//system/tools/aidl/build")
-  filegroup_module_name = f"{bp_module_name}_filegroup"
-  module.srcs = {f":{filegroup_module_name}"}
-  # Filegroup exists here because Soong's genrule for AIDL contains a bug where there's
-  # a discrepancy between the expected generated file path and the actual path.
-  # See crbug.com/418726870 for more information.
-  filegroup_module = Module("filegroup", filegroup_module_name, target.name)
-  filegroup_module.srcs = [
-      gn_utils.label_to_path(src) for src in sorted(target.sources)
-  ]
-  filegroup_module.build_file_path = target.build_file_path
-  # The following lines will trim an absolute path to the path
-  # of the java package. There's an assumption here that AIDL files
-  # live in java-kind packages.
-  # e.g. A/B/C/src/package/path/path.aidl -> A/B/C
-  source_file_path = list(filegroup_module.srcs)[0]
-  path_to_package = source_file_path[:source_file_path.find("src/") +
-                                     len("src/")]
-  assert all(
-      src.startswith(path_to_package) for src in filegroup_module.srcs
-  ), f"AIDL module {target.name} has sources from different packages which is not supported."
-  filegroup_module.path = path_to_package
-  blueprint.add_module(filegroup_module)
-  return (module, )
 
 def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                                is_test_target):
@@ -2775,13 +2638,13 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       modules = create_action_foreach_modules(blueprint, gn, target,
                                               is_test_target)
   elif target.type == 'copy':
-    # Copy targets are not supported: currently, we stop traversing the
-    # dependency tree when we encounter one.
+    # TODO: careful now! copy targets are not supported yet, but this will stop
+    # traversing the dependency tree. For //base:base, this is not a big
+    # problem as libicu contains the only copy target which happens to be a
+    # leaf node.
     return ()
   elif target.type == 'java_library':
     modules = (create_java_module(bp_module_name, target, blueprint), )
-  elif target.type == 'aidl_interface':
-    modules = create_aidl_module(bp_module_name, target, blueprint)
   else:
     # Note we don't have to handle `group` targets because parse_gn_desc() never
     # returns any; it just recurses through them and bubbles their dependencies
@@ -2790,7 +2653,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
 
   for module in modules:
     blueprint.add_module(module)
-    if target.type not in ['action', 'action_foreach', 'aidl_interface']:
+    if target.type not in ['action', 'action_foreach']:
       # Actions should get their srcs from their corresponding ActionSanitizer as actionSanitizer
       # filters srcs differently according to the type of the action.
       module.srcs.update(
@@ -2837,12 +2700,12 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     module.build_file_path = target.build_file_path
     # Chromium does not use visibility at all, in order to avoid visibility issues
     # in AOSP. Make every module visible to any module in external/cronet.
-    module.visibility.add("//external/cronet:__subpackages__")
+    module.visibility = {"//external/cronet:__subpackages__"}
 
     if module.type in ["rust_proc_macro", "rust_binary", "rust_ffi_static"]:
       module.crate_name = target.crate_name
       module.crate_root = gn_utils.label_to_path(target.crate_root)
-      module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+      module.min_sdk_version = _MIN_SDK_VERSION
       module.apex_available = [tethering_apex]
       for arch_name, arch in target.get_archs().items():
         _set_rust_flags(module.target[arch_name], arch.rust_flags, arch_name)
@@ -2880,6 +2743,10 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           else 'lib' + lib
         if lib in shared_library_allowlist:
           module.add_android_shared_lib(android_lib)
+
+    # If the module is a static library, export all the generated headers.
+    if module.type == 'cc_library_static':
+      module.export_generated_headers = module.generated_headers
 
     if module.type == 'cc_library_shared':
       output_name = target.output_name
@@ -2956,40 +2823,17 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           module_target.shared_libs.add(dep_module.name)
         elif dep_module.type == 'cc_library_static' or (
             dep_module.type == "rust_ffi_static" and module_is_cc):
-          if module.type in [
-              'cc_library_shared', 'cc_binary', 'rust_binary',
-              'cc_library_static'
-          ]:
-            if module.type != 'cc_library_static':
-              module_target.whole_static_libs.add(dep_module.name)
-            module.transitive_generated_headers_modules[arch_name].update(
-                dep_module.transitive_generated_headers_modules[arch_name])
-            # Deduplicating attributes from arch-specific ones into "common" is done on a
-            # per-target basis: matching values from attributes are deduplicated via 'common' if they're present in all
-            # architectures supported by a target. This leads to a deduplication which is
-            # stable on a "per-target basis", but not "globally": being a common
-            # attribute for a target X does not guarantee that it will also be for a target Y that depends on X
-            # (Y could support more architecture than X).
-            # A common scenario is a target that also build for hosts, but depend on targets
-            # which do not: this dependency will not be present for arch_name == host,
-            # but will be there for others. Now, due to the "deduplication mismatch"
-            # mentioned above, module_target will be oblivious to the common attributes
-            # which should be propagated into the arch-specific variants.
-            module.transitive_generated_headers_modules[arch_name].update(
-                dep_module.transitive_generated_headers_modules["common"])
+          if module.type in ['cc_library_shared', 'cc_binary', 'rust_binary']:
+            module_target.whole_static_libs.add(dep_module.name)
+          elif module.type == 'cc_library_static':
+            module_target.generated_headers.update(dep_module.generated_headers)
             module_target.shared_libs.update(dep_module.shared_libs)
             module_target.header_libs.update(dep_module.header_libs)
           elif module.type in ('rust_ffi_static', 'rust_bindgen'):
             module_target.shared_libs.update(dep_module.shared_libs)
-          elif module.type == 'rust_proc_macro' and dep_module.type == 'cc_library_static':
-            # rust_proc_macro cannot depend on cc_library_static. Having said
-            # that, we still need these dependencies to further bubble them up
-            # to rust_proc_macro targets dependencies, so simply ignore them.
-            # See https:/crbug.com/417429009.
-            pass
           else:
             raise Exception(
-                f"Cannot add {dep_module.name} ({dep_module.type}) to {module.name} ({module.type})"
+                f"Trying to add an unknown type {dep_module.type} to a type of {module.type}"
             )
         elif dep_module.type == "rust_bindgen":
           module.srcs.add(":" + dep_module.name)
@@ -3019,18 +2863,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             module_target.rustlibs.add(dep_module.name)
         elif dep_module.type == "rust_proc_macro":
           module_target.proc_macros.add(dep_module.name)
-        elif dep_module.type == "aidl_interface":
-          # See https://cs.android.com/android/platform/superproject/main/+/main:system/tools/aidl/build/aidl_interface_backends.go
-          # for how those modules "-lang-source" is generated.
-          if module.type.startswith("cc_"):
-            module.srcs.add(f":{dep_module.name}-ndk-source")
-            module.generated_headers.add(f"{dep_module.name}-ndk-source")
-            module.transitive_generated_headers_modules[arch_name].add(
-                f"{dep_module.name}-ndk-source")
-          elif module.type.startswith("java_"):
-            module.srcs.add(f":{dep_module.name}-java-source")
-          elif module.type.startswith("rust_"):
-            module.srcs.add(f":{dep_module.name}-rust-source")
         elif dep_module.type == 'cc_genrule':
           if dep_module.genrule_headers:
             if module.type == "rust_ffi_static":
@@ -3051,8 +2883,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                   create_generated_headers_export_module(blueprint,
                                                          dep_module).name)
             else:
-              module.transitive_generated_headers_modules[arch_name].update(
-                  dep_module.genrule_headers)
+              module_target.generated_headers.update(dep_module.genrule_headers)
           module_target.srcs.update(dep_module.genrule_srcs)
           module_target.shared_libs.update(dep_module.genrule_shared_libs)
           module_target.header_libs.update(dep_module.genrule_header_libs)
@@ -3173,44 +3004,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
               'Unsupported arch-specific dependency %s of target %s with type %s'
               % (dep_module.name, target.name, dep_module.type))
 
-    for arch_name, arch_generated_headers in module.transitive_generated_headers_modules.items(
-    ):
-      # We are capable of concatenating only internal dependencies (We don't know
-      # what the output of external dependencies are).
-      external_dependencies = {
-          header_module
-          for header_module in arch_generated_headers
-          if header_module not in blueprint.modules.keys()
-      }
-      # Headers that are not generated via gn2bp should not be concatenated (e.g. aidl_interface).
-      # Remove those from the set sent to `create_concatenated_generated_headers_module` while
-      # keeping them in the transitive headers set to be propagated upward.
-      headers_to_concatenate = arch_generated_headers - external_dependencies
-      module.variant(arch_name).generated_headers.update(external_dependencies)
-      if len(headers_to_concatenate) == 0:
-        continue
-
-      concatenated_hdrs_module = create_concatenated_generated_headers_module(
-          f"{bp_module_name}__concatenated_headers_{arch_name}",
-          headers_to_concatenate, blueprint, gn_target_name)
-      concatenated_hdrs_module.host_supported = (arch_name == 'host'
-                                                 or (arch_name == 'common'
-                                                     and module.host_supported))
-      module.variant(arch_name).generated_headers.add(
-          concatenated_hdrs_module.name)
-
     if module.is_java_top_level_module():
       # The Java top-level module is not the one doing the actual compiling; the
       # unfiltered module is, so it should get the srcs.
       module.java_unfiltered_module.srcs = module.srcs
       module.srcs = ()
-
-    # post_processing has to be applied here as we need to ensure that the modules have the
-    # correct properties in order to propagate them upward the tree. A common example is the
-    # merging of intermediate headers into a single cc_genrule, the merging copies the `export_include_dirs`
-    # of the descendant modules. However, if we apply the post_processing after we're done then it won't be
-    # copied to the merged modules.
-    apply_post_processing(module)
 
   return modules
 
@@ -3265,10 +3063,6 @@ def create_cc_defaults_module():
       # https://crrev.com/c/6396655/7/build/config/compiler/BUILD.gn
       # https://crbug.com/406704769
       '-Wno-nullability-completeness',
-      # Stops warning about unknown options. This usually happens when
-      # Chromium uses a newer version of Clang that supports a flag which
-      # Android's clang does not know about.
-      '-Wno-unknown-warning-option'
   ]
   defaults.build_file_path = ""
   defaults.include_build_directory = False
@@ -3293,34 +3087,10 @@ def create_cc_defaults_module():
   defaults.target['host'].compile_multilib = '64'
   defaults.stl = 'none'
   defaults.cpp_std = CPP_VERSION
-  defaults.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+  defaults.min_sdk_version = _MIN_SDK_VERSION
   defaults.apex_available.add(tethering_apex)
   return defaults
 
-
-def apply_post_processing(module):
-  if module.post_processed:
-    return
-  for key, add_val in additional_args.get(module.name, []):
-    curr = getattr(module, key)
-    if add_val and isinstance(add_val, set) and isinstance(curr, set):
-      curr.update(add_val)
-    elif isinstance(add_val, str) and (not curr or isinstance(curr, str)):
-      setattr(module, key, add_val)
-    elif isinstance(add_val, bool) and (not curr or isinstance(curr, bool)):
-      setattr(module, key, add_val)
-    elif isinstance(add_val, dict) and isinstance(curr, dict):
-      curr.update(add_val)
-    elif add_val is None:
-      setattr(module, key, None)
-    elif isinstance(add_val[1], dict) and isinstance(curr[add_val[0]],
-                                                     Module.Target):
-      curr[add_val[0]].__dict__.update(add_val[1])
-    elif isinstance(curr, dict):
-      curr[add_val[0]] = add_val[1]
-    else:
-      raise Exception('Unimplemented type %r of additional_args: %r' %
-                      (type(add_val), key))
 
 def create_blueprint_for_targets(gn, targets, test_targets):
   """Generate a blueprint for a list of GN targets."""
@@ -3349,12 +3119,24 @@ def create_blueprint_for_targets(gn, targets, test_targets):
 
   # Merge in additional hardcoded arguments.
   for module in blueprint.modules.values():
-    # post_processing is applied here again after we have finished creating all the modules as
-    # some modules shortcut the `create_modules_from_target` which means that the previous
-    # post processing does not apply to them. Re-apply the post-processing here.
-    # It's safe to reapply the post processing more than once as it appends to sets or
-    # overwrite previous values.
-    apply_post_processing(module)
+    for key, add_val in additional_args.get(module.name, []):
+      curr = getattr(module, key)
+      if add_val and isinstance(add_val, set) and isinstance(curr, set):
+        curr.update(add_val)
+      elif isinstance(add_val, str) and (not curr or isinstance(curr, str)):
+        setattr(module, key, add_val)
+      elif isinstance(add_val, bool) and (not curr or isinstance(curr, bool)):
+        setattr(module, key, add_val)
+      elif isinstance(add_val, dict) and isinstance(curr, dict):
+        curr.update(add_val)
+      elif isinstance(add_val[1], dict) and isinstance(curr[add_val[0]],
+                                                       Module.Target):
+        curr[add_val[0]].__dict__.update(add_val[1])
+      elif isinstance(curr, dict):
+        curr[add_val[0]] = add_val[1]
+      else:
+        raise Exception('Unimplemented type %r of additional_args: %r' %
+                        (type(add_val), key))
 
   return blueprint
 
@@ -3424,11 +3206,6 @@ def _rebase_module(module: Module, blueprint_path: str) -> Union[Module, None]:
     module_copy.crate_root = _rebase_file(module_copy.crate_root,
                                           blueprint_path)
     if module_copy.crate_root is None:
-      return None
-
-  if module_copy.path:
-    module_copy.path = _rebase_file(module_copy.path, blueprint_path)
-    if module_copy.path is None:
       return None
 
   if module_copy.wrapper_src:
@@ -3620,12 +3397,6 @@ def _break_down_blueprint(top_level_blueprint: Blueprint):
       continue
 
     android_bp_path = _locate_android_bp_destination(module)
-    # third_party/android_deps is not imported which means that copybara will not
-    # pick up the Android.bp in there. Instead direct the modules to the top-level
-    # Android.bp
-    if android_bp_path.startswith("third_party/android_deps"):
-      blueprints[""].add_module(module)
-      continue
     if android_bp_path is None:
       # Raise an exception if the module does not specify a BUILD file path.
       raise Exception(f"Found module {module_name} without a build file path.")

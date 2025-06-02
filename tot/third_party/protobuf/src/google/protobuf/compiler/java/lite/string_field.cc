@@ -32,6 +32,7 @@ namespace compiler {
 namespace java {
 
 using internal::WireFormat;
+using internal::WireFormatLite;
 using Semantic = ::google::protobuf::io::AnnotationCollector::Semantic;
 
 namespace {
@@ -213,8 +214,7 @@ void ImmutableStringFieldLiteGenerator::GenerateMembers(
   printer->Annotate("{", "}", descriptor_);
 
   WriteFieldAccessorDocComment(printer, descriptor_, SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "@java.lang.SuppressWarnings(\"ReturnValueIgnored\")\n"
                  "private void set$capitalized_name$(\n"
@@ -224,8 +224,7 @@ void ImmutableStringFieldLiteGenerator::GenerateMembers(
                  "  $name$_ = value;\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void clear$capitalized_name$() {\n"
                  "  $clear_has_field_bit_message$\n"
@@ -235,9 +234,8 @@ void ImmutableStringFieldLiteGenerator::GenerateMembers(
                  "  $name$_ = getDefaultInstance().get$capitalized_name$();\n"
                  "}\n");
 
-  WriteFieldStringBytesAccessorDocComment(
-      printer, descriptor_, SETTER, context_->options(), /* builder */ false,
-      /* kdoc */ false, /* is_private */ true);
+  WriteFieldStringBytesAccessorDocComment(printer, descriptor_, SETTER,
+                                          context_->options());
   printer->Print(variables_,
                  "private void set$capitalized_name$Bytes(\n"
                  "    com.google.protobuf.ByteString value) {\n");
@@ -396,8 +394,7 @@ void ImmutableStringOneofFieldLiteGenerator::GenerateMembers(
   printer->Annotate("{", "}", descriptor_);
 
   WriteFieldAccessorDocComment(printer, descriptor_, SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "@java.lang.SuppressWarnings(\"ReturnValueIgnored\")\n"
                  "private void ${$set$capitalized_name$$}$(\n"
@@ -408,8 +405,7 @@ void ImmutableStringOneofFieldLiteGenerator::GenerateMembers(
                  "}\n");
   printer->Annotate("{", "}", descriptor_, Semantic::kSet);
   WriteFieldAccessorDocComment(printer, descriptor_, CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void ${$clear$capitalized_name$$}$() {\n"
                  "  if ($has_oneof_case_message$) {\n"
@@ -419,9 +415,8 @@ void ImmutableStringOneofFieldLiteGenerator::GenerateMembers(
                  "}\n");
   printer->Annotate("{", "}", descriptor_, Semantic::kSet);
 
-  WriteFieldStringBytesAccessorDocComment(
-      printer, descriptor_, SETTER, context_->options(), /* builder */ false,
-      /* kdoc */ false, /* is_private */ true);
+  WriteFieldStringBytesAccessorDocComment(printer, descriptor_, SETTER,
+                                          context_->options());
   printer->Print(variables_,
                  "private void ${$set$capitalized_name$Bytes$}$(\n"
                  "    com.google.protobuf.ByteString value) {\n");
@@ -618,8 +613,7 @@ void RepeatedImmutableStringFieldLiteGenerator::GenerateMembers(
       "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, LIST_INDEXED_SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "@java.lang.SuppressWarnings(\"ReturnValueIgnored\")\n"
                  "private void set$capitalized_name$(\n"
@@ -629,8 +623,7 @@ void RepeatedImmutableStringFieldLiteGenerator::GenerateMembers(
                  "  $name$_.set(index, value);\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "@java.lang.SuppressWarnings(\"ReturnValueIgnored\")\n"
                  "private void add$capitalized_name$(\n"
@@ -640,8 +633,7 @@ void RepeatedImmutableStringFieldLiteGenerator::GenerateMembers(
                  "  $name$_.add(value);\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void addAll$capitalized_name$(\n"
                  "    java.lang.Iterable<java.lang.String> values) {\n"
@@ -656,9 +648,8 @@ void RepeatedImmutableStringFieldLiteGenerator::GenerateMembers(
                  "  $name$_ = $empty_list$;\n"
                  "}\n");
 
-  WriteFieldStringBytesAccessorDocComment(
-      printer, descriptor_, LIST_ADDER, context_->options(),
-      /* builder */ false, /* kdoc */ false, /* is_private */ true);
+  WriteFieldStringBytesAccessorDocComment(printer, descriptor_, LIST_ADDER,
+                                          context_->options());
   printer->Print(variables_,
                  "private void add$capitalized_name$Bytes(\n"
                  "    com.google.protobuf.ByteString value) {\n");

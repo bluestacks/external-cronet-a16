@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.81"
 name = "icu_locale"
-version = "2.0.0"
+version = "2.0.0-beta2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,7 +25,6 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
-    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -46,10 +45,7 @@ skip_optional_dependencies = true
 all-features = true
 
 [features]
-compiled_data = [
-    "dep:icu_locale_data",
-    "icu_provider/baked",
-]
+compiled_data = ["dep:icu_locale_data"]
 datagen = [
     "serde",
     "dep:databake",
@@ -57,7 +53,6 @@ datagen = [
     "icu_locale_core/databake",
     "tinystr/databake",
     "icu_collections/databake",
-    "icu_provider/export",
 ]
 default = ["compiled_data"]
 serde = [
@@ -96,11 +91,11 @@ version = "0.2.3"
 default-features = false
 
 [dependencies.icu_collections]
-version = "~2.0.0"
+version = "~2.0.0-beta2"
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.0.0"
+version = "2.0.0-beta2"
 features = [
     "alloc",
     "zerovec",
@@ -108,12 +103,12 @@ features = [
 default-features = false
 
 [dependencies.icu_locale_data]
-version = "~2.0.0"
+version = "~2.0.0-beta2"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0"
+version = "2.0.0-beta2"
 default-features = false
 
 [dependencies.potential_utf]

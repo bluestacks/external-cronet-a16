@@ -83,6 +83,7 @@ static jboolean JNI_LibraryLoader_LibraryLoaded(JNIEnv* env,
   }
   if (g_registration_callback &&
       !g_registration_callback(
+          env, nullptr,
           static_cast<LibraryProcessType>(library_process_type))) {
     return false;
   }

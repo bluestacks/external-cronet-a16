@@ -237,9 +237,10 @@ class ReportingServiceImpl : public ReportingService {
       base::TimeTicks queued_ticks,
       ReportingTargetType target_type) {
     DCHECK(initialized_);
-    context_->cache()->AddReport(
-        reporting_source, network_anonymization_key, sanitized_url, user_agent,
-        group, type, std::move(body), depth, queued_ticks, target_type);
+    context_->cache()->AddReport(reporting_source, network_anonymization_key,
+                                 sanitized_url, user_agent, group, type,
+                                 std::move(body), depth, queued_ticks,
+                                 0 /* attempts */, target_type);
   }
 
   void DoProcessReportToHeader(

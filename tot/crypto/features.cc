@@ -12,8 +12,4 @@ BASE_FEATURE(kProcessBoundStringEncryption,
              "ProcessBoundStringEncryption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIsHardwareBackedFixEnabled,
-             "IsHardwareBackedFixEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace crypto::features

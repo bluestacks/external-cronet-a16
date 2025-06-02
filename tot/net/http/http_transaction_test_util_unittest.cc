@@ -61,7 +61,9 @@ class MockNetworkTransactionTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
-    return network_layer_->CreateTransaction(DEFAULT_PRIORITY);
+    std::unique_ptr<HttpTransaction> network_transaction;
+    network_layer_->CreateTransaction(DEFAULT_PRIORITY, &network_transaction);
+    return network_transaction;
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

@@ -117,6 +117,8 @@ class MockPersistentNelStore
 
 bool operator==(const MockPersistentNelStore::Command& lhs,
                 const MockPersistentNelStore::Command& rhs);
+bool operator!=(const MockPersistentNelStore::Command& lhs,
+                const MockPersistentNelStore::Command& rhs);
 
 }  // namespace net
 

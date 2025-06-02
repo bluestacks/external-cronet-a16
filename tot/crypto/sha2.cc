@@ -19,8 +19,16 @@ std::array<uint8_t, kSHA256Length> SHA256Hash(base::span<const uint8_t> input) {
   return digest;
 }
 
+void SHA256HashString(std::string_view str, void* output, size_t len) {
+  std::unique_ptr<SecureHash> ctx(SecureHash::Create(SecureHash::SHA256));
+  ctx->Update(str.data(), str.length());
+  ctx->Finish(output, len);
+}
+
 std::string SHA256HashString(std::string_view str) {
-  return std::string(base::as_string_view(SHA256Hash(base::as_byte_span(str))));
+  std::string output(kSHA256Length, 0);
+  SHA256HashString(str, std::data(output), output.size());
+  return output;
 }
 
 }  // namespace crypto

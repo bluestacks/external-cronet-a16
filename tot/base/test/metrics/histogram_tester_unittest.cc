@@ -13,11 +13,10 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace {
-
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+
+namespace {
 
 const char kHistogram1[] = "Test1";
 const char kHistogram2[] = "Test2";
@@ -26,7 +25,13 @@ const char kHistogram4[] = "Test4";
 const char kHistogram5[] = "Test5";
 const char kHistogram6[] = "Test6";
 
-TEST(HistogramTesterTest, Scope) {
+}  // namespace
+
+namespace base {
+
+typedef testing::Test HistogramTesterTest;
+
+TEST_F(HistogramTesterTest, Scope) {
   // Record a histogram before the creation of the recorder.
   UMA_HISTOGRAM_BOOLEAN(kHistogram1, true);
 
@@ -45,7 +50,7 @@ TEST(HistogramTesterTest, Scope) {
   EXPECT_EQ(1, samples->TotalCount());
 }
 
-TEST(HistogramTesterTest, GetHistogramSamplesSinceCreationNotNull) {
+TEST_F(HistogramTesterTest, GetHistogramSamplesSinceCreationNotNull) {
   // Chose the histogram name uniquely, to ensure nothing was recorded for it so
   // far.
   static const char kHistogram[] =
@@ -59,7 +64,7 @@ TEST(HistogramTesterTest, GetHistogramSamplesSinceCreationNotNull) {
   tester.ExpectTotalCount(kHistogram, 0);
 }
 
-TEST(HistogramTesterTest, TestUniqueSample) {
+TEST_F(HistogramTesterTest, TestUniqueSample) {
   HistogramTester tester;
 
   // Emit '2' three times.
@@ -73,7 +78,7 @@ TEST(HistogramTesterTest, TestUniqueSample) {
 
 // Verify that the expectation is violated if the bucket contains an incorrect
 // number of samples.
-TEST(HistogramTesterTest, TestUniqueSample_TooManySamplesInActualBucket) {
+TEST_F(HistogramTesterTest, TestUniqueSample_TooManySamplesInActualBucket) {
   auto failing_code = [] {
     HistogramTester tester;
 
@@ -92,7 +97,7 @@ TEST(HistogramTesterTest, TestUniqueSample_TooManySamplesInActualBucket) {
 
 // Verify that the expectation is violated if the bucket contains the correct
 // number of samples but another bucket contains extra samples.
-TEST(HistogramTesterTest, TestUniqueSample_OneExtraSampleInWrongBucket) {
+TEST_F(HistogramTesterTest, TestUniqueSample_OneExtraSampleInWrongBucket) {
   auto failing_code = [] {
     HistogramTester tester;
 
@@ -110,7 +115,7 @@ TEST(HistogramTesterTest, TestUniqueSample_OneExtraSampleInWrongBucket) {
                           "Histogram \"Test2\" did not meet its expectations.");
 }
 
-TEST(HistogramTesterTest, TestBucketsSample) {
+TEST_F(HistogramTesterTest, TestBucketsSample) {
   HistogramTester tester;
 
   UMA_HISTOGRAM_COUNTS_100(kHistogram3, 2);
@@ -125,7 +130,7 @@ TEST(HistogramTesterTest, TestBucketsSample) {
   tester.ExpectTotalCount(kHistogram3, 5);
 }
 
-TEST(HistogramTesterTest, TestBucketsSampleWithScope) {
+TEST_F(HistogramTesterTest, TestBucketsSampleWithScope) {
   // Emit values twice, once before the tester creation and once after.
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
 
@@ -138,7 +143,7 @@ TEST(HistogramTesterTest, TestBucketsSampleWithScope) {
   tester.ExpectTotalCount(kHistogram4, 1);
 }
 
-TEST(HistogramTesterTest, TestGetAllSamples) {
+TEST_F(HistogramTesterTest, TestGetAllSamples) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION(kHistogram5, 2, 5);
   UMA_HISTOGRAM_ENUMERATION(kHistogram5, 3, 5);
@@ -149,12 +154,12 @@ TEST(HistogramTesterTest, TestGetAllSamples) {
               ElementsAre(Bucket(2, 1), Bucket(3, 2), Bucket(5, 1)));
 }
 
-TEST(HistogramTesterTest, TestGetAllSamples_NoSamples) {
+TEST_F(HistogramTesterTest, TestGetAllSamples_NoSamples) {
   HistogramTester tester;
   EXPECT_THAT(tester.GetAllSamples(kHistogram5), IsEmpty());
 }
 
-TEST(HistogramTesterTest, TestGetTotalSum) {
+TEST_F(HistogramTesterTest, TestGetTotalSum) {
   // Emit values twice, once before the tester creation and once after.
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
 
@@ -165,7 +170,7 @@ TEST(HistogramTesterTest, TestGetTotalSum) {
   EXPECT_EQ(7, tester.GetTotalSum(kHistogram4));
 }
 
-TEST(HistogramTesterTest, TestGetTotalCountsForPrefix) {
+TEST_F(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test3", 2, 5);
 
@@ -175,7 +180,7 @@ TEST(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   EXPECT_EQ(1u, tester.GetTotalCountsForPrefix("Test1.").size());
 }
 
-TEST(HistogramTesterTest, TestGetAllChangedHistograms) {
+TEST_F(HistogramTesterTest, TestGetAllChangedHistograms) {
   // Emit multiple values, some before tester creation.
   UMA_HISTOGRAM_COUNTS_100(kHistogram6, true);
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
@@ -201,7 +206,7 @@ TEST(HistogramTesterTest, TestGetAllChangedHistograms) {
       results.find("Histogram: Test1.Test2.Test3 recorded 1 new samples"));
 }
 
-TEST(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
+TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
   // When a histogram hasn't been instantiated, expecting counts of zero should
   // still succeed.
   static const char kHistogram[] = "MissingHistogramMeansEmptyBucketsHistogram";
@@ -216,7 +221,7 @@ TEST(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
             tester.GetHistogramSamplesSinceCreation(kHistogram)->TotalCount());
 }
 
-TEST(HistogramTesterTest, BucketsAre) {
+TEST_F(HistogramTesterTest, BucketsAre) {
   // Auxiliary functions for keeping the lines short.
   auto a = [](std::vector<Bucket> b) { return b; };
   auto b = [](base::Histogram::Sample32 min, base::Histogram::Count32 count) {
@@ -255,7 +260,7 @@ TEST(HistogramTesterTest, BucketsAre) {
               Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
 }
 
-TEST(HistogramTesterTest, BucketsInclude) {
+TEST_F(HistogramTesterTest, BucketsInclude) {
   // Auxiliary function for the "actual" values to shorten lines.
   auto a = [](std::vector<Bucket> b) { return b; };
   auto b = [](base::Histogram::Sample32 min, base::Histogram::Count32 count) {
@@ -294,5 +299,4 @@ TEST(HistogramTesterTest, BucketsInclude) {
               Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
 }
 
-}  // namespace
 }  // namespace base

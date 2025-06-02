@@ -15,7 +15,7 @@ import java.util.List;
 /** Parameterized class runner delegate that extends BlockJUnit4ClassRunner */
 public final class BlockJUnit4RunnerDelegate extends BlockJUnit4ClassRunner
         implements ParameterizedRunnerDelegate {
-    private final ParameterizedRunnerDelegateCommon mDelegateCommon;
+    private ParameterizedRunnerDelegateCommon mDelegateCommon;
 
     public BlockJUnit4RunnerDelegate(
             Class<?> klass, ParameterizedRunnerDelegateCommon delegateCommon)

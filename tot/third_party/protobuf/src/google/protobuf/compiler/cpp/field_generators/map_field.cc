@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
@@ -19,9 +18,6 @@
 #include "google/protobuf/compiler/cpp/options.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/printer.h"
-
-// Must be included last.
-#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
@@ -317,7 +313,6 @@ void Map::GenerateByteSize(io::Printer* p) const {
         }
       )cc");
 }
-
 }  // namespace
 
 std::unique_ptr<FieldGeneratorBase> MakeMapGenerator(
@@ -330,5 +325,3 @@ std::unique_ptr<FieldGeneratorBase> MakeMapGenerator(
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
-
-#include "google/protobuf/port_undef.inc"

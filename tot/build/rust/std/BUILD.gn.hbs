@@ -11,9 +11,6 @@ import("//build/rust/cargo_crate.gni")
 cargo_crate("{{../name}}") {
   crate_type = "{{crate_type}}"
   crate_root = "{{crate_root}}"
-  {{#if cond}}
-  enabled = {{cond}}
-  {{/if}}
   sources = [
     {{#each sources}}
     "{{this}}",
@@ -159,6 +156,6 @@ cargo_crate("{{../name}}") {
   {{this}}
   {{/with}}
   {{/if}}
+  {{/with}}
 }
-{{/with}}
 {{/each}}

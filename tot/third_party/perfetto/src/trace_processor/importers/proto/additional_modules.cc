@@ -20,13 +20,11 @@
 
 #include "src/trace_processor/importers/etw/etw_module_impl.h"
 #include "src/trace_processor/importers/ftrace/ftrace_module_impl.h"
-#include "src/trace_processor/importers/generic_kernel/generic_kernel_module.h"
 #include "src/trace_processor/importers/proto/android_camera_event_module.h"
 #include "src/trace_processor/importers/proto/android_kernel_wakelocks_module.h"
 #include "src/trace_processor/importers/proto/android_probes_module.h"
 #include "src/trace_processor/importers/proto/app_wakelock_module.h"
 #include "src/trace_processor/importers/proto/content_analyzer.h"
-#include "src/trace_processor/importers/proto/deobfuscation_module.h"
 #include "src/trace_processor/importers/proto/graphics_event_module.h"
 #include "src/trace_processor/importers/proto/heap_graph_module.h"
 #include "src/trace_processor/importers/proto/metadata_module.h"
@@ -53,7 +51,6 @@ void RegisterAdditionalModules(TraceProcessorContext* context) {
   context->modules.emplace_back(new NetworkTraceModule(context));
   context->modules.emplace_back(new GraphicsEventModule(context));
   context->modules.emplace_back(new HeapGraphModule(context));
-  context->modules.emplace_back(new DeobfuscationModule(context));
   context->modules.emplace_back(new SystemProbesModule(context));
   context->modules.emplace_back(new TranslationTableModule(context));
   context->modules.emplace_back(new StatsdModule(context));
@@ -64,7 +61,6 @@ void RegisterAdditionalModules(TraceProcessorContext* context) {
   context->modules.emplace_back(new PixelModemModule(context));
   context->modules.emplace_back(new ProfileModule(context));
   context->modules.emplace_back(new AppWakelockModule(context));
-  context->modules.emplace_back(new GenericKernelModule(context));
 
   // Ftrace/Etw modules are special, because it has one extra method for parsing
   // ftrace/etw packets. So we need to store a pointer to it separately.

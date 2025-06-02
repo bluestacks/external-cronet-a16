@@ -41,11 +41,7 @@ const ProbesDataSource::Descriptor FrozenFtraceDataSource::descriptor = {
     /*fill_descriptor_func*/ nullptr,
 };
 
-FrozenFtraceDataSource::~FrozenFtraceDataSource() {
-  // Ensure the read data is erased and not recovered in the next boot.
-  if (tracefs_)
-    tracefs_->ClearTrace();
-}
+FrozenFtraceDataSource::~FrozenFtraceDataSource() = default;
 
 FrozenFtraceDataSource::FrozenFtraceDataSource(
     base::TaskRunner* task_runner,

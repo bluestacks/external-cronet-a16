@@ -4,8 +4,6 @@
 
 #include "partition_alloc/partition_root.h"
 
-#include <algorithm>
-#include <array>
 #include <cstdint>
 
 #include "partition_alloc/bucket_lookup.h"
@@ -71,8 +69,7 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
 PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
                                        uintptr_t test_address,
                                        size_t type_size) {
-  PA_DCHECK(ReservationOffsetTable::Get(orig_address)
-                .IsManagedByNormalBucketsOrDirectMap(orig_address));
+  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(orig_address));
   DCheckIfManagedByPartitionAllocBRPPool(orig_address);
 
   auto [slot_start, _] =
@@ -493,13 +490,13 @@ static size_t PartitionPurgeSlotSpan(
   PA_DCHECK(slot_span->num_unprovisioned_slots < bucket_num_slots);
   size_t num_provisioned_slots =
       bucket_num_slots - slot_span->num_unprovisioned_slots;
-  std::array<char, kMaxSlotCount> slot_usage{};
+  char slot_usage[kMaxSlotCount];
 #if !PA_BUILDFLAG(IS_WIN)
   // The last freelist entry should not be discarded when using OS_WIN.
   // DiscardVirtualMemory makes the contents of discarded memory undefined.
   size_t last_slot = static_cast<size_t>(-1);
 #endif
-  std::fill_n(slot_usage.begin(), num_provisioned_slots, 1);
+  memset(slot_usage, 1, num_provisioned_slots);
   uintptr_t slot_span_start = internal::SlotSpanMetadata<
       internal::MetadataKind::kReadOnly>::ToSlotSpanStart(slot_span);
   // First, walk the freelist for this slot span and make a bitmap of which
@@ -1007,8 +1004,24 @@ void PartitionRoot::DestructForTesting()
           reinterpret_cast<uintptr_t>(curr), kSuperPageSize);
       size_t reservation_size = curr->reservation_size;
 
-      GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
-                                                     reservation_size);
+      {
+        uintptr_t reservation_end = reservation_start + reservation_size;
+        auto* offset_ptr =
+            internal::ReservationOffsetPointer(reservation_start);
+        // Reset the offset table entries for the given memory before
+        // unreserving it. Since the memory is not unreserved and not available
+        // for other threads, the table entries for the memory are not modified
+        // by other threads either. So we can update the table entries without
+        // race condition.
+        uint16_t i = 0;
+        for (uintptr_t address = reservation_start; address < reservation_end;
+             address += kSuperPageSize) {
+          PA_DCHECK(offset_ptr <
+                    internal::GetReservationOffsetTableEnd(address));
+          PA_DCHECK(*offset_ptr == i++);
+          *offset_ptr++ = internal::kOffsetTagNotAllocated;
+        }
+      }
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       internal::AddressPoolManager::GetInstance().MarkUnused(
           pool_handle, reservation_start, reservation_size);
@@ -1026,6 +1039,30 @@ void PartitionRoot::DestructForTesting()
   }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
+
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
+void PartitionRoot::InitMac11MallocSizeHackUsableSize() {
+  settings.mac11_malloc_size_hack_enabled_ = true;
+
+  // Request of 32B will fall into a 48B bucket in the presence of BRP
+  // in-slot metadata, yielding |48 - in_slot_metadata_size| of actual usable
+  // space.
+  PA_DCHECK(settings.in_slot_metadata_size);
+  settings.mac11_malloc_size_hack_usable_size_ =
+      48 - settings.in_slot_metadata_size;
+}
+
+void PartitionRoot::EnableMac11MallocSizeHackForTesting() {
+  InitMac11MallocSizeHackUsableSize();
+}
+
+void PartitionRoot::EnableMac11MallocSizeHackIfNeeded() {
+  PA_DCHECK(settings.brp_enabled_);
+  if (internal::base::mac::MacOSMajorVersion() == 11) {
+    InitMac11MallocSizeHackUsableSize();
+  }
+}
+#endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -1097,16 +1134,15 @@ void PartitionRoot::Init(PartitionOptions opts) {
     ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-    if (opts.use_configurable_pool == PartitionOptions::kAllowed &&
-        IsConfigurablePoolAvailable()) {
-      // BRP is not supported in the configurable pool because BRP requires
-      // objects to be in a different Pool.
-      PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
-      PA_CHECK(settings.pool_handle == internal::kNullPoolHandle);
-      settings.pool_handle = internal::kConfigurablePoolHandle;
-    }
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    settings.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
+#else   // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    settings.use_configurable_pool =
+        (opts.use_configurable_pool == PartitionOptions::kAllowed) &&
+        IsConfigurablePoolAvailable();
+    PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
     settings.eventually_zero_freed_memory =
         opts.eventually_zero_freed_memory == PartitionOptions::kEnabled;
     settings.fewer_memory_regions =
@@ -1131,7 +1167,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     // representations. All custom representations encountered so far rely on an
     // "is in configurable pool?" check, so we use that as a proxy.
     PA_CHECK(!settings.memory_tagging_enabled_ ||
-             settings.pool_handle != internal::kConfigurablePoolHandle);
+             !settings.use_configurable_pool);
 
     settings.use_random_memory_tagging_ =
         opts.memory_tagging.random_memory_tagging == PartitionOptions::kEnabled;
@@ -1140,17 +1176,18 @@ void PartitionRoot::Init(PartitionOptions opts) {
         opts.memory_tagging.reporting_mode;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
-    settings.thread_isolation = opts.thread_isolation;
-    if (opts.thread_isolation.enabled) {
-      // BRP and thread isolated mode use different pools, so they can't be
-      // enabled at the same time.
-      PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
-      PA_CHECK(settings.pool_handle == internal::kNullPoolHandle);
-      settings.pool_handle = internal::kThreadIsolatedPoolHandle;
+    // brp_enabled() is not supported in the configurable pool because
+    // BRP requires objects to be in a different Pool.
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    PA_CHECK(!(settings.use_configurable_pool && brp_enabled()));
+#endif
 
-      internal::PartitionAllocThreadIsolationInit(settings.thread_isolation);
-    }
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    // BRP and thread isolated mode use different pools, so they can't be
+    // enabled at the same time.
+    PA_CHECK(!opts.thread_isolation.enabled ||
+             opts.backup_ref_ptr == PartitionOptions::kDisabled);
+    settings.thread_isolation = opts.thread_isolation;
 #endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
@@ -1161,30 +1198,16 @@ void PartitionRoot::Init(PartitionOptions opts) {
     }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    settings.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
-    if (opts.backup_ref_ptr == PartitionOptions::kEnabled) {
+    if (brp_enabled()) {
       settings.in_slot_metadata_size = internal::kInSlotMetadataSizeAdjustment;
       settings.extras_size += internal::kInSlotMetadataSizeAdjustment;
       settings.extras_size += opts.backup_ref_ptr_extra_extras_size;
-      PA_CHECK(settings.pool_handle == internal::kNullPoolHandle);
-      settings.pool_handle = internal::kBRPPoolHandle;
+#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
+      EnableMac11MallocSizeHackIfNeeded();
+#endif
     }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
-
-#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
-#endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-
-    if (settings.pool_handle == internal::kNullPoolHandle) {
-      settings.pool_handle = internal::kRegularPoolHandle;
-    }
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-    settings.offset_lookup =
-        internal::PartitionAddressSpace::GetOffsetLookup(settings.pool_handle);
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-    settings.reservation_offset_table =
-        internal::ReservationOffsetTable::Get(settings.pool_handle);
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
@@ -1229,8 +1252,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
     if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(
-            settings.pool_handle)) {
-      switch (settings.pool_handle) {
+            ChoosePool())) {
+      switch (ChoosePool()) {
         case internal::kRegularPoolHandle:
           settings.shadow_pool_offset_ =
               internal::PartitionAddressSpace::RegularPoolShadowOffset();
@@ -1255,6 +1278,12 @@ void PartitionRoot::Init(PartitionOptions opts) {
   // Called without the lock, might allocate.
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PartitionAllocMallocInitOnce();
+#endif
+
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  if (settings.thread_isolation.enabled) {
+    internal::PartitionAllocThreadIsolationInit(settings.thread_isolation);
+  }
 #endif
 }
 
@@ -1310,8 +1339,8 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
     size_t requested_size) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // Slot-span metadata isn't MTE-tagged.
-  PA_DCHECK(GetReservationOffsetTable().IsManagedByDirectMap(
-      reinterpret_cast<uintptr_t>(slot_span)));
+  PA_DCHECK(
+      internal::IsManagedByDirectMap(reinterpret_cast<uintptr_t>(slot_span)));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   auto* extent = ReadOnlyDirectMapExtent::FromSlotSpanMetadata(slot_span);
@@ -1360,7 +1389,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
       PartitionRoot::GetDirectMapMetadataAndGuardPagesSize();
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   uintptr_t reservation_start = slot_start & internal::kSuperPageBaseMask;
-  PA_DCHECK(GetReservationOffsetTable().IsReservationStart(reservation_start));
+  PA_DCHECK(internal::IsReservationStart(reservation_start));
   PA_DCHECK(slot_start + available_reservation_size ==
             reservation_start + current_reservation_size -
                 GetDirectMapMetadataAndGuardPagesSize() +
@@ -1440,7 +1469,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     internal::SlotSpanMetadata<internal::MetadataKind::kReadOnly>* slot_span,
     size_t new_size) {
   uintptr_t slot_start = ObjectToSlotStart(object);
-  PA_DCHECK(GetReservationOffsetTable().IsManagedByNormalBuckets(slot_start));
+  PA_DCHECK(internal::IsManagedByNormalBuckets(slot_start));
 
   // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
   // new size is a significant percentage smaller. We could do the same if we
@@ -1969,19 +1998,15 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
   if (!IsManagedByPartitionAlloc(address)) {
     // Not managed by PA; cannot help to determine its integrity.
     return;
-  }
-
-  auto* root = FromAddrInFirstSuperpage(address);
-
-  const internal::ReservationOffsetTable& reservation_offset =
-      root->GetReservationOffsetTable();
-  if (reservation_offset.IsManagedByDirectMap(address)) {
+  } else if (internal::IsManagedByDirectMap(address)) {
     // OOB for direct-mapped allocations is likely immediate crash.
     // No extra benefit from additional checks.
     return;
   }
+  PA_CHECK(internal::IsManagedByNormalBuckets(address));
 
-  PA_CHECK(reservation_offset.IsManagedByNormalBuckets(address));
+  auto* root = FromAddrInFirstSuperpage(address);
+
   ReadOnlySlotSpanMetadata* slot_span =
       ReadOnlySlotSpanMetadata::FromAddr(address);
   PA_CHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == root);

@@ -222,8 +222,7 @@ TEST(FixtureDriverTest, PerFuzzTestFixtureGoesThroughCompleteLifecycle) {
               LifecycleRecordingPerFuzzTestFixture::was_destructed);
 }
 
-struct ExampleRunnerFixture : public FuzzTestRunnerFixture,
-                              public IterationRunnerFixture {
+struct ExampleRunnerFixture {
   void FuzzTestRunner(absl::AnyInvocable<void() &&> run_test) {
     ++fuzz_test_runner_called;
     std::move(run_test)();

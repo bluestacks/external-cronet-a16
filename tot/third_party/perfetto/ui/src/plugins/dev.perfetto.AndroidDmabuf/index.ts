@@ -153,11 +153,7 @@ async function addGlobalAllocs(ctx: Trace, parent: () => TrackNode) {
       kind: SLICE_TRACK_KIND,
       trackIds: ids,
     },
-    track: await createTraceProcessorSliceTrack({
-      trace: ctx,
-      uri,
-      trackIds: ids,
-    }),
+    track: createTraceProcessorSliceTrack({trace: ctx, uri, trackIds: ids}),
   });
   const node = new TrackNode({
     uri,

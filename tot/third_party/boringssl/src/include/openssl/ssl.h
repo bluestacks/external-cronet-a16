@@ -24,6 +24,7 @@
 #include <openssl/pem.h>
 #include <openssl/span.h>
 #include <openssl/ssl3.h>
+#include <openssl/thread.h>
 #include <openssl/tls1.h>
 #include <openssl/x509.h>
 
@@ -2522,6 +2523,7 @@ OPENSSL_EXPORT size_t SSL_CTX_get_num_tickets(const SSL_CTX *ctx);
 // |SSL_SIGN_*|.
 
 // SSL_GROUP_* define TLS group IDs.
+#define SSL_GROUP_SECP224R1 21
 #define SSL_GROUP_SECP256R1 23
 #define SSL_GROUP_SECP384R1 24
 #define SSL_GROUP_SECP521R1 25
@@ -5835,6 +5837,7 @@ OPENSSL_EXPORT int SSL_CTX_set_tlsext_status_arg(SSL_CTX *ctx, void *arg);
 #define SSL_R_TLSV1_CERTIFICATE_REQUIRED SSL_R_TLSV1_ALERT_CERTIFICATE_REQUIRED
 
 // The following symbols are compatibility aliases for |SSL_GROUP_*|.
+#define SSL_CURVE_SECP224R1 SSL_GROUP_SECP224R1
 #define SSL_CURVE_SECP256R1 SSL_GROUP_SECP256R1
 #define SSL_CURVE_SECP384R1 SSL_GROUP_SECP384R1
 #define SSL_CURVE_SECP521R1 SSL_GROUP_SECP521R1

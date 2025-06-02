@@ -14,10 +14,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/cstring_view.h"
-#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
@@ -172,17 +170,10 @@ bool LaunchSettingsDefaultApps(std::wstring_view app_name,
                                bool is_per_user_install) {
   AssertComInitialized();
 
-  // The `app_name` parameter is escaped using URL escaping, not because it is
-  // part of a URL, but because the Settings app parses the parameter as if it
-  // was part of a URL.
-  // The '+' character is not escaped by `EscapeQueryParamValue`, because it is
-  // valid in a query parameter, but it is not valid in this context, so it
-  // needs to be escaped.
-  const std::wstring settings_url = StrCat(
+  const std::wstring settings_url = base::StrCat(
       {L"ms-settings:defaultapps?",
        is_per_user_install ? L"registeredAppUser=" : L"registeredAppMachine=",
-       ASCIIToWide(EscapeQueryParamValue(WideToUTF8(app_name),
-                                         /*use_plus=*/false))});
+       app_name});
   return reinterpret_cast<intptr_t>(::ShellExecute(
              /*hwnd=*/nullptr, L"open", settings_url.c_str(),
              /*lpParameters=*/nullptr,

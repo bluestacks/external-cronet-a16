@@ -19,7 +19,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <optional>
 
 #include "perfetto/ext/base/flat_hash_map.h"
@@ -59,7 +58,7 @@ class StatsdModule : public ProtoImporterModule {
 
   TraceProcessorContext* context_;
   base::FlatHashMap<uint32_t, StringId> atom_names_;
-  uint32_t descriptor_idx_ = std::numeric_limits<uint32_t>::max();
+  const ProtoDescriptor* descriptor_ = nullptr;
   util::ProtoToArgsParser args_parser_;
   std::optional<TrackId> track_id_;
 };

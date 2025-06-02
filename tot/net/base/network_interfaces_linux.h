@@ -18,9 +18,9 @@
 
 namespace net::internal {
 
-using GetInterfaceNameFunction = std::string (*)(int interface_index);
+typedef char* (*GetInterfaceNameFunction)(int interface_index, char* ifname);
 
-using GetInterfaceSSIDFunction = std::string (*)(const std::string& ifname);
+typedef std::string (*GetInterfaceSSIDFunction)(const std::string& ifname);
 
 NET_EXPORT bool GetNetworkListImpl(
     NetworkInterfaceList* networks,

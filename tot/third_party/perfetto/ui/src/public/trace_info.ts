@@ -35,8 +35,6 @@ export interface TraceInfo {
   // recorded into the trace, to show timestamps in the device local time.
   readonly traceTzOffset: time;
 
-  readonly tzOffMin: number;
-
   // The list of CPUs in the trace
   readonly cpus: Cpu[];
 

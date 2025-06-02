@@ -528,7 +528,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
     @Override
     public BuilderT clone() {
       BuilderT builder = (BuilderT) getDefaultInstanceForType().newBuilderForType();
-      return builder.mergeFrom(buildPartial());
+      builder.mergeFrom(buildPartial());
+      return builder;
     }
 
     /**
@@ -2041,7 +2042,6 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
      * @param builderClass The builder type.
      * @return this
      */
-    @CanIgnoreReturnValue
     public FieldAccessorTable ensureFieldAccessorsInitialized(
         Class<? extends GeneratedMessage> messageClass, Class<? extends Builder<?>> builderClass) {
       if (initialized) {
@@ -2067,7 +2067,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
                 fields[i] = new MapFieldAccessor(field, messageClass);
               } else {
                 fields[i] =
-                    new RepeatedMessageFieldAccessor(camelCaseNames[i], messageClass, builderClass);
+                    new RepeatedMessageFieldAccessor(
+                        field, camelCaseNames[i], messageClass, builderClass);
               }
             } else if (field.getJavaType() == FieldDescriptor.JavaType.ENUM) {
               fields[i] =
@@ -3124,6 +3125,7 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
 
     private static final class RepeatedMessageFieldAccessor extends RepeatedFieldAccessor {
       RepeatedMessageFieldAccessor(
+          final FieldDescriptor descriptor,
           final String camelCaseName,
           final Class<? extends GeneratedMessage> messageClass,
           final Class<? extends Builder<?>> builderClass) {
@@ -3188,7 +3190,6 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
   /**
    * Checks that the {@link Extension} is non-Lite and returns it as a {@link GeneratedExtension}.
    */
-  @SuppressWarnings("unchecked")
   private static <MessageT extends ExtendableMessage<MessageT>, T>
       Extension<MessageT, T> checkNotLite(ExtensionLite<? extends MessageT, T> extension) {
     if (extension.isLite()) {
@@ -3340,7 +3341,7 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
     }
   }
 
-  /** Serializes the map using the iteration order. */
+  /** Serialize the map using the iteration order. */
   private static <K, V> void serializeMapTo(
       CodedOutputStream out, Map<K, V> m, MapEntry<K, V> defaultEntry, int fieldNumber)
       throws IOException {

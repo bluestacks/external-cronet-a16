@@ -265,7 +265,7 @@ public class ViewPrinter {
      * </pre>
      */
     public static class TreeOutput {
-        private final String mLabel;
+        private String mLabel;
         private @Nullable List<TreeOutput> mChildren;
 
         public TreeOutput(String label) {

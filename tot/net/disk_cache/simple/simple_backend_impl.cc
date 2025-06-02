@@ -54,14 +54,14 @@ namespace disk_cache {
 namespace {
 
 // Maximum fraction of the cache that one entry can consume.
-constexpr int kMaxFileRatio = 8;
+const int kMaxFileRatio = 8;
 
 // Native code entries can be large. Rather than increasing the overall cache
 // size, allow an individual entry to occupy up to half of the cache.
-constexpr int kMaxNativeCodeFileRatio = 2;
+const int kMaxNativeCodeFileRatio = 2;
 
 // Overrides the above.
-constexpr int64_t kMinFileSizeLimit = 5 * 1024 * 1024;
+const int64_t kMinFileSizeLimit = 5 * 1024 * 1024;
 
 // Global context of all the files we have open --- this permits some to be
 // closed on demand if too many FDs are being used, to avoid running out.

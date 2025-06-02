@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/base/address_tracker_linux.h"
 
 #include <errno.h>
@@ -10,8 +15,6 @@
 #include <sys/ioctl.h>
 
 #include <optional>
-#include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -26,12 +29,10 @@
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "net/base/net_platform_api_util.h"
 #include "net/base/network_interfaces_linux.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -150,24 +151,18 @@ T* SafelyCastNetlinkMsgData(const struct nlmsghdr* header, int length) {
 }  // namespace
 
 // static
-std::string AddressTrackerLinux::GetInterfaceName(int interface_index) {
+char* AddressTrackerLinux::GetInterfaceName(int interface_index, char* buf) {
+  memset(buf, 0, IFNAMSIZ);
   base::ScopedFD ioctl_socket = GetSocketForIoctl();
   if (!ioctl_socket.is_valid())
-    return std::string();
+    return buf;
 
   struct ifreq ifr = {};
   ifr.ifr_ifindex = interface_index;
 
-  if (ioctl(ioctl_socket.get(), SIOCGIFNAME, &ifr) != 0) {
-    return std::string();
-  }
-
-  // `ifr.ifr_name` should be nul terminated, but for safety, remove the final
-  // character and return SpanMaybeWithNulToStringView(), which will ensure the
-  // returned string will fit within `ifr_name`, with a terminating null added,
-  // in a future query.
-  return std::string(SpanMaybeWithNulToStringView(
-      base::span(ifr.ifr_name).first(sizeof(ifr.ifr_name) - 1)));
+  if (ioctl(ioctl_socket.get(), SIOCGIFNAME, &ifr) == 0)
+    strncpy(buf, ifr.ifr_name, IFNAMSIZ - 1);
+  return buf;
 }
 
 AddressTrackerLinux::AddressTrackerLinux()
@@ -319,7 +314,8 @@ bool AddressTrackerLinux::IsInterfaceIgnored(int interface_index) const {
   if (ignored_interfaces_.empty())
     return false;
 
-  std::string interface_name = get_interface_name_(interface_index);
+  char buf[IFNAMSIZ] = {};
+  const char* interface_name = get_interface_name_(interface_index, buf);
   return ignored_interfaces_.find(interface_name) != ignored_interfaces_.end();
 }
 
@@ -517,10 +513,7 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           if (it == address_map_.end()) {
             address_map_.insert(it, std::pair(address, msg_copy));
             *address_changed = true;
-            // Unfortunately, `ifaddrmsg` has no equality operator, so have to
-            // either do this, or compare every field individually.
-          } else if (base::byte_span_from_ref(it->second) !=
-                     base::byte_span_from_ref(msg_copy)) {
+          } else if (memcmp(&it->second, &msg_copy, sizeof(msg_copy))) {
             it->second = msg_copy;
             *address_changed = true;
           }
@@ -625,13 +618,14 @@ void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
 }
 
 bool AddressTrackerLinux::IsTunnelInterface(int interface_index) const {
-  return IsTunnelInterfaceName(get_interface_name_(interface_index));
+  char buf[IFNAMSIZ] = {};
+  return IsTunnelInterfaceName(get_interface_name_(interface_index, buf));
 }
 
 // static
-bool AddressTrackerLinux::IsTunnelInterfaceName(std::string_view name) {
+bool AddressTrackerLinux::IsTunnelInterfaceName(const char* name) {
   // Linux kernel drivers/net/tun.c uses "tun" name prefix.
-  return base::StartsWith(name, "tun");
+  return strncmp(name, "tun", 3) == 0;
 }
 
 void AddressTrackerLinux::UpdateCurrentConnectionType() {

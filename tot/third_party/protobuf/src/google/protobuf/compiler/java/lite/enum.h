@@ -43,7 +43,7 @@ class EnumLiteGenerator : public EnumGenerator {
                     Context* context);
   EnumLiteGenerator(const EnumLiteGenerator&) = delete;
   EnumLiteGenerator& operator=(const EnumLiteGenerator&) = delete;
-  ~EnumLiteGenerator() override;
+  ~EnumLiteGenerator();
 
   void Generate(io::Printer* printer) override;
 

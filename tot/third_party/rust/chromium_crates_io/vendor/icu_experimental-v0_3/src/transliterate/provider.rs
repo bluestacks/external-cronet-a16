@@ -30,7 +30,7 @@ use zerovec::*;
 // TODO(#3776): Improve the documentation of this datastruct.
 
 icu_provider::data_marker!(
-    /// `TransliteratorRulesV1`
+    /// TODO
     TransliteratorRulesV1,
     RuleBasedTransliterator<'static>
 );

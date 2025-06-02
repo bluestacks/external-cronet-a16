@@ -21,6 +21,7 @@
 #include <openssl/mem.h>
 #include <openssl/rand.h>
 #include <openssl/siphash.h>
+#include <openssl/thread.h>
 
 #include "../internal.h"
 #include "internal.h"

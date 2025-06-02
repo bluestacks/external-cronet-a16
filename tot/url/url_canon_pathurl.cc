@@ -59,9 +59,8 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
                            CanonOutput* output,
                            Parsed* new_parsed) {
   // Scheme: this will append the colon.
-  bool success =
-      CanonicalizeScheme(parsed.scheme.maybe_as_string_view_on(source.scheme),
-                         output, &new_parsed->scheme);
+  bool success = CanonicalizeScheme(source.scheme, parsed.scheme,
+                                    output, &new_parsed->scheme);
 
   // We assume there's no authority for path URLs. Note that hosts should never
   // have -1 length.
@@ -79,11 +78,10 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
 
   // Similar to mailto:, always use the default UTF-8 charset converter for
   // query.
-  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query), nullptr,
-                    output, &new_parsed->query);
+  CanonicalizeQuery(source.query, parsed.query, nullptr, output,
+                    &new_parsed->query);
 
-  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
-                  &new_parsed->ref);
+  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
 
   return success;
 }

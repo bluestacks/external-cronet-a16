@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: MIT */
 /* origin: musl src/math/rint.c */
 
-use crate::support::{Float, FpResult, Round};
+use super::super::Float;
+use super::super::support::{FpResult, Round};
 
 /// IEEE 754-2019 `roundToIntegralExact`, which respects rounding mode and raises inexact if
 /// applicable.

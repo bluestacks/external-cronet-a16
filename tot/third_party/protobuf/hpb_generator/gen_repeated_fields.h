@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef GOOGLE_PROTOBUF_COMPILER_HPB_GEN_REPEATED_FIELDS_H__
-#define GOOGLE_PROTOBUF_COMPILER_HPB_GEN_REPEATED_FIELDS_H__
+#ifndef PROTOBUF_COMPILER_HBP_GEN_REPEATED_FIELDS_H_
+#define PROTOBUF_COMPILER_HBP_GEN_REPEATED_FIELDS_H_
 
 #include "absl/strings/string_view.h"
 #include "google/protobuf/compiler/hpb/context.h"
@@ -45,4 +45,4 @@ void WriteRepeatedScalarAccessor(const protobuf::Descriptor* message,
 }  // namespace protobuf
 }  // namespace google::hpb_generator
 
-#endif  // GOOGLE_PROTOBUF_COMPILER_HPB_GEN_REPEATED_FIELDS_H__
+#endif  // PROTOBUF_COMPILER_HBP_GEN_REPEATED_FIELDS_H_

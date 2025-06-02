@@ -23,6 +23,7 @@
 #include <openssl/mem.h>
 #include <openssl/obj.h>
 #include <openssl/pool.h>
+#include <openssl/thread.h>
 #include <openssl/x509.h>
 
 #include "../asn1/internal.h"

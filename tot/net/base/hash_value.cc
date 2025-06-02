@@ -93,6 +93,10 @@ bool operator==(const HashValue& lhs, const HashValue& rhs) {
   NOTREACHED();
 }
 
+bool operator!=(const HashValue& lhs, const HashValue& rhs) {
+  return !(lhs == rhs);
+}
+
 bool operator<(const HashValue& lhs, const HashValue& rhs) {
   if (lhs.tag_ != rhs.tag_)
     return lhs.tag_ < rhs.tag_;

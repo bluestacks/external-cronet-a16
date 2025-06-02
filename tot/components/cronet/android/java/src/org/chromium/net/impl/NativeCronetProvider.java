@@ -15,14 +15,10 @@ import org.chromium.net.ICronetEngineBuilder;
 import java.util.Arrays;
 
 /**
- * Implementation of {@link CronetProvider} that creates {@link CronetEngine.Builder} for building
- * the native implementation of {@link CronetEngine}.
+ * Implementation of {@link CronetProvider} that creates {@link CronetEngine.Builder}
+ * for building the native implementation of {@link CronetEngine}.
  */
 public class NativeCronetProvider extends CronetProvider {
-    public static final String OVERRIDE_NATIVE_CRONET_WITH_HTTPENGINE_FLAG =
-            "Cronet_OverrideNativeCronetWithHttpEngine";
-    private final HttpEngineNativeProvider mHttpEngineProvider;
-
     /**
      * Constructor.
      *
@@ -31,18 +27,12 @@ public class NativeCronetProvider extends CronetProvider {
     @UsedByReflection("CronetProvider.java")
     public NativeCronetProvider(Context context) {
         super(context);
-        mHttpEngineProvider = new HttpEngineNativeProvider(mContext);
     }
 
     @Override
     public CronetEngine.Builder createBuilder() {
-        if (shouldUseHttpEngine()) {
-            return mHttpEngineProvider.createBuilder();
-        } else {
-            ICronetEngineBuilder impl =
-                    new NativeCronetEngineBuilderWithLibraryLoaderImpl(mContext);
-            return new ExperimentalCronetEngine.Builder(impl);
-        }
+        ICronetEngineBuilder impl = new NativeCronetEngineBuilderWithLibraryLoaderImpl(mContext);
+        return new ExperimentalCronetEngine.Builder(impl);
     }
 
     @Override
@@ -52,9 +42,7 @@ public class NativeCronetProvider extends CronetProvider {
 
     @Override
     public String getVersion() {
-        return shouldUseHttpEngine()
-                ? mHttpEngineProvider.getVersion()
-                : ImplVersion.getCronetVersion();
+        return ImplVersion.getCronetVersion();
     }
 
     @Override
@@ -72,14 +60,5 @@ public class NativeCronetProvider extends CronetProvider {
         return other == this
                 || (other instanceof NativeCronetProvider
                         && this.mContext.equals(((NativeCronetProvider) other).mContext));
-    }
-
-    private boolean shouldUseHttpEngine() {
-        if (!HttpEngineNativeProvider.isHttpEngineAvailable()) return false;
-        var shouldForceHttpEngine =
-                HttpFlagsForImpl.getHttpFlags(mContext)
-                        .flags()
-                        .get(OVERRIDE_NATIVE_CRONET_WITH_HTTPENGINE_FLAG);
-        return shouldForceHttpEngine != null && shouldForceHttpEngine.getBoolValue();
     }
 }

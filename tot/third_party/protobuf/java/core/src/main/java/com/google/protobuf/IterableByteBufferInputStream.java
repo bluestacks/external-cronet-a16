@@ -61,15 +61,11 @@ class IterableByteBufferInputStream extends InputStream {
   }
 
   private boolean getNextByteBuffer() {
-    // The loop ensures we skip empty buffers (see
-    // https://github.com/protocolbuffers/protobuf/issues/17850)
-    do {
-      currentIndex++;
-      if (!iterator.hasNext()) {
-        return false;
-      }
-      currentByteBuffer = iterator.next();
-    } while (!currentByteBuffer.hasRemaining());
+    currentIndex++;
+    if (!iterator.hasNext()) {
+      return false;
+    }
+    currentByteBuffer = iterator.next();
     currentByteBufferPos = currentByteBuffer.position();
     if (currentByteBuffer.hasArray()) {
       hasArray = true;

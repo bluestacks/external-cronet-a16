@@ -321,4 +321,12 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextAdapter(
   return reinterpret_cast<jlong>(context_adapter);
 }
 
+static ScopedJavaLocalRef<jbyteArray>
+JNI_CronetUrlRequestContext_GetHistogramDeltas(JNIEnv* env) {
+  std::vector<uint8_t> data;
+  if (!metrics::HistogramManager::GetInstance()->GetDeltas(&data))
+    return ScopedJavaLocalRef<jbyteArray>();
+  return base::android::ToJavaByteArray(env, data);
+}
+
 }  // namespace cronet

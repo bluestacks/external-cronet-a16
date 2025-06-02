@@ -47,8 +47,6 @@
 // Must be last.
 #include "upb/port/def.inc"
 
-#if UPB_FASTTABLE
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -144,8 +142,6 @@ TAGBYTES(r)
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
-#endif /* UPB_FASTTABLE */
 
 #include "upb/port/undef.inc"
 

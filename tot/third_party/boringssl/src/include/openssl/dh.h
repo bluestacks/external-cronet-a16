@@ -17,6 +17,8 @@
 
 #include <openssl/base.h>   // IWYU pragma: export
 
+#include <openssl/thread.h>
+
 #if defined(__cplusplus)
 extern "C" {
 #endif

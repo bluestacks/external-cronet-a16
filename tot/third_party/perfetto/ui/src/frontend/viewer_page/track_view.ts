@@ -275,21 +275,14 @@ export class TrackView {
       right: trackRect.width,
     });
 
-    const maybeNewResolution = calculateResolution(
-      visibleWindow,
-      trackRect.width,
-    );
-    if (!maybeNewResolution.ok) {
-      return;
-    }
-
     const start = performance.now();
+
     node.uri &&
       renderer?.render({
         trackUri: node.uri,
         visibleWindow,
         size: trackRect,
-        resolution: maybeNewResolution.value,
+        resolution: calculateResolution(visibleWindow, trackRect.width),
         ctx,
         timescale,
       });
@@ -618,7 +611,13 @@ function copyToWorkspace(trace: Trace, node: TrackNode, ws?: Workspace) {
 }
 
 function renderTrackDetailsMenu(node: TrackNode, descriptor?: Track) {
-  const fullPath = node.fullPath.join(' \u2023 ');
+  let parent = node.parent;
+  let fullPath: m.ChildArray = [node.title];
+  while (parent && parent instanceof TrackNode) {
+    fullPath = [parent.title, ' \u2023 ', ...fullPath];
+    parent = parent.parent;
+  }
+
   const query = descriptor?.track.getDataset?.()?.query();
 
   return m(

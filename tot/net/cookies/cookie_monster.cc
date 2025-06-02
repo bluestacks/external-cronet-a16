@@ -62,7 +62,6 @@
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -528,10 +527,7 @@ void CookieMonster::SetCanonicalCookieAsync(
     const CookieOptions& options,
     SetCookiesCallback callback,
     std::optional<CookieAccessResult> cookie_access_result) {
-  if constexpr (DCHECK_IS_ON()) {
-    CanonicalCookie::CanonicalizationResult result = cookie->IsCanonical();
-    DCHECK(result) << result;
-  }
+  DCHECK(cookie->IsCanonical());
 
   std::string domain = cookie->Domain();
   DoCookieCallbackForHostOrDomain(
@@ -548,8 +544,7 @@ void CookieMonster::SetCanonicalCookieAsync(
 void CookieMonster::SetUnsafeCanonicalCookieForTestAsync(
     std::unique_ptr<CanonicalCookie> cookie,
     SetCookiesCallback callback) {
-  CanonicalCookie::CanonicalizationResult result = cookie->IsCanonical();
-  CHECK(result) << result;
+  CHECK(cookie->IsCanonical());
 
   std::string domain = cookie->Domain();
   DoCookieCallbackForHostOrDomain(
@@ -1740,7 +1735,7 @@ void CookieMonster::SetCanonicalCookie(
   // source type to kOther (or kHTTP/kScript where applicable). See
   // CookieSourceType in net/cookies/cookie_constants.h for more.
   if (cc->SourceType() == CookieSourceType::kUnknown) {
-    CHECK_IS_TEST();
+    CHECK_IS_TEST(base::NotFatalUntil::M126);
   }
 #endif
 

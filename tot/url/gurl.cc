@@ -290,11 +290,8 @@ GURL GURL::DeprecatedGetOriginAsURL() const {
 }
 
 GURL GURL::GetAsReferrer() const {
-  if (!is_valid() ||
-      !url::IsReferrerScheme(
-          parsed_.scheme.maybe_as_string_view_on(spec_.data()))) {
+  if (!is_valid() || !IsReferrerScheme(spec_.data(), parsed_.scheme))
     return GURL();
-  }
 
   if (!has_ref() && !has_username() && !has_password())
     return GURL(*this);
@@ -344,7 +341,7 @@ GURL GURL::GetWithoutRef() const {
 }
 
 bool GURL::IsStandard() const {
-  return url::IsStandard(parsed_.scheme.maybe_as_string_view_on(spec_.data()));
+  return url::IsStandard(spec_.data(), parsed_.scheme);
 }
 
 bool GURL::IsAboutBlank() const {

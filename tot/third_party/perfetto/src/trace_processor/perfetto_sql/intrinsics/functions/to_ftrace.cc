@@ -57,7 +57,6 @@
 #include "protos/perfetto/trace/ftrace/power.pbzero.h"
 #include "protos/perfetto/trace/ftrace/samsung.pbzero.h"
 #include "protos/perfetto/trace/ftrace/sched.pbzero.h"
-#include "protos/perfetto/trace/ftrace/timer.pbzero.h"
 #include "protos/perfetto/trace/ftrace/workqueue.pbzero.h"
 #include "src/trace_processor/types/version_number.h"
 
@@ -531,11 +530,6 @@ void ArgsSerializer::SerializeArgs() {
     WriteArgForField(CAT::kDstPathFieldNumber, DVW());
     WriteArgForField(CAT::kPidFieldNumber, DVW());
     WriteArgForField(CAT::kCommFieldNumber, DVW());
-    return;
-  } else if (event_name_ == "hrtimer_expire_entry") {
-    using HEE = protos::pbzero::HrtimerExpireEntryFtraceEvent;
-    WriteArgForField(HEE::kFunctionFieldNumber,
-                     Wrap(&ArgsSerializer::WriteKernelFnValue));
     return;
   }
   for (; it_; ++it_) {

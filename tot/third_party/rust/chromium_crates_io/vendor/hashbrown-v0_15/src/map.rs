@@ -2596,7 +2596,10 @@ impl<K, V, A: Allocator> Drain<'_, K, V, A> {
 /// assert_eq!(map.len(), 1);
 /// ```
 #[must_use = "Iterators are lazy unless consumed"]
-pub struct ExtractIf<'a, K, V, F, A: Allocator = Global> {
+pub struct ExtractIf<'a, K, V, F, A: Allocator = Global>
+where
+    F: FnMut(&K, &mut V) -> bool,
+{
     f: F,
     inner: RawExtractIf<'a, (K, V), A>,
 }
@@ -4128,8 +4131,7 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> EntryRef<'a, 'b, K, Q, V, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn insert(self, value: V) -> OccupiedEntry<'a, K, V, S, A>
     where
-        K: Hash,
-        &'b Q: Into<K>,
+        K: Hash + From<&'b Q>,
         S: BuildHasher,
     {
         match self {
@@ -4162,8 +4164,7 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> EntryRef<'a, 'b, K, Q, V, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn or_insert(self, default: V) -> &'a mut V
     where
-        K: Hash,
-        &'b Q: Into<K>,
+        K: Hash + From<&'b Q>,
         S: BuildHasher,
     {
         match self {
@@ -4193,8 +4194,7 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> EntryRef<'a, 'b, K, Q, V, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn or_insert_with<F: FnOnce() -> V>(self, default: F) -> &'a mut V
     where
-        K: Hash,
-        &'b Q: Into<K>,
+        K: Hash + From<&'b Q>,
         S: BuildHasher,
     {
         match self {
@@ -4225,8 +4225,7 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> EntryRef<'a, 'b, K, Q, V, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn or_insert_with_key<F: FnOnce(&Q) -> V>(self, default: F) -> &'a mut V
     where
-        K: Hash + Borrow<Q>,
-        &'b Q: Into<K>,
+        K: Hash + Borrow<Q> + From<&'b Q>,
         S: BuildHasher,
     {
         match self {
@@ -4321,8 +4320,7 @@ impl<'a, 'b, K, Q: ?Sized, V: Default, S, A: Allocator> EntryRef<'a, 'b, K, Q, V
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn or_default(self) -> &'a mut V
     where
-        K: Hash,
-        &'b Q: Into<K>,
+        K: Hash + From<&'b Q>,
         S: BuildHasher,
     {
         match self {
@@ -4370,8 +4368,7 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> VacantEntryRef<'a, 'b, K, Q, V, S
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn insert(self, value: V) -> &'a mut V
     where
-        K: Hash,
-        &'b Q: Into<K>,
+        K: Hash + From<&'b Q>,
         S: BuildHasher,
     {
         let table = &mut self.table.table;
@@ -4402,8 +4399,7 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> VacantEntryRef<'a, 'b, K, Q, V, S
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn insert_entry(self, value: V) -> OccupiedEntry<'a, K, V, S, A>
     where
-        K: Hash,
-        &'b Q: Into<K>,
+        K: Hash + From<&'b Q>,
         S: BuildHasher,
     {
         let elem = self.table.table.insert(
@@ -4694,9 +4690,9 @@ mod test_map {
     use super::Entry::{Occupied, Vacant};
     use super::EntryRef;
     use super::HashMap;
-    use crate::raw::{AllocError, Allocator, Global};
     use alloc::string::{String, ToString};
     use alloc::sync::Arc;
+    use allocator_api2::alloc::{AllocError, Allocator, Global};
     use core::alloc::Layout;
     use core::ptr::NonNull;
     use core::sync::atomic::{AtomicI8, Ordering};

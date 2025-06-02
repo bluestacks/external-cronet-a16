@@ -83,7 +83,7 @@ impl<'a> ConditionalListJoinerPattern<'a> {
 
 impl<'data> ListJoinerPattern<'data> {
     #[cfg(feature = "datagen")]
-    /// Parses a [`ListJoinerPattern`] from a string containing the "{0}" and "{1}" placeholders.
+    /// TODO
     pub fn try_from_str(
         pattern: &str,
         allow_prefix: bool,

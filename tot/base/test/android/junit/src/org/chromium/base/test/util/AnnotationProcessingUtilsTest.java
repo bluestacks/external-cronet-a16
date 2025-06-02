@@ -365,7 +365,7 @@ public class AnnotationProcessingUtilsTest {
     }
 
     private static class ClassWithRule {
-        @Rule final Rule1 mRule = new Rule1();
+        @Rule Rule1 mRule = new Rule1();
 
         @Test
         public void methodWithoutAnnotation() {}

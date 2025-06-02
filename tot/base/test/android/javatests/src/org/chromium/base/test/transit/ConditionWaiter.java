@@ -50,7 +50,7 @@ public class ConditionWaiter {
         private long mTimeStarted;
         private long mTimeUnfulfilled;
         private long mTimeFulfilled;
-        private final StatusStore mStatusStore = new StatusStore();
+        private StatusStore mStatusStore = new StatusStore();
 
         /**
          * Constructor.

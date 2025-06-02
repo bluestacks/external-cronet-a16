@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -298,7 +297,7 @@ TEST_F(ProcessRequirementTest, KernelFailuresAreNotFatal) {
 }
 
 TEST_F(ProcessRequirementTest, InvalidCombinations) {
-  EXPECT_CHECK_DEATH_WITH(
+  EXPECT_DEATH(
       {
         // A requirement that includes a team identifier but no certificate type
         // will assert because it could be matched by a self-signed certificate
@@ -308,7 +307,7 @@ TEST_F(ProcessRequirementTest, InvalidCombinations) {
       },
       "without specifying a certificate type is unsafe");
 
-  EXPECT_CHECK_DEATH_WITH(
+  EXPECT_DEATH(
       {
         // A requirement that includes a certificate type but no team identifier
         // will assert because it will match any signing identity of that type

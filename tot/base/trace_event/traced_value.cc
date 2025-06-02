@@ -276,7 +276,7 @@ class PickleWriter final : public TracedValue::Writer {
         }
 
         case kTypeBool: {
-          TraceValue json_value;
+          TraceEvent::TraceValue json_value;
           CHECK(it.ReadBool(&json_value.as_bool));
           maybe_append_key_name(state_stack[current_state_index], &it, out);
           json_value.AppendAsJSON(TRACE_VALUE_TYPE_BOOL, out);
@@ -287,14 +287,14 @@ class PickleWriter final : public TracedValue::Writer {
           int value;
           CHECK(it.ReadInt(&value));
           maybe_append_key_name(state_stack[current_state_index], &it, out);
-          TraceValue json_value;
+          TraceEvent::TraceValue json_value;
           json_value.as_int = value;
           json_value.AppendAsJSON(TRACE_VALUE_TYPE_INT, out);
           break;
         }
 
         case kTypeDouble: {
-          TraceValue json_value;
+          TraceEvent::TraceValue json_value;
           CHECK(it.ReadDouble(&json_value.as_double));
           maybe_append_key_name(state_stack[current_state_index], &it, out);
           json_value.AppendAsJSON(TRACE_VALUE_TYPE_DOUBLE, out);
@@ -305,7 +305,7 @@ class PickleWriter final : public TracedValue::Writer {
           std::string value;
           CHECK(it.ReadString(&value));
           maybe_append_key_name(state_stack[current_state_index], &it, out);
-          TraceValue json_value;
+          TraceEvent::TraceValue json_value;
           json_value.as_string = value.c_str();
           json_value.AppendAsJSON(TRACE_VALUE_TYPE_STRING, out);
           break;
@@ -398,7 +398,7 @@ class PickleWriter final : public TracedValue::Writer {
         } break;
 
         case kTypeDouble: {
-          TraceValue trace_value;
+          TraceEvent::TraceValue trace_value;
           CHECK(it.ReadDouble(&trace_value.as_double));
           Value base_value;
           if (!std::isfinite(trace_value.as_double)) {

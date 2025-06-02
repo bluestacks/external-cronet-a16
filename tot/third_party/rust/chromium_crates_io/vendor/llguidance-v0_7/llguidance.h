@@ -494,7 +494,7 @@ int32_t llg_matcher_compute_mask(struct LlgMatcher *matcher);
 const uint32_t *llg_matcher_get_mask(struct LlgMatcher *matcher);
 
 /**
- * Return the size of the mask in bytes.
+ * Return pointer to the mask computed by llg_matcher_compute_mask(), if any.
  */
 size_t llg_matcher_get_mask_byte_size(struct LlgMatcher *matcher);
 

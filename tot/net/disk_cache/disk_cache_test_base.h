@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "net/base/cache_type.h"
 #include "net/disk_cache/disk_cache.h"
@@ -43,9 +42,7 @@ class SimpleFileTracker;
 // to this problem; all such tests should use TEST_F(DiskCacheTest, ...).
 class DiskCacheTest : public PlatformTest, public net::WithTaskEnvironment {
  protected:
-  explicit DiskCacheTest(
-      base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  DiskCacheTest();
   ~DiskCacheTest() override;
 
   // Copies a set of cache files from the data folder to the test folder.
@@ -64,10 +61,6 @@ class DiskCacheTest : public PlatformTest, public net::WithTaskEnvironment {
 
 // Provides basic support for cache related tests.
 class DiskCacheTestWithCache : public DiskCacheTest {
- public:
-  enum class BackendToTest { kBlockfile, kSimple, kMemory };
-  static std::string BackendToTestName(BackendToTest backend_to_test);
-
  protected:
   class TestIterator {
    public:
@@ -81,9 +74,7 @@ class DiskCacheTestWithCache : public DiskCacheTest {
     std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
   };
 
-  explicit DiskCacheTestWithCache(
-      base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  DiskCacheTestWithCache();
 
   DiskCacheTestWithCache(const DiskCacheTestWithCache&) = delete;
   DiskCacheTestWithCache& operator=(const DiskCacheTestWithCache&) = delete;
@@ -97,11 +88,14 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   void SimulateCrash();
   void SetTestMode();
 
-  void SetBackendToTest(BackendToTest backend_to_test) {
-    backend_to_test_ = backend_to_test;
-    CHECK(!(backend_to_test_ == BackendToTest::kSimple && use_current_thread_));
+  void SetMemoryOnlyMode() {
+    memory_only_ = true;
   }
-  BackendToTest backend_to_test() const { return backend_to_test_; }
+
+  void SetSimpleCacheMode() {
+    DCHECK(!use_current_thread_);
+    simple_cache_mode_ = true;
+  }
 
   void SetMask(uint32_t mask) { mask_ = mask; }
 
@@ -131,11 +125,9 @@ class DiskCacheTestWithCache : public DiskCacheTest {
     integrity_ = false;
   }
 
-  // Forces all execution to happen on the current thread. This affects the
-  // blockfile cache; and is a no-op for the memory backend which is
-  // single-threaded to start with. It can't be used with the simple backend.
+  // This is only supported for blockfile cache.
   void UseCurrentThread() {
-    DCHECK_NE(backend_to_test_, BackendToTest::kSimple);
+    DCHECK(!simple_cache_mode_);
     use_current_thread_ = true;
   }
 
@@ -216,8 +208,8 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   uint32_t mask_ = 0;
   int64_t size_ = 0;
   net::CacheType type_ = net::DISK_CACHE;
-  BackendToTest backend_to_test_ = BackendToTest::kBlockfile;
-
+  bool memory_only_ = false;
+  bool simple_cache_mode_ = false;
   bool simple_cache_wait_for_index_ = true;
   bool force_creation_ = false;
   bool new_eviction_ = false;

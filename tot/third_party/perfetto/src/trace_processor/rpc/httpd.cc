@@ -52,7 +52,7 @@ const char* kAllowedCORSOrigins[] = {
 
 class Httpd : public base::HttpRequestHandler {
  public:
-  explicit Httpd(std::unique_ptr<TraceProcessor>, bool is_preloaded_eof);
+  explicit Httpd(std::unique_ptr<TraceProcessor>);
   ~Httpd() override;
   void Run(const std::string& listen_ip, int port);
 
@@ -93,10 +93,8 @@ void SendRpcChunk(base::HttpServerConnection* conn,
   }
 }
 
-Httpd::Httpd(std::unique_ptr<TraceProcessor> preloaded_instance,
-             bool is_preloaded_eof)
-    : global_trace_processor_rpc_(std::move(preloaded_instance),
-                                  is_preloaded_eof),
+Httpd::Httpd(std::unique_ptr<TraceProcessor> preloaded_instance)
+    : global_trace_processor_rpc_(std::move(preloaded_instance)),
       http_srv_(&task_runner_, this) {}
 Httpd::~Httpd() = default;
 
@@ -233,12 +231,6 @@ void Httpd::OnHttpRequest(const base::HttpRequest& req) {
     return conn.SendResponse("200 OK", default_headers, Vec2Sv(res));
   }
 
-  if (req.uri == "/trace_summary") {
-    std::vector<uint8_t> res = global_trace_processor_rpc_.ComputeTraceSummary(
-        reinterpret_cast<const uint8_t*>(req.body.data()), req.body.size());
-    return conn.SendResponse("200 OK", default_headers, Vec2Sv(res));
-  }
-
   if (req.uri == "/enable_metatrace") {
     global_trace_processor_rpc_.EnableMetatrace(
         reinterpret_cast<const uint8_t*>(req.body.data()), req.body.size());
@@ -267,10 +259,9 @@ void Httpd::OnWebsocketMessage(const base::WebsocketMessage& msg) {
 }  // namespace
 
 void RunHttpRPCServer(std::unique_ptr<TraceProcessor> preloaded_instance,
-                      bool is_preloaded_eof,
                       const std::string& listen_ip,
                       const std::string& port_number) {
-  Httpd srv(std::move(preloaded_instance), is_preloaded_eof);
+  Httpd srv(std::move(preloaded_instance));
   std::optional<int> port_opt = base::StringToInt32(port_number);
   std::string ip = listen_ip.empty() ? "localhost" : listen_ip;
   int port = port_opt.has_value() ? *port_opt : kBindPort;

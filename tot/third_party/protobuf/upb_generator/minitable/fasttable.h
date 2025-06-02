@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef GOOGLE_UPB_UPB_GENERATOR_MINITABLE_FASTTABLE_H__
-#define GOOGLE_UPB_UPB_GENERATOR_MINITABLE_FASTTABLE_H__
+#ifndef THIRD_PARTY_UPB_UPB_GENERATOR_MINITABLE_FASTTABLE_H_
+#define THIRD_PARTY_UPB_UPB_GENERATOR_MINITABLE_FASTTABLE_H_
 
 #include <cstdint>
 #include <string>
@@ -27,4 +27,4 @@ std::vector<TableEntry> FastDecodeTable(upb::MessageDefPtr message,
 }  // namespace generator
 }  // namespace upb
 
-#endif  // GOOGLE_UPB_UPB_GENERATOR_MINITABLE_FASTTABLE_H__
+#endif  // THIRD_PARTY_UPB_UPB_GENERATOR_MINITABLE_FASTTABLE_H_

@@ -9,6 +9,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <tuple>
 
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
@@ -73,12 +74,25 @@ class NET_EXPORT NetworkAnonymizationKey {
       NetworkAnonymizationKey&& network_anonymization_key);
 
   // Compare keys for equality, true if all enabled fields are equal.
-  friend bool operator==(const NetworkAnonymizationKey&,
-                         const NetworkAnonymizationKey&) = default;
+  bool operator==(const NetworkAnonymizationKey& other) const {
+    return std::tie(top_frame_site_, is_cross_site_, nonce_,
+                    network_isolation_partition_) ==
+           std::tie(other.top_frame_site_, other.is_cross_site_, other.nonce_,
+                    other.network_isolation_partition_);
+  }
+
+  // Compare keys for inequality, true if any enabled field varies.
+  bool operator!=(const NetworkAnonymizationKey& other) const {
+    return !(*this == other);
+  }
 
   // Provide an ordering for keys based on all enabled fields.
-  friend auto operator<=>(const NetworkAnonymizationKey&,
-                          const NetworkAnonymizationKey&) = default;
+  bool operator<(const NetworkAnonymizationKey& other) const {
+    return std::tie(top_frame_site_, is_cross_site_, nonce_,
+                    network_isolation_partition_) <
+           std::tie(other.top_frame_site_, other.is_cross_site_, other.nonce_,
+                    other.network_isolation_partition_);
+  }
 
   // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
   // same-site (see comment on the class, above) and has no nonce.

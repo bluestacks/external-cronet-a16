@@ -113,12 +113,6 @@ namespace fuzztest {
 #define FUZZ_TEST_F(fixture, func) \
   INTERNAL_FUZZ_TEST_F(fixture, func, fixture, func)
 
-// Optional runner interfaces for native FuzzTest fixtures. For more details,
-// see
-// https://github.com/google/fuzztest/blob/main/doc/fixtures.md.
-using FuzzTestRunnerFixture = internal::FuzzTestRunnerFixture;
-using IterationRunnerFixture = internal::IterationRunnerFixture;
-
 // Reads files from the directory `dir` recursively. Returns the content strings
 // as a vector usable by .WithSeeds().
 //

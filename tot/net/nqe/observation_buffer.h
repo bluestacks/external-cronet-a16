@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -31,9 +30,6 @@ class TimeTicks;
 namespace net {
 
 class NetworkQualityEstimatorParams;
-
-using DeletedObservationSources =
-    std::array<bool, NETWORK_QUALITY_OBSERVATION_SOURCE_MAX>;
 
 namespace nqe::internal {
 
@@ -94,7 +90,7 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   // 3 in |deleted_observation_sources| are set to true, then all observations
   // in the buffer that have source set to either 1 or 3 would be removed.
   void RemoveObservationsWithSource(
-      const DeletedObservationSources& deleted_observation_sources);
+      bool deleted_observation_sources[NETWORK_QUALITY_OBSERVATION_SOURCE_MAX]);
 
  private:
   // Computes the weighted observations and stores them in

@@ -194,10 +194,12 @@ constexpr bool IsComponentChar(unsigned char c) {
 
 // Appends the given string to the output, escaping characters that do not
 // match the given |type| in SharedCharTypes.
-void AppendStringOfType(std::string_view source,
+void AppendStringOfType(const char* source,
+                        size_t length,
                         SharedCharTypes type,
                         CanonOutput* output);
-void AppendStringOfType(std::u16string_view source,
+void AppendStringOfType(const char16_t* source,
+                        size_t length,
                         SharedCharTypes type,
                         CanonOutput* output);
 
@@ -477,9 +479,13 @@ void AppendInvalidNarrowString(const char16_t* spec,
 // return false in the failure case, and the caller should not continue as
 // normal.
 COMPONENT_EXPORT(URL)
-bool ConvertUTF16ToUTF8(std::u16string_view input, CanonOutput* output);
+bool ConvertUTF16ToUTF8(const char16_t* input,
+                        size_t input_len,
+                        CanonOutput* output);
 COMPONENT_EXPORT(URL)
-bool ConvertUTF8ToUTF16(std::string_view input, CanonOutputT<char16_t>* output);
+bool ConvertUTF8ToUTF16(const char* input,
+                        size_t input_len,
+                        CanonOutputT<char16_t>* output);
 
 // Converts from UTF-16 to 8-bit using the character set converter. If the
 // converter is NULL, this will use UTF-8.

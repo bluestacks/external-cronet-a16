@@ -47,7 +47,6 @@ import {
 import {featureFlags} from '../core/feature_flags';
 import {trackMatchesFilter} from '../core/track_manager';
 import {renderStatusBar} from './statusbar';
-import {Time} from '../base/time';
 
 const showStatusBarFlag = featureFlags.register({
   id: 'Enable status bar',
@@ -117,12 +116,11 @@ export class UiMainPerTrace implements m.ClassComponent {
         name: 'Set timestamp and duration format',
         callback: async () => {
           const TF = TimestampFormat;
-          const timeZone = Time.formatTimezone(trace.traceInfo.tzOffMin);
           const result = await app.omnibox.prompt('Select format...', {
             values: [
               {format: TF.Timecode, name: 'Timecode'},
               {format: TF.UTC, name: 'Realtime (UTC)'},
-              {format: TF.TraceTz, name: `Realtime (Trace TZ - ${timeZone})`},
+              {format: TF.TraceTz, name: 'Realtime (Trace TZ)'},
               {format: TF.Seconds, name: 'Seconds'},
               {format: TF.Milliseconds, name: 'Milliseconds'},
               {format: TF.Microseconds, name: 'Microseconds'},

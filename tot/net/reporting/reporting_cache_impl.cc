@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -43,6 +44,7 @@ void ReportingCacheImpl::AddReport(
     base::Value::Dict body,
     int depth,
     base::TimeTicks queued,
+    int attempts,
     ReportingTargetType target_type) {
   // If |reporting_source| is present, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
@@ -57,7 +59,7 @@ void ReportingCacheImpl::AddReport(
 
   auto report = std::make_unique<ReportingReport>(
       reporting_source, network_anonymization_key, url, user_agent, group_name,
-      type, std::move(body), depth, queued, target_type);
+      type, std::move(body), depth, queued, attempts, target_type);
 
   auto inserted = reports_.insert(std::move(report));
   DCHECK(inserted.second);
@@ -66,7 +68,7 @@ void ReportingCacheImpl::AddReport(
     // There should be at most one extra report (the one added above).
     DCHECK_EQ(context_->policy().max_report_count + 1, reports_.size());
     ReportSet::const_iterator to_evict = FindReportToEvict();
-    CHECK(to_evict != reports_.end());
+    CHECK(to_evict != reports_.end(), base::NotFatalUntil::M130);
     // The newly-added report isn't pending, so even if all other reports are
     // pending, the cache should have a report to evict.
     DCHECK(!to_evict->get()->IsUploadPending());
@@ -172,7 +174,7 @@ void ReportingCacheImpl::ClearReportsPending(
         reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
-    CHECK(it != reports_.end());
+    CHECK(it != reports_.end(), base::NotFatalUntil::M130);
     if (it->get()->status == ReportingReport::Status::DOOMED ||
         it->get()->status == ReportingReport::Status::SUCCESS) {
       reports_.erase(it);
@@ -189,7 +191,7 @@ void ReportingCacheImpl::IncrementReportsAttempts(
         reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
-    CHECK(it != reports_.end());
+    CHECK(it != reports_.end(), base::NotFatalUntil::M130);
     it->get()->attempts++;
     context_->NotifyReportUpdated(it->get());
   }
@@ -315,7 +317,7 @@ void ReportingCacheImpl::RemoveReports(
     bool delivery_success) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
-    CHECK(it != reports_.end());
+    CHECK(it != reports_.end(), base::NotFatalUntil::M130);
 
     switch (it->get()->status) {
       case ReportingReport::Status::DOOMED:
@@ -571,7 +573,7 @@ void ReportingCacheImpl::RemoveEndpointGroup(
   if (group_it == endpoint_groups_.end())
     return;
   ClientMap::iterator client_it = FindClientIt(group_key);
-  CHECK(client_it != clients_.end());
+  CHECK(client_it != clients_.end(), base::NotFatalUntil::M130);
 
   RemoveEndpointGroupInternal(client_it, group_it);
   ConsistencyCheckClients();
@@ -603,9 +605,9 @@ void ReportingCacheImpl::RemoveEndpointsForUrl(const GURL& url) {
     DCHECK(endpoint_it->second.info.url == url);
     const ReportingEndpointGroupKey& group_key = endpoint_it->first;
     ClientMap::iterator client_it = FindClientIt(group_key);
-    CHECK(client_it != clients_.end());
+    CHECK(client_it != clients_.end(), base::NotFatalUntil::M130);
     EndpointGroupMap::iterator group_it = FindEndpointGroupIt(group_key);
-    CHECK(group_it != endpoint_groups_.end());
+    CHECK(group_it != endpoint_groups_.end(), base::NotFatalUntil::M130);
     RemoveEndpointInternal(client_it, group_it, endpoint_it);
   }
 
@@ -1046,7 +1048,7 @@ IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
   }
   const auto it =
       isolation_info_.find(endpoint.group_key.reporting_source.value());
-  CHECK(it != isolation_info_.end());
+  CHECK(it != isolation_info_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
@@ -1429,9 +1431,9 @@ std::optional<ReportingCacheImpl::EndpointMap::iterator>
 ReportingCacheImpl::RemoveEndpointInternal(ClientMap::iterator client_it,
                                            EndpointGroupMap::iterator group_it,
                                            EndpointMap::iterator endpoint_it) {
-  CHECK(client_it != clients_.end());
-  CHECK(group_it != endpoint_groups_.end());
-  CHECK(endpoint_it != endpoints_.end());
+  CHECK(client_it != clients_.end(), base::NotFatalUntil::M130);
+  CHECK(group_it != endpoint_groups_.end(), base::NotFatalUntil::M130);
+  CHECK(endpoint_it != endpoints_.end(), base::NotFatalUntil::M130);
 
   const ReportingEndpointGroupKey& group_key = endpoint_it->first;
   // If this is the only endpoint in the group, then removing it will cause the
@@ -1457,8 +1459,8 @@ ReportingCacheImpl::RemoveEndpointGroupInternal(
     ClientMap::iterator client_it,
     EndpointGroupMap::iterator group_it,
     size_t* num_endpoints_removed) {
-  CHECK(client_it != clients_.end());
-  CHECK(group_it != endpoint_groups_.end());
+  CHECK(client_it != clients_.end(), base::NotFatalUntil::M130);
+  CHECK(group_it != endpoint_groups_.end(), base::NotFatalUntil::M130);
   const ReportingEndpointGroupKey& group_key = group_it->first;
 
   // Remove the endpoints for this group.
@@ -1501,7 +1503,7 @@ ReportingCacheImpl::RemoveEndpointGroupInternal(
 
 ReportingCacheImpl::ClientMap::iterator
 ReportingCacheImpl::RemoveClientInternal(ClientMap::iterator client_it) {
-  CHECK(client_it != clients_.end());
+  CHECK(client_it != clients_.end(), base::NotFatalUntil::M130);
   const Client& client = client_it->second;
 
   // Erase all groups in this client, and all endpoints in those groups.
@@ -1531,7 +1533,7 @@ ReportingCacheImpl::RemoveClientInternal(ClientMap::iterator client_it) {
 
 void ReportingCacheImpl::EnforcePerClientAndGlobalEndpointLimits(
     ClientMap::iterator client_it) {
-  CHECK(client_it != clients_.end());
+  CHECK(client_it != clients_.end(), base::NotFatalUntil::M130);
   size_t client_endpoint_count = client_it->second.endpoint_count;
   // TODO(chlily): This is actually a limit on the endpoints for a given client
   // (for a NAK, origin pair). Rename this.
@@ -1554,7 +1556,7 @@ void ReportingCacheImpl::EnforcePerClientAndGlobalEndpointLimits(
       }
     }
 
-    CHECK(to_evict != clients_.end());
+    CHECK(to_evict != clients_.end(), base::NotFatalUntil::M130);
 
     // Evict endpoints from the chosen client.
     size_t num_to_evict = GetEndpointCount() - max_endpoint_count;
@@ -1566,7 +1568,7 @@ void ReportingCacheImpl::EnforcePerClientAndGlobalEndpointLimits(
 void ReportingCacheImpl::EvictEndpointsFromClient(ClientMap::iterator client_it,
                                                   size_t endpoints_to_evict) {
   DCHECK_GT(endpoints_to_evict, 0u);
-  CHECK(client_it != clients_.end());
+  CHECK(client_it != clients_.end(), base::NotFatalUntil::M130);
   const Client& client = client_it->second;
   // Cache this value as |client| may be deleted.
   size_t client_endpoint_count = client.endpoint_count;
@@ -1614,7 +1616,8 @@ void ReportingCacheImpl::EvictEndpointsFromClient(ClientMap::iterator client_it,
         stalest_group_endpoint_count = group_endpoint_count;
       }
     }
-    CHECK(stalest_group_it != endpoint_groups_.end());
+    CHECK(stalest_group_it != endpoint_groups_.end(),
+          base::NotFatalUntil::M130);
 
     // Evict the least important (lowest priority, lowest weight) endpoint.
     EvictEndpointFromGroup(client_it, stalest_group_it);
@@ -1638,7 +1641,7 @@ void ReportingCacheImpl::EvictEndpointFromGroup(
       endpoint_to_evict_it = it;
     }
   }
-  CHECK(endpoint_to_evict_it != endpoints_.end());
+  CHECK(endpoint_to_evict_it != endpoints_.end(), base::NotFatalUntil::M130);
 
   RemoveEndpointInternal(client_it, group_it, endpoint_to_evict_it);
 }
@@ -1658,7 +1661,7 @@ bool ReportingCacheImpl::RemoveExpiredOrStaleGroups(
         ReportingEndpointGroupKey(client_it->second.network_anonymization_key,
                                   client_it->second.origin, group_name,
                                   ReportingTargetType::kDeveloper));
-    CHECK(group_it != endpoint_groups_.end());
+    CHECK(group_it != endpoint_groups_.end(), base::NotFatalUntil::M130);
     const CachedReportingEndpointGroup& group = group_it->second;
     if (group.expires < now ||
         now - group.last_used > context_->policy().max_group_staleness) {

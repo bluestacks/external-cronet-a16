@@ -380,7 +380,8 @@ void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
   if (pool_shadow_address_ == kUninitializedPoolBaseAddress) {
     // Reserve 1 address space for all pools.
     const size_t shadow_pool_size =
-        std::max(ConfigurablePoolShadowSize(), CorePoolShadowSize());
+        std::max(ConfigurablePoolShadowSize(),
+                 std::max(CorePoolShadowSize(), CorePoolShadowSize()));
 
     // Reserve virtual address space for the shadow pool.
     uintptr_t pool_shadow_address =

@@ -11,15 +11,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <map>
-#include <string>
 #include <utility>
-#include <variant>
-#include <vector>
 
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/variant.h"
 
 // Must be included last
 #include "google/protobuf/port_def.inc"
@@ -27,17 +25,6 @@
 namespace google {
 namespace protobuf {
 namespace internal {
-
-size_t StringSpaceUsedExcludingSelfLong(const std::string& str) {
-  const void* start = &str;
-  const void* end = &str + 1;
-  if (start <= str.data() && str.data() < end) {
-    // The string's data is stored inside the string object itself.
-    return 0;
-  } else {
-    return str.capacity() + /* NULL terminator */ 1;
-  }
-}
 
 // protobuf_assumption_failed() is declared and used in port_def.inc to assert
 // PROTOBUF_ASSUME conditions in debug mode. This function avoids having
@@ -51,8 +38,8 @@ void protobuf_assumption_failed(const char* pred, const char* file, int line) {
 static void PrintAllCounters();
 static auto& CounterMap() {
   using Map = std::map<absl::string_view,
-                       std::map<std::variant<int64_t, absl::string_view>,
-                                std::vector<const RealDebugCounter*>>>;
+                       std::map<absl::variant<int64_t, absl::string_view>,
+                                const RealDebugCounter*>>;
   static auto* counter_map = new Map{};
   static bool dummy = std::atexit(PrintAllCounters);
   (void)dummy;
@@ -63,42 +50,37 @@ static void PrintAllCounters() {
   auto& counters = CounterMap();
   if (counters.empty()) return;
   absl::FPrintF(stderr, "Protobuf debug counters:\n");
-  for (auto& [category_name, category_map] : counters) {
+  for (auto& category : counters) {
     // Example output:
     //
     //   Category  :
     //     Value 1 : 1234 (12.34%)
     //     Value 2 : 2345 (23.45%)
     //     Total   : 3579
-    absl::FPrintF(stderr, "  %-12s:\n", category_name);
+    absl::FPrintF(stderr, "  %-12s:\n", category.first);
     size_t total = 0;
-    for (auto& entry : category_map) {
-      for (auto* counter : entry.second) {
-        total += counter->value();
-      }
+    for (auto& count : category.second) {
+      total += count.second->value();
     }
-    for (auto& [subname, counter_vector] : category_map) {
-      size_t value = 0;
-      for (auto* counter : counter_vector) {
-        value += counter->value();
-      }
-      if (std::holds_alternative<int64_t>(subname)) {
+    for (auto& count : category.second) {
+      size_t value = count.second->value();
+      if (absl::holds_alternative<int64_t>(count.first)) {
         // For integers, right align
-        absl::FPrintF(stderr, "    %9d : %10zu", std::get<int64_t>(subname),
-                      value);
+        absl::FPrintF(stderr, "    %9d : %10zu",
+                      absl::get<int64_t>(count.first), value);
       } else {
         // For strings, left align
         absl::FPrintF(stderr, "    %-10s: %10zu",
-                      std::get<absl::string_view>(subname), value);
+                      absl::get<absl::string_view>(count.first), value);
       }
-      if (total != 0 && category_map.size() > 1) {
+      if (total != 0 && category.second.size() > 1) {
         absl::FPrintF(
             stderr, " (%5.2f%%)",
             100. * static_cast<double>(value) / static_cast<double>(total));
       }
       absl::FPrintF(stderr, "\n");
     }
-    if (total != 0 && category_map.size() > 1) {
+    if (total != 0 && category.second.size() > 1) {
       absl::FPrintF(stderr, "    %-10s: %10zu\n", "Total", total);
     }
   }
@@ -109,9 +91,9 @@ void RealDebugCounter::Register(absl::string_view name) {
       absl::StrSplit(name, '.');
   int64_t as_int;
   if (absl::SimpleAtoi(parts.second, &as_int)) {
-    CounterMap()[parts.first][as_int].push_back(this);
+    CounterMap()[parts.first][as_int] = this;
   } else {
-    CounterMap()[parts.first][parts.second].push_back(this);
+    CounterMap()[parts.first][parts.second] = this;
   }
 }
 

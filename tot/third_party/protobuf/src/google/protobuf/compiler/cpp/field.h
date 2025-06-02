@@ -29,9 +29,6 @@
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/printer.h"
 
-// Must be included last.
-#include "google/protobuf/port_def.inc"
-
 namespace google {
 namespace protobuf {
 namespace compiler {
@@ -204,7 +201,6 @@ class FieldGeneratorBase {
   absl::flat_hash_map<absl::string_view, std::string> variables_;
 
   pb::CppFeatures::StringType GetDeclaredStringType() const;
-
 
  private:
   bool should_split_ = false;
@@ -481,7 +477,6 @@ class FieldGenerator {
     impl_->GenerateByteSize(p);
   }
 
-
   // Generates lines to call IsInitialized() for eligible message fields. Non
   // message fields won't need to override this function.
   void GenerateIsInitialized(io::Printer* p) const {
@@ -545,7 +540,5 @@ std::vector<io::Printer::Sub> FieldVars(const FieldDescriptor* field,
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
-
-#include "google/protobuf/port_undef.inc"
 
 #endif  // GOOGLE_PROTOBUF_COMPILER_CPP_FIELD_H__

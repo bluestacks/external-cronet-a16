@@ -11,6 +11,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "absl/log/absl_check.h"
@@ -25,10 +26,6 @@
 #include "google/protobuf/descriptor.pb.h"
 #include "google/protobuf/io/printer.h"
 #include "google/protobuf/wire_format.h"
-#include "google/protobuf/wire_format_lite.h"
-
-// Must be included last.
-#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
@@ -613,7 +610,7 @@ void RepeatedPrimitive::GenerateByteSize(io::Printer* p) const {
              auto fixed_size = FixedSize(field_->type());
              if (fixed_size.has_value()) {
                p->Emit({{"kFixed", *fixed_size}}, R"cc(
-                 ::size_t{$kFixed$} *
+                 std::size_t{$kFixed$} *
                      ::_pbi::FromIntSize(this_._internal_$name$_size());
                )cc");
              } else {
@@ -634,15 +631,15 @@ void RepeatedPrimitive::GenerateByteSize(io::Printer* p) const {
                )cc");
              } else {
                p->Emit(R"cc(
-                 ::size_t{$kTagBytes$} *
+                 std::size_t{$kTagBytes$} *
                      ::_pbi::FromIntSize(this_._internal_$name$_size());
                )cc");
              }
            }},
       },
       R"cc(
-        ::size_t data_size = $data_size$;
-        ::size_t tag_size = $tag_size$;
+        std::size_t data_size = $data_size$;
+        std::size_t tag_size = $tag_size$;
         total_size += tag_size + data_size;
       )cc");
 }
@@ -664,5 +661,3 @@ std::unique_ptr<FieldGeneratorBase> MakeRepeatedPrimitiveGenerator(
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
-
-#include "google/protobuf/port_undef.inc"

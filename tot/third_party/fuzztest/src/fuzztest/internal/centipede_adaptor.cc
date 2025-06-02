@@ -53,7 +53,6 @@
 #include "absl/random/random.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
-#include "absl/strings/escaping.h"
 #include "absl/strings/match.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_cat.h"
@@ -74,7 +73,6 @@
 #include "./centipede/runner_result.h"
 #include "./centipede/workdir.h"
 #include "./common/defs.h"
-#include "./common/remote_file.h"
 #include "./common/temp_dir.h"
 #include "./fuzztest/internal/any.h"
 #include "./fuzztest/internal/configuration.h"
@@ -166,6 +164,20 @@ absl::StatusOr<std::vector<std::string>> GetProcessArgs() {
 #endif
 }
 
+std::string GetSelfBinaryHashForCentipedeEnvironment() {
+  static absl::NoDestructor<std::string> cached_self_binary_hash{[] {
+    fuzztest::internal::Environment env;
+    const auto args = GetProcessArgs();
+    FUZZTEST_INTERNAL_CHECK(
+        args.ok(), absl::StrCat("failed to get the original process args: ",
+                                args.status()));
+    env.coverage_binary = (*args)[0];
+    env.UpdateBinaryHashIfEmpty();
+    return env.binary_hash;
+  }()};
+  return *cached_self_binary_hash;
+}
+
 std::string ShellEscape(absl::string_view str) {
   return absl::StrCat("'", absl::StrReplaceAll(str, {{"'", "'\\''"}}), "'");
 }
@@ -246,8 +258,7 @@ fuzztest::internal::Environment CreateCentipedeEnvironmentFromConfiguration(
         std::string{test_name}};
     single_test_configuration.time_limit = total_time_limit;
     single_test_configuration.time_budget_type = TimeBudgetType::kTotal;
-    env.fuzztest_configuration =
-        absl::WebSafeBase64Escape(single_test_configuration.Serialize());
+    env.fuzztest_configuration = single_test_configuration.Serialize();
   }
 
   absl::StrAppend(&env.binary,
@@ -264,7 +275,7 @@ fuzztest::internal::Environment CreateCentipedeEnvironmentFromConfiguration(
   }
   env.coverage_binary = (*args)[0];
   env.binary_name = std::filesystem::path{(*args)[0]}.filename();
-  env.binary_hash = "DUMMY_HASH";
+  env.binary_hash = GetSelfBinaryHashForCentipedeEnvironment();
   env.exit_on_crash =
       // Do shallow testing when running in unit-test mode unless we are replay
       // coverage inputs.
@@ -333,30 +344,6 @@ fuzztest::internal::Environment CreateCentipedeEnvironmentFromConfiguration(
   return env;
 }
 
-int RunCentipede(const Environment& env,
-                 const std::optional<std::string>& centipede_binary_path) {
-  if (centipede_binary_path.has_value()) {
-    std::string cmdline = ShellEscape(*centipede_binary_path);
-    for (const auto& flag : env.CreateFlags()) {
-      absl::StrAppend(&cmdline, " ");
-      absl::StrAppend(&cmdline, ShellEscape(flag));
-    }
-    absl::StrAppend(&cmdline, " 2>&1");
-    absl::FPrintF(GetStderr(), "[.] Running Centipede command %s\n", cmdline);
-    FILE* pipe = popen(cmdline.c_str(), "r");
-    FUZZTEST_INTERNAL_CHECK(pipe != nullptr, "popen failed with errno %d",
-                            errno);
-    char buf[1024];
-    while (std::fgets(buf, sizeof(buf), pipe)) {
-      std::fputs(buf, GetStderr());
-    }
-    return pclose(pipe);
-  }
-  static absl::NoDestructor<DefaultCallbacksFactory<CentipedeDefaultCallbacks>>
-      factory;
-  return CentipedeMain(env, *factory);
-}
-
 }  // namespace
 
 bool IsCentipedeRunner() {
@@ -376,8 +363,8 @@ std::vector<std::string> ListCrashIdsUsingCentipede(
   env.list_crash_ids_file =
       std::filesystem::path{workspace.path()} / "crash_ids";
 
-  const int centipede_ret =
-      RunCentipede(env, configuration.centipede_binary_path);
+  DefaultCallbacksFactory<CentipedeDefaultCallbacks> callbacks;
+  const int centipede_ret = CentipedeMain(env, callbacks);
   if (centipede_ret != EXIT_SUCCESS) {
     absl::FPrintF(GetStderr(),
                   "[!] Cannot list crash IDs using Centipede - returning "
@@ -409,19 +396,6 @@ class CentipedeAdaptorRunnerCallbacks
         prng_(GetRandomSeed()) {}
 
   bool Execute(fuzztest::internal::ByteSpan input) override {
-    [[maybe_unused]] static bool check_if_not_skipped_on_setup = [&] {
-      if (runtime_.skipping_requested()) {
-        absl::FPrintF(GetStderr(),
-                      "[.] Skipping %s per request from the test setup.\n",
-                      fuzzer_impl_.test_.full_name());
-        CentipedeSetFailureDescription("SKIPPED TEST: Requested from setup");
-        // It has to use _Exit(1) to avoid trigger the reporting of regular
-        // setup failure while let Centipede be aware of this. Note that this
-        // skips the fixture teardown.
-        std::_Exit(1);
-      }
-      return true;
-    }();
     // We should avoid doing anything other than executing the input here so
     // that we don't affect the execution time.
     auto parsed_input =
@@ -451,6 +425,29 @@ class CentipedeAdaptorRunnerCallbacks
 
   std::string GetSerializedTargetConfig() override {
     return configuration_.Serialize();
+  }
+
+  void OnFailure(std::function<void(std::string_view)>
+                     failure_description_callback) override {
+    // We register the callback only once. This is because `runtime_` is a
+    // global singleton object, and hence previously registered callbacks remain
+    // in the registry. In normal circumstances, there should be only one
+    // runner callback object and a single call to this method, but there are
+    // corner cases when multiple runner callback objects are created, e.g.,
+    // when Centipede runs multiple fuzz tests in the multi-process mode.
+    [[maybe_unused]] static bool callback_registered =
+        [this, failure_description_callback =
+                   std::move(failure_description_callback)]() mutable {
+          runtime_.RegisterCrashMetadataListener(
+              [failure_description_callback =
+                   std::move(failure_description_callback)](
+                  absl::string_view crash_type,
+                  absl::Span<const std::string> /*stack_frames*/) {
+                failure_description_callback(
+                    {crash_type.data(), crash_type.size()});
+              });
+          return true;
+        }();
   }
 
   bool HasCustomMutator() const override { return true; }
@@ -656,6 +653,9 @@ bool CentipedeFuzzerAdaptor::RunInFuzzingMode(
 
 bool CentipedeFuzzerAdaptor::ReplayCrashInSingleProcess(
     const Configuration& configuration) {
+  fuzztest::internal::DefaultCallbacksFactory<
+      fuzztest::internal::CentipedeDefaultCallbacks>
+      factory;
   TempDir crash_export_dir("fuzztest_crash");
   auto export_crash_env = CreateCentipedeEnvironmentFromConfiguration(
       configuration, /*workdir=*/"", test_.full_name(), runtime_.run_mode());
@@ -664,7 +664,7 @@ bool CentipedeFuzzerAdaptor::ReplayCrashInSingleProcess(
   export_crash_env.export_crash_file = crash_file;
   export_crash_env.replay_crash = false;
   export_crash_env.export_crash = true;
-  if (RunCentipede(export_crash_env, configuration.centipede_binary_path) !=
+  if (fuzztest::internal::CentipedeMain(export_crash_env, factory) !=
       EXIT_SUCCESS) {
     absl::FPrintF(
         GetStderr(),
@@ -683,128 +683,6 @@ bool CentipedeFuzzerAdaptor::ReplayCrashInSingleProcess(
                                             runner_callbacks);
   });
   return result == 0;
-}
-
-struct ReportSink {
-  friend void AbslFormatFlush(ReportSink*, absl::string_view v) {
-    absl::FPrintF(GetStderr(), "%s", v);
-  }
-};
-
-absl::Status ExportReproducersFromCentipede(
-    const Environment& env, const FuzzTest& test,
-    const Configuration& configuration) {
-  const auto output = GetReproducerOutputLocation();
-  if (output.type == ReproducerOutputLocation::Type::kUnspecified)
-    return absl::OkStatus();
-
-  TempDir exported_crash_dir("fuzztest_crashes");
-  auto export_crash_env = env;
-  export_crash_env.crashes_to_files = exported_crash_dir.path();
-  if (const int export_exit_code =
-          RunCentipede(export_crash_env, configuration.centipede_binary_path);
-      export_exit_code != 0) {
-    return absl::InternalError(absl::StrCat(
-        "got error while exporting reproducers from Centipede. Exit code: ",
-        export_exit_code));
-  }
-  const absl::StatusOr<std::vector<std::string>> exported_crash_files =
-      RemoteListFiles(exported_crash_dir.path().c_str(),
-                      /*recursively=*/false);
-  if (!exported_crash_files.ok()) {
-    return absl::InternalError(
-        absl::StrCat("got error status while listing exported crash dir: ",
-                     exported_crash_files.status()));
-  }
-  if (exported_crash_files->empty()) return absl::OkStatus();
-  absl::FPrintF(GetStderr(), "\n==== Saving reproducers\n");
-
-  switch (output.type) {
-    case ReproducerOutputLocation::Type::kUserSpecified:
-      absl::FPrintF(GetStderr(),
-                    "[.] Saving reproducers to user specified dir %s\n",
-                    output.dir_path);
-      break;
-    case ReproducerOutputLocation::Type::kTestUndeclaredOutputs:
-      absl::FPrintF(GetStderr(),
-                    "[.] Saving reproducers using "
-                    "TEST_UNDECLARED_OUTPUTS_DIR to %s\n",
-                    output.dir_path);
-      break;
-    default:
-      FUZZTEST_INTERNAL_CHECK(false,
-                              "unsupported reproducer output location type "
-                              "to report reproducers from Centipede");
-  }
-
-  // Will be set when there is only one reproducer - nullopt otherwise.
-  std::optional<std::string> single_reproducer_path;
-  for (const auto& exported_crash_file : *exported_crash_files) {
-    if (!absl::EndsWith(exported_crash_file, ".data")) {
-      continue;
-    }
-    const std::string crash_id =
-        std::filesystem::path{exported_crash_file}.stem().string();
-    std::string reproducer;
-    const absl::Status read_reproducer_status =
-        RemoteFileGetContents(exported_crash_file, reproducer);
-    if (!read_reproducer_status.ok()) {
-      absl::FPrintF(GetStderr(),
-                    "[!] Got error while reading the reproducer contents: %s\n",
-                    absl::StrCat(read_reproducer_status));
-      continue;
-    }
-    const std::string metadata_file = std::filesystem::path{exported_crash_file}
-                                          .replace_extension("metadata")
-                                          .string();
-    std::string metadata;
-    const absl::Status read_metadata_status =
-        RemoteFileGetContents(metadata_file, metadata);
-    if (!read_metadata_status.ok()) {
-      absl::FPrintF(
-          GetStderr(),
-          "[!] Got error while reading the metadata for crash id %s: %s\n",
-          crash_id, absl::StrCat(read_metadata_status));
-      continue;
-    }
-    std::string reproducer_path = WriteDataToDir(reproducer, output.dir_path);
-    if (reproducer_path.empty()) {
-      absl::FPrintF(GetStderr(),
-                    "[!] Got error while saving the reproducer file for "
-                    "crash ID %s.\n",
-                    crash_id);
-      continue;
-    }
-    absl::FPrintF(GetStderr(),
-                  "[.] Saved reproducer with ID %s and crash metadata %s\n",
-                  Basename(reproducer_path), metadata);
-    if (!single_reproducer_path.has_value()) {
-      single_reproducer_path = reproducer_path;
-    } else {
-      // More than one reproducers are exported - use the placeholder for
-      // the instruction.
-      single_reproducer_path = std::nullopt;
-    }
-  }
-
-  ReportSink report_sink;
-  if (single_reproducer_path.has_value()) {
-    PrintReproducerIfRequested(&report_sink, test, &configuration,
-                               *single_reproducer_path);
-  } else {
-    // TODO: b/385113025 - Test this branch when we no longer need to emulate
-    // the legacy exit-on-crash behavior.
-    absl::FPrintF(GetStderr(),
-                  "[.] Please follow the guide below for fetching and/or "
-                  "replaying each reproducer files. You would need to replace "
-                  "REPRODUCER_ID with the actual reproducer ID to be used.\n");
-    PrintReproducerIfRequested(&report_sink, test, &configuration,
-                               std::filesystem::path{output.dir_path}
-                                   .append("REPRODUCER_ID")
-                                   .string());
-  }
-
-  return absl::OkStatus();
 }
 
 // TODO(xinhaoyuan): Consider merging `mode` into `configuration`.
@@ -829,8 +707,6 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
     runtime_.SetSkippingRequested(true);
     return true;
   }
-  runtime_.SetShouldTerminateOnNonFatalFailure(
-      is_running_property_function_in_this_process);
   runtime_.SetRunMode(mode);
   runtime_.SetSkippingRequested(false);
   runtime_.SetCurrentTest(&test_, &configuration);
@@ -840,21 +716,22 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
     // enabled in the controller mode to handle test setup failures.
     runtime_.EnableReporter(&fuzzer_impl_.stats_, [] { return absl::Now(); });
   }
-  if (runner_mode) {
-    runtime_.RegisterCrashMetadataListener(
-        [](absl::string_view crash_type,
-           absl::Span<const std::string> /*stack_frames*/) {
-          CentipedeSetFailureDescription(std::string{crash_type}.c_str());
-        });
-  }
   if (!configuration.corpus_database.empty() &&
       configuration.crashing_input_to_reproduce.has_value() &&
       configuration.replay_in_single_process) {
     return ReplayCrashInSingleProcess(configuration);
   }
-  if (runner_mode) {
-    std::optional<int> result;
-    fuzzer_impl_.fixture_driver_->RunFuzzTest([&, this]() {
+  int result = EXIT_FAILURE;
+  bool to_run_controller = false;
+  fuzzer_impl_.fixture_driver_->RunFuzzTest([&, this]() {
+    if (runtime_.skipping_requested()) {
+      absl::FPrintF(GetStderr(),
+                    "[.] Skipping %s per request from the test setup.\n",
+                    test_.full_name());
+      result = 0;
+      return;
+    }
+    if (runner_mode) {
       CentipedeAdaptorRunnerCallbacks runner_callbacks(&runtime_, &fuzzer_impl_,
                                                        &configuration);
       static char fake_argv0[] = "fake_argv";
@@ -863,33 +740,21 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
           argc != nullptr ? *argc : 1, argv != nullptr ? *argv : fake_argv,
           runner_callbacks);
       return;
-    });
-    FUZZTEST_INTERNAL_CHECK(result.has_value(),
-                            "No result is set for running fuzz test");
-    return *result == EXIT_SUCCESS;
-  } else if (is_running_property_function_in_this_process) {
-    // If `is_running_property_function_in_this_process` holds at this point. We
-    // assume it is for `ReplayInputsIfAvailable` to handle `FUZZTEST_REPLAY`
-    // and `FUZZTEST_MINIMIZE_REPRODUCER`, which Centipede does not support.
+    }
+    // Centipede engine does not support replay and reproducer minimization
+    // (within the single process). So use the existing fuzztest implementation.
     // This is fine because it does not require coverage instrumentation.
-    FUZZTEST_INTERNAL_CHECK(
-        std::getenv("FUZZTEST_REPLAY") ||
-            std::getenv("FUZZTEST_MINIMIZE_REPRODUCER"),
-        "Both env vars `FUZZTEST_REPLAY` and `FUZZTEST_MINIMIZE_REPRODUCER` "
-        "are not set when calling the legacy input replaying - this is a "
-        "FuzzTest bug!");
-    fuzzer_impl_.fixture_driver_->RunFuzzTest([&, this]() {
-      FUZZTEST_INTERNAL_CHECK_PRECONDITION(
-          fuzzer_impl_.ReplayInputsIfAvailable(configuration),
-          "ReplayInputsIfAvailable failed to handle env vars `FUZZTEST_REPLAY` "
-          "or `FUZZTEST_MINIMIZE_REPRODUCER`. Please check if they are set "
-          "properly.");
+    if (!configuration.crashing_input_to_reproduce.has_value() &&
+        fuzzer_impl_.ReplayInputsIfAvailable(configuration)) {
+      result = 0;
       return;
-    });
-    return true;
-  }
+    }
+    // `ReplayInputsIfAvailable` overwrites the run mode - revert it back.
+    runtime_.SetRunMode(mode);
+    to_run_controller = true;
+  });
+  if (!to_run_controller) return result == 0;
   // Run as the fuzzing engine.
-  int result = EXIT_FAILURE;
   [&] {
     runtime_.SetShouldTerminateOnNonFatalFailure(false);
     std::unique_ptr<TempDir> workdir;
@@ -898,6 +763,9 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
     const std::string workdir_path = workdir ? workdir->path() : "";
     const auto env = CreateCentipedeEnvironmentFromConfiguration(
         configuration, workdir_path, test_.full_name(), mode);
+    fuzztest::internal::DefaultCallbacksFactory<
+        fuzztest::internal::CentipedeDefaultCallbacks>
+        factory;
     if (const char* minimize_dir_chars =
             std::getenv("FUZZTEST_MINIMIZE_TESTSUITE_DIR")) {
       const std::string minimize_dir = minimize_dir_chars;
@@ -919,7 +787,7 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
       replay_env.corpus_dir = {"", minimize_dir};
       replay_env.load_shards_only = true;
       FUZZTEST_INTERNAL_CHECK(
-          RunCentipede(replay_env, configuration.centipede_binary_path) == 0,
+          fuzztest::internal::CentipedeMain(replay_env, factory) == 0,
           "Failed to replaying the testsuite for minimization");
       absl::FPrintF(GetStderr(), "[.] Imported the corpus from %s.\n",
                     minimize_dir);
@@ -927,22 +795,21 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
       auto distill_env = env;
       distill_env.distill = true;
       FUZZTEST_INTERNAL_CHECK(
-          RunCentipede(distill_env, configuration.centipede_binary_path) == 0,
+          fuzztest::internal::CentipedeMain(distill_env, factory) == 0,
           "Failed to minimize the testsuite");
       absl::FPrintF(GetStderr(),
                     "[.] Minimized the corpus using Centipede distillation.\n");
       // 3. Replace the shard corpus data with the distillation result.
-      auto distill_workdir = fuzztest::internal::WorkDir(distill_env);
+      auto workdir = fuzztest::internal::WorkDir(distill_env);
       FUZZTEST_INTERNAL_CHECK(
-          std::rename(
-              distill_workdir.DistilledCorpusFilePaths().MyShard().c_str(),
-              distill_workdir.CorpusFilePaths().MyShard().c_str()) == 0,
+          std::rename(workdir.DistilledCorpusFilePaths().MyShard().c_str(),
+                      workdir.CorpusFilePaths().MyShard().c_str()) == 0,
           "Failed to replace the corpus data with the minimized result");
       // 4. Export the corpus of the shard.
       auto export_env = env;
       export_env.corpus_to_files = corpus_out_dir;
       FUZZTEST_INTERNAL_CHECK(
-          RunCentipede(export_env, configuration.centipede_binary_path) == 0,
+          fuzztest::internal::CentipedeMain(export_env, factory) == 0,
           "Failed to export the corpus to FUZZTEST_MINIMIZE_TESTSUITE_DIR");
       absl::FPrintF(GetStderr(),
                     "[.] Exported the minimized the corpus to %s.\n",
@@ -950,18 +817,7 @@ bool CentipedeFuzzerAdaptor::Run(int* argc, char*** argv, RunMode mode,
       result = 0;
       return;
     }
-    result = RunCentipede(env, configuration.centipede_binary_path);
-    if (!env.workdir.empty()) {
-      const auto status =
-          ExportReproducersFromCentipede(env, test_, configuration);
-      if (!status.ok()) {
-        absl::FPrintF(GetStderr(),
-                      "[!] Failed to export reproducers from Centipede: %s\n",
-                      absl::StrCat(status));
-        result = EXIT_FAILURE;
-        return;
-      }
-    }
+    result = fuzztest::internal::CentipedeMain(env, factory);
   }();
   return result == 0;
 }

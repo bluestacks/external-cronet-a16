@@ -325,8 +325,8 @@ public class CronetTestRule implements TestRule {
 
     private CronetTestFramework createCronetTestFramework(
             String testName, boolean netLogEnabled, org.chromium.net.httpflags.Flags flags) {
-        mCronetTestFramework =
-                new CronetTestFramework(mImplementation, testName, netLogEnabled, flags);
+        mCronetTestFramework = new CronetTestFramework(mImplementation, testName, netLogEnabled);
+        mCronetTestFramework.setHttpFlags(flags);
         if (mEngineStartupMode.equals(EngineStartupMode.AUTOMATIC)) {
             mCronetTestFramework.startEngine();
         }
@@ -527,16 +527,12 @@ public class CronetTestRule implements TestRule {
         private boolean mClosed;
 
         private CronetTestFramework(
-                CronetImplementation implementation,
-                String testName,
-                boolean netLogEnabled,
-                org.chromium.net.httpflags.Flags flags) {
+                CronetImplementation implementation, String testName, boolean netLogEnabled) {
             mContextWrapperWithoutFlags =
                     new MutableContextWrapper(ApplicationProvider.getApplicationContext());
             mContextWrapper = new MutableContextWrapper(mContextWrapperWithoutFlags);
             assert sContextWrapper.getBaseContext() == ApplicationProvider.getApplicationContext();
             sContextWrapper.setBaseContext(mContextWrapper);
-            setHttpFlags(flags);
             mBuilder =
                     implementation
                             .createBuilder(sContextWrapper)
@@ -643,6 +639,9 @@ public class CronetTestRule implements TestRule {
 
             mCronetEngine = mBuilder.build();
             mImplementation.verifyCronetEngineInstance(mCronetEngine);
+
+            // Start collecting metrics.
+            mCronetEngine.getGlobalMetricsDeltas();
 
             if (mNetLogEnabled) {
                 File dataDir = new File(PathUtils.getDataDirectory());

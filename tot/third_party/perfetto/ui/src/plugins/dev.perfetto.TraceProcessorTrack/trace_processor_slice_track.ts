@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import {BigintMath as BIMath} from '../../base/bigint_math';
-import {assertTrue} from '../../base/logging';
 import {clamp} from '../../base/math_utils';
 import {exists} from '../../base/utils';
 import {ThreadSliceDetailsPanel} from '../../components/details/thread_slice_details_tab';
@@ -24,7 +23,6 @@ import {
 import {TrackEventDetailsPanel} from '../../public/details_panel';
 import {Trace} from '../../public/trace';
 import {SourceDataset} from '../../trace_processor/dataset';
-import {Engine} from '../../trace_processor/engine';
 import {
   LONG,
   LONG_NULL,
@@ -41,17 +39,7 @@ export interface TraceProcessorSliceTrackAttrs {
   readonly detailsPanel?: (row: {id: number}) => TrackEventDetailsPanel;
 }
 
-const schema = {
-  id: NUM,
-  ts: LONG,
-  dur: LONG,
-  name: STR_NULL,
-  depth: NUM,
-  thread_dur: LONG_NULL,
-  category: STR_NULL,
-};
-
-export async function createTraceProcessorSliceTrack({
+export function createTraceProcessorSliceTrack({
   trace,
   uri,
   maxDepth,
@@ -61,10 +49,26 @@ export async function createTraceProcessorSliceTrack({
   return new DatasetSliceTrack({
     trace,
     uri,
-    dataset: await getDataset(trace.engine, trackIds),
+    dataset: new SourceDataset({
+      schema: {
+        id: NUM,
+        ts: LONG,
+        dur: LONG,
+        name: STR_NULL,
+        depth: NUM,
+        thread_dur: LONG_NULL,
+        category: STR_NULL,
+      },
+      src: 'slice',
+      filter: {
+        col: 'track_id',
+        in: trackIds,
+      },
+    }),
     sliceName: (row) => (row.name === null ? '[null]' : row.name),
     initialMaxDepth: maxDepth,
     rootTableName: 'slice',
+    queryGenerator: getDepthProvider(trackIds),
     fillRatio: (row) => {
       if (row.dur > 0n && row.thread_dur !== null) {
         return clamp(BIMath.ratio(row.thread_dur, row.dur), 0, 1);
@@ -85,50 +89,27 @@ export async function createTraceProcessorSliceTrack({
   });
 }
 
-async function getDataset(engine: Engine, trackIds: ReadonlyArray<number>) {
-  assertTrue(trackIds.length > 0);
-
-  if (trackIds.length === 1) {
-    return new SourceDataset({
-      schema,
-      src: 'slice',
-      filter: {
-        col: 'track_id',
-        eq: trackIds[0],
-      },
-    });
-  } else {
-    // If we have more than one trackId, we must use experimental_slice_layout
-    // to work out the depths. However, just using this as the dataset can be
-    // extremely slow. So we cache the depths up front in a new table for this
-    // track.
-    const tableName = `__async_slice_depth_${trackIds[0]}`;
-
-    await engine.query(`
-      create perfetto table ${tableName} as
+function getDepthProvider(trackIds: ReadonlyArray<number>) {
+  // If we have more than one track we basically just need to replace the query
+  // used for rendering tracks with this one which uses
+  // experimental_slice_layout. The reason we don't just put this query in the
+  // dataset is that the dataset is shared with the outside world and we don't
+  // want to force everyone else to use experimental_slice_track.
+  // TODO(stevegolton): Let's teach internal_layout how to mimic this behaviour.
+  if (trackIds.length > 1) {
+    return () => `
       select
         id,
-        layout_depth as depth
+        ts,
+        dur,
+        layout_depth as depth,
+        name,
+        thread_dur,
+        category
       from experimental_slice_layout
       where filter_track_ids = '${trackIds.join(',')}'
-    `);
-
-    // The (inner) join acts as a filter as well as providing the depth.
-    return new SourceDataset({
-      schema,
-      src: `
-        select
-          slice.id,
-          ts,
-          dur,
-          d.depth as depth,
-          name,
-          thread_dur,
-          track_id,
-          category
-        from slice
-        join ${tableName} d using (id)
-      `,
-    });
+    `;
+  } else {
+    return undefined;
   }
 }

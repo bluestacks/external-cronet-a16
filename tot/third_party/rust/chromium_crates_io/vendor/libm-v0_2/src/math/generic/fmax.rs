@@ -14,7 +14,7 @@
 //!
 //! [link]: https://grouper.ieee.org/groups/msc/ANSI_IEEE-Std-754-2019/background/minNum_maxNum_Removal_Demotion_v3.pdf
 
-use crate::support::Float;
+use super::super::Float;
 
 #[inline]
 pub fn fmax<F: Float>(x: F, y: F) -> F {

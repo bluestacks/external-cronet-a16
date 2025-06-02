@@ -83,9 +83,7 @@ export class TimeAxisPanel {
           this.trace.traceInfo.realtimeOffset,
         );
         const dateTzStr = toISODateOnly(offsetTzDate);
-        const tzOffsetMins = this.trace.traceInfo.tzOffMin;
-        const timeZone = Time.formatTimezone(tzOffsetMins);
-        ctx.fillText(`${dateTzStr} ${timeZone}`, 6, 10);
+        ctx.fillText(dateTzStr, 6, 10);
         break;
       default:
         assertUnreachable(timestampFormat);

@@ -90,7 +90,7 @@ public class TripUnitTest {
     public static class TestCondition extends ConditionWithResult<String> {
         public ConditionStatus mConditionStatus =
                 Condition.awaiting("Waiting for a call to setConditionStatus");
-        private final String mDescription;
+        private String mDescription;
 
         TestCondition(String description) {
             super(/* isRunOnUiThread= */ false);

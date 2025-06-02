@@ -773,13 +773,13 @@ public class TraceEvent implements AutoCloseable {
             mRes = res;
         }
 
-        private final int mId;
-        private final int mParentId;
-        private final boolean mIsShown;
-        private final boolean mIsDirty;
-        private final String mClassName;
+        private int mId;
+        private int mParentId;
+        private boolean mIsShown;
+        private boolean mIsDirty;
+        private String mClassName;
         // One can use mRes to resolve mId to a resource name.
-        private final android.content.res.Resources mRes;
+        private android.content.res.Resources mRes;
     }
 
     /**

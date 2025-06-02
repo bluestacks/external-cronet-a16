@@ -1,4 +1,4 @@
-use anyhow::{anyhow, bail, ensure, Result};
+use anyhow::{anyhow, ensure, Result};
 use toktrie::{SimpleVob, TokEnv, TokenId};
 
 use crate::{api::StopReason, earley::ParserStats, panic_utils, TokenParser};
@@ -48,9 +48,8 @@ impl Matcher {
                 match r {
                     Ok(r) => Ok(r),
                     Err(e) => {
-                        let msg = inner.parser.augment_err(e);
-                        self.0 = MatcherState::Error(msg.clone());
-                        bail!(msg);
+                        self.0 = MatcherState::Error(e.to_string());
+                        Err(e)
                     }
                 }
             }

@@ -80,7 +80,7 @@ public class RequestFinishedInfoTest {
     }
 
     static class DirectExecutor implements Executor {
-        private final ConditionVariable mBlock = new ConditionVariable();
+        private ConditionVariable mBlock = new ConditionVariable();
 
         @Override
         public void execute(Runnable task) {
@@ -94,7 +94,7 @@ public class RequestFinishedInfoTest {
     }
 
     static class ThreadExecutor implements Executor {
-        private final List<Thread> mThreads = new ArrayList<Thread>();
+        private List<Thread> mThreads = new ArrayList<Thread>();
 
         @Override
         public void execute(Runnable task) {

@@ -69,10 +69,6 @@ rust_ffi_static {
     ],
     crate_name: "serde",
     crate_root: "src/lib.rs",
-    rustlibs: [
-        "liballoc_error_handler_impl_ffi__b3956dbf57d32035",
-        "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
-    ],
     proc_macros: [
         "libserde_derive__f6f91290b362308b",
     ],
@@ -80,7 +76,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -90,7 +86,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -99,12 +95,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_arm64: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -114,7 +112,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -123,12 +121,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_riscv64: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -138,7 +138,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -147,12 +147,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_x86: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -162,7 +164,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -171,12 +173,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_x86_64: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -186,7 +190,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -195,6 +199,8 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         host: {
@@ -238,10 +244,6 @@ rust_ffi_static {
     ],
     crate_name: "serde",
     crate_root: "src/lib.rs",
-    rustlibs: [
-        "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
-        "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
-    ],
     proc_macros: [
         "libserde_derive__27402fda8f6ce600",
     ],
@@ -249,7 +251,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -259,7 +261,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -268,12 +270,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_arm64: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -283,7 +287,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -292,12 +296,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_riscv64: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -307,7 +313,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -316,12 +322,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_x86: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -331,7 +339,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -340,12 +348,14 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         android_x86_64: {
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -355,7 +365,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -364,13 +374,15 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
         },
         host: {
             compile_multilib: "64",
             edition: "2018",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             features: [
                 "alloc",
@@ -380,7 +392,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Awarnings",
+                "--cap-lints=allow",
                 "-Cmetadata=serde-1",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
@@ -389,6 +401,8 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Dunsafe_op_in_unsafe_fn",
+                "-Dwarnings",
             ],
             rustlibs: [
                 "libproc_macro2__d957ddb2eb267eaf",

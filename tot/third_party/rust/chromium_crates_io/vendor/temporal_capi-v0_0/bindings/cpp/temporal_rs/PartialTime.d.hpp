@@ -8,7 +8,6 @@
 #include <memory>
 #include <functional>
 #include <optional>
-#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -22,7 +21,7 @@ namespace capi {
       diplomat::capi::OptionU16 microsecond;
       diplomat::capi::OptionU16 nanosecond;
     };
-
+    
     typedef struct PartialTime_option {union { PartialTime ok; }; bool is_ok; } PartialTime_option;
 } // namespace capi
 } // namespace

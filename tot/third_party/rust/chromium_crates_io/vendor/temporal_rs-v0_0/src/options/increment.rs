@@ -1,7 +1,6 @@
 use core::num::{NonZeroU128, NonZeroU32};
 
 use crate::{TemporalError, TemporalResult};
-use num_traits::float::FloatCore;
 
 // ==== RoundingIncrement option ====
 
@@ -32,7 +31,7 @@ impl TryFrom<f64> for RoundingIncrement {
         }
 
         // 5. Let integerIncrement be truncate(ℝ(increment)).
-        let integer_increment = FloatCore::trunc(value);
+        let integer_increment = value.trunc();
         // 6. If integerIncrement < 1 or integerIncrement > 10**9, throw a RangeError exception.
         if !(1.0..=1_000_000_000.0).contains(&integer_increment) {
             return Err(TemporalError::range()

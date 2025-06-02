@@ -670,19 +670,20 @@ bool BalsaFrame::CheckHeaderLinesForInvalidChars(const Lines& lines,
       headers->OriginalHeaderStreamBegin() + lines.front().first;
   const char* stream_end =
       headers->OriginalHeaderStreamBegin() + lines.back().second;
+  bool found_invalid = false;
 
   for (const char* c = stream_begin; c < stream_end; c++) {
     if (header_properties::IsInvalidHeaderChar(*c)) {
-      return true;
+      found_invalid = true;
     }
     if (*c == '\r' &&
         http_validation_policy().disallow_lone_cr_in_request_headers &&
         c + 1 < stream_end && *(c + 1) != '\n') {
-      return true;
+      found_invalid = true;
     }
   }
 
-  return false;
+  return found_invalid;
 }
 
 void BalsaFrame::ProcessHeaderLines(const Lines& lines, bool is_trailer,

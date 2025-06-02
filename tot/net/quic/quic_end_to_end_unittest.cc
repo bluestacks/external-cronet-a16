@@ -72,9 +72,10 @@ class TestTransactionFactory : public HttpTransactionFactory {
   ~TestTransactionFactory() override = default;
 
   // HttpTransactionFactory methods
-  std::unique_ptr<HttpTransaction> CreateTransaction(
-      RequestPriority priority) override {
-    return std::make_unique<HttpNetworkTransaction>(priority, session_.get());
+  int CreateTransaction(RequestPriority priority,
+                        std::unique_ptr<HttpTransaction>* trans) override {
+    *trans = std::make_unique<HttpNetworkTransaction>(priority, session_.get());
+    return OK;
   }
 
   HttpCache* GetCache() override { return nullptr; }

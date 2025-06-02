@@ -1,4 +1,4 @@
-use crate::support::Float;
+use super::super::Float;
 
 /// Copy the sign of `y` to `x`.
 #[inline]

@@ -45,25 +45,7 @@ static_assert(kExpectedIndividualAllocSz > kTestSamplingInterval,
 // malloc(kExpectedIndividualAllocSz).
 static char kMallocActivity[] = "MainActivity";
 
-// Note that tests using AssertExpectedMallocsPresent are relying on the fact
-// that callstacks can provide information about which function called
-// malloc/free. This is not the case for apps running with native_bridge.
-//
-// For these there are 2 different stacks: native one - visible to perfetto;
-// and another one for emulated architecture. Perfetto currently does not
-// detect/report stack for emulated apps and the native stacktrace looks
-// similar for all memory allocations initiated from emulated code.
-//
-// Since having perfetto handle second callstack is not a trivial change
-// we disable these tests if ran on emulated architectures.
-//
-// See also http://b/411111586.
-#define SKIP_WITH_NATIVE_BRIDGE  \
-  if (RunningWithNativeBridge()) \
-  GTEST_SKIP()
-
 TEST(HeapprofdCtsTest, DebuggableAppRuntime) {
-  SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
   std::string app_name = "android.perfetto.cts.app.debuggable";
   const auto& packets = ProfileRuntime(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});
@@ -72,7 +54,6 @@ TEST(HeapprofdCtsTest, DebuggableAppRuntime) {
 }
 
 TEST(HeapprofdCtsTest, DebuggableAppStartup) {
-  SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
   std::string app_name = "android.perfetto.cts.app.debuggable";
   const auto& packets = ProfileStartup(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});
@@ -81,7 +62,6 @@ TEST(HeapprofdCtsTest, DebuggableAppStartup) {
 }
 
 TEST(HeapprofdCtsTest, ProfileableAppRuntime) {
-  SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
   std::string app_name = "android.perfetto.cts.app.profileable";
   const auto& packets = ProfileRuntime(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});
@@ -90,7 +70,6 @@ TEST(HeapprofdCtsTest, ProfileableAppRuntime) {
 }
 
 TEST(HeapprofdCtsTest, ProfileableAppStartup) {
-  SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
   std::string app_name = "android.perfetto.cts.app.profileable";
   const auto& packets = ProfileStartup(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});
@@ -99,9 +78,6 @@ TEST(HeapprofdCtsTest, ProfileableAppStartup) {
 }
 
 TEST(HeapprofdCtsTest, ReleaseAppRuntime) {
-  if (!IsUserBuild()) {
-    SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
-  }
   std::string app_name = "android.perfetto.cts.app.release";
   const auto& packets = ProfileRuntime(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});
@@ -114,9 +90,6 @@ TEST(HeapprofdCtsTest, ReleaseAppRuntime) {
 }
 
 TEST(HeapprofdCtsTest, ReleaseAppStartup) {
-  if (!IsUserBuild()) {
-    SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
-  }
   std::string app_name = "android.perfetto.cts.app.release";
   const auto& packets = ProfileStartup(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});
@@ -129,9 +102,6 @@ TEST(HeapprofdCtsTest, ReleaseAppStartup) {
 }
 
 TEST(HeapprofdCtsTest, NonProfileableAppRuntime) {
-  if (!IsUserBuild()) {
-    SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
-  }
   std::string app_name = "android.perfetto.cts.app.nonprofileable";
   const auto& packets = ProfileRuntime(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});
@@ -143,9 +113,6 @@ TEST(HeapprofdCtsTest, NonProfileableAppRuntime) {
 }
 
 TEST(HeapprofdCtsTest, NonProfileableAppStartup) {
-  if (!IsUserBuild()) {
-    SKIP_WITH_NATIVE_BRIDGE;  // http://b/411111586
-  }
   std::string app_name = "android.perfetto.cts.app.nonprofileable";
   const auto& packets = ProfileStartup(
       app_name, kMallocActivity, kTestSamplingInterval, /*heap_names=*/{});

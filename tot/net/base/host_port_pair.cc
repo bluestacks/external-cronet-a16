@@ -32,7 +32,7 @@ constexpr std::string_view kValuePortKey = "port";
 
 HostPortPair::HostPortPair() : port_(0) {}
 HostPortPair::HostPortPair(std::string_view in_host, uint16_t in_port)
-    : port_(in_port), host_(in_host) {}
+    : host_(in_host), port_(in_port) {}
 
 // static
 HostPortPair HostPortPair::FromURL(const GURL& url) {

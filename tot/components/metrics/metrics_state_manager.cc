@@ -505,11 +505,6 @@ void MetricsStateManager::ForceClientIdCreation() {
   BackUpCurrentClientInfo();
 }
 
-const ClonedInstallDetector& MetricsStateManager::GetClonedInstallDetector()
-    const {
-  return cloned_install_detector_;
-}
-
 void MetricsStateManager::CheckForClonedInstall() {
   cloned_install_detector_.CheckForClonedInstall(local_state_);
 }
@@ -658,7 +653,7 @@ void MetricsStateManager::ResetMetricsIDsIfNecessary() {
   local_state_->ClearPref(prefs::kMetricsLogRecordId);
   EntropyState::ClearPrefs(local_state_);
 
-  cloned_install_detector_.RecordClonedInstallInfo(local_state_);
+  ClonedInstallDetector::RecordClonedInstallInfo(local_state_);
 
   // Also clear the backed up client info. This is asynchronus; any reads
   // shortly after may retrieve the old ClientInfo from the backup.

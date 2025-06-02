@@ -9,7 +9,7 @@
 //!
 //! Excluded from our implementation is sNaN handling.
 
-use crate::support::Float;
+use super::super::Float;
 
 #[inline]
 pub fn fminimum<F: Float>(x: F, y: F) -> F {

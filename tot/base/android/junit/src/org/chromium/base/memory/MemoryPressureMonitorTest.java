@@ -53,7 +53,7 @@ public class MemoryPressureMonitorTest {
     }
 
     private static class TestPressureSupplier implements Supplier<Integer> {
-        private final @MemoryPressureLevel Integer mPressure;
+        private @MemoryPressureLevel Integer mPressure;
         private boolean mIsCalled;
 
         public TestPressureSupplier(@MemoryPressureLevel Integer pressure) {

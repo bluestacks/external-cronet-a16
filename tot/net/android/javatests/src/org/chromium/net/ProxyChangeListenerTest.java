@@ -59,7 +59,7 @@ public class ProxyChangeListenerTest {
             }
         }
 
-        private final List<RegisteredReceiver> mReceivers = new ArrayList<>();
+        private List<RegisteredReceiver> mReceivers = new ArrayList<>();
 
         FakeContext() {
             super(

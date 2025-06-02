@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "crypto/features.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
 #include "crypto/unexportable_key.h"
@@ -352,20 +351,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kTestKeys),
                          TestParamsToString);
 
-class UnexportableSSLPlatformKeyWinTest : public testing::TestWithParam<bool> {
- protected:
-  bool UseHardwareBackedKeys() { return GetParam(); }
-};
-
-TEST_P(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      crypto::features::kIsHardwareBackedFixEnabled);
-
-  auto provider = UseHardwareBackedKeys()
-                      ? crypto::GetUnexportableKeyProvider({})
-                      : crypto::GetMicrosoftSoftwareUnexportableKeyProvider();
+TEST(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
+  auto provider = crypto::GetUnexportableKeyProvider({});
   if (!provider) {
-    GTEST_SKIP() << "Platform keys are not supported.";
+    GTEST_SKIP() << "Hardware-backed keys are not supported.";
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
@@ -382,9 +371,5 @@ TEST_P(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
   auto ssl_private_key = WrapUnexportableKeySlowly(*key);
   ASSERT_TRUE(ssl_private_key);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UnexportableSSLPlatformKeyWinTest,
-                         testing::Bool());
 
 }  // namespace net

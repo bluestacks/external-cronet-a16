@@ -8,7 +8,6 @@
 #include <memory>
 #include <functional>
 #include <optional>
-#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 #include "PartialDate.d.hpp"
 #include "PartialTime.d.hpp"
@@ -25,7 +24,7 @@ namespace capi {
       temporal_rs::capi::PartialDate date;
       temporal_rs::capi::PartialTime time;
     };
-
+    
     typedef struct PartialDateTime_option {union { PartialDateTime ok; }; bool is_ok; } PartialDateTime_option;
 } // namespace capi
 } // namespace

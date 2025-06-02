@@ -85,7 +85,7 @@ namespace internal {
 class InternalMetadata;
 
 namespace v2 {
-class TableDrivenMessage;
+class TableDriven;
 }  // namespace v2
 
 // Used to store values of type WireFormatLite::FieldType without having to
@@ -572,7 +572,7 @@ class PROTOBUF_EXPORT ExtensionSet {
   friend class google::protobuf::internal::ReflectionVisit;
   friend struct google::protobuf::internal::DynamicExtensionInfoHelper;
   friend class google::protobuf::internal::WireFormat;
-  friend class google::protobuf::internal::v2::TableDrivenMessage;
+  friend class google::protobuf::internal::v2::TableDriven;
 
   friend void internal::InitializeLazyExtensionSet();
 

@@ -1366,7 +1366,6 @@ public class TextFormatTest {
   }
 
   @Test
-  @SuppressWarnings("InlineMeInliner") // We still want to test the actual method behavior.
   public void testShortDebugString_field() {
     final FieldDescriptor dataField = OneString.getDescriptor().findFieldByName("data");
     assertThat(TextFormat.printer().shortDebugString(dataField, "test data"))
@@ -1381,7 +1380,6 @@ public class TextFormatTest {
   }
 
   @Test
-  @SuppressWarnings("InlineMeInliner") // We still want to test the actual method behavior.
   public void testShortDebugString_unknown() {
     assertThat(TextFormat.printer().shortDebugString(makeUnknownFieldSet()))
         .isEqualTo(

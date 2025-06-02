@@ -614,8 +614,7 @@ final class MessageSchema<T> implements Schema<T> {
               + " for "
               + messageClass.getName()
               + " not found. Known fields are "
-              + Arrays.toString(fields),
-          e);
+              + Arrays.toString(fields));
     }
   }
 

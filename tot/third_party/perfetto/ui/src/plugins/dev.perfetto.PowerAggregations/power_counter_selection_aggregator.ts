@@ -101,6 +101,8 @@ export class PowerCounterSelectionAggregator
     ];
   }
 
+  async getExtra() {}
+
   getTabName() {
     return 'Power Counters';
   }

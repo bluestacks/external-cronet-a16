@@ -25,11 +25,16 @@ struct NET_EXPORT_PRIVATE NetworkID {
             const std::string& id,
             int32_t signal_strength);
   NetworkID(const NetworkID& other);
-  NetworkID& operator=(const NetworkID& other);
   ~NetworkID();
 
-  friend bool operator==(const NetworkID&, const NetworkID&) = default;
-  friend auto operator<=>(const NetworkID&, const NetworkID&) = default;
+  bool operator==(const NetworkID& other) const;
+
+  bool operator!=(const NetworkID& other) const;
+
+  NetworkID& operator=(const NetworkID& other);
+
+  // Overloaded to support ordered collections.
+  bool operator<(const NetworkID& other) const;
 
   std::string ToString() const;
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <functional>
 #include <optional>
-#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -21,7 +20,7 @@ namespace capi {
       ErrorKind_Syntax = 3,
       ErrorKind_Assert = 4,
     };
-
+    
     typedef struct ErrorKind_option {union { ErrorKind ok; }; bool is_ok; } ErrorKind_option;
 } // namespace capi
 } // namespace

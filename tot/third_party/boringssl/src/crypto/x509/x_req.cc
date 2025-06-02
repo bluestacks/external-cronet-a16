@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #include <openssl/asn1t.h>
+#include <openssl/thread.h>
 #include <openssl/x509.h>
 
 #include "internal.h"

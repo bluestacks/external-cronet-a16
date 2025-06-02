@@ -11,7 +11,7 @@
 //!
 //! Excluded from our implementation is sNaN handling.
 
-use crate::support::Float;
+use super::super::Float;
 
 #[inline]
 pub fn fmaximum_num<F: Float>(x: F, y: F) -> F {

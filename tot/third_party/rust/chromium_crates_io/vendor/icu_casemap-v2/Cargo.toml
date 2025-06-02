@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.81"
 name = "icu_casemap"
-version = "2.0.0"
+version = "2.0.0-beta2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,7 +25,6 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
-    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -49,14 +48,12 @@ all-features = true
 compiled_data = [
     "dep:icu_casemap_data",
     "icu_properties/compiled_data",
-    "icu_provider/baked",
 ]
 datagen = [
     "serde",
     "dep:databake",
     "zerovec/databake",
     "icu_collections/databake",
-    "icu_provider/export",
 ]
 default = ["compiled_data"]
 serde = [
@@ -107,26 +104,26 @@ version = "0.2.3"
 default-features = false
 
 [dependencies.icu_casemap_data]
-version = "~2.0.0"
+version = "~2.0.0-beta2"
 optional = true
 default-features = false
 
 [dependencies.icu_collections]
-version = "~2.0.0"
+version = "~2.0.0-beta2"
 features = ["alloc"]
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.0.0"
+version = "2.0.0-beta2"
 features = ["alloc"]
 default-features = false
 
 [dependencies.icu_properties]
-version = "~2.0.0"
+version = "~2.0.0-beta2"
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0"
+version = "2.0.0-beta2"
 default-features = false
 
 [dependencies.potential_utf]

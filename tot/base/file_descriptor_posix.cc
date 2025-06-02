@@ -19,6 +19,14 @@ FileDescriptor::FileDescriptor(File file)
 FileDescriptor::FileDescriptor(ScopedFD fd)
     : fd(fd.release()), auto_close(true) {}
 
+bool FileDescriptor::operator==(const FileDescriptor& other) const {
+  return fd == other.fd && auto_close == other.auto_close;
+}
+
+bool FileDescriptor::operator!=(const FileDescriptor& other) const {
+  return !operator==(other);
+}
+
 bool FileDescriptor::operator<(const FileDescriptor& other) const {
   return other.fd < fd;
 }

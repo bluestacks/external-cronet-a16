@@ -69,7 +69,7 @@ struct BitField {
 // unrelated to BRP.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
  public:
-  // This class holds an atomic 32 bits field: `count_`. It holds 3 values:
+  // This class holds an atomic 32 bits field: `count_`. It holds 4 values:
   //
   // bits   name                   description
   // -----  ---------------------  ----------------------------------------
@@ -81,14 +81,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   //                                 `ReleaseFromAllocator()`, and if not we
   //                                 have a double-free.
   //
-  // 1-30   ptr_count              Number of raw_ptr<T>.
+  // 1-29   ptr_count              Number of raw_ptr<T>.
   //                               - Increased in Acquire()
   //                               - Decreased in Release()
   //
-  // 31     request_quarantine     When set, PA will quarantine the memory in
+  // 30     request_quarantine     When set, PA will quarantine the memory in
   //                               Scheduler-Loop quarantine.
   //                               It also extends quarantine duration when
   //                               set after being quarantined.
+  // 31     needs_mac11_malloc_    Whether malloc_size() return value needs to
+  //          size_hack            be adjusted for this allocation.
   //
   // On `PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)` builds, it holds two more
   // entries in total of 64 bits.
@@ -99,9 +101,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // 1-31   ptr_count
   //
   // 32     dangling_detected      A dangling raw_ptr<> has been detected.
-  // 33     request_quarantine
+  // 33     needs_mac11_malloc_
+  //          size_hack
+  // 34     request_quarantine
   //
-  // 34-63  unprotected_ptr_count  Number of
+  // 35-63  unprotected_ptr_count  Number of
   //                               raw_ptr<T, DisableDanglingPtrDetection>
   //                               - Increased in AcquireFromUnprotectedPtr().
   //                               - Decreased in ReleaseFromUnprotectedPtr().
@@ -120,11 +124,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   using CountType = uint32_t;
   static constexpr CountType kMemoryHeldByAllocatorBit =
       BitField<CountType>::Bit(0);
-  static constexpr CountType kPtrCountMask = BitField<CountType>::Mask(1, 30);
+  static constexpr CountType kPtrCountMask = BitField<CountType>::Mask(1, 29);
   // The most significant bit of the refcount is reserved to prevent races with
   // overflow detection.
-  static constexpr CountType kMaxPtrCount = BitField<CountType>::Mask(1, 29);
+  static constexpr CountType kMaxPtrCount = BitField<CountType>::Mask(1, 28);
   static constexpr CountType kRequestQuarantineBit =
+      BitField<CountType>::Bit(30);
+  static constexpr CountType kNeedsMac11MallocSizeHackBit =
       BitField<CountType>::Bit(31);
   static constexpr CountType kDanglingRawPtrDetectedBit =
       BitField<CountType>::None();
@@ -139,20 +145,22 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   static constexpr auto kMaxPtrCount = BitField<CountType>::Mask(1, 30);
   static constexpr auto kDanglingRawPtrDetectedBit =
       BitField<CountType>::Bit(32);
-  static constexpr CountType kRequestQuarantineBit =
+  static constexpr auto kNeedsMac11MallocSizeHackBit =
       BitField<CountType>::Bit(33);
+  static constexpr CountType kRequestQuarantineBit =
+      BitField<CountType>::Bit(34);
   static constexpr auto kUnprotectedPtrCountMask =
-      BitField<CountType>::Mask(34, 63);
+      BitField<CountType>::Mask(35, 63);
   // The most significant bit of the refcount is reserved to prevent races with
   // overflow detection.
   static constexpr auto kMaxUnprotectedPtrCount =
-      BitField<CountType>::Mask(34, 62);
+      BitField<CountType>::Mask(35, 62);
 #endif  // !PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
   // Quick check to assert these masks do not overlap.
   static_assert((kMemoryHeldByAllocatorBit + kPtrCountMask +
                  kUnprotectedPtrCountMask + kDanglingRawPtrDetectedBit +
-                 kRequestQuarantineBit) ==
+                 kRequestQuarantineBit + kNeedsMac11MallocSizeHackBit) ==
                 std::numeric_limits<CountType>::max());
 
   static constexpr auto kPtrInc =
@@ -160,7 +168,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   static constexpr auto kUnprotectedPtrInc =
       SafeShift<CountType>(1, base::bits::CountrZero(kUnprotectedPtrCountMask));
 
-  PA_ALWAYS_INLINE InSlotMetadata();
+  PA_ALWAYS_INLINE explicit InSlotMetadata(bool needs_mac11_malloc_size_hack);
 
   // Incrementing the counter doesn't imply any visibility about modified
   // memory, hence relaxed atomics. For decrement, visibility is required before
@@ -357,6 +365,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     return (count_.load(std::memory_order_acquire) & mask) == kPtrInc;
   }
 
+  bool NeedsMac11MallocSizeHack() {
+    return count_.load(std::memory_order_relaxed) &
+           kNeedsMac11MallocSizeHackBit;
+  }
+
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   PA_ALWAYS_INLINE void SetRequestedSize(size_t size) {
     requested_size_ = static_cast<uint32_t>(size);
@@ -468,8 +481,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 #endif
 };
 
-PA_ALWAYS_INLINE InSlotMetadata::InSlotMetadata()
-    : count_(kMemoryHeldByAllocatorBit)
+PA_ALWAYS_INLINE InSlotMetadata::InSlotMetadata(
+    bool needs_mac11_malloc_size_hack)
+    : count_(kMemoryHeldByAllocatorBit |
+             (needs_mac11_malloc_size_hack ? kNeedsMac11MallocSizeHackBit : 0))
 #if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
       ,
       brp_cookie_(CalculateCookie())

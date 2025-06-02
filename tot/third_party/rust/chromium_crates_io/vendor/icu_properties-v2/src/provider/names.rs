@@ -20,242 +20,224 @@ use zerovec::ule::NichedOption;
 use zerovec::{VarZeroVec, ZeroMap, ZeroVec};
 
 icu_provider::data_marker!(
-    /// `PropertyNameParseBidiClassV1`
-    PropertyNameParseBidiClassV1,
+    /// `BidiClassNameToValueV2`
+    BidiClassNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseCanonicalCombiningClassV1`
-    PropertyNameParseCanonicalCombiningClassV1,
+    /// `CanonicalCombiningClassNameToValueV2`
+    CanonicalCombiningClassNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseEastAsianWidthV1`
-    PropertyNameParseEastAsianWidthV1,
+    /// `EastAsianWidthNameToValueV2`
+    EastAsianWidthNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseGeneralCategoryMaskV1`
-    PropertyNameParseGeneralCategoryMaskV1,
+    /// `GeneralCategoryMaskNameToValueV2`
+    GeneralCategoryMaskNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseGeneralCategoryV1`
-    PropertyNameParseGeneralCategoryV1,
+    /// `GeneralCategoryNameToValueV2`
+    GeneralCategoryNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseGraphemeClusterBreakV1`
-    PropertyNameParseGraphemeClusterBreakV1,
+    /// `GraphemeClusterBreakNameToValueV2`
+    GraphemeClusterBreakNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseHangulSyllableTypeV1`
-    PropertyNameParseHangulSyllableTypeV1,
+    /// `HangulSyllableTypeNameToValueV2`
+    HangulSyllableTypeNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseIndicSyllabicCategoryV1`
-    PropertyNameParseIndicSyllabicCategoryV1,
+    /// `IndicSyllabicCategoryNameToValueV2`
+    IndicSyllabicCategoryNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseJoiningTypeV1`
-    PropertyNameParseJoiningTypeV1,
+    /// `JoiningTypeNameToValueV2`
+    JoiningTypeNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseLineBreakV1`
-    PropertyNameParseLineBreakV1,
+    /// `LineBreakNameToValueV2`
+    LineBreakNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseScriptV1`
-    PropertyNameParseScriptV1,
+    /// `ScriptNameToValueV2`
+    ScriptNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseSentenceBreakV1`
-    PropertyNameParseSentenceBreakV1,
+    /// `SentenceBreakNameToValueV2`
+    SentenceBreakNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseVerticalOrientationV1`
-    PropertyNameParseVerticalOrientationV1,
+    /// `WordBreakNameToValueV2`
+    WordBreakNameToValueV2,
     PropertyValueNameToEnumMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameParseWordBreakV1`
-    PropertyNameParseWordBreakV1,
-    PropertyValueNameToEnumMap<'static>,
-    is_singleton = true
-);
-icu_provider::data_marker!(
-    /// `PropertyNameLongBidiClassV1`
-    PropertyNameLongBidiClassV1,
+    /// `BidiClassValueToLongNameV1`
+    BidiClassValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortBidiClassV1`
-    PropertyNameShortBidiClassV1,
+    /// `BidiClassValueToShortNameV1`
+    BidiClassValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongEastAsianWidthV1`
-    PropertyNameLongEastAsianWidthV1,
+    /// `EastAsianWidthValueToLongNameV1`
+    EastAsianWidthValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortEastAsianWidthV1`
-    PropertyNameShortEastAsianWidthV1,
+    /// `EastAsianWidthValueToShortNameV1`
+    EastAsianWidthValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongGeneralCategoryV1`
-    PropertyNameLongGeneralCategoryV1,
+    /// `GeneralCategoryValueToLongNameV1`
+    GeneralCategoryValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortGeneralCategoryV1`
-    PropertyNameShortGeneralCategoryV1,
+    /// `GeneralCategoryValueToShortNameV1`
+    GeneralCategoryValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongGraphemeClusterBreakV1`
-    PropertyNameLongGraphemeClusterBreakV1,
+    /// `GraphemeClusterBreakValueToLongNameV1`
+    GraphemeClusterBreakValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortGraphemeClusterBreakV1`
-    PropertyNameShortGraphemeClusterBreakV1,
+    /// `GraphemeClusterBreakValueToShortNameV1`
+    GraphemeClusterBreakValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongHangulSyllableTypeV1`
-    PropertyNameLongHangulSyllableTypeV1,
+    /// `HangulSyllableTypeValueToLongNameV1`
+    HangulSyllableTypeValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortHangulSyllableTypeV1`
-    PropertyNameShortHangulSyllableTypeV1,
+    /// `HangulSyllableTypeValueToShortNameV1`
+    HangulSyllableTypeValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongIndicSyllabicCategoryV1`
-    PropertyNameLongIndicSyllabicCategoryV1,
+    /// `IndicSyllabicCategoryValueToLongNameV1`
+    IndicSyllabicCategoryValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortIndicSyllabicCategoryV1`
-    PropertyNameShortIndicSyllabicCategoryV1,
+    /// `IndicSyllabicCategoryValueToShortNameV1`
+    IndicSyllabicCategoryValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongJoiningTypeV1`
-    PropertyNameLongJoiningTypeV1,
+    /// `JoiningTypeValueToLongNameV1`
+    JoiningTypeValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortJoiningTypeV1`
-    PropertyNameShortJoiningTypeV1,
+    /// `JoiningTypeValueToShortNameV1`
+    JoiningTypeValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongLineBreakV1`
-    PropertyNameLongLineBreakV1,
+    /// `LineBreakValueToLongNameV1`
+    LineBreakValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortLineBreakV1`
-    PropertyNameShortLineBreakV1,
+    /// `LineBreakValueToShortNameV1`
+    LineBreakValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongScriptV1`
-    PropertyNameLongScriptV1,
+    /// `ScriptValueToLongNameV1`
+    ScriptValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongSentenceBreakV1`
-    PropertyNameLongSentenceBreakV1,
+    /// `SentenceBreakValueToLongNameV1`
+    SentenceBreakValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortSentenceBreakV1`
-    PropertyNameShortSentenceBreakV1,
+    /// `SentenceBreakValueToShortNameV1`
+    SentenceBreakValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongVerticalOrientationV1`
-    PropertyNameLongVerticalOrientationV1,
+    /// `WordBreakValueToLongNameV1`
+    WordBreakValueToLongNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortVerticalOrientationV1`
-    PropertyNameShortVerticalOrientationV1,
+    /// `WordBreakValueToShortNameV1`
+    WordBreakValueToShortNameV1,
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PropertyNameLongWordBreakV1`
-    PropertyNameLongWordBreakV1,
-    PropertyEnumToValueNameLinearMap<'static>,
-    is_singleton = true
-);
-icu_provider::data_marker!(
-    /// `PropertyNameShortWordBreakV1`
-    PropertyNameShortWordBreakV1,
-    PropertyEnumToValueNameLinearMap<'static>,
-    is_singleton = true
-);
-icu_provider::data_marker!(
-    /// `PropertyNameLongCanonicalCombiningClassV1`
-    PropertyNameLongCanonicalCombiningClassV1,
+    /// `CanonicalCombiningClassValueToLongNameV1`
+    CanonicalCombiningClassValueToLongNameV1,
     PropertyEnumToValueNameSparseMap<'static>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortCanonicalCombiningClassV1`
-    PropertyNameShortCanonicalCombiningClassV1,
+    /// `CanonicalCombiningClassValueToShortNameV1`
+    CanonicalCombiningClassValueToShortNameV1,
     PropertyEnumToValueNameSparseMap<'static>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
-    /// `PropertyNameShortScriptV1`
-    PropertyNameShortScriptV1,
+    /// `ScriptValueToShortNameV1`
+    ScriptValueToShortNameV1,
     PropertyScriptToIcuScriptMap<'static>,
     is_singleton = true,
 );

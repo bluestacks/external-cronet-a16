@@ -65,8 +65,6 @@ interface LogEntries {
   offset: number;
   machineIds: number[];
   timestamps: time[];
-  pids: number[];
-  tids: number[];
   priorities: number[];
   tags: string[];
   messages: string[];
@@ -123,8 +121,6 @@ export class LogPanel implements m.ClassComponent<LogPanelAttrs> {
         columns: [
           ...(hasMachineIds ? [{header: 'Machine', width: '6em'}] : []),
           {header: 'Timestamp', width: '13em'},
-          {header: 'PID', width: '3em'},
-          {header: 'TID', width: '3em'},
           {header: 'Level', width: '4em'},
           {header: 'Tag', width: '13em'},
           ...(hasProcessNames ? [{header: 'Process', width: '18em'}] : []),
@@ -180,8 +176,6 @@ export class LogPanel implements m.ClassComponent<LogPanelAttrs> {
 
     const machineIds = this.entries.machineIds;
     const timestamps = this.entries.timestamps;
-    const pids = this.entries.pids;
-    const tids = this.entries.tids;
     const priorities = this.entries.priorities;
     const tags = this.entries.tags;
     const messages = this.entries.messages;
@@ -202,8 +196,6 @@ export class LogPanel implements m.ClassComponent<LogPanelAttrs> {
         cells: [
           ...(hasMachineIds ? [machineIds[i]] : []),
           m(Timestamp, {ts}),
-          pids[i],
-          tids[i],
           priorityLetter || '?',
           tags[i],
           ...(hasProcessNames ? [processNames[i]] : []),
@@ -400,8 +392,6 @@ async function updateLogEntries(
   const rowsResult = await engine.query(`
         select
           ts,
-          pid,
-          tid,
           prio,
           ifnull(tag, '[NULL]') as tag,
           ifnull(msg, '[NULL]') as msg,
@@ -417,8 +407,6 @@ async function updateLogEntries(
 
   const machineIds = [];
   const timestamps: time[] = [];
-  const pids = [];
-  const tids = [];
   const priorities = [];
   const tags = [];
   const messages = [];
@@ -427,8 +415,6 @@ async function updateLogEntries(
 
   const it = rowsResult.iter({
     ts: LONG,
-    pid: NUM,
-    tid: NUM,
     prio: NUM,
     tag: STR,
     msg: STR,
@@ -439,8 +425,6 @@ async function updateLogEntries(
   });
   for (; it.valid(); it.next()) {
     timestamps.push(Time.fromRaw(it.ts));
-    pids.push(it.pid);
-    tids.push(it.tid);
     priorities.push(it.prio);
     tags.push(it.tag);
     messages.push(it.msg);
@@ -463,8 +447,6 @@ async function updateLogEntries(
     offset: pagination.offset,
     machineIds,
     timestamps,
-    pids,
-    tids,
     priorities,
     tags,
     messages,
@@ -478,7 +460,7 @@ async function updateLogView(engine: Engine, filter: LogFilteringCriteria) {
   await engine.query('drop view if exists filtered_logs');
 
   const globMatch = composeGlobMatch(filter.hideNonMatching, filter.textEntry);
-  let selectedRows = `select prio, ts, pid, tid, tag, msg,
+  let selectedRows = `select prio, ts, tag, msg,
       process.name as process_name,
       process.machine_id as machine_id, ${globMatch}
       from android_logs

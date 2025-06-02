@@ -69,7 +69,7 @@ struct PtrAndLen;
 
 namespace internal {
 namespace v2 {
-class TableDrivenMessage;
+class TableDriven;
 }  // namespace v2
 
 template <typename Key, typename T>
@@ -404,7 +404,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
   friend struct MapBenchmarkPeer;
   friend class UntypedMapIterator;
   friend class RustMapHelper;
-  friend class v2::TableDrivenMessage;
+  friend class v2::TableDriven;
 
   // Calls `f(type_t)` where `type_t` is an unspecified type that has a `::type`
   // typedef in it representing the dynamic type of key/value of the node.

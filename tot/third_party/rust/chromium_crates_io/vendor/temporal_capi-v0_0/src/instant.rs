@@ -5,15 +5,6 @@ pub mod ffi {
     use crate::duration::ffi::{Duration, TimeDuration};
     use crate::error::ffi::TemporalError;
     use crate::options::ffi::{DifferenceSettings, RoundingOptions};
-    use alloc::boxed::Box;
-    use alloc::string::String;
-    use core::str::FromStr;
-    use diplomat_runtime::{DiplomatStr, DiplomatStr16};
-
-    #[cfg(feature = "compiled_data")]
-    use crate::options::ffi::ToStringRoundingOptions;
-    #[cfg(feature = "compiled_data")]
-    use crate::time_zone::ffi::TimeZone;
 
     #[diplomat::opaque]
     pub struct Instant(pub temporal_rs::Instant);
@@ -33,7 +24,7 @@ pub mod ffi {
             let is_neg = ns.high < 0;
             let ns_high_abs = ns.high.unsigned_abs() as u128;
             // Stick them together
-            let total = ((ns_high_abs << 64) + ns.low as u128) as i128;
+            let total = (ns_high_abs << (64 + ns.low as u128)) as i128;
             // Reintroduce the sign
             let instant = if is_neg { -total } else { total };
             temporal_rs::Instant::try_new(instant)
@@ -45,20 +36,6 @@ pub mod ffi {
             epoch_milliseconds: i64,
         ) -> Result<Box<Self>, TemporalError> {
             temporal_rs::Instant::from_epoch_milliseconds(epoch_milliseconds)
-                .map(|c| Box::new(Self(c)))
-                .map_err(Into::into)
-        }
-
-        pub fn from_utf8(s: &DiplomatStr) -> Result<Box<Self>, TemporalError> {
-            temporal_rs::Instant::from_utf8(s)
-                .map(|c| Box::new(Self(c)))
-                .map_err(Into::into)
-        }
-
-        pub fn from_utf16(s: &DiplomatStr16) -> Result<Box<Self>, TemporalError> {
-            // TODO(#275) This should not need to convert
-            let s = String::from_utf16(s).map_err(|_| temporal_rs::TemporalError::range())?;
-            temporal_rs::Instant::from_str(&s)
                 .map(|c| Box::new(Self(c)))
                 .map_err(Into::into)
         }
@@ -120,14 +97,6 @@ pub mod ffi {
                 .map_err(Into::into)
         }
 
-        pub fn compare(&self, other: &Self) -> core::cmp::Ordering {
-            self.0.cmp(&other.0)
-        }
-
-        pub fn equals(&self, other: &Self) -> bool {
-            self.0 == other.0
-        }
-
         pub fn epoch_milliseconds(&self) -> i64 {
             self.0.epoch_milliseconds()
         }
@@ -143,22 +112,6 @@ pub mod ffi {
 
             I128Nanoseconds { high, low }
         }
-
-        #[cfg(feature = "compiled_data")]
-        pub fn to_ixdtf_string_with_compiled_data(
-            &self,
-            zone: Option<&TimeZone>,
-            options: ToStringRoundingOptions,
-            write: &mut DiplomatWrite,
-        ) -> Result<(), TemporalError> {
-            use core::fmt::Write;
-            let string = self.0.to_ixdtf_string(zone.map(|x| &x.0), options.into())?;
-            // throw away the error, this should always succeed
-            let _ = write.write_str(&string);
-
-            Ok(())
-        }
-
-        // TODO non-compiled data timezone APIs
+        // TODO timezone APIs
     }
 }

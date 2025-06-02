@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef GOOGLE_PROTOBUF_COMPILER_HPB_GEN_ENUMS_H__
-#define GOOGLE_PROTOBUF_COMPILER_HPB_GEN_ENUMS_H__
+#ifndef PROTOBUF_COMPILER_HBP_GEN_ENUMS_H_
+#define PROTOBUF_COMPILER_HBP_GEN_ENUMS_H_
 
 #include "google/protobuf/compiler/hpb/context.h"
 #include "google/protobuf/descriptor.h"
@@ -25,4 +25,4 @@ void WriteEnumDeclarations(
 }  // namespace protobuf
 }  // namespace google::hpb_generator
 
-#endif  // GOOGLE_PROTOBUF_COMPILER_HPB_GEN_ENUMS_H__
+#endif  // PROTOBUF_COMPILER_HBP_GEN_ENUMS_H_

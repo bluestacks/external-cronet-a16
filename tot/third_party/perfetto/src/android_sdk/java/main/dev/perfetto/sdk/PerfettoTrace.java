@@ -51,10 +51,11 @@ public final class PerfettoTrace {
    * events within the category, it must also be enabled in the trace config.
    */
   public static class Category implements PerfettoTrackEventExtra.PerfettoPointer {
+    private final long mPtr;
+    private final long mExtraPtr;
     private final String mName;
     private final List<String> mTags;
-    private volatile long mPtr;
-    private volatile boolean mIsRegistered;
+    private boolean mIsRegistered;
 
     /**
      * Category ctor.
@@ -74,8 +75,9 @@ public final class PerfettoTrace {
     public Category(String name, List<String> tags) {
       mName = name;
       mTags = tags;
-      mPtr = 0;
-      mIsRegistered = false;
+      mPtr = native_init(name, tags.toArray(new String[0]));
+      mExtraPtr = native_get_extra_ptr(mPtr);
+      sNativeMemoryCleaner.registerNativeAllocation(this, mPtr, native_delete());
     }
 
     @FastNative
@@ -93,39 +95,26 @@ public final class PerfettoTrace {
     @CriticalNative
     private static native boolean native_is_enabled(long ptr);
 
-    /** Create the native category object and register it. */
-    public synchronized Category register() {
-      if (mPtr == 0) {
-        long ptr = native_init(mName, mTags.toArray(new String[0]));
-        sNativeMemoryCleaner.registerNativeAllocation(this, ptr, native_delete());
-        native_register(ptr);
-        // There is not much sense in the created, but not yet registered category,
-        // so we make the `ptr` visible to other threads only after registration.
-        mPtr = ptr;
-        mIsRegistered = true;
-      } else {
-        if (!mIsRegistered) {
-          native_register(mPtr);
-          mIsRegistered = true;
-        }
-      }
+    @CriticalNative
+    private static native long native_get_extra_ptr(long ptr);
+
+    /** Register the category. */
+    public Category register() {
+      native_register(mPtr);
+      mIsRegistered = true;
       return this;
     }
 
     /** Unregister the category. */
-    public synchronized Category unregister() {
-      if (mIsRegistered) {
-        // mIsRegistered == true implies mPtr != 0
-        mIsRegistered = false;
-        native_unregister(mPtr);
-      }
+    public Category unregister() {
+      native_unregister(mPtr);
+      mIsRegistered = false;
       return this;
     }
 
-    /** Whether the category is registered and enabled or not. */
+    /** Whether the category is enabled or not. */
     public boolean isEnabled() {
-      // mPtr is volatile and is set only from `#register()` method.
-      return mPtr != 0 && native_is_enabled(mPtr);
+      return native_is_enabled(mPtr);
     }
 
     /** Whether the category is registered or not. */
@@ -133,11 +122,10 @@ public final class PerfettoTrace {
       return mIsRegistered;
     }
 
-    /** Returns the pointer to the native category object. */
+    /** Returns the native pointer for the category. */
     @Override
     public long getPtr() {
-      // mPtr is volatile and is set only from `#register()` method.
-      return mPtr;
+      return mExtraPtr;
     }
 
     public String getName() {

@@ -8,7 +8,6 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>

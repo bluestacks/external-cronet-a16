@@ -289,7 +289,7 @@ TEST(NetworkQualityObservationBufferTest, RemoveObservations) {
   }
   EXPECT_EQ(200u, buffer.Size());
 
-  DeletedObservationSources deleted_observation_sources = {};
+  bool deleted_observation_sources[NETWORK_QUALITY_OBSERVATION_SOURCE_MAX] = {};
 
   // Since all entries in |deleted_observation_sources| are set to false, no
   // observations should be deleted.

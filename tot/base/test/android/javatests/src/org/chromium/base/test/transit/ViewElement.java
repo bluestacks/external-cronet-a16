@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.hamcrest.core.Is.is;
+
 import android.view.View;
 
 import androidx.test.espresso.Espresso;
@@ -26,7 +28,7 @@ import org.chromium.build.annotations.Nullable;
  * Represents a {@link ViewSpec} added to a {@link ConditionalState}.
  *
  * <p>{@link ViewSpec}s should be declared as constants, while {@link ViewElement}s are created by
- * calling {@link ConditionalState#declareView(Matcher)}.
+ * calling {@link Elements.Builder#declareView(ViewSpec)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.
@@ -116,22 +118,12 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return mViewSpec.descendant(viewClass, viewMatcher);
     }
 
-    /** Returns a {@link ViewSpec} to declare an ancestor of this ViewElement. */
-    @SafeVarargs
-    public final ViewSpec<View> ancestor(Matcher<View>... viewMatcher) {
-        return mViewSpec.ancestor(viewMatcher);
-    }
-
-    /** Returns a {@link ViewSpec} to declare an ancestor of this ViewElement. */
-    @SafeVarargs
-    public final <DescendantViewT extends View> ViewSpec<DescendantViewT> ancestor(
-            Class<DescendantViewT> viewClass, Matcher<View>... viewMatcher) {
-        return mViewSpec.ancestor(viewClass, viewMatcher);
-    }
-
     /** Trigger an Espresso action on this View. */
     public Transition.Trigger getPerformTrigger(ViewAction action) {
-        return () -> Espresso.onView(mViewSpec.getViewMatcher()).perform(action);
+        return () -> {
+            View view = get();
+            Espresso.onView(is(view)).perform(action);
+        };
     }
 
     /**
@@ -175,7 +167,8 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
 
     /** Trigger an Espresso ViewAssertion on this View. */
     public void check(ViewAssertion assertion) {
-        Espresso.onView(mViewSpec.getViewMatcher()).check(assertion);
+        View view = get();
+        Espresso.onView(is(view)).check(assertion);
     }
 
     /** Extra options for declaring ViewElements. */

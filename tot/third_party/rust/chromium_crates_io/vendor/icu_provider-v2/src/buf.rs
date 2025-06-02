@@ -15,7 +15,7 @@ pub use self::serde::*;
 ///
 /// The data is expected to be deserialized before it can be used; see
 /// [`DataPayload::into_deserialized`].
-#[non_exhaustive]
+#[allow(clippy::exhaustive_structs)] // marker type
 #[derive(Debug)]
 pub struct BufferMarker;
 

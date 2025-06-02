@@ -16,7 +16,7 @@ import m from 'mithril';
 import {duration, time, TimeSpan} from '../base/time';
 import {Dataset, DatasetSchema} from '../trace_processor/dataset';
 import {Engine} from '../trace_processor/engine';
-import {ColumnDef, Sorting, BarChartData} from './aggregation';
+import {ColumnDef, Sorting, ThreadStateExtra} from './aggregation';
 import {Track} from './track';
 import {arrayEquals} from '../base/array_utils';
 
@@ -162,11 +162,11 @@ export interface AreaSelectionAggregator {
     area: AreaSelection,
     dataset?: Dataset,
   ): Promise<boolean>;
-  getBarChartData?(
+  getExtra(
     engine: Engine,
     area: AreaSelection,
     dataset?: Dataset,
-  ): Promise<BarChartData[] | undefined>;
+  ): Promise<ThreadStateExtra | void>;
   getTabName(): string;
   getDefaultSorting(): Sorting;
   getColumnDefinitions(): ColumnDef[];

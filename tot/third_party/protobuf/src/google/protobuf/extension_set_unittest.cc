@@ -32,7 +32,6 @@
 #include "google/protobuf/test_util2.h"
 #include "google/protobuf/text_format.h"
 #include "google/protobuf/unittest.pb.h"
-#include "google/protobuf/unittest_import.pb.h"
 #include "google/protobuf/unittest_mset.pb.h"
 #include "google/protobuf/unittest_mset_wire_format.pb.h"
 #include "google/protobuf/unittest_proto3_extensions.pb.h"
@@ -648,7 +647,7 @@ TEST(ExtensionSetTest, Parsing) {
   TestUtil::SetAllFields(&source);
   source.SerializeToString(&data);
   EXPECT_TRUE(destination.ParseFromString(data));
-  TestUtil::SetOneofFieldsExtensions(&destination);
+  TestUtil::SetOneofFields(&destination);
   TestUtil::ExpectAllExtensionsSet(destination);
 }
 

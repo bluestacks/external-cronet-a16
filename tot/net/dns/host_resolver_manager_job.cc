@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/address_family.h"
@@ -389,7 +390,7 @@ bool HostResolverManager::Job::ServeFromHosts() {
 
 void HostResolverManager::Job::OnAddedToJobMap(JobMap::iterator iterator) {
   CHECK(!self_iterator_);
-  CHECK(iterator != resolver_->jobs_.end());
+  CHECK(iterator != resolver_->jobs_.end(), base::NotFatalUntil::M130);
   self_iterator_ = iterator;
 }
 

@@ -64,7 +64,7 @@ class NodeBox implements m.ClassComponent<NodeBoxAttrs> {
         {
           trigger: m(Button, {
             iconFilled: true,
-            icon: Icons.ContextMenuAlt,
+            icon: Icons.MoreVert,
           }),
         },
         attrs.renderNodeActionsMenuItems(node),

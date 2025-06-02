@@ -11,7 +11,8 @@
 
 #include "base/base_export.h"
 
-namespace base::trace_event {
+namespace base {
+namespace trace_event {
 
 class BASE_EXPORT MemoryAllocatorDumpGuid {
  public:
@@ -30,10 +31,17 @@ class BASE_EXPORT MemoryAllocatorDumpGuid {
 
   bool empty() const { return guid_ == 0u; }
 
-  friend bool operator==(const MemoryAllocatorDumpGuid&,
-                         const MemoryAllocatorDumpGuid&) = default;
-  friend auto operator<=>(const MemoryAllocatorDumpGuid&,
-                          const MemoryAllocatorDumpGuid&) = default;
+  bool operator==(const MemoryAllocatorDumpGuid& other) const {
+    return guid_ == other.guid_;
+  }
+
+  bool operator!=(const MemoryAllocatorDumpGuid& other) const {
+    return !(*this == other);
+  }
+
+  bool operator<(const MemoryAllocatorDumpGuid& other) const {
+    return guid_ < other.guid_;
+  }
 
  private:
   uint64_t guid_;
@@ -41,6 +49,7 @@ class BASE_EXPORT MemoryAllocatorDumpGuid {
   // Deliberately copy-able.
 };
 
-}  // namespace base::trace_event
+}  // namespace trace_event
+}  // namespace base
 
 #endif  // BASE_TRACE_EVENT_MEMORY_ALLOCATOR_DUMP_GUID_H_

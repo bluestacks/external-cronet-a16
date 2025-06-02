@@ -8,7 +8,6 @@
 #include <memory>
 #include <functional>
 #include <optional>
-#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -19,7 +18,7 @@ namespace capi {
       DisplayTimeZone_Never = 1,
       DisplayTimeZone_Critical = 2,
     };
-
+    
     typedef struct DisplayTimeZone_option {union { DisplayTimeZone ok; }; bool is_ok; } DisplayTimeZone_option;
 } // namespace capi
 } // namespace

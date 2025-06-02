@@ -55,8 +55,8 @@ pub mod ffi {
         Reject,
     }
 
-    #[diplomat::enum_convert(options::RoundingMode)]
-    pub enum RoundingMode {
+    #[diplomat::enum_convert(options::TemporalRoundingMode)]
+    pub enum TemporalRoundingMode {
         Ceil,
         Floor,
         Expand,
@@ -68,8 +68,8 @@ pub mod ffi {
         HalfEven,
     }
 
-    #[diplomat::enum_convert(options::Unit)]
-    pub enum Unit {
+    #[diplomat::enum_convert(options::TemporalUnit)]
+    pub enum TemporalUnit {
         Auto = 0,
         Nanosecond = 1,
         Microsecond = 2,
@@ -83,8 +83,8 @@ pub mod ffi {
         Year = 10,
     }
 
-    #[diplomat::enum_convert(options::UnsignedRoundingMode)]
-    pub enum UnsignedRoundingMode {
+    #[diplomat::enum_convert(options::TemporalUnsignedRoundingMode)]
+    pub enum TemporalUnsignedRoundingMode {
         Infinity,
         Zero,
         HalfInfinity,
@@ -100,22 +100,22 @@ pub mod ffi {
     }
 
     pub struct RoundingOptions {
-        pub largest_unit: DiplomatOption<Unit>,
-        pub smallest_unit: DiplomatOption<Unit>,
-        pub rounding_mode: DiplomatOption<RoundingMode>,
+        pub largest_unit: DiplomatOption<TemporalUnit>,
+        pub smallest_unit: DiplomatOption<TemporalUnit>,
+        pub rounding_mode: DiplomatOption<TemporalRoundingMode>,
         pub increment: DiplomatOption<u32>,
     }
 
     pub struct ToStringRoundingOptions {
         pub precision: Precision,
-        pub smallest_unit: DiplomatOption<Unit>,
-        pub rounding_mode: DiplomatOption<RoundingMode>,
+        pub smallest_unit: DiplomatOption<TemporalUnit>,
+        pub rounding_mode: DiplomatOption<TemporalRoundingMode>,
     }
 
     pub struct DifferenceSettings {
-        pub largest_unit: DiplomatOption<Unit>,
-        pub smallest_unit: DiplomatOption<Unit>,
-        pub rounding_mode: DiplomatOption<RoundingMode>,
+        pub largest_unit: DiplomatOption<TemporalUnit>,
+        pub smallest_unit: DiplomatOption<TemporalUnit>,
+        pub rounding_mode: DiplomatOption<TemporalRoundingMode>,
         pub increment: DiplomatOption<u32>,
     }
 }

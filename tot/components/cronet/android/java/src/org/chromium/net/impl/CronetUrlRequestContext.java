@@ -681,7 +681,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     // is loaded by class constructor.
     @Override
     public byte[] getGlobalMetricsDeltas() {
-        return new byte[] {};
+        return CronetUrlRequestContextJni.get().getHistogramDeltas();
     }
 
     @Override
@@ -1090,6 +1090,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 long expirationTime);
 
         long createRequestContextAdapter(long urlRequestContextConfig);
+
+        byte[] getHistogramDeltas();
 
         @NativeClassQualifiedName("CronetContextAdapter")
         void destroy(long nativePtr, CronetUrlRequestContext caller);

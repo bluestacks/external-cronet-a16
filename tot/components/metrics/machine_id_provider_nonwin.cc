@@ -11,18 +11,14 @@
 
 namespace metrics {
 
-MachineIdProvider::MachineIdProvider() = default;
-
-MachineIdProvider::~MachineIdProvider() = default;
-
 // Checks if hardware model name is available.
-bool MachineIdProvider::HasId() const {
+bool MachineIdProvider::HasId() {
   return !base::SysInfo::HardwareModelName().empty();
 }
 
 // On non-windows, the machine id is based on the hardware model name.
 // This will suffice as users are unlikely to change to the same machine model.
-std::string MachineIdProvider::GetMachineId() const {
+std::string MachineIdProvider::GetMachineId() {
   // Gets hardware model name. (e.g. 'Macbook Pro 16,1', 'iPhone 9,3')
   std::string hardware_model_name = base::SysInfo::HardwareModelName();
 

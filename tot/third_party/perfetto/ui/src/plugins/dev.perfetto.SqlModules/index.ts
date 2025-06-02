@@ -26,7 +26,7 @@ export default class implements PerfettoPlugin {
   private tables?: string[];
 
   async onTraceLoad(ctx: Trace) {
-    await this.loadJson(ctx);
+    this.loadJson(ctx);
   }
 
   private async loadJson(ctx: Trace) {

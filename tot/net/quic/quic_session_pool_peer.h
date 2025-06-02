@@ -62,13 +62,13 @@ class QuicSessionPoolPeer {
                            bool require_dns_https_alpn = false);
 
   static QuicChromiumClientSession* GetPendingSession(
-      QuicSessionPool* pool,
+      QuicSessionPool* factory,
       const quic::QuicServerId& server_id,
       PrivacyMode privacy_mode,
       url::SchemeHostPort destination);
 
   static QuicChromiumClientSession* GetActiveSession(
-      QuicSessionPool* pool,
+      QuicSessionPool* factory,
       const quic::QuicServerId& server_id,
       PrivacyMode privacy_mode,
       const NetworkAnonymizationKey& network_anonymization_key =
@@ -77,32 +77,32 @@ class QuicSessionPoolPeer {
       SessionUsage session_usage = SessionUsage::kDestination,
       bool require_dns_https_alpn = false);
 
-  static bool IsLiveSession(QuicSessionPool* pool,
+  static bool IsLiveSession(QuicSessionPool* factory,
                             QuicChromiumClientSession* session);
 
-  static void SetTickClock(QuicSessionPool* pool,
+  static void SetTickClock(QuicSessionPool* factory,
                            const base::TickClock* tick_clock);
 
-  static void SetTaskRunner(QuicSessionPool* pool,
+  static void SetTaskRunner(QuicSessionPool* factory,
                             base::SequencedTaskRunner* task_runner);
 
-  static quic::QuicTime::Delta GetPingTimeout(QuicSessionPool* pool);
+  static quic::QuicTime::Delta GetPingTimeout(QuicSessionPool* factory);
 
-  static void SetYieldAfterPackets(QuicSessionPool* pool,
+  static void SetYieldAfterPackets(QuicSessionPool* factory,
                                    int yield_after_packets);
 
-  static void SetYieldAfterDuration(QuicSessionPool* pool,
+  static void SetYieldAfterDuration(QuicSessionPool* factory,
                                     quic::QuicTime::Delta yield_after_duration);
 
   static bool CryptoConfigCacheIsEmpty(
-      QuicSessionPool* pool,
+      QuicSessionPool* factory,
       const quic::QuicServerId& quic_server_id,
       QuicSessionPool::QuicCryptoClientConfigKey key);
 
   static size_t GetNumDegradingSessions(QuicSessionPool* factory);
 
   static void SetAlarmFactory(
-      QuicSessionPool* pool,
+      QuicSessionPool* factory,
       std::unique_ptr<quic::QuicAlarmFactory> alarm_factory);
 };
 

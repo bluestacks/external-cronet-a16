@@ -304,9 +304,7 @@ class BASE_EXPORT Process {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
-  using TerminateCallback = bool (*)(ProcessHandle handle,
-                                     int exit_code,
-                                     bool wait);
+  using TerminateCallback = bool (*)(ProcessHandle handle);
   using WaitForExitCallback = bool (*)(ProcessHandle handle,
                                        int* exit_code,
                                        base::TimeDelta timeout);

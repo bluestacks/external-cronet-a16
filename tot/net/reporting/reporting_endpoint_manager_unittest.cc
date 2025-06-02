@@ -69,6 +69,7 @@ class TestReportingCache : public ReportingCache {
                  base::Value::Dict body,
                  int depth,
                  base::TimeTicks queued,
+                 int attempts,
                  ReportingTargetType target_type) override {
     NOTREACHED();
   }

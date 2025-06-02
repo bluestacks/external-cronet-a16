@@ -80,7 +80,6 @@
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
 #include "absl/hash/internal/city.h"
-#include "absl/hash/internal/low_level_hash.h"
 #include "absl/hash/internal/weakly_mixed_integer.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
@@ -1075,6 +1074,13 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   using uint128 = absl::uint128;
 #endif  // ABSL_HAVE_INTRINSIC_INT128
 
+  // Random data taken from the hexadecimal digits of Pi's fractional component.
+  // https://en.wikipedia.org/wiki/Nothing-up-my-sleeve_number
+  ABSL_CACHELINE_ALIGNED static constexpr uint64_t kStaticRandomData[] = {
+      0x243f'6a88'85a3'08d3, 0x1319'8a2e'0370'7344, 0xa409'3822'299f'31d0,
+      0x082e'fa98'ec4e'6c89, 0x4528'21e6'38d0'1377,
+  };
+
   static constexpr uint64_t kMul =
    uint64_t{0xdcb22ca68cb134ed};
 
@@ -1246,11 +1252,20 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
                                                size_t len);
 
   // Reads 9 to 16 bytes from p.
-  // The first 8 bytes are in .first, and the rest of the bytes are in .second
-  // along with duplicated bytes from .first if len<16.
+  // The least significant 8 bytes are in .first, and the rest of the bytes are
+  // in .second along with duplicated bytes from .first if len<16.
   static std::pair<uint64_t, uint64_t> Read9To16(const unsigned char* p,
                                                  size_t len) {
-    return {Read8(p), Read8(p + len - 8)};
+    uint64_t low_mem = Read8(p);
+    uint64_t high_mem = Read8(p + len - 8);
+#ifdef ABSL_IS_LITTLE_ENDIAN
+    uint64_t most_significant = high_mem;
+    uint64_t least_significant = low_mem;
+#else
+    uint64_t most_significant = low_mem;
+    uint64_t least_significant = high_mem;
+#endif
+    return {least_significant, most_significant};
   }
 
   // Reads 8 bytes from p.
@@ -1323,14 +1338,16 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
     return absl::gbswap_64(n * kMul);
   }
 
+  // An extern to avoid bloat on a direct call to LowLevelHash() with fixed
+  // values for both the seed and salt parameters.
+  static uint64_t LowLevelHashImpl(const unsigned char* data, size_t len);
+
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Hash64(const unsigned char* data,
-                                                      size_t len,
-                                                      uint64_t state) {
+                                                      size_t len) {
 #ifdef ABSL_HAVE_INTRINSIC_INT128
-    return LowLevelHashLenGt32(data, len, state);
+    return LowLevelHashImpl(data, len);
 #else
-    return hash_internal::CityHash64WithSeed(
-        reinterpret_cast<const char*>(data), len, state);
+    return hash_internal::CityHash64(reinterpret_cast<const char*>(data), len);
 #endif
   }
 
@@ -1370,13 +1387,12 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
 inline uint64_t MixingHashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 4> /* sizeof_size_t */) {
-  // For large values we use CityHash, for small ones we use custom low latency
-  // hash.
+  // For large values we use CityHash, for small ones we just use a
+  // multiplicative hash.
   if (len <= 8) {
     return CombineSmallContiguousImpl(state, first, len);
   }
   if (ABSL_PREDICT_TRUE(len <= PiecewiseChunkSize())) {
-    // TODO(b/417141985): expose and use CityHash32WithSeed.
     return Mix(state ^ hash_internal::CityHash32(
                            reinterpret_cast<const char*>(first), len),
                kMul);
@@ -1389,7 +1405,7 @@ inline uint64_t MixingHashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 8> /* sizeof_size_t */) {
   // For large values we use LowLevelHash or CityHash depending on the platform,
-  // for small ones we use custom low latency hash.
+  // for small ones we just use a multiplicative hash.
   if (len <= 8) {
     return CombineSmallContiguousImpl(state, first, len);
   }
@@ -1400,7 +1416,7 @@ inline uint64_t MixingHashState::CombineContiguousImpl(
     return CombineContiguousImpl17to32(state, first, len);
   }
   if (ABSL_PREDICT_TRUE(len <= PiecewiseChunkSize())) {
-    return Hash64(first, len, state);
+    return Mix(state ^ Hash64(first, len), kMul);
   }
   return CombineLargeContiguousImpl64(state, first, len);
 }

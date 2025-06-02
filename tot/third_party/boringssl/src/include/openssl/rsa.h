@@ -19,6 +19,7 @@
 
 #include <openssl/engine.h>
 #include <openssl/ex_data.h>
+#include <openssl/thread.h>
 
 #if defined(__cplusplus)
 extern "C" {

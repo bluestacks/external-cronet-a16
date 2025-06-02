@@ -51,6 +51,10 @@ class BASE_EXPORT ScopedAuthorizationRef {
     return authorization_ == that;
   }
 
+  bool operator!=(AuthorizationRef that) const {
+    return authorization_ != that;
+  }
+
   operator AuthorizationRef() const { return authorization_; }
 
   explicit operator bool() const { return authorization_ != nullptr; }

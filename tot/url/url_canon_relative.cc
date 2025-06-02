@@ -190,7 +190,7 @@ bool DoIsRelativeURL(const char* base,
   // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
   // >      url’s scheme:
   if ((IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-       !IsStandard(base_parsed.scheme.maybe_as_string_view_on(base))) ||
+       !IsStandard(base, base_parsed.scheme)) ||
       !AreSchemesEqual(base, base_parsed.scheme, url, scheme)) {
     return true;
   }
@@ -443,10 +443,9 @@ bool DoResolveRelativePath(const char* base_url,
       true_path_begin = out_parsed->path.begin;
     }
     // Finish with the query and reference part (these can't fail).
-    CanonicalizeQuery(query.maybe_as_string_view_on(relative_url),
-                      query_converter, output, &out_parsed->query);
-    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url), output,
-                    &out_parsed->ref);
+    CanonicalizeQuery(relative_url, query, query_converter,
+                      output, &out_parsed->query);
+    CanonicalizeRef(relative_url, ref, output, &out_parsed->ref);
 
     // Fix the path beginning to add back the "C:" we may have written above.
     out_parsed->path = MakeRange(true_path_begin, out_parsed->path.end());
@@ -459,10 +458,9 @@ bool DoResolveRelativePath(const char* base_url,
   if (query.is_valid()) {
     // Just the query specified, replace the query and reference (ignore
     // failures for refs)
-    CanonicalizeQuery(query.as_string_view_on(relative_url), query_converter,
+    CanonicalizeQuery(relative_url, query, query_converter,
                       output, &out_parsed->query);
-    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url), output,
-                    &out_parsed->ref);
+    CanonicalizeRef(relative_url, ref, output, &out_parsed->ref);
     return success;
   }
 
@@ -475,8 +473,7 @@ bool DoResolveRelativePath(const char* base_url,
 
   if (ref.is_valid()) {
     // Just the reference specified: replace it (ignoring failures).
-    CanonicalizeRef(ref.as_string_view_on(relative_url), output,
-                    &out_parsed->ref);
+    CanonicalizeRef(relative_url, ref, output, &out_parsed->ref);
     return success;
   }
 
@@ -498,8 +495,8 @@ bool DoResolveRelativeHost(const char* base_url,
                            CanonOutput* output,
                            Parsed* out_parsed) {
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  const bool is_standard_scheme = GetStandardSchemeType(
-      base_parsed.scheme.maybe_as_string_view_on(base_url), &scheme_type);
+  const bool is_standard_scheme =
+      GetStandardSchemeType(base_url, base_parsed.scheme, &scheme_type);
 
   // Parse the relative URL, just like we would for anything following a
   // scheme.

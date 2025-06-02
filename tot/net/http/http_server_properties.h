@@ -66,8 +66,13 @@ struct NET_EXPORT SupportsQuic {
 struct NET_EXPORT ServerNetworkStats {
   ServerNetworkStats() : bandwidth_estimate(quic::QuicBandwidth::Zero()) {}
 
-  friend bool operator==(const ServerNetworkStats&,
-                         const ServerNetworkStats&) = default;
+  bool operator==(const ServerNetworkStats& other) const {
+    return srtt == other.srtt && bandwidth_estimate == other.bandwidth_estimate;
+  }
+
+  bool operator!=(const ServerNetworkStats& other) const {
+    return !this->operator==(other);
+  }
 
   base::TimeDelta srtt;
   quic::QuicBandwidth bandwidth_estimate;

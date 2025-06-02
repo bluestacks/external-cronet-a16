@@ -13,11 +13,9 @@
 
 #include <string>
 
-#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -114,9 +112,7 @@ HRESULT RunDeElevatedNoWait(const CommandLine& command_line) {
 }
 
 HRESULT RunDeElevatedNoWait(const std::wstring& path,
-                            const std::wstring& parameters,
-                            std::optional<std::wstring_view> current_directory,
-                            bool start_hidden) {
+                            const std::wstring& parameters) {
   Microsoft::WRL::ComPtr<IShellWindows> shell;
   HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
@@ -173,17 +169,10 @@ HRESULT RunDeElevatedNoWait(const std::wstring& path,
     return hr;
   }
 
-  std::optional<base::FilePath> current_dir;
-  if (!current_directory) {
-    current_dir = base::PathService::CheckedGet(base::DIR_CURRENT);
-    current_directory = current_dir->value();
-  }
-
   return shell_dispatch->ShellExecute(
       ScopedBstr(path.c_str()).Get(), ScopedVariant(parameters.c_str()),
-      ScopedVariant(current_directory->data()),
-      /*vOperation=*/ScopedVariant::kEmptyVariant,
-      ScopedVariant(start_hidden ? SW_HIDE : SW_SHOWDEFAULT));
+      ScopedVariant::kEmptyVariant, ScopedVariant::kEmptyVariant,
+      ScopedVariant::kEmptyVariant);
 }
 
 }  // namespace base::win

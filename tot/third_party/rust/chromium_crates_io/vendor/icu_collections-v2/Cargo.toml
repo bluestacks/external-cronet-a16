@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.81"
 name = "icu_collections"
-version = "2.0.0"
+version = "2.0.0-beta2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,7 +25,6 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
-    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -146,9 +145,7 @@ default-features = false
 version = "1.0.45"
 
 [dev-dependencies.toml]
-version = "0.8.0"
-features = ["parse"]
-default-features = false
+version = "0.5.8"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
 version = "0.5.0"

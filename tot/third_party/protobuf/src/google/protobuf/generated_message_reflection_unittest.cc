@@ -40,7 +40,6 @@
 #include "google/protobuf/test_util.h"
 #include "google/protobuf/text_format.h"
 #include "google/protobuf/unittest.pb.h"
-#include "google/protobuf/unittest_import.pb.h"
 #include "google/protobuf/unittest_mset.pb.h"
 #include "google/protobuf/unittest_mset_wire_format.pb.h"
 #include "google/protobuf/unittest_proto3.pb.h"
@@ -719,7 +718,7 @@ TEST(GeneratedMessageReflectionTest, RemoveLastPackedExtensions) {
 
   reflection_tester.RemoveLastRepeatedsViaReflection(&message);
 
-  TestUtil::ExpectLastRepeatedExtensionsRemovedPacked(message);
+  TestUtil::ExpectLastRepeatedExtensionsRemoved(message);
 }
 
 TEST(GeneratedMessageReflectionTest, ReleaseLast) {

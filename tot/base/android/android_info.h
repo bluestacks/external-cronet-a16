@@ -5,8 +5,6 @@
 #ifndef BASE_ANDROID_ANDROID_INFO_H_
 #define BASE_ANDROID_ANDROID_INFO_H_
 
-#include <string>
-
 #include "base/base_export.h"
 
 namespace base::android::android_info {
@@ -37,38 +35,36 @@ enum SdkVersion {
   SDK_VERSION_BAKLAVA = 36,
 };
 
-const std::string& device();
+const char* device();
 
-const std::string& manufacturer();
+const char* manufacturer();
 
-const std::string& model();
+const char* model();
 
-BASE_EXPORT const std::string& brand();
+BASE_EXPORT const char* brand();
 
-const std::string& android_build_id();
+const char* android_build_id();
 
-const std::string& build_type();
+const char* build_type();
 
-const std::string& board();
+const char* board();
 
-const std::string& android_build_fp();
+const char* android_build_fp();
 
 BASE_EXPORT int sdk_int();
 
-BASE_EXPORT bool is_debug_android();
+bool is_debug_android();
 
-const std::string& version_incremental();
+const char* version_incremental();
 
-BASE_EXPORT const std::string& hardware();
+BASE_EXPORT const char* hardware();
 
-const std::string& codename();
+const char* codename();
 
 // Available only on android S+. For S-, this method returns empty string.
-const std::string& soc_manufacturer();
+const char* soc_manufacturer();
 
-const std::string& abi_name();
-
-BASE_EXPORT const std::string& security_patch();
+const char* abi_name();
 
 }  // namespace base::android::android_info
 

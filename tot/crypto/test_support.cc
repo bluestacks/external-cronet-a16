@@ -4,8 +4,6 @@
 
 #include "crypto/test_support.h"
 
-#include <array>
-
 namespace crypto::test {
 
 // To generate these keys:

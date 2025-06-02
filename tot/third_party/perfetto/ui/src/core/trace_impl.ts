@@ -55,7 +55,6 @@ import {Raf} from '../public/raf';
 import {StatusbarManagerImpl} from './statusbar_manager';
 import {Setting, SettingDescriptor, SettingsManager} from '../public/settings';
 import {SettingsManagerImpl} from './settings_manager';
-import {MinimapManagerImpl} from './minimap_manager';
 
 /**
  * Handles the per-trace state of the UI
@@ -84,7 +83,6 @@ export class TraceContext implements Disposable {
   readonly trash = new DisposableStack();
   readonly onTraceReady = new EvtSource<void>();
   readonly statusbarMgr = new StatusbarManagerImpl();
-  readonly minimapManager = new MinimapManagerImpl();
 
   // List of errors that were encountered while loading the trace by the TS
   // code. These are on top of traceInfo.importErrors, which is a summary of
@@ -97,11 +95,18 @@ export class TraceContext implements Disposable {
     this.trash.use(engine);
     this.traceInfo = traceInfo;
 
-    this.timeline = new TimelineImpl(
-      traceInfo,
-      this.appCtx.timestampFormat,
-      this.appCtx.durationPrecision,
-    );
+    // Wrap the core settings manager in a proxy which removes registered
+    // settings when the trace is disposed.
+    // TODO(stevegolton): Dedupe this with the one in TraceImpl.
+    const settingsManagerProxy = createProxy(gctx.settingsManager, {
+      register: <T>(setting: SettingDescriptor<T>): Setting<T> => {
+        const settingInstance = gctx.settingsManager.register(setting);
+        this.trash.use(settingInstance);
+        return settingInstance;
+      },
+    });
+
+    this.timeline = new TimelineImpl(traceInfo, settingsManagerProxy);
 
     this.scrollHelper = new ScrollHelper(
       this.traceInfo,
@@ -332,10 +337,6 @@ export class TraceImpl implements Trace {
 
   get trace() {
     return this;
-  }
-
-  get minimap() {
-    return this.traceCtx.minimapManager;
   }
 
   get engine() {

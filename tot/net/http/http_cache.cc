@@ -25,6 +25,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
@@ -563,8 +564,9 @@ void HttpCache::ClearNoVarySearchCache(
   }
 }
 
-std::unique_ptr<HttpTransaction> HttpCache::CreateTransaction(
-    RequestPriority priority) {
+int HttpCache::CreateTransaction(
+    RequestPriority priority,
+    std::unique_ptr<HttpTransaction>* transaction) {
   // Do lazy initialization of disk cache if needed.
   if (!disk_cache_.get()) {
     // We don't care about the result.
@@ -583,7 +585,8 @@ std::unique_ptr<HttpTransaction> HttpCache::CreateTransaction(
     new_transaction->FailConditionalizationForTest();
   }
 
-  return new_transaction;
+  *transaction = std::move(new_transaction);
+  return OK;
 }
 
 HttpCache* HttpCache::GetCache() {
@@ -973,7 +976,7 @@ void HttpCache::DeletePendingOp(PendingOp* pending_op) {
 
   if (!key.empty()) {
     auto it = pending_ops_.find(key);
-    CHECK(it != pending_ops_.end());
+    CHECK(it != pending_ops_.end(), base::NotFatalUntil::M130);
     pending_ops_.erase(it);
   } else {
     for (auto it = pending_ops_.begin(); it != pending_ops_.end(); ++it) {
@@ -1165,7 +1168,7 @@ void HttpCache::DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
   // Transaction is reading from the entry.
   DCHECK(!entry->HasWriters());
   auto readers_it = entry->readers().find(transaction);
-  CHECK(readers_it != entry->readers().end());
+  CHECK(readers_it != entry->readers().end(), base::NotFatalUntil::M130);
   entry->readers().erase(readers_it);
   ProcessQueuedTransactions(entry);
 }

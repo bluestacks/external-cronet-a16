@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -39,13 +40,14 @@ int defaults_escape(const std::string& defaults_path,
                     const std::string& encoding, std::string& out_content) {
   std::ifstream defaults_file(defaults_path);
   if (!defaults_file.is_open()) {
-    ABSL_LOG(ERROR) << "Could not open defaults file " << defaults_path;
+    std::cerr << "Could not open defaults file " << defaults_path << std::endl;
     return 1;
   }
 
   google::protobuf::FeatureSetDefaults defaults;
   if (!defaults.ParseFromIstream(&defaults_file)) {
-    ABSL_LOG(ERROR) << "Unable to parse edition defaults " << defaults_path;
+    std::cerr << "Unable to parse edition defaults " << defaults_path
+              << std::endl;
     defaults_file.close();
     return 1;
   }
@@ -70,7 +72,7 @@ int defaults_escape(const std::string& defaults_path,
 int read_to_string(const std::string& path, std::string& out_content) {
   std::ifstream input_file(path);
   if (!input_file.is_open()) {
-    ABSL_LOG(ERROR) << "Could not open file " << path;
+    std::cerr << "Could not open file " << path << std::endl;
     return 1;
   }
 
@@ -98,7 +100,7 @@ int replace_placeholder(std::string& out_content,
 int write(const std::string& path, const std::string& content) {
   std::ofstream output_file(path);
   if (!output_file.is_open()) {
-    ABSL_LOG(ERROR) << "Could not write to file " << path;
+    std::cerr << "Could not write to file " << path << std::endl;
     return 1;
   }
 

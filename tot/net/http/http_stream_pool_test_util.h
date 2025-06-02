@@ -31,61 +31,51 @@ namespace net {
 class IOBuffer;
 class SSLInfo;
 
-// Provides fake service endpoint resolution results for testing.
-class FakeServiceEndpointResolution {
- public:
-  FakeServiceEndpointResolution();
-  ~FakeServiceEndpointResolution();
-
-  FakeServiceEndpointResolution(const FakeServiceEndpointResolution&);
-  FakeServiceEndpointResolution& operator=(
-      const FakeServiceEndpointResolution&);
-
-  int start_result() const { return start_result_; }
-  const std::vector<ServiceEndpoint>& endpoints() const { return endpoints_; }
-  const std::set<std::string>& aliases() const { return aliases_; }
-  bool endpoints_crypto_ready() const { return endpoints_crypto_ready_; }
-  ResolveErrorInfo resolve_error_info() const { return resolve_error_info_; }
-  RequestPriority priority() const { return priority_; }
-
-  // These setters return `this&` to allow chaining.
-  FakeServiceEndpointResolution& CompleteStartSynchronously(int rv);
-  FakeServiceEndpointResolution& set_start_result(int start_result);
-  FakeServiceEndpointResolution& set_endpoints(
-      std::vector<ServiceEndpoint> endpoints);
-  FakeServiceEndpointResolution& add_endpoint(ServiceEndpoint endpoint);
-  FakeServiceEndpointResolution& set_aliases(std::set<std::string> aliases);
-  FakeServiceEndpointResolution& set_crypto_ready(bool endpoints_crypto_ready);
-  FakeServiceEndpointResolution& set_resolve_error_info(
-      ResolveErrorInfo resolve_error_info);
-  FakeServiceEndpointResolution& set_priority(RequestPriority priority);
-
- private:
-  int start_result_ = ERR_IO_PENDING;
-  std::vector<ServiceEndpoint> endpoints_;
-  std::set<std::string> aliases_;
-  bool endpoints_crypto_ready_ = false;
-  ResolveErrorInfo resolve_error_info_;
-  RequestPriority priority_ = RequestPriority::IDLE;
-};
-
-// A fake ServiceEndpointRequest implementation that provides testing
-// harnesses. See the comment of HostResolver::ServiceEndpointRequest for
-// details.
+// A fake ServiceEndpointRequest implementation that provides testing harnesses.
+// See the comment of HostResolver::ServiceEndpointRequest for details.
 class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
  public:
   FakeServiceEndpointRequest();
   ~FakeServiceEndpointRequest() override;
 
-  // Following setter methods return `this&` to allow chaining.
+  // Sets the current endpoints to `endpoints`. Previous endpoints are
+  // discarded.
   FakeServiceEndpointRequest& set_endpoints(
-      std::vector<ServiceEndpoint> endpoints);
-  FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint);
-  FakeServiceEndpointRequest& set_aliases(std::set<std::string> aliases);
-  FakeServiceEndpointRequest& set_crypto_ready(bool endpoints_crypto_ready);
+      std::vector<ServiceEndpoint> endpoints) {
+    endpoints_ = std::move(endpoints);
+    return *this;
+  }
+
+  // Add `endpoint` to the current endpoints.
+  FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint) {
+    endpoints_.emplace_back(std::move(endpoint));
+    return *this;
+  }
+
+  // Sets the return value of GetDnsAliasResults().
+  FakeServiceEndpointRequest& set_aliases(std::set<std::string> aliases) {
+    aliases_ = std::move(aliases);
+    return *this;
+  }
+
+  // Sets the return value of EndpointsCryptoReady().
+  FakeServiceEndpointRequest& set_crypto_ready(bool endpoints_crypto_ready) {
+    endpoints_crypto_ready_ = endpoints_crypto_ready;
+    return *this;
+  }
+
+  // Sets the return value of GetResolveErrorInfo().
   FakeServiceEndpointRequest& set_resolve_error_info(
-      ResolveErrorInfo resolve_error_info);
-  FakeServiceEndpointRequest& set_priority(RequestPriority priority);
+      ResolveErrorInfo resolve_error_info) {
+    resolve_error_info_ = resolve_error_info;
+    return *this;
+  }
+
+  RequestPriority priority() const { return priority_; }
+  FakeServiceEndpointRequest& set_priority(RequestPriority priority) {
+    priority_ = priority;
+    return *this;
+  }
 
   // Make `this` complete synchronously when ServiceEndpointRequest::Start()
   // is called.
@@ -99,8 +89,6 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   // Calls `delegate_->OnServiceEndpointRequestFinished()`. Mut not be used
   // after calling CompleteStartSynchronously().
   FakeServiceEndpointRequest& CallOnServiceEndpointRequestFinished(int rv);
-
-  RequestPriority priority() const { return resolution_.priority(); }
 
   // HostResolver::ServiceEndpointRequest methods:
   int Start(Delegate* delegate) override;
@@ -117,7 +105,12 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
 
   raw_ptr<Delegate> delegate_;
 
-  FakeServiceEndpointResolution resolution_;
+  int start_result_ = ERR_IO_PENDING;
+  std::vector<ServiceEndpoint> endpoints_;
+  std::set<std::string> aliases_;
+  bool endpoints_crypto_ready_ = false;
+  ResolveErrorInfo resolve_error_info_;
+  RequestPriority priority_ = RequestPriority::IDLE;
 
   base::WeakPtrFactory<FakeServiceEndpointRequest> weak_ptr_factory_{this};
 };
@@ -134,20 +127,12 @@ class FakeServiceEndpointResolver : public HostResolver {
 
   ~FakeServiceEndpointResolver() override;
 
-  // Creates a FakeServiceEndpointRequest that will be used for the next
-  // CreateServiceEndpointRequest() call. CreateServiceEndpointRequest()
-  // consumes the request. If you expect multiple CreateServiceEndpointRequest()
-  // calls, you need to do either:
-  // - Call this method as many times as you expect
-  //   CreateServiceEndpointRequest()
-  // - Configure the default resolution result using
-  //   ConfigureDefaultResolution().
+  // Create a FakeServiceEndpointRequest that will be used for the next
+  // CreateServiceEndpointRequest() call. Note that
+  // CreateServiceEndpointRequest() consumes the request. You will need to call
+  // this method multiple times when you expect multiple
+  // CreateServiceEndpointRequest() calls.
   base::WeakPtr<FakeServiceEndpointRequest> AddFakeRequest();
-
-  // Configures the default resolution result. It will be used when there are
-  // no requests in the request queue. Overrides the previous default result if
-  // existed.
-  FakeServiceEndpointResolution& ConfigureDefaultResolution();
 
   // HostResolver methods:
   void OnShutdown() override;
@@ -170,7 +155,6 @@ class FakeServiceEndpointResolver : public HostResolver {
 
  private:
   std::list<std::unique_ptr<FakeServiceEndpointRequest>> requests_;
-  std::optional<FakeServiceEndpointResolution> default_resolution_;
 };
 
 // A helper to build a ServiceEndpoint.

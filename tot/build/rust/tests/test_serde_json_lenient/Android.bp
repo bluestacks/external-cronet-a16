@@ -38,7 +38,6 @@ rust_ffi_static {
     crate_name: "build_srust_stests_stest_userde_ujson_ulenient_ctest_userde_ujson_ulenient_urs",
     crate_root: "lib.rs",
     rustlibs: [
-        "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
         "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
@@ -53,7 +52,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -70,7 +69,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -87,7 +86,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -104,7 +103,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -121,7 +120,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -149,13 +148,10 @@ cc_library_shared {
     ],
     shared_libs: [
         "libandroid",
-        "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     whole_static_libs: [
-        "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
         "libbase_clogging_ulog_useverity_ubindgen__4a607e49e19da3e5",
         "libbase_crust_ulogger__646bebece24fc263",
         "libbase_stest_ctest_urust_ulogger_uconsumer__c71463e67618dfbc",
@@ -173,10 +169,8 @@ cc_library_shared {
         "libthird_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper__814aa58e06e5f56f",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_build_config__testing",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_raw_ptr__testing",
-        "tot_cronet_base_android_info_aidl_native__testing",
         "tot_cronet_base_base__testing",
         "tot_cronet_base_base_static__testing",
-        "tot_cronet_base_build_info_aidl_native__testing",
         "tot_cronet_base_check_version_internal__testing",
         "tot_cronet_base_i18n__testing",
         "tot_cronet_base_rust_logger_cxx_generated__testing",
@@ -191,6 +185,7 @@ cc_library_shared {
         "tot_cronet_base_third_party_superfasthash_superfasthash__testing",
         "tot_cronet_base_tracing_protos_chrome_track_event_zero__testing",
         "tot_cronet_build_rust_allocator_alloc_error_handler_impl__testing",
+        "tot_cronet_build_rust_allocator_allocator_cxx_generated__testing",
         "tot_cronet_build_rust_cxx_cppdeps__testing",
         "tot_cronet_build_rust_tests_test_serde_json_lenient_test_serde_json_lenient_rs_cxx_generated__testing",
         "tot_cronet_buildtools_third_party_libc___libc____testing",
@@ -349,7 +344,6 @@ cc_library_shared {
         "tot_cronet_third_party_perfetto_protos_perfetto_trace_etw_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_trace_filesystem_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_trace_ftrace_zero__testing",
-        "tot_cronet_third_party_perfetto_protos_perfetto_trace_generic_kernel_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_trace_gpu_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_trace_interned_data_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_trace_minimal_zero__testing",
@@ -397,11 +391,6 @@ cc_library_shared {
         "tot_cronet_third_party_re2_re2__testing",
         "tot_cronet_third_party_rust_serde_json_lenient_v0_2_wrapper_wrapper_cxx_generated__testing",
     ],
-    generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
-        "tot_cronet_base_build_info_aidl__testing-ndk-source",
-        "tot_cronet_build_rust_tests_test_serde_json_lenient_test_serde_json_lenient__library__testing__concatenated_headers_common",
-    ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
@@ -409,8 +398,8 @@ cc_library_shared {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=c2e409462f540d1798214848e23023dca51e3e15",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGTEST_API_=",
         "-DGTEST_HAS_ABSL",
@@ -456,7 +445,6 @@ cc_library_shared {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     stem: "libtest_serde_json_lenient__library",
@@ -502,7 +490,10 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_rust_tests_test_serde_json_lenient_test_serde_json_lenient_rs_cxx_generated__testing__concatenated_headers_common",
+        "tot_cronet_build_rust_tests_test_serde_json_lenient_test_serde_json_lenient_rs_cxx_generated_gen__testing_header",
+    ],
+    export_generated_headers: [
+        "tot_cronet_build_rust_tests_test_serde_json_lenient_test_serde_json_lenient_rs_cxx_generated_gen__testing_header",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
@@ -510,8 +501,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=c2e409462f540d1798214848e23023dca51e3e15",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -542,7 +533,6 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
-        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",

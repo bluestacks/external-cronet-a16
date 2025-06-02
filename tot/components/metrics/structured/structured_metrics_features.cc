@@ -8,6 +8,10 @@
 
 namespace metrics::structured {
 
+BASE_FEATURE(kEnabledStructuredMetricsService,
+             "EnableStructuredMetricsService",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPhoneHubStructuredMetrics,
              "PhoneHubStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -23,6 +27,24 @@ constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
 
 constexpr base::FeatureParam<std::string> kDisallowedProjectsParam{
     &features::kStructuredMetrics, "disabled_projects", ""};
+
+constexpr base::FeatureParam<int> kMinLogQueueCount{
+    &kEnabledStructuredMetricsService, "min_log_queue_count", 10};
+
+constexpr base::FeatureParam<int> kMinLogQueueSizeBytes{
+    &kEnabledStructuredMetricsService, "min_log_queue_size_bytes",
+    300 * 1024 * 1024  // 300 KiB
+};
+
+constexpr base::FeatureParam<int> kMaxLogSizeBytes{
+    &kEnabledStructuredMetricsService, "max_log_size_bytes",
+    1024 * 1024 * 1024  // 1 MiB
+};
+
+constexpr base::FeatureParam<int> kUploadTimeInSeconds{
+    &kEnabledStructuredMetricsService, "upload_time_in_seconds",
+    10 * 60  // 40 minutes
+};
 
 constexpr base::FeatureParam<int> kExternalMetricsCollectionIntervalInSeconds{
     &features::kStructuredMetrics,
@@ -64,6 +86,10 @@ int GetProtoKiBLimit() {
 
 std::string GetDisabledProjects() {
   return kDisallowedProjectsParam.Get();
+}
+
+int GetUploadInterval() {
+  return kUploadTimeInSeconds.Get();
 }
 
 base::TimeDelta GetExternalMetricsCollectionInterval() {

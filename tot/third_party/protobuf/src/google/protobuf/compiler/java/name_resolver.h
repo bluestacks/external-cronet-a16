@@ -123,13 +123,10 @@ class PROTOC_EXPORT ClassNameResolver {
 
  private:
   // Get the Java Class style full name of a message.
-  template <typename Descriptor>
   std::string GetJavaClassFullName(absl::string_view name_without_package,
-                                   const Descriptor& descriptor,
-                                   bool immutable);
-  template <typename Descriptor>
+                                   const FileDescriptor* file, bool immutable);
   std::string GetJavaClassFullName(absl::string_view name_without_package,
-                                   const Descriptor& descriptor, bool immutable,
+                                   const FileDescriptor* file, bool immutable,
                                    bool kotlin);
   // Caches the result to provide better performance.
   absl::flat_hash_map<const FileDescriptor*, std::string>

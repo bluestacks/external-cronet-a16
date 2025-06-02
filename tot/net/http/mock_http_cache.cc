@@ -730,8 +730,8 @@ MockDiskCache* MockHttpCache::disk_cache() {
   return static_cast<MockDiskCache*>(backend());
 }
 
-std::unique_ptr<HttpTransaction> MockHttpCache::CreateTransaction() {
-  return http_cache_.CreateTransaction(DEFAULT_PRIORITY);
+int MockHttpCache::CreateTransaction(std::unique_ptr<HttpTransaction>* trans) {
+  return http_cache_.CreateTransaction(DEFAULT_PRIORITY, trans);
 }
 
 void MockHttpCache::SimulateCacheLockTimeout() {

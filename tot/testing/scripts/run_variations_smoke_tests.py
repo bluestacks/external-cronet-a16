@@ -192,7 +192,9 @@ def _inject_seed(user_data_dir, path_chromedriver, chrome_options):
       'variations_seed_beta_%s.json' % _get_platform())
   seed, signature = seed_helper.load_test_seed_from_file(hardcoded_seed_path)
   if not seed or not signature:
-    logging.error(seed_helper.ILL_FORMED_TEST_SEED_ERROR_MESSAGE)
+    logging.error('Ill-formed test seed json file: "%s" and "%s" are required',
+                  seed_helper.LOCAL_STATE_SEED_NAME,
+                  seed_helper.LOCAL_STATE_SEED_SIGNATURE_NAME)
     return 1
 
   if not seed_helper.inject_test_seed(seed, signature, user_data_dir):

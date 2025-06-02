@@ -108,7 +108,8 @@ class NET_EXPORT IPEndPoint {
   std::string ToStringWithoutPort() const;
 
   bool operator<(const IPEndPoint& that) const;
-  friend bool operator==(const IPEndPoint&, const IPEndPoint&) = default;
+  bool operator==(const IPEndPoint& that) const;
+  bool operator!=(const IPEndPoint& that) const;
 
   base::Value ToValue() const;
 

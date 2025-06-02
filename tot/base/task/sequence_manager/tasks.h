@@ -83,7 +83,12 @@ struct WakeUp {
   TimeDelta leeway;
   subtle::DelayPolicy delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
 
-  friend bool operator==(const WakeUp&, const WakeUp&) = default;
+  bool operator!=(const WakeUp& other) const {
+    return time != other.time || leeway != other.leeway ||
+           delay_policy != other.delay_policy;
+  }
+
+  bool operator==(const WakeUp& other) const { return !(*this != other); }
 
   bool is_immediate() const { return time.is_null(); }
 

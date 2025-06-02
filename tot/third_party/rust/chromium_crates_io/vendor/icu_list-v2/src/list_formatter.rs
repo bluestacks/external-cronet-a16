@@ -75,21 +75,21 @@ impl ListFormatter {
         try_new_and,
         try_new_and_with_buffer_provider,
         try_new_and_unstable,
-        ListAndV1,
+        ListAndV2,
         "and"
     );
     constructor!(
         try_new_or,
         try_new_or_with_buffer_provider,
         try_new_or_unstable,
-        ListOrV1,
+        ListOrV2,
         "or"
     );
     constructor!(
         try_new_unit,
         try_new_unit_with_buffer_provider,
         try_new_unit_unstable,
-        ListUnitV1,
+        ListUnitV2,
         "unit"
     );
 
@@ -339,7 +339,7 @@ mod tests {
         let formatter = formatter(crate::patterns::test::test_patterns_general());
 
         assert_writeable_parts_eq!(
-            formatter.format(core::iter::repeat_n(5, 2)),
+            formatter.format(core::iter::repeat(5).take(2)),
             "$5;5+",
             [
                 (0, 1, parts::LITERAL),

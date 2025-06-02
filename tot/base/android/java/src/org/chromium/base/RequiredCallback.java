@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -28,7 +27,7 @@ public class RequiredCallback<T extends @Nullable Object> implements Callback<T>
     public void onResult(T result) {
         assert mCallback != null : "Callback was already called.";
         mCallback.onResult(result);
-        LifetimeAssert.destroy(mLifetimeAssert);
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
         mCallback = null;
     }
 }

@@ -112,6 +112,7 @@ class NET_EXPORT IPAddressBytes {
   }
 
   bool operator<(const IPAddressBytes& other) const;
+  bool operator!=(const IPAddressBytes& other) const;
   bool operator==(const IPAddressBytes& other) const;
 
   size_t EstimateMemoryUsage() const;

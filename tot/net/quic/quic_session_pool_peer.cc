@@ -40,30 +40,30 @@ const quic::QuicConfig* QuicSessionPoolPeer::GetConfig(
 
 std::unique_ptr<QuicCryptoClientConfigHandle>
 QuicSessionPoolPeer::GetCryptoConfig(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     QuicSessionPool::QuicCryptoClientConfigKey key) {
-  return pool->GetCryptoConfigForTesting(std::move(key));
+  return factory->GetCryptoConfigForTesting(std::move(key));
 }
 
 bool QuicSessionPoolPeer::HasActiveSession(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
     bool require_dns_https_alpn) {
-  return pool->HasActiveSession(
+  return factory->HasActiveSession(
       QuicSessionKey(server_id, privacy_mode, proxy_chain, session_usage,
                      SocketTag(), network_anonymization_key,
                      SecureDnsPolicy::kAllow, require_dns_https_alpn));
 }
 
-bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* pool,
+bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* factory,
                                        const quic::QuicServerId& server_id,
                                        PrivacyMode privacy_mode,
                                        bool require_dns_https_alpn) {
-  return pool->HasActiveJob(QuicSessionKey(
+  return factory->HasActiveJob(QuicSessionKey(
       server_id, privacy_mode, ProxyChain::Direct(), SessionUsage::kDestination,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       require_dns_https_alpn));
@@ -71,7 +71,7 @@ bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* pool,
 
 // static
 QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     PrivacyMode privacy_mode,
     url::SchemeHostPort destination) {
@@ -80,15 +80,15 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
                              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                              /*require_dns_https_alpn=*/false);
   QuicSessionAliasKey key(std::move(destination), session_key);
-  DCHECK(pool->HasActiveJob(session_key));
-  DCHECK_EQ(pool->all_sessions_.size(), 1u);
-  QuicChromiumClientSession* session = pool->all_sessions_.begin()->get();
+  DCHECK(factory->HasActiveJob(session_key));
+  DCHECK_EQ(factory->all_sessions_.size(), 1u);
+  QuicChromiumClientSession* session = factory->all_sessions_.begin()->get();
   DCHECK(key == session->session_alias_key());
   return session;
 }
 
 QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
     PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
@@ -99,58 +99,58 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
                              session_usage, SocketTag(),
                              network_anonymization_key, SecureDnsPolicy::kAllow,
                              require_dns_https_alpn);
-  DCHECK(pool->HasActiveSession(session_key));
-  return pool->active_sessions_[session_key];
+  DCHECK(factory->HasActiveSession(session_key));
+  return factory->active_sessions_[session_key];
 }
 
-bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* pool,
+bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* factory,
                                         QuicChromiumClientSession* session) {
-  return base::Contains(pool->all_sessions_, session);
+  return base::Contains(factory->all_sessions_, session);
 }
 
 void QuicSessionPoolPeer::SetTaskRunner(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     base::SequencedTaskRunner* task_runner) {
-  pool->task_runner_ = task_runner;
+  factory->task_runner_ = task_runner;
 }
 
-void QuicSessionPoolPeer::SetTickClock(QuicSessionPool* pool,
+void QuicSessionPoolPeer::SetTickClock(QuicSessionPool* factory,
                                        const base::TickClock* tick_clock) {
-  pool->tick_clock_ = tick_clock;
+  factory->tick_clock_ = tick_clock;
 }
 
 quic::QuicTime::Delta QuicSessionPoolPeer::GetPingTimeout(
-    QuicSessionPool* pool) {
-  return pool->ping_timeout_;
+    QuicSessionPool* factory) {
+  return factory->ping_timeout_;
 }
 
-void QuicSessionPoolPeer::SetYieldAfterPackets(QuicSessionPool* pool,
+void QuicSessionPoolPeer::SetYieldAfterPackets(QuicSessionPool* factory,
                                                int yield_after_packets) {
-  pool->yield_after_packets_ = yield_after_packets;
+  factory->yield_after_packets_ = yield_after_packets;
 }
 
 void QuicSessionPoolPeer::SetYieldAfterDuration(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     quic::QuicTime::Delta yield_after_duration) {
-  pool->yield_after_duration_ = yield_after_duration;
+  factory->yield_after_duration_ = yield_after_duration;
 }
 
 bool QuicSessionPoolPeer::CryptoConfigCacheIsEmpty(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     const quic::QuicServerId& quic_server_id,
     QuicSessionPool::QuicCryptoClientConfigKey key) {
-  return pool->CryptoConfigCacheIsEmptyForTesting(quic_server_id,
-                                                  std::move(key));
+  return factory->CryptoConfigCacheIsEmptyForTesting(quic_server_id,
+                                                     std::move(key));
 }
 
-size_t QuicSessionPoolPeer::GetNumDegradingSessions(QuicSessionPool* pool) {
-  return pool->connectivity_monitor_.GetNumDegradingSessions();
+size_t QuicSessionPoolPeer::GetNumDegradingSessions(QuicSessionPool* factory) {
+  return factory->connectivity_monitor_.GetNumDegradingSessions();
 }
 
 void QuicSessionPoolPeer::SetAlarmFactory(
-    QuicSessionPool* pool,
+    QuicSessionPool* factory,
     std::unique_ptr<quic::QuicAlarmFactory> alarm_factory) {
-  pool->alarm_factory_ = std::move(alarm_factory);
+  factory->alarm_factory_ = std::move(alarm_factory);
 }
 
 }  // namespace net::test

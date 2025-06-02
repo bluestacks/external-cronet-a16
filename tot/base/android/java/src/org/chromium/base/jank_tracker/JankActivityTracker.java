@@ -29,7 +29,7 @@ class JankActivityTracker extends JankTrackerStateController implements Activity
     private final ThreadChecker mThreadChecker = new ThreadChecker();
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
-    private final WeakReference<Activity> mActivityReference;
+    private WeakReference<Activity> mActivityReference;
 
     JankActivityTracker(
             Activity context,

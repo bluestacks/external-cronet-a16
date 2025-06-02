@@ -25,9 +25,11 @@ struct Options;
 
 class PROTOC_EXPORT Generator : public CodeGenerator {
  public:
-  bool Generate(const FileDescriptor* file, const std::string& parameter,
-                GeneratorContext* generator_context,
-                std::string* error) const override;
+  virtual bool Generate(
+      const FileDescriptor* file,
+      const std::string& parameter,
+      GeneratorContext* generator_context,
+      std::string* error) const override;
 
   bool GenerateAll(const std::vector<const FileDescriptor*>& files,
                    const std::string& parameter,

@@ -9,22 +9,18 @@ use icu_experimental::transliterate::{
     provider::TransliteratorRulesV1, CustomTransliterator, RuleCollection, RuleCollectionProvider,
     Transliterator,
 };
-use icu_locale_core::{LanguageIdentifier, Locale};
+use icu_locale_core::LanguageIdentifier;
 use icu_provider::prelude::*;
 
-type DefaultRuleCollectionProvider<'a> = RuleCollectionProvider<
-    'a,
-    icu_properties::provider::Baked,
-    icu_normalizer::provider::Baked,
-    icu_casemap::provider::Baked,
->;
-
-struct TransliteratorMultiSourceProvider<'a>(DefaultRuleCollectionProvider<'a>);
+struct TransliteratorMultiSourceProvider<'a>(
+    RuleCollectionProvider<'a, icu_properties::provider::Baked, icu_normalizer::provider::Baked>,
+);
 
 impl<'a, M> DataProvider<M> for TransliteratorMultiSourceProvider<'a>
 where
     M: DataMarker,
-    DefaultRuleCollectionProvider<'a>: DataProvider<M>,
+    RuleCollectionProvider<'a, icu_properties::provider::Baked, icu_normalizer::provider::Baked>:
+        DataProvider<M>,
 {
     fn load(&self, req: DataRequest) -> Result<DataResponse<M>, DataError> {
         if TypeId::of::<M>() == TypeId::of::<TransliteratorRulesV1>() {
@@ -51,7 +47,7 @@ struct LowercaseTransliterator<'a>(CaseMapperBorrowed<'a>);
 
 impl CustomTransliterator for LowercaseTransliterator<'_> {
     fn transliterate(&self, input: &str, range: std::ops::Range<usize>) -> String {
-        self.0.lowercase_to_string(&input[range], &LanguageIdentifier::UNKNOWN).to_string()
+        self.0.lowercase_to_string(&input[range], &LanguageIdentifier::default())
     }
 }
 
@@ -109,9 +105,8 @@ pub fn make_transliterator_from_rules(rules: &str) -> Transliterator {
     Transliterator::try_new_with_override_unstable(
         &provider,
         &provider,
-        &provider,
         &"und-t-und-x0-custom".parse().unwrap(),
-        |locale: &Locale| {
+        |locale| {
             if locale.normalizing_eq("und-t-und-x0-lower") {
                 Some(Ok(Box::new(LowercaseTransliterator(CaseMapper::new()))))
             } else {

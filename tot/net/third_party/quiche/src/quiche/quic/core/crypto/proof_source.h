@@ -53,17 +53,13 @@ class QUICHE_EXPORT ProofSource {
   // Chain is a reference-counted wrapper for a vector of stringified
   // certificates.
   struct QUICHE_EXPORT Chain : public quiche::QuicheReferenceCounted {
-    Chain(const std::vector<std::string>& certs,
-          const std::string& trust_anchor_id = "");
+    explicit Chain(const std::vector<std::string>& certs);
     Chain(const Chain&) = delete;
     Chain& operator=(const Chain&) = delete;
 
     CryptoBuffers ToCryptoBuffers() const;
 
     const std::vector<std::string> certs;
-    // Trust anchor ID to be configured alongside the certificate. If empty, no
-    // trust anchor ID will be set.
-    const std::string trust_anchor_id;
 
    protected:
     ~Chain() override;

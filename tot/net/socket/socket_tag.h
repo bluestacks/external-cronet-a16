@@ -38,6 +38,7 @@ class NET_EXPORT SocketTag {
 
   bool operator<(const SocketTag& other) const;
   bool operator==(const SocketTag& other) const;
+  bool operator!=(const SocketTag& other) const { return !(*this == other); }
 
   // Apply this tag to |socket|.
   void Apply(SocketDescriptor socket) const;

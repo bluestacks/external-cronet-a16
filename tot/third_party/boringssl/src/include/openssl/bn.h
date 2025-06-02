@@ -17,6 +17,7 @@
 #define OPENSSL_HEADER_BN_H
 
 #include <openssl/base.h>   // IWYU pragma: export
+#include <openssl/thread.h>
 
 #include <inttypes.h>  // for PRIu64 and friends
 #include <stdio.h>  // for FILE*

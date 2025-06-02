@@ -33,7 +33,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
-#include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request_context.h"
 
 namespace cronet {
@@ -308,10 +307,11 @@ void CronetURLRequest::NetworkTasks::Start(
   url_request_->SetExtraRequestHeaders(*request_headers);
   url_request_->SetPriority(initial_priority_);
   url_request_->SetIdempotency(idempotency_);
-  url_request_->SetReferrer(
-      request_headers->GetHeader(net::HttpRequestHeaders::kReferer)
-          .value_or(url_request_->referrer()));
-  url_request_->set_referrer_policy(net::ReferrerPolicy::NEVER_CLEAR);
+  if (std::optional<std::string> referer =
+          request_headers->GetHeader(net::HttpRequestHeaders::kReferer);
+      referer) {
+    url_request_->SetReferrer(*referer);
+  }
   if (shared_dictionary_) {
     if (!context->GetURLRequestContext(network_)->enable_brotli()) {
       // Ideally this would be impossible. Unfortunately, due to Cronet's API

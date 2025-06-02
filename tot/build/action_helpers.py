@@ -38,8 +38,7 @@ def atomic_output(path, mode='w+b', only_if_changed=True):
   dirname = os.path.dirname(path) or '.'
   os.makedirs(dirname, exist_ok=True)
   with tempfile.NamedTemporaryFile(mode,
-                                   prefix=".tempfile.",
-                                   suffix="." + os.path.basename(path),
+                                   suffix=os.path.basename(path),
                                    dir=dirname,
                                    delete=False) as f:
     try:

@@ -20,7 +20,6 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "absl/cleanup/cleanup.h"
@@ -34,6 +33,7 @@
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "absl/types/span.h"
+#include "absl/types/variant.h"
 #include "google/protobuf/io/zero_copy_sink.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 
@@ -844,7 +844,7 @@ struct Printer::ValueImpl {
   using StringType = std::conditional_t<owned, std::string, absl::string_view>;
   // These callbacks return false if this is a recursive call.
   using Callback = std::function<bool()>;
-  using StringOrCallback = std::variant<StringType, Callback>;
+  using StringOrCallback = absl::variant<StringType, Callback>;
 
   ValueImpl() = default;
 
@@ -854,7 +854,7 @@ struct Printer::ValueImpl {
                 !IsSubImpl<absl::remove_cvref_t<Value>>::value>>
   ValueImpl(Value&& value)  // NOLINT
       : value(ToStringOrCallback(std::forward<Value>(value), Rank2{})) {
-    if (std::holds_alternative<Callback>(this->value)) {
+    if (absl::holds_alternative<Callback>(this->value)) {
       consume_after = ";,";
     }
   }
@@ -868,9 +868,11 @@ struct Printer::ValueImpl {
   template <bool that_owned>
   ValueImpl& operator=(const ValueImpl<that_owned>& that);
 
-  const StringType* AsString() const { return std::get_if<StringType>(&value); }
+  const StringType* AsString() const {
+    return absl::get_if<StringType>(&value);
+  }
 
-  const Callback* AsCallback() const { return std::get_if<Callback>(&value); }
+  const Callback* AsCallback() const { return absl::get_if<Callback>(&value); }
 
   StringOrCallback value;
   std::string consume_after;
@@ -912,10 +914,10 @@ Printer::ValueImpl<owned>& Printer::ValueImpl<owned>::operator=(
 
   using ThatStringType = typename ValueImpl<that_owned>::StringType;
 
-  if (auto* str = std::get_if<ThatStringType>(&that.value)) {
+  if (auto* str = absl::get_if<ThatStringType>(&that.value)) {
     value = StringType(*str);
   } else {
-    value = std::get<Callback>(that.value);
+    value = absl::get<Callback>(that.value);
   }
 
   consume_after = that.consume_after;

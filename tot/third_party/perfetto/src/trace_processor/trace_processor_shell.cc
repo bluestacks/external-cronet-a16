@@ -1986,8 +1986,7 @@ base::Status TraceProcessorMain(int argc, char** argv) {
 #endif
 
 #if PERFETTO_BUILDFLAG(PERFETTO_TP_HTTPD)
-    RunHttpRPCServer(std::move(tp), !options.trace_file_path.empty(),
-                     options.listen_ip, options.port_number);
+    RunHttpRPCServer(std::move(tp), options.listen_ip, options.port_number);
     PERFETTO_FATAL("Should never return");
 #else
     PERFETTO_FATAL("HTTP not available");
@@ -1995,7 +1994,7 @@ base::Status TraceProcessorMain(int argc, char** argv) {
   }
 
   if (options.enable_stdiod) {
-    return RunStdioRpcServer(std::move(tp), !options.trace_file_path.empty());
+    return RunStdioRpcServer(std::move(tp));
   }
 
   if (options.launch_shell) {

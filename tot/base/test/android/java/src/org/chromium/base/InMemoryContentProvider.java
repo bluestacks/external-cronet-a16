@@ -29,7 +29,7 @@ import java.io.OutputStream;
 public class InMemoryContentProvider extends ContentProvider {
     private static final String PREFIX = "content://org.chromium.native_test.inmemory/cache/";
 
-    private final PipeDataWriter mPipeDataWriter =
+    private PipeDataWriter mPipeDataWriter =
             new ContentProvider.PipeDataWriter<byte[]>() {
                 @Override
                 public void writeDataToPipe(

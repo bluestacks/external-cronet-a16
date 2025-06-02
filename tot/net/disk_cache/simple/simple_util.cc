@@ -25,7 +25,7 @@
 namespace {
 
 // Size of the uint64_t hash_key number in Hex format in a string.
-constexpr size_t kEntryHashKeyAsHexStringSize = 2 * sizeof(uint64_t);
+const size_t kEntryHashKeyAsHexStringSize = 2 * sizeof(uint64_t);
 
 }  // namespace
 

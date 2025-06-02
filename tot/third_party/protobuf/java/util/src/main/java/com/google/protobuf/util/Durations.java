@@ -20,7 +20,6 @@ import static com.google.protobuf.util.Timestamps.NANOS_PER_MILLISECOND;
 import static com.google.protobuf.util.Timestamps.NANOS_PER_SECOND;
 
 import com.google.common.annotations.GwtIncompatible;
-import com.google.common.annotations.J2ktIncompatible;
 import com.google.common.base.Strings;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CompileTimeConstant;
@@ -145,7 +144,6 @@ public final class Durations {
    */
   @CanIgnoreReturnValue
   @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
-  @J2ktIncompatible
   @J2ObjCIncompatible
   public static Duration checkNotNegative(Duration duration) {
     checkArgument(!isNegative(duration), "duration (%s) must not be negative", toString(duration));
@@ -160,7 +158,6 @@ public final class Durations {
    */
   @CanIgnoreReturnValue
   @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
-  @J2ktIncompatible
   @J2ObjCIncompatible
   public static Duration checkPositive(Duration duration) {
     checkArgument(isPositive(duration), "duration (%s) must be positive", toString(duration));
@@ -204,7 +201,6 @@ public final class Durations {
    * @throws IllegalArgumentException if the given duration is not in the valid range.
    */
   @GwtIncompatible("Depends on String.format which is not supported in Xplat.")
-  @J2ktIncompatible
   @J2ObjCIncompatible
   public static String toString(Duration duration) {
     checkValid(duration);
@@ -234,7 +230,6 @@ public final class Durations {
    * @throws ParseException if the string is not in the duration format
    */
   @GwtIncompatible("ParseException is not supported in Xplat")
-  @J2ktIncompatible
   @J2ObjCIncompatible
   public static Duration parse(String value) throws ParseException {
     // Must end with "s".
@@ -286,7 +281,6 @@ public final class Durations {
    * @throws IllegalArgumentException if parsing fails
    */
   @GwtIncompatible("ParseException is not supported in Xplat")
-  @J2ktIncompatible
   @J2ObjCIncompatible
   public static Duration parseUnchecked(@CompileTimeConstant String value) {
     try {

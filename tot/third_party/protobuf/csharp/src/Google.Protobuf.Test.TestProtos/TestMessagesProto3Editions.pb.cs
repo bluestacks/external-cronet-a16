@@ -496,7 +496,6 @@ namespace ProtobufTestMessages.Editions.Proto3 {
     private int optionalInt32_;
     /// <summary>
     /// Singular
-    /// test [kotlin] comment
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

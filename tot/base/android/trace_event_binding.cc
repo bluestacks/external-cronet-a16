@@ -43,8 +43,10 @@ class TraceEnabledObserver : public perfetto::TrackEventSessionObserver {
 
   // perfetto::TrackEventSessionObserver implementation
   void OnSetup(const perfetto::DataSourceBase::SetupArgs& args) override {
+    trace_event::TraceConfig trace_config(
+        args.config->chrome_config().trace_config());
     event_name_filtering_per_session_[args.internal_instance_index] =
-        args.config->chrome_config().event_package_name_filter_enabled();
+        trace_config.IsEventPackageNameFilterEnabled();
   }
 
   void OnStart(const perfetto::DataSourceBase::StartArgs&) override {

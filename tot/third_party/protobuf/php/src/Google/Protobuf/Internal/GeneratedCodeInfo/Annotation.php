@@ -7,9 +7,9 @@ namespace Google\Protobuf\Internal\GeneratedCodeInfo;
 
 use Google\Protobuf\Internal\GPBType;
 use Google\Protobuf\Internal\GPBWire;
+use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\InputStream;
 use Google\Protobuf\Internal\GPBUtil;
-use Google\Protobuf\RepeatedField;
 
 /**
  * Generated from protobuf message <code>google.protobuf.GeneratedCodeInfo.Annotation</code>
@@ -55,7 +55,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type int[] $path
+     *     @type array<int>|\Google\Protobuf\Internal\RepeatedField $path
      *           Identifies the element in the original source .proto file. This field
      *           is formatted the same as SourceCodeInfo.Location.path.
      *     @type string $source_file
@@ -80,7 +80,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * is formatted the same as SourceCodeInfo.Location.path.
      *
      * Generated from protobuf field <code>repeated int32 path = 1 [packed = true];</code>
-     * @return RepeatedField<int>
+     * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getPath()
     {
@@ -92,7 +92,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * is formatted the same as SourceCodeInfo.Location.path.
      *
      * Generated from protobuf field <code>repeated int32 path = 1 [packed = true];</code>
-     * @param int[] $var
+     * @param array<int>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setPath($var)

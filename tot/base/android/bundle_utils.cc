@@ -58,8 +58,8 @@ std::string BundleUtils::ResolveLibraryPath(const std::string& library_name,
 }
 
 // static
-bool BundleUtils::HasAnyInstalledSplits() {
-  return Java_BundleUtils_hasAnyInstalledSplits(AttachCurrentThread());
+bool BundleUtils::IsBundle() {
+  return Java_BundleUtils_isBundle(AttachCurrentThread());
 }
 
 // static

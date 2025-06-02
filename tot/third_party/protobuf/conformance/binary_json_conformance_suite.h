@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef GOOGLE_PROTOBUF_CONFORMANCE_BINARY_JSON_CONFORMANCE_SUITE_H__
-#define GOOGLE_PROTOBUF_CONFORMANCE_BINARY_JSON_CONFORMANCE_SUITE_H__
+#ifndef CONFORMANCE_BINARY_JSON_CONFORMANCE_SUITE_H
+#define CONFORMANCE_BINARY_JSON_CONFORMANCE_SUITE_H
 
 #include <functional>
 #include <memory>
@@ -45,19 +45,12 @@ class BinaryAndJsonConformanceSuite : public ConformanceTestSuite {
                                   const std::string& equivalent_text_format);
 
   template <typename MessageType>
-  void RunValidRoundtripProtobufTest(const std::string& test_name,
-                                     ConformanceLevel level,
-                                     const std::string& input_protobuf);
-
-  template <typename MessageType>
   void RunValidProtobufTest(const std::string& test_name,
                             ConformanceLevel level,
                             const std::string& input_protobuf,
                             const std::string& equivalent_text_format);
 
   void RunDelimitedFieldTests();
-
-  void RunMessageSetTests();
 
   template <typename MessageType>
   friend class BinaryAndJsonConformanceSuiteImpl;
@@ -193,4 +186,4 @@ class BinaryAndJsonConformanceSuiteImpl {
 }  // namespace protobuf
 }  // namespace google
 
-#endif  // GOOGLE_PROTOBUF_CONFORMANCE_BINARY_JSON_CONFORMANCE_SUITE_H__
+#endif  // CONFORMANCE_BINARY_JSON_CONFORMANCE_SUITE_H

@@ -353,9 +353,6 @@ absl::Status ValidateMergedFeatures(const FeatureSet& features) {
   CHECK_ENUM_FEATURE(json_format, JsonFormat, JSON_FORMAT)
   CHECK_ENUM_FEATURE(enforce_naming_style, EnforceNamingStyle,
                      ENFORCE_NAMING_STYLE)
-  CHECK_ENUM_FEATURE(default_symbol_visibility,
-                     VisibilityFeature::DefaultSymbolVisibility,
-                     VisibilityFeature::DEFAULT_SYMBOL_VISIBILITY)
 
 #undef CHECK_ENUM_FEATURE
 

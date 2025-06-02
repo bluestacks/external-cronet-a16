@@ -213,8 +213,8 @@ class Rankings {
 
   bool init_ = false;
   bool count_lists_;
-  std::array<Addr, LAST_ELEMENT> heads_;
-  std::array<Addr, LAST_ELEMENT> tails_;
+  Addr heads_[LAST_ELEMENT];
+  Addr tails_[LAST_ELEMENT];
   raw_ptr<BackendImpl> backend_;
 
   // Data related to the LRU lists.

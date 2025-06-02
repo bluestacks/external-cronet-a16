@@ -5,7 +5,9 @@
 #include "base/android/jni_callback.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/JniCallbackImpl_jni.h"
+#include "base/base_minimal_jni/JniCallbackUtils_jni.h"
+#include "base/base_minimal_jni/JniOnceCallback_jni.h"
+#include "base/base_minimal_jni/JniRepeatingCallback_jni.h"
 
 namespace base::android {
 
@@ -23,10 +25,8 @@ class JniOnceCallback {
   jni_zero::ScopedJavaLocalRef<jobject> TransferToJava(JNIEnv* env) && {
     CHECK(wrapped_callback_);
     CHECK(!wrapped_callback_->is_null());
-    bool is_repeating = false;
-    return Java_JniCallbackImpl_Constructor(
-        env, is_repeating,
-        reinterpret_cast<jlong>(wrapped_callback_.release()));
+    return Java_JniOnceCallback_Constructor(
+        env, reinterpret_cast<jlong>(wrapped_callback_.release()));
   }
 
  private:
@@ -47,10 +47,8 @@ class JniRepeatingCallback {
   jni_zero::ScopedJavaLocalRef<jobject> TransferToJava(JNIEnv* env) && {
     CHECK(wrapped_callback_);
     CHECK(!wrapped_callback_->is_null());
-    bool is_repeating = true;
-    return Java_JniCallbackImpl_Constructor(
-        env, is_repeating,
-        reinterpret_cast<jlong>(wrapped_callback_.release()));
+    return Java_JniRepeatingCallback_Constructor(
+        env, reinterpret_cast<jlong>(wrapped_callback_.release()));
   }
   JniRepeatingCallback(const JniRepeatingCallback&) = delete;
   const JniRepeatingCallback& operator=(const JniRepeatingCallback&) = delete;
@@ -78,39 +76,10 @@ ScopedJavaLocalRef<jobject> ToJniCallback(
   return JniRepeatingCallback(callback).TransferToJava(env);
 }
 
-ScopedJavaLocalRef<jobject> ToJniCallback(
+void JNI_JniCallbackUtils_OnResult(
     JNIEnv* env,
-    base::OnceCallback<void()>&& callback) {
-  return ToJniCallback(env, base::BindOnce(
-                                [](base::OnceCallback<void()> captured_callback,
-                                   const jni_zero::JavaRef<jobject>& j_null) {
-                                  // For callbacks with no parameters, the
-                                  // parameter from Java should be null.
-                                  CHECK(!j_null);
-                                  std::move(captured_callback).Run();
-                                },
-                                std::move(callback)));
-}
-
-ScopedJavaLocalRef<jobject> ToJniCallback(
-    JNIEnv* env,
-    const base::RepeatingCallback<void()>& callback) {
-  return ToJniCallback(
-      env, base::BindOnce(
-               [](const base::RepeatingCallback<void()>& captured_callback,
-                  const jni_zero::JavaRef<jobject>& j_null) {
-                 // For callbacks with no parameters, the parameter from Java
-                 // should be null.
-                 CHECK(!j_null);
-                 captured_callback.Run();
-               },
-               std::move(callback)));
-}
-
-void JNI_JniCallbackImpl_OnResult(
-    JNIEnv* env,
-    jboolean isRepeating,
     jlong callbackPtr,
+    jboolean isRepeating,
     const jni_zero::JavaParamRef<jobject>& j_result) {
   if (isRepeating) {
     auto* callback =
@@ -123,9 +92,9 @@ void JNI_JniCallbackImpl_OnResult(
   }
 }
 
-void JNI_JniCallbackImpl_Destroy(JNIEnv* env,
-                                 jboolean isRepeating,
-                                 jlong callbackPtr) {
+void JNI_JniCallbackUtils_Destroy(JNIEnv* env,
+                                  jlong callbackPtr,
+                                  jboolean isRepeating) {
   if (isRepeating) {
     auto* callback =
         reinterpret_cast<JniRepeatingWrappedCallbackType*>(callbackPtr);
@@ -142,4 +111,6 @@ void JNI_JniCallbackImpl_Destroy(JNIEnv* env,
 
 }  // namespace base::android
 
-DEFINE_JNI_FOR_JniCallbackImpl()
+DEFINE_JNI_FOR_JniCallbackUtils()
+DEFINE_JNI_FOR_JniOnceCallback()
+DEFINE_JNI_FOR_JniRepeatingCallback()

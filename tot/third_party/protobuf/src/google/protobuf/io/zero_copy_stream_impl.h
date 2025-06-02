@@ -17,10 +17,10 @@
 #ifndef GOOGLE_PROTOBUF_IO_ZERO_COPY_STREAM_IMPL_H__
 #define GOOGLE_PROTOBUF_IO_ZERO_COPY_STREAM_IMPL_H__
 
-#include <cstdint>
 #include <iosfwd>
+#include <string>
 
-#include "absl/strings/cord.h"
+#include "google/protobuf/stubs/common.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 
@@ -77,7 +77,7 @@ class PROTOBUF_EXPORT FileInputStream final : public ZeroCopyInputStream {
   class PROTOBUF_EXPORT CopyingFileInputStream final
       : public CopyingInputStream {
    public:
-    explicit CopyingFileInputStream(int file_descriptor);
+    CopyingFileInputStream(int file_descriptor);
     CopyingFileInputStream(const CopyingFileInputStream&) = delete;
     CopyingFileInputStream& operator=(const CopyingFileInputStream&) = delete;
     ~CopyingFileInputStream() override;
@@ -152,7 +152,7 @@ class PROTOBUF_EXPORT FileOutputStream final
   class PROTOBUF_EXPORT CopyingFileOutputStream final
       : public CopyingOutputStream {
    public:
-    explicit CopyingFileOutputStream(int file_descriptor);
+    CopyingFileOutputStream(int file_descriptor);
     CopyingFileOutputStream(const CopyingFileOutputStream&) = delete;
     CopyingFileOutputStream& operator=(const CopyingFileOutputStream&) = delete;
     ~CopyingFileOutputStream() override;
@@ -203,7 +203,7 @@ class PROTOBUF_EXPORT IstreamInputStream final : public ZeroCopyInputStream {
   class PROTOBUF_EXPORT CopyingIstreamInputStream final
       : public CopyingInputStream {
    public:
-    explicit CopyingIstreamInputStream(std::istream* input);
+    CopyingIstreamInputStream(std::istream* input);
     CopyingIstreamInputStream(const CopyingIstreamInputStream&) = delete;
     CopyingIstreamInputStream& operator=(const CopyingIstreamInputStream&) =
         delete;
@@ -248,7 +248,7 @@ class PROTOBUF_EXPORT OstreamOutputStream final : public ZeroCopyOutputStream {
   class PROTOBUF_EXPORT CopyingOstreamOutputStream final
       : public CopyingOutputStream {
    public:
-    explicit CopyingOstreamOutputStream(std::ostream* output);
+    CopyingOstreamOutputStream(std::ostream* output);
     CopyingOstreamOutputStream(const CopyingOstreamOutputStream&) = delete;
     CopyingOstreamOutputStream& operator=(const CopyingOstreamOutputStream&) =
         delete;

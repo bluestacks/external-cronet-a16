@@ -52,9 +52,10 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   ~JobController() override;
 
-  // Takes over the responsibility of processing an already created `request`.
-  void HandleStreamRequest(HttpStreamRequest* stream_request,
-                           HttpStreamRequest::Delegate* delegate);
+  // Creates an HttpStreamRequest and starts Job(s) to handle it.
+  std::unique_ptr<HttpStreamRequest> RequestStream(
+      HttpStreamRequest::Delegate* delegate,
+      const NetLogWithSource& net_log);
 
   // Requests that enough connections/sessions for `num_streams` be opened.
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
@@ -136,9 +137,6 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   // Calls the request's client auth callback.
   void CallOnNeedsClientAuth(SSLCertRequestInfo* cert_info);
-
-  // Resets `job` and invokes the preconnect callback.
-  void ResetJobAndInvokePreconnectCallback(Job* job, int status);
 
   // Sets the result of `job`.
   void SetJobResult(Job* job, int status);

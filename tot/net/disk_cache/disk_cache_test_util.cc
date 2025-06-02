@@ -138,9 +138,12 @@ MessageLoopHelper::~MessageLoopHelper() = default;
 bool MessageLoopHelper::WaitUntilCacheIoFinished(int num_callbacks) {
   if (num_callbacks == callbacks_called_)
     return true;
-  expected_num_callbacks_ = num_callbacks;
-  completed_ = false;
 
+  ExpectCallbacks(num_callbacks);
+  // Create a recurrent timer of 50 ms.
+  base::RepeatingTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(50), this,
+              &MessageLoopHelper::TimerExpired);
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   run_loop_.reset();
@@ -148,12 +151,21 @@ bool MessageLoopHelper::WaitUntilCacheIoFinished(int num_callbacks) {
   return completed_;
 }
 
-void MessageLoopHelper::CallbackWasCalled() {
-  CHECK_LE(callbacks_called_, expected_num_callbacks_);
-  ++callbacks_called_;
-  if (run_loop_ && expected_num_callbacks_ == callbacks_called_) {
+// Quits the message loop when all callbacks are called or we've been waiting
+// too long for them (2 secs without a callback).
+void MessageLoopHelper::TimerExpired() {
+  CHECK_LE(callbacks_called_, num_callbacks_);
+  if (callbacks_called_ == num_callbacks_) {
     completed_ = true;
     run_loop_->Quit();
+  } else {
+    // Not finished yet. See if we have to abort.
+    if (last_ == callbacks_called_)
+      num_iterations_++;
+    else
+      last_ = callbacks_called_;
+    if (40 == num_iterations_)
+      run_loop_->Quit();
   }
 }
 

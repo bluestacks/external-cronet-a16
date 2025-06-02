@@ -702,7 +702,7 @@ void URLRequestHttpJob::StartTransactionInternal() {
   // If we already have a transaction, then we should restart the transaction
   // with auth provided by auth_credentials_.
 
-  int rv = OK;
+  int rv;
 
   // Notify NetworkQualityEstimator.
   NetworkQualityEstimator* network_quality_estimator =
@@ -717,12 +717,11 @@ void URLRequestHttpJob::StartTransactionInternal() {
     auth_credentials_ = AuthCredentials();
   } else {
     DCHECK(request_->context()->http_transaction_factory());
-    transaction_ =
-        request_->context()->http_transaction_factory()->CreateTransaction(
-            priority_);
-    CHECK(transaction_);
 
-    if (request_info_.url.SchemeIsWSOrWSS()) {
+    rv = request_->context()->http_transaction_factory()->CreateTransaction(
+        priority_, &transaction_);
+
+    if (rv == OK && request_info_.url.SchemeIsWSOrWSS()) {
       base::SupportsUserData::Data* data =
           request_->GetUserData(kWebSocketHandshakeUserDataKey);
       if (data) {
@@ -974,9 +973,6 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
     base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferralCount",
                                 device_bound_session_deferral_count_);
-    base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.RequestDeferralDecision",
-        request_->device_bound_session_usage());
     if (device_bound_session_deferral_count_ > 0) {
       base::UmaHistogramTimes(
           "Net.DeviceBoundSessions.TotalRequestDeferredDuration",
@@ -1173,29 +1169,29 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
+  if (!request_->allows_device_bound_session_registration() &&
+      !features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
+    return;
+  }
+
   device_bound_sessions::SessionService* service =
       request_->context()->device_bound_session_service();
   if (!service) {
     return;
   }
 
-  const auto& request_url = request_->url();
-  auto* headers = GetResponseHeaders();
-
   // If response header Sec-Session-Registration is present and configured
   // appropriately, trigger a registration request per header value to attempt
   // to create a new session.
-  if (request_->allows_device_bound_session_registration() ||
-      features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
-    std::vector<device_bound_sessions::RegistrationFetcherParam> params =
-        device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
-            request_url, headers);
-    for (auto& param : params) {
-      service->RegisterBoundSession(
-          request_->device_bound_session_access_callback(), std::move(param),
-          request_->isolation_info(), request_->net_log(),
-          request_->initiator());
-    }
+  const auto& request_url = request_->url();
+  auto* headers = GetResponseHeaders();
+  std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+      device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
+          request_url, headers);
+  for (auto& param : params) {
+    service->RegisterBoundSession(
+        request_->device_bound_session_access_callback(), std::move(param),
+        request_->isolation_info(), request_->net_log(), request_->initiator());
   }
 
   // If response header Sec-Session-Challenge is present and configured

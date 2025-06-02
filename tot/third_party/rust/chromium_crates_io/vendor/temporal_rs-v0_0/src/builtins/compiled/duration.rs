@@ -1,6 +1,6 @@
 use crate::{
     builtins::TZ_PROVIDER,
-    options::{RelativeTo, RoundingOptions, Unit},
+    options::{RelativeTo, RoundingOptions, TemporalUnit},
     primitive::FiniteF64,
     Duration, TemporalError, TemporalResult,
 };
@@ -41,7 +41,11 @@ impl Duration {
         self.compare_with_provider(two, relative_to, &*provider)
     }
 
-    pub fn total(&self, unit: Unit, relative_to: Option<RelativeTo>) -> TemporalResult<FiniteF64> {
+    pub fn total(
+        &self,
+        unit: TemporalUnit,
+        relative_to: Option<RelativeTo>,
+    ) -> TemporalResult<FiniteF64> {
         let provider = TZ_PROVIDER
             .lock()
             .map_err(|_| TemporalError::general("Unable to acquire lock"))?;

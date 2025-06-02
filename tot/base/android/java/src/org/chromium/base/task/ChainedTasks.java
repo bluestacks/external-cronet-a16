@@ -33,7 +33,7 @@ public class ChainedTasks {
     private boolean mFinalized;
 
     private volatile boolean mCanceled;
-    private final int mIterationIdForTesting = PostTask.sTestIterationForTesting;
+    private int mIterationIdForTesting = PostTask.sTestIterationForTesting;
 
     private final Runnable mRunAndPost =
             new Runnable() {

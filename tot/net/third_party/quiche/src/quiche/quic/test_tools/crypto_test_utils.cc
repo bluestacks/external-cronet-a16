@@ -316,11 +316,10 @@ class FullChloGenerator {
 
 }  // namespace
 
-std::unique_ptr<QuicCryptoServerConfig> CryptoServerConfigForTesting(
-    const std::string& trust_anchor_id) {
+std::unique_ptr<QuicCryptoServerConfig> CryptoServerConfigForTesting() {
   return std::make_unique<QuicCryptoServerConfig>(
       QuicCryptoServerConfig::TESTING, QuicRandom::GetInstance(),
-      ProofSourceForTesting(trust_anchor_id), KeyExchangeSource::Default());
+      ProofSourceForTesting(), KeyExchangeSource::Default());
 }
 
 int HandshakeWithFakeServer(QuicConfig* server_quic_config,
@@ -904,12 +903,11 @@ constexpr char kTestProofHostname[] = "test.example.com";
 
 class TestProofSource : public ProofSourceX509 {
  public:
-  explicit TestProofSource(const std::string& trust_anchor_id)
+  TestProofSource()
       : ProofSourceX509(
             quiche::QuicheReferenceCountedPointer<ProofSource::Chain>(
                 new ProofSource::Chain(
-                    std::vector<std::string>{std::string(kTestCertificate)},
-                    trust_anchor_id)),
+                    std::vector<std::string>{std::string(kTestCertificate)})),
             std::move(*CertificatePrivateKey::LoadFromDer(
                 kTestCertificatePrivateKey))) {
     QUICHE_DCHECK(valid());
@@ -991,9 +989,8 @@ class TestProofVerifier : public ProofVerifier {
 
 }  // namespace
 
-std::unique_ptr<ProofSource> ProofSourceForTesting(
-    const std::string& trust_anchor_id) {
-  return std::make_unique<TestProofSource>(trust_anchor_id);
+std::unique_ptr<ProofSource> ProofSourceForTesting() {
+  return std::make_unique<TestProofSource>();
 }
 
 std::unique_ptr<ProofVerifier> ProofVerifierForTesting() {

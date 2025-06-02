@@ -89,18 +89,10 @@ CookiePartitionKey::CookiePartitionKey(
     const SchemefulSite& site,
     std::optional<base::UnguessableToken> nonce,
     AncestorChainBit ancestor_chain_bit)
-    : site_(site), nonce_(nonce), ancestor_chain_bit_(ancestor_chain_bit) {
-#if BUILDFLAG(IS_ANDROID)
-  g_constructor_called_ = true;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
+    : site_(site), nonce_(nonce), ancestor_chain_bit_(ancestor_chain_bit) {}
 
 CookiePartitionKey::CookiePartitionKey(bool from_script)
-    : from_script_(from_script) {
-#if BUILDFLAG(IS_ANDROID)
-  g_constructor_called_ = true;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
+    : from_script_(from_script) {}
 
 CookiePartitionKey::CookiePartitionKey(const CookiePartitionKey& other) =
     default;

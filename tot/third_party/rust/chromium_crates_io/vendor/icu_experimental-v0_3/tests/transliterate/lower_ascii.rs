@@ -4,31 +4,26 @@
 
 use core::any::TypeId;
 
+use icu::casemap::CaseMapperBorrowed;
 use icu_experimental::transliterate::{
-    provider::TransliteratorRulesV1, RuleCollection, RuleCollectionProvider, Transliterator,
+    provider::TransliteratorRulesV1, CustomTransliterator, RuleCollection, RuleCollectionProvider,
+    Transliterator,
 };
+use icu_locale::LanguageIdentifier;
 use icu_provider::prelude::*;
 
 struct TransliteratorMultiSourceProvider<'a>(
-    RuleCollectionProvider<
-        'a,
-        icu_properties::provider::Baked,
-        icu_normalizer::provider::Baked,
-        icu_casemap::provider::Baked,
-    >,
+    RuleCollectionProvider<'a, icu_properties::provider::Baked, icu_normalizer::provider::Baked>,
 );
 
 impl<'a, M> DataProvider<M> for TransliteratorMultiSourceProvider<'a>
 where
     M: DataMarker,
-    RuleCollectionProvider<
-        'a,
-        icu_properties::provider::Baked,
-        icu_normalizer::provider::Baked,
-        icu_casemap::provider::Baked,
-    >: DataProvider<M>,
+    RuleCollectionProvider<'a, icu_properties::provider::Baked, icu_normalizer::provider::Baked>:
+        DataProvider<M>,
 {
     fn load(&self, req: DataRequest) -> Result<DataResponse<M>, DataError> {
+        println!("{:?} {req:?}", M::INFO);
         if TypeId::of::<M>() == TypeId::of::<TransliteratorRulesV1>() {
             let mut silent_req = req;
             silent_req.metadata.silent = true;
@@ -48,31 +43,58 @@ where
     }
 }
 
+#[derive(Debug)]
+struct LowercaseTransliterator(CaseMapperBorrowed<'static>);
+
+impl CustomTransliterator for LowercaseTransliterator {
+    fn transliterate(&self, input: &str, range: std::ops::Range<usize>) -> String {
+        self.0
+            .lowercase_to_string(&input[range], &LanguageIdentifier::default())
+    }
+}
+
 #[test]
 fn test_lower_ascii() {
     let mut collection = RuleCollection::default();
     // Register Latin-ASCII so that the alias mapping gets added
     collection.register_source(
         &"und-t-und-latn-d0-ascii".parse().unwrap(),
-        "<unused>".to_string(),
+        "<error>".to_string(),
         ["Latin-ASCII"],
+        false,
+        true,
+    );
+    // Register Lower so that the alias mapping gets added
+    collection.register_source(
+        &"und-t-und-x0-lower".parse().unwrap(),
+        "<error>".to_string(),
+        ["Any-XLower"],
         false,
         true,
     );
     // Now register our new transliterator
     collection.register_source(
         &"und-t-und-x0-lowascii".parse().unwrap(),
-        "::NFD; ::[:Nonspacing Mark:] Remove; ::Lower; ::NFC; ::Latin-ASCII;".to_string(),
+        // "::NFD; ::[:Nonspacing Mark:] Remove; ::Any-XLower; ::NFC; ::Latin-ASCII;".to_string(),
+        "::NFD; ::[:Nonspacing Mark:] Remove; ::Any-XLower; ::NFC; ::Latin-ASCII;".to_string(),
         [],
         false,
         true,
     );
     let provider = TransliteratorMultiSourceProvider(collection.as_provider());
-    let t = Transliterator::try_new_unstable(
-        &provider,
+    let t = Transliterator::try_new_with_override_unstable(
         &provider,
         &provider,
         &"und-t-und-x0-lowascii".parse().unwrap(),
+        |locale| {
+            if locale.normalizing_eq("und-t-und-x0-lower") {
+                Some(Ok(Box::new(LowercaseTransliterator(
+                    CaseMapperBorrowed::new(),
+                ))))
+            } else {
+                None
+            }
+        },
     )
     .unwrap();
     let r = t.transliterate("ÎÑŢÉRÑÅŢÎÖÑÅĻÎŽÅŢÎÖÑ".to_string());

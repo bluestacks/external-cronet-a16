@@ -35,14 +35,15 @@ use crate::{
         Duration, PartialTime, PlainDate,
     },
     error::TemporalError,
-    options::{ArithmeticOverflow, ResolvedRoundingOptions, Unit},
+    options::{ArithmeticOverflow, ResolvedRoundingOptions, TemporalUnit},
+    primitive::FiniteF64,
     rounding::{IncrementRounder, Round},
     temporal_assert,
-    unix_time::EpochNanoseconds,
+    time::EpochNanoseconds,
     utils, TemporalResult, TemporalUnwrap, NS_PER_DAY,
 };
 use icu_calendar::{Date as IcuDate, Iso};
-use num_traits::{cast::FromPrimitive, Euclid};
+use num_traits::{cast::FromPrimitive, AsPrimitive, Euclid};
 
 /// `IsoDateTime` is the record of the `IsoDate` and `IsoTime` internal slots.
 #[non_exhaustive]
@@ -115,8 +116,8 @@ impl IsoDateTime {
             minute,
             second,
             millis,
-            micros.into(),
-            (nanos + offset).into(),
+            micros,
+            nanos + offset,
         ))
     }
 
@@ -129,13 +130,12 @@ impl IsoDateTime {
         minute: i64,
         second: i64,
         millisecond: i64,
-        microsecond: i128,
-        nanosecond: i128,
+        microsecond: i64,
+        nanosecond: i64,
     ) -> Self {
         let (overflow_day, time) =
             IsoTime::balance(hour, minute, second, millisecond, microsecond, nanosecond);
-        // TODO: Address truncation with `try_balance`
-        let date = IsoDate::balance(year, month, day + overflow_day as i32);
+        let date = IsoDate::balance(year, month, day + overflow_day);
         Self::new_unchecked(date, time)
     }
 
@@ -172,8 +172,7 @@ impl IsoDateTime {
             date_duration.weeks,
             date_duration
                 .days
-                .checked_add(t_result.0)
-                .ok_or(TemporalError::range())?,
+                .checked_add(&FiniteF64::from(t_result.0))?,
         )?;
         let duration = Duration::from(date_duration);
 
@@ -189,11 +188,11 @@ impl IsoDateTime {
 
     pub(crate) fn round(&self, resolved_options: ResolvedRoundingOptions) -> TemporalResult<Self> {
         let (rounded_days, rounded_time) = self.time.round(resolved_options)?;
-        let balance_result = IsoDate::try_balance(
+        let balance_result = IsoDate::balance(
             self.date.year,
             self.date.month.into(),
-            i64::from(self.date.day) + rounded_days,
-        )?;
+            i32::from(self.date.day) + rounded_days,
+        );
         Self::new(balance_result, rounded_time)
     }
 
@@ -203,11 +202,11 @@ impl IsoDateTime {
         &self,
         other: &Self,
         calendar: &Calendar,
-        largest_unit: Unit,
+        largest_unit: TemporalUnit,
     ) -> TemporalResult<NormalizedDurationRecord> {
         // 1. Assert: ISODateTimeWithinLimits(y1, mon1, d1, h1, min1, s1, ms1, mus1, ns1) is true.
         // 2. Assert: ISODateTimeWithinLimits(y2, mon2, d2, h2, min2, s2, ms2, mus2, ns2) is true.
-        // 3. Assert: If y1 ≠ y2, and mon1 ≠ mon2, and d1 ≠ d2, and LargerOfTwoUnits(largestUnit, "day")
+        // 3. Assert: If y1 ≠ y2, and mon1 ≠ mon2, and d1 ≠ d2, and LargerOfTwoTemporalUnits(largestUnit, "day")
         // is not "day", CalendarMethodsRecordHasLookedUp(calendarRec, date-until) is true.
 
         // 4. Let timeDuration be DifferenceTime(h1, min1, s1, ms1, mus1, ns1, h2, min2, s2, ms2, mus2, ns2).
@@ -245,9 +244,9 @@ impl IsoDateTime {
             calendar.clone(),
         )?;
 
-        // 11. Let dateLargestUnit be LargerOfTwoUnits("day", largestUnit).
+        // 11. Let dateLargestUnit be LargerOfTwoTemporalUnits("day", largestUnit).
         // 12. Let untilOptions be ! SnapshotOwnProperties(options, null).
-        let date_largest_unit = largest_unit.max(Unit::Day);
+        let date_largest_unit = largest_unit.max(TemporalUnit::Day);
 
         // 13. Perform ! CreateDataPropertyOrThrow(untilOptions, "largestUnit", dateLargestUnit).
         // 14. Let dateDifference be ? DifferenceDate(calendarRec, date1, date2, untilOptions).
@@ -259,9 +258,9 @@ impl IsoDateTime {
             date_diff.days()
         } else {
             // a. Set timeDuration to ? Add24HourDaysToNormalizedTimeDuration(timeDuration, dateDifference.[[Days]]).
-            time_duration = time_duration.add_days(date_diff.days())?;
+            time_duration = time_duration.add_days(date_diff.days().as_())?;
             // b. Set days to 0.
-            0
+            FiniteF64::default()
         };
 
         // 17. Return ? CreateNormalizedDurationRecord(dateDifference.[[Years]], dateDifference.[[Months]], dateDifference.[[Weeks]], days, timeDuration).
@@ -339,18 +338,6 @@ impl IsoDate {
         Ok(date)
     }
 
-    /// Create a balance date while rejecting invalid intermediates
-    pub(crate) fn try_balance(year: i32, month: i32, day: i64) -> TemporalResult<Self> {
-        let epoch_days = iso_date_to_epoch_days(year, month, 1) + day - 1;
-        if (MAX_EPOCH_DAYS) < epoch_days.abs() {
-            return Err(TemporalError::range().with_message("epoch days exceed maximum range."));
-        }
-        // NOTE The cast is to i32 is safe due to MAX_EPOCH_DAYS check
-        let ms = utils::epoch_days_to_epoch_ms(epoch_days, 0);
-        let (year, month, day) = utils::ymd_from_epoch_milliseconds(ms);
-        Ok(Self::new_unchecked(year, month, day))
-    }
-
     /// Create a balanced `IsoDate`
     ///
     /// Equivalent to `BalanceISODate`.
@@ -379,8 +366,7 @@ impl IsoDate {
     /// Equivalent to `IsoDateToEpochDays`
     #[inline]
     pub(crate) fn to_epoch_days(self) -> i32 {
-        // NOTE: cast to i32 is safe as IsoDate is in a valid range.
-        utils::epoch_days_from_gregorian_date(self.year, self.month, self.day) as i32
+        utils::epoch_days_from_gregorian_date(self.year, self.month, self.day)
     }
 
     /// Returns if the current `IsoDate` is valid.
@@ -397,9 +383,9 @@ impl IsoDate {
         // 1. Assert: year, month, day, years, months, weeks, and days are integers.
         // 2. Assert: overflow is either "constrain" or "reject".
         // 3. Let intermediate be ! BalanceISOYearMonth(year + years, month + months).
-        let intermediate = balance_iso_year_month_with_clamp(
-            i64::from(self.year) + duration.years,
-            i64::from(self.month) + duration.months,
+        let intermediate = balance_iso_year_month(
+            self.year + duration.years.as_date_value()?,
+            i32::from(self.month) + duration.months.as_date_value()?,
         );
 
         // 4. Let intermediate be ? RegulateISODate(intermediate.[[Year]], intermediate.[[Month]], day, overflow).
@@ -407,22 +393,23 @@ impl IsoDate {
             Self::new_with_overflow(intermediate.0, intermediate.1, self.day, overflow)?;
 
         // 5. Set days to days + 7 × weeks.
-        let additional_days = duration.days + (7 * duration.weeks); // Verify
-                                                                    // 6. Let d be intermediate.[[Day]] + days.
-        let intermediate_days = i64::from(intermediate.day) + additional_days;
+        let additional_days =
+            duration.days.as_date_value()? + (duration.weeks.as_date_value()? * 7);
+        // 6. Let d be intermediate.[[Day]] + days.
+        let intermediate_days = i32::from(intermediate.day) + additional_days;
 
         // 7. Return BalanceISODate(intermediate.[[Year]], intermediate.[[Month]], d).
-        Self::try_balance(
+        Ok(Self::balance(
             intermediate.year,
             intermediate.month.into(),
             intermediate_days,
-        )
+        ))
     }
 
     pub(crate) fn diff_iso_date(
         &self,
         other: &Self,
-        largest_unit: Unit,
+        largest_unit: TemporalUnit,
     ) -> TemporalResult<DateDuration> {
         // 1. Assert: IsValidISODate(y1, m1, d1) is true.
         // 2. Assert: IsValidISODate(y2, m2, d2) is true.
@@ -437,7 +424,7 @@ impl IsoDate {
         let mut years = 0;
         let mut months = 0;
         // 6. If largestUnit is "year", then
-        if largest_unit == Unit::Year || largest_unit == Unit::Month {
+        if largest_unit == TemporalUnit::Year || largest_unit == TemporalUnit::Month {
             // others.year - self.year is adopted from temporal-proposal/polyfill as it saves iterations.
             // a. Let candidateYears be sign.
             let mut candidate_years: i32 = other.year - self.year;
@@ -481,7 +468,7 @@ impl IsoDate {
                 );
             }
 
-            if largest_unit == Unit::Month {
+            if largest_unit == TemporalUnit::Month {
                 months += years * 12;
                 years = 0;
             }
@@ -507,14 +494,19 @@ impl IsoDate {
                 constrained.day,
             );
 
-        let (weeks, days) = if largest_unit == Unit::Week {
+        let (weeks, days) = if largest_unit == TemporalUnit::Week {
             (days / 7, days % 7)
         } else {
             (0, days)
         };
 
         // 17. Return ! CreateDateDurationRecord(years, months, weeks, days).
-        DateDuration::new(years as i64, months as i64, weeks, days)
+        DateDuration::new(
+            FiniteF64::from(years),
+            FiniteF64::from(months),
+            FiniteF64::from(weeks),
+            FiniteF64::from(days),
+        )
     }
 }
 
@@ -671,18 +663,18 @@ impl IsoTime {
         minute: i64,
         second: i64,
         millisecond: i64,
-        microsecond: i128,
-        nanosecond: i128,
-    ) -> (i64, Self) {
+        microsecond: i64,
+        nanosecond: i64,
+    ) -> (i32, Self) {
         // 1. Set microsecond to microsecond + floor(nanosecond / 1000).
         // 2. Set nanosecond to nanosecond modulo 1000.
-        let (quotient, nanosecond) = (nanosecond.div_euclid(1000), nanosecond.rem_euclid(1000));
+        let (quotient, nanosecond) = div_mod(nanosecond, 1000);
         let microsecond = microsecond + quotient;
 
         // 3. Set millisecond to millisecond + floor(microsecond / 1000).
         // 4. Set microsecond to microsecond modulo 1000.
-        let (quotient, microsecond) = (microsecond.div_euclid(1000), microsecond.rem_euclid(1000));
-        let millisecond = millisecond + quotient as i64;
+        let (quotient, microsecond) = div_mod(microsecond, 1000);
+        let millisecond = millisecond + quotient;
 
         // 5. Set second to second + floor(millisecond / 1000).
         // 6. Set millisecond to millisecond modulo 1000.
@@ -712,19 +704,26 @@ impl IsoTime {
             nanosecond as u16,
         );
 
-        (days, time)
+        (days as i32, time)
     }
 
     /// Difference this `IsoTime` against another and returning a `TimeDuration`.
     pub(crate) fn diff(&self, other: &Self) -> TimeDuration {
-        let h = i64::from(other.hour) - i64::from(self.hour);
-        let m = i64::from(other.minute) - i64::from(self.minute);
-        let s = i64::from(other.second) - i64::from(self.second);
-        let ms = i64::from(other.millisecond) - i64::from(self.millisecond);
-        let mis = i128::from(other.microsecond) - i128::from(self.microsecond);
-        let ns = i128::from(other.nanosecond) - i128::from(self.nanosecond);
+        let h = i32::from(other.hour) - i32::from(self.hour);
+        let m = i32::from(other.minute) - i32::from(self.minute);
+        let s = i32::from(other.second) - i32::from(self.second);
+        let ms = i32::from(other.millisecond) - i32::from(self.millisecond);
+        let mis = i32::from(other.microsecond) - i32::from(self.microsecond);
+        let ns = i32::from(other.nanosecond) - i32::from(self.nanosecond);
 
-        TimeDuration::new_unchecked(h, m, s, ms, mis, ns)
+        TimeDuration::new_unchecked(
+            FiniteF64::from(h),
+            FiniteF64::from(m),
+            FiniteF64::from(s),
+            FiniteF64::from(ms),
+            FiniteF64::from(mis),
+            FiniteF64::from(ns),
+        )
     }
 
     // NOTE (nekevss): Specification seemed to be off / not entirely working, so the below was adapted from the
@@ -734,10 +733,10 @@ impl IsoTime {
     pub(crate) fn round(
         &self,
         resolved_options: ResolvedRoundingOptions,
-    ) -> TemporalResult<(i64, Self)> {
+    ) -> TemporalResult<(i32, Self)> {
         // 1. If unit is "day" or "hour", then
         let quantity = match resolved_options.smallest_unit {
-            Unit::Day | Unit::Hour => {
+            TemporalUnit::Day | TemporalUnit::Hour => {
                 // a. Let quantity be ((((hour × 60 + minute) × 60 + second) × 1000 + millisecond)
                 // × 1000 + microsecond) × 1000 + nanosecond.
                 let minutes = i128::from(self.hour) * 60 + i128::from(self.minute);
@@ -747,7 +746,7 @@ impl IsoTime {
                 micros * 1000 + i128::from(self.nanosecond)
             }
             // 2. Else if unit is "minute", then
-            Unit::Minute => {
+            TemporalUnit::Minute => {
                 // a. Let quantity be (((minute × 60 + second) × 1000 + millisecond) × 1000 + microsecond) × 1000 + nanosecond.
                 let seconds = i128::from(self.minute) * 60 + i128::from(self.second);
                 let millis = seconds * 1000 + i128::from(self.millisecond);
@@ -755,25 +754,25 @@ impl IsoTime {
                 micros * 1000 + i128::from(self.nanosecond)
             }
             // 3. Else if unit is "second", then
-            Unit::Second => {
+            TemporalUnit::Second => {
                 // a. Let quantity be ((second × 1000 + millisecond) × 1000 + microsecond) × 1000 + nanosecond.
                 let millis = i128::from(self.second) * 1000 + i128::from(self.millisecond);
                 let micros = millis * 1000 + i128::from(self.microsecond);
                 micros * 1000 + i128::from(self.nanosecond)
             }
             // 4. Else if unit is "millisecond", then
-            Unit::Millisecond => {
+            TemporalUnit::Millisecond => {
                 // a. Let quantity be (millisecond × 1000 + microsecond) × 1000 + nanosecond.
                 let micros = i128::from(self.millisecond) * 1000 + i128::from(self.microsecond);
                 micros * 1000 + i128::from(self.nanosecond)
             }
             // 5. Else if unit is "microsecond", then
-            Unit::Microsecond => {
+            TemporalUnit::Microsecond => {
                 // a. Let quantity be microsecond × 1000 + nanosecond.
                 i128::from(self.microsecond) * 1000 + i128::from(self.nanosecond)
             }
             // 6. Else,
-            Unit::Nanosecond => {
+            TemporalUnit::Nanosecond => {
                 // a. Assert: unit is "nanosecond".
                 // b. Let quantity be nanosecond.
                 i128::from(self.nanosecond)
@@ -810,16 +809,16 @@ impl IsoTime {
         match resolved_options.smallest_unit {
             // 9. If unit is "day", then
             // a. Return Time Record { [[Days]]: result, [[Hour]]: 0, [[Minute]]: 0, [[Second]]: 0, [[Millisecond]]: 0, [[Microsecond]]: 0, [[Nanosecond]]: 0  }.
-            Unit::Day => Ok((result_i64, Self::default())),
+            TemporalUnit::Day => Ok((result_i64 as i32, Self::default())),
             // 10. If unit is "hour", then
             // a. Return BalanceTime(result, 0, 0, 0, 0, 0).
-            Unit::Hour => Ok(Self::balance(result_i64, 0, 0, 0, 0, 0)),
+            TemporalUnit::Hour => Ok(Self::balance(result_i64, 0, 0, 0, 0, 0)),
             // 11. If unit is "minute", then
             // a. Return BalanceTime(hour, result, 0.0, 0.0, 0.0, 0).
-            Unit::Minute => Ok(Self::balance(self.hour.into(), result_i64, 0, 0, 0, 0)),
+            TemporalUnit::Minute => Ok(Self::balance(self.hour.into(), result_i64, 0, 0, 0, 0)),
             // 12. If unit is "second", then
             // a. Return BalanceTime(hour, minute, result, 0.0, 0.0, 0).
-            Unit::Second => Ok(Self::balance(
+            TemporalUnit::Second => Ok(Self::balance(
                 self.hour.into(),
                 self.minute.into(),
                 result_i64,
@@ -829,7 +828,7 @@ impl IsoTime {
             )),
             // 13. If unit is "millisecond", then
             // a. Return BalanceTime(hour, minute, second, result, 0.0, 0).
-            Unit::Millisecond => Ok(Self::balance(
+            TemporalUnit::Millisecond => Ok(Self::balance(
                 self.hour.into(),
                 self.minute.into(),
                 self.second.into(),
@@ -839,23 +838,23 @@ impl IsoTime {
             )),
             // 14. If unit is "microsecond", then
             // a. Return BalanceTime(hour, minute, second, millisecond, result, 0).
-            Unit::Microsecond => Ok(Self::balance(
+            TemporalUnit::Microsecond => Ok(Self::balance(
                 self.hour.into(),
                 self.minute.into(),
                 self.second.into(),
                 self.millisecond.into(),
-                result_i64.into(),
+                result_i64,
                 0,
             )),
             // 15. Assert: unit is "nanosecond".
             // 16. Return BalanceTime(hour, minute, second, millisecond, microsecond, result).
-            Unit::Nanosecond => Ok(Self::balance(
+            TemporalUnit::Nanosecond => Ok(Self::balance(
                 self.hour.into(),
                 self.minute.into(),
                 self.second.into(),
                 self.millisecond.into(),
                 self.microsecond.into(),
-                result_i64.into(),
+                result_i64,
             )),
             _ => Err(TemporalError::assert()),
         }
@@ -878,7 +877,7 @@ impl IsoTime {
             && sub_second.contains(&self.nanosecond)
     }
 
-    pub(crate) fn add(&self, norm: NormalizedTimeDuration) -> (i64, Self) {
+    pub(crate) fn add(&self, norm: NormalizedTimeDuration) -> (i32, Self) {
         // 1. Set second to second + NormalizedTimeDurationSeconds(norm).
         let seconds = i64::from(self.second) + norm.seconds();
         // 2. Set nanosecond to nanosecond + NormalizedTimeDurationSubseconds(norm).
@@ -909,7 +908,7 @@ impl IsoTime {
 
 // ==== `IsoDateTime` specific utility functions ====
 
-const MAX_EPOCH_DAYS: i64 = 10i64.pow(8) + 1;
+const MAX_EPOCH_DAYS: i32 = 10i32.pow(8) + 1;
 
 #[inline]
 /// Utility function to determine if a `DateTime`'s components create a `DateTime` within valid limits
@@ -936,7 +935,7 @@ fn utc_epoch_nanos(date: IsoDate, time: &IsoTime) -> TemporalResult<EpochNanosec
 #[inline]
 fn to_unchecked_epoch_nanoseconds(date: IsoDate, time: &IsoTime) -> i128 {
     let ms = time.to_epoch_ms();
-    let epoch_ms = utils::epoch_days_to_epoch_ms(date.to_epoch_days() as i64, ms);
+    let epoch_ms = utils::epoch_days_to_epoch_ms(date.to_epoch_days(), ms);
     epoch_ms as i128 * 1_000_000 + time.microsecond as i128 * 1_000 + time.nanosecond as i128
 }
 
@@ -945,7 +944,7 @@ fn to_unchecked_epoch_nanoseconds(date: IsoDate, time: &IsoTime) -> i128 {
 /// Returns the Epoch days based off the given year, month, and day.
 /// Note: Month should be 1 indexed
 #[inline]
-pub(crate) fn iso_date_to_epoch_days(year: i32, month: i32, day: i32) -> i64 {
+pub(crate) fn iso_date_to_epoch_days(year: i32, month: i32, day: i32) -> i32 {
     // 1. Let resolvedYear be year + floor(month / 12).
     let resolved_year = year + month.div_euclid(12);
     // 2. Let resolvedMonth be month modulo 12.
@@ -955,7 +954,7 @@ pub(crate) fn iso_date_to_epoch_days(year: i32, month: i32, day: i32) -> i64 {
     let epoch_days = utils::epoch_days_from_gregorian_date(resolved_year, resolved_month, 1);
 
     // 4. Return EpochTimeToDayNumber(t) + date - 1.
-    epoch_days + day as i64 - 1
+    epoch_days + day - 1
 }
 
 #[inline]
@@ -990,16 +989,6 @@ pub(crate) fn year_month_within_limits(year: i32, month: u8) -> bool {
     }
     // 4. Return true.
     true
-}
-
-fn balance_iso_year_month_with_clamp(year: i64, month: i64) -> (i32, u8) {
-    // 1. Assert: year and month are integers.
-    // 2. Set year to year + floor((month - 1) / 12).
-    let y = year + (month - 1).div_euclid(12);
-    // 3. Set month to ((month - 1) modulo 12) + 1.
-    let m = (month - 1).rem_euclid(12) + 1;
-    // 4. Return the Record { [[Year]]: year, [[Month]]: month  }.
-    (y.clamp(i32::MIN as i64, i32::MAX as i64) as i32, m as u8)
 }
 
 #[inline]
@@ -1053,7 +1042,7 @@ fn div_mod(dividend: i64, divisor: i64) -> (i64, i64) {
 mod tests {
     use super::{iso_date_to_epoch_days, IsoDate};
 
-    const MAX_DAYS_BASE: i64 = 100_000_000;
+    const MAX_DAYS_BASE: i32 = 100_000_000;
 
     #[test]
     fn icu4x_max_conversion_test() {

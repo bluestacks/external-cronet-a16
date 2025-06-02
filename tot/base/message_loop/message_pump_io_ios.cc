@@ -100,13 +100,10 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
 
     CFFileDescriptorEnableCallBacks(scoped_fdref.get(), callback_types);
 
-    // `order` is set to the same value as MessagePumpCFRunLoopBase's
-    // `work_source_`'s order. It should not be lower than the latter to avoid
-    // starving that run loop (which can happen in
-    // IOWatcherFdTest.ReadPersistent, for example).
+    // TODO(wtc): what should the 'order' argument be?
     apple::ScopedCFTypeRef<CFRunLoopSourceRef> scoped_fd_source(
         CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault,
-                                            scoped_fdref.get(), /*order=*/1));
+                                            scoped_fdref.get(), 0));
     if (!scoped_fd_source) {
       NOTREACHED() << "CFFileDescriptorCreateRunLoopSource failed";
     }

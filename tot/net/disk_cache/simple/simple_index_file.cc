@@ -32,15 +32,15 @@
 namespace disk_cache {
 namespace {
 
-constexpr int kEntryFilesHashLength = 16;
-constexpr int kEntryFilesSuffixLength = 2;
+const int kEntryFilesHashLength = 16;
+const int kEntryFilesSuffixLength = 2;
 
 // Limit on how big a file we are willing to work with, to avoid crashes
 // when its corrupt.
-constexpr int kMaxEntriesInIndex = 1000000;
+const int kMaxEntriesInIndex = 1000000;
 
 // Here 8 comes from the key size.
-constexpr int64_t kMaxIndexFileSizeBytes =
+const int64_t kMaxIndexFileSizeBytes =
     kMaxEntriesInIndex * (8 + EntryMetadata::kOnDiskSizeBytes);
 
 uint32_t CalculatePickleCRC(const base::Pickle& pickle) {
@@ -219,12 +219,8 @@ void ProcessEntryFile(BackendFileOperations* file_operations,
   } else {
     // Summing up the total size of the entry through all the *_[0-1] files
     total_entry_size += it->second.GetEntrySize();
-    auto tmp_entry_size =
-        total_entry_size.ValueOrDefault(kPlaceHolderSizeWhenInvalid);
-    if (!it->second.SetEntrySize(tmp_entry_size)) {
-      LOG(ERROR) << "Could not set the given entry size as it is too large: "
-                 << static_cast<uint64_t>(tmp_entry_size);
-    }
+    it->second.SetEntrySize(
+        total_entry_size.ValueOrDefault(kPlaceHolderSizeWhenInvalid));
   }
 }
 
@@ -279,19 +275,17 @@ void SimpleIndexFile::SerializeFinalData(base::Time cache_modified,
 bool SimpleIndexFile::IndexMetadata::Deserialize(base::PickleIterator* it) {
   DCHECK(it);
 
-  bool index_read_results =
+  bool v6_format_index_read_results =
       it->ReadUInt64(&magic_number_) && it->ReadUInt32(&version_) &&
       it->ReadUInt64(&entry_count_) && it->ReadUInt64(&cache_size_);
-  if (!index_read_results) {
+  if (!v6_format_index_read_results)
     return false;
+  if (version_ >= 7) {
+    uint32_t tmp_reason;
+    if (!it->ReadUInt32(&tmp_reason))
+      return false;
+    reason_ = static_cast<SimpleIndex::IndexWriteToDiskReason>(tmp_reason);
   }
-
-  uint32_t tmp_reason;
-  if (!it->ReadUInt32(&tmp_reason)) {
-    return false;
-  }
-  reason_ = static_cast<SimpleIndex::IndexWriteToDiskReason>(tmp_reason);
-
   return true;
 }
 
@@ -344,13 +338,11 @@ bool SimpleIndexFile::IndexMetadata::CheckIndexMetadata() {
     return false;
   }
 
-  static_assert(kSimpleIndexFileVersion == 9,
-                "index metadata reader out of date");
-
-  // `version_` must be between the min version to upgrade and the newest
-  // version.
-  return version_ >= kMinSimpleIndexFileVersionSupported &&
-         version_ <= kSimpleVersion &&
+  static_assert(kSimpleVersion == 9, "index metadata reader out of date");
+  // No |reason_| is saved in the version 6 file format.
+  if (version_ == 6)
+    return reason_ == SimpleIndex::INDEX_WRITE_REASON_MAX;
+  return (version_ == 7 || version_ == 8 || version_ == 9) &&
          reason_ < SimpleIndex::INDEX_WRITE_REASON_MAX;
 }
 
@@ -576,7 +568,7 @@ void SimpleIndexFile::Deserialize(net::CacheType cache_type,
     EntryMetadata entry_metadata;
     if (!pickle_it.ReadUInt64(&hash_key) ||
         !entry_metadata.Deserialize(
-            cache_type, &pickle_it,
+            cache_type, &pickle_it, index_metadata.has_entry_in_memory_data(),
             index_metadata.app_cache_has_trailer_prefetch_size())) {
       LOG(WARNING) << "Invalid EntryMetadata in Simple Index file.";
       entries->clear();

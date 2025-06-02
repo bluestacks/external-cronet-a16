@@ -36,7 +36,7 @@ import java.util.List;
  * Context).
  */
 public class PackageManagerWrapper extends PackageManager {
-    private final PackageManager mWrapped;
+    private PackageManager mWrapped;
 
     public PackageManagerWrapper(PackageManager wrapped) {
         super();

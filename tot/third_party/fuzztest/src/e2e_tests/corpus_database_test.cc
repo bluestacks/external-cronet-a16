@@ -57,9 +57,8 @@ absl::StatusOr<std::string> FindFile(absl::string_view root_path,
 }
 
 enum class ExecutionModelParam {
-  kTestBinary,
-  kTestBinaryInvokingCentipedeBinary,
-  kCentipedeBinary
+  kSingleBinary,
+  kWithCentipedeBinary,
 };
 
 struct UpdateCorpusDatabaseRun {
@@ -111,20 +110,11 @@ class UpdateCorpusDatabaseTest
   }
 
   static RunResults RunBinaryMaybeWithCentipede(absl::string_view binary_path,
-                                                RunOptions options) {
-    // Dumping stack trace in gtest would slow down the execution, causing
-    // test flakiness.
-    options.flags[GTEST_FLAG_PREFIX_ "stack_trace_depth"] = "0";
+                                                const RunOptions &options) {
     switch (GetParam()) {
-      case ExecutionModelParam::kTestBinary:
+      case ExecutionModelParam::kSingleBinary:
         return RunBinary(binary_path, options);
-      case ExecutionModelParam::kTestBinaryInvokingCentipedeBinary: {
-        RunOptions centipede_options = options;
-        centipede_options.fuzztest_flags["internal_centipede_binary_path"] =
-            CentipedePath();
-        return RunBinary(binary_path, centipede_options);
-      }
-      case ExecutionModelParam::kCentipedeBinary: {
+      case ExecutionModelParam::kWithCentipedeBinary: {
         RunOptions centipede_options;
         centipede_options.env = options.env;
         centipede_options.timeout = options.timeout;
@@ -351,7 +341,7 @@ TEST_P(UpdateCorpusDatabaseTest, PrintsErrorsWhenBazelTimeoutIsNotEnough) {
   run_options.fuzztest_flags = {{"corpus_database", GetCorpusDatabasePath()},
                                 {"fuzz_for", "20s"}};
   run_options.env = {{"TEST_TIMEOUT", "30"}};
-  run_options.timeout = absl::Seconds(60);
+  run_options.timeout = absl::Seconds(40);
   auto [status, std_out, std_err] = RunBinaryMaybeWithCentipede(
       GetCorpusDatabaseTestingBinaryPath(), run_options);
   EXPECT_THAT(std_err, AllOf(HasSubstr("Fuzzing FuzzTest.FailsInTwoWays"),
@@ -362,9 +352,8 @@ TEST_P(UpdateCorpusDatabaseTest, PrintsErrorsWhenBazelTimeoutIsNotEnough) {
 
 INSTANTIATE_TEST_SUITE_P(
     UpdateCorpusDatabaseTestWithExecutionModel, UpdateCorpusDatabaseTest,
-    testing::ValuesIn({ExecutionModelParam::kTestBinary,
-                       ExecutionModelParam::kTestBinaryInvokingCentipedeBinary,
-                       ExecutionModelParam::kCentipedeBinary}));
+    testing::ValuesIn({ExecutionModelParam::kSingleBinary,
+                       ExecutionModelParam::kWithCentipedeBinary}));
 
 }  // namespace
 }  // namespace fuzztest::internal

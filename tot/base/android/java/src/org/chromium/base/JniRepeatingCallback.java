@@ -4,7 +4,9 @@
 
 package org.chromium.base;
 
-import org.chromium.base.lifetime.Destroyable;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -17,6 +19,33 @@ import org.chromium.build.annotations.Nullable;
  * This class has no additional thread safety measures compared to
  * base::RepeatingCallback.
  */
+@JNINamespace("base::android")
 @NullMarked
-public interface JniRepeatingCallback<T extends @Nullable Object>
-        extends Callback<T>, Destroyable {}
+public class JniRepeatingCallback<T extends @Nullable Object> implements Callback<T> {
+    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+    long mNativePointer;
+
+    @CalledByNative
+    private JniRepeatingCallback(long nativePointer) {
+        mNativePointer = nativePointer;
+    }
+
+    @Override
+    public void onResult(T result) {
+        if (mNativePointer != 0) {
+            JniCallbackUtils.runNativeCallback(this, result);
+        } else {
+            // TODO(mheikal): maybe store destroy callstack to output here?
+            assert false : "Called destroyed callback";
+        }
+    }
+
+    /** Frees the owned base::RepeatingCallback's memory */
+    public void destroy() {
+        if (mNativePointer != 0) {
+            JniCallbackUtils.destroyNativeCallback(this);
+            mNativePointer = 0;
+        }
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+    }
+}

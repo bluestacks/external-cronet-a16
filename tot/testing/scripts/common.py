@@ -197,20 +197,7 @@ def record_local_script_results(name, output_fd, failures, valid):
   elif failures:
     status = result_types.FAIL
   test_log = '\n'.join(failures)
-
-  # Source comes from:
-  # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
-  struct_test_dict = {
-      'coarseName': None,  # Not used for single tests.
-      'fineName': None,  # Not used for single tests.
-      'caseNameComponents': ['*fixture'],
-  }
-  result_sink_client.Post(name,
-                          status,
-                          None,
-                          test_log,
-                          None,
-                          test_id_structured=struct_test_dict)
+  result_sink_client.Post(name, status, None, test_log, None)
 
 
 def parse_common_test_results(json_results, test_separator='/'):

@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef GOOGLE_PROTOBUF_HPB_INTERNAL_MESSAGE_LOCK_H__
-#define GOOGLE_PROTOBUF_HPB_INTERNAL_MESSAGE_LOCK_H__
+#ifndef PROTOBUF_HPB_EXTENSION_LOCK_H_
+#define PROTOBUF_HPB_EXTENSION_LOCK_H_
 
 #include <atomic>
 
@@ -49,4 +49,4 @@ upb_Message* DeepClone(const upb_Message* source,
 
 }  // namespace hpb::internal
 
-#endif  // GOOGLE_PROTOBUF_HPB_INTERNAL_MESSAGE_LOCK_H__
+#endif  // PROTOBUF_HPB_EXTENSION_LOCK_H_

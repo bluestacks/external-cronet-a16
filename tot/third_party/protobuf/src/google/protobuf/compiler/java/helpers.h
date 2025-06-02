@@ -14,8 +14,10 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
+#include <vector>
 
-#include "absl/status/status.h"
+#include "absl/container/flat_hash_map.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/compiler/java/names.h"
 #include "google/protobuf/compiler/java/options.h"
@@ -140,30 +142,25 @@ inline Proto1EnumRepresentation GetProto1EnumRepresentation(
   return Proto1EnumRepresentation::kInteger;
 }
 
-absl::Status ValidateNestInFileClassFeature(const Descriptor& descriptor);
-absl::Status ValidateNestInFileClassFeature(const EnumDescriptor& descriptor);
+// Whether we should generate multiple java files for messages.
+inline bool MultipleJavaFiles(const FileDescriptor* descriptor,
+                              bool immutable) {
+  (void)immutable;
+  return descriptor->options().java_multiple_files();
+}
 
-// Returns true if the generated class for the type is nested in the generated
-// proto file Java class.
-// `immutable` should be set to true if we're generating for the immutable API.
-bool NestedInFileClass(const Descriptor& descriptor, bool immutable);
-bool NestedInFileClass(const EnumDescriptor& descriptor, bool immutable);
-bool NestedInFileClass(const ServiceDescriptor& descriptor, bool immutable);
 
 // Returns true if `descriptor` will be written to its own .java file.
 // `immutable` should be set to true if we're generating for the immutable API.
-// For nested messages, this always returns false, since their generated Java
-// class is always nested in their parent message's Java class i.e. they never
-// have their own standalone Java file.
 template <typename Descriptor>
 bool IsOwnFile(const Descriptor* descriptor, bool immutable) {
   return descriptor->containing_type() == nullptr &&
-         !NestedInFileClass(*descriptor, immutable);
+         MultipleJavaFiles(descriptor->file(), immutable);
 }
 
 template <>
 inline bool IsOwnFile(const ServiceDescriptor* descriptor, bool immutable) {
-  return !NestedInFileClass(*descriptor, immutable);
+  return MultipleJavaFiles(descriptor->file(), immutable);
 }
 
 // If `descriptor` describes an object with its own .java file,
@@ -213,7 +210,7 @@ absl::string_view KotlinTypeName(JavaType type);
 // Get the name of the java enum constant representing this type. E.g.,
 // "INT32" for FieldDescriptor::TYPE_INT32. The enum constant's full
 // name is "com.google.protobuf.WireFormat.FieldType.INT32".
-absl::string_view FieldTypeName(FieldDescriptor::Type field_type);
+absl::string_view FieldTypeName(const FieldDescriptor::Type field_type);
 
 class ClassNameResolver;
 std::string DefaultValue(const FieldDescriptor* field, bool immutable,

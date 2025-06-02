@@ -164,14 +164,8 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
         ADD_FAILURE() << "Unexpected non-dictionary event in trace_events";
         continue;
       }
-      const auto& dict = event.GetDict();
-
-      if (const std::string* s = dict.FindString("s");
-          s != nullptr && *s == "t") {
-        continue;  // Ignore events on thread tracks
-      }
-
-      const std::string* category = dict.FindStringByDottedPath("cat");
+      const std::string* category =
+          event.GetDict().FindStringByDottedPath("cat");
       if (!category) {
         ADD_FAILURE()
             << "Unexpected item without a category field in trace_events";

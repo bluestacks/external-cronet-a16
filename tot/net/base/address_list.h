@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -56,7 +57,11 @@ class NET_EXPORT AddressList {
   // Returns a copy of `list` with port on each element set to |port|.
   static AddressList CopyWithPort(const AddressList& list, uint16_t port);
 
-  friend bool operator==(const AddressList&, const AddressList&) = default;
+  bool operator==(const AddressList& other) const {
+    return std::tie(endpoints_, dns_aliases_) ==
+           std::tie(other.endpoints_, other.dns_aliases_);
+  }
+  bool operator!=(const AddressList& other) const { return !(*this == other); }
 
   // Sets the first entry of `dns_aliases_` to the literal of the first IP
   // address on the list. Assumes that `dns_aliases_` is empty.

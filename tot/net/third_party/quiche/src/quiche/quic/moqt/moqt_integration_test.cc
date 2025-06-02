@@ -203,11 +203,12 @@ TEST_F(MoqtIntegrationTest, AnnounceSuccessThenCancel) {
         matches = true;
         EXPECT_EQ(track_namespace, FullTrackName{"foo"});
         ASSERT_TRUE(error.has_value());
-        EXPECT_EQ(error->error_code, RequestErrorCode::kInternalError);
+        EXPECT_EQ(error->error_code, SubscribeErrorCode::kInternalError);
         EXPECT_EQ(error->reason_phrase, "internal error");
       });
-  server_->session()->CancelAnnounce(
-      FullTrackName{"foo"}, RequestErrorCode::kInternalError, "internal error");
+  server_->session()->CancelAnnounce(FullTrackName{"foo"},
+                                     SubscribeErrorCode::kInternalError,
+                                     "internal error");
   success = test_harness_.RunUntilWithDefaultTimeout([&]() { return matches; });
   EXPECT_TRUE(success);
 }
@@ -460,7 +461,7 @@ TEST_F(MoqtIntegrationTest, AnnounceFailure) {
         matches = true;
         EXPECT_EQ(track_namespace, FullTrackName{"foo"});
         ASSERT_TRUE(error.has_value());
-        EXPECT_EQ(error->error_code, RequestErrorCode::kNotSupported);
+        EXPECT_EQ(error->error_code, SubscribeErrorCode::kNotSupported);
       });
   bool success =
       test_harness_.RunUntilWithDefaultTimeout([&]() { return matches; });
@@ -519,7 +520,7 @@ TEST_F(MoqtIntegrationTest, SubscribeCurrentObjectOk) {
   EXPECT_TRUE(success);
 }
 
-TEST_F(MoqtIntegrationTest, SubscribeNextGroupOk) {
+TEST_F(MoqtIntegrationTest, SubscribeCurrentGroupOk) {
   EstablishSession();
   FullTrackName full_track_name("foo", "bar");
 
@@ -538,8 +539,8 @@ TEST_F(MoqtIntegrationTest, SubscribeNextGroupOk) {
       });
   EXPECT_CALL(client_visitor, OnReply(full_track_name, _, expected_reason))
       .WillOnce([&]() { received_ok = true; });
-  client_->session()->SubscribeNextGroup(full_track_name, &client_visitor,
-                                         VersionSpecificParameters());
+  client_->session()->SubscribeCurrentObject(full_track_name, &client_visitor,
+                                             VersionSpecificParameters());
   bool success =
       test_harness_.RunUntilWithDefaultTimeout([&]() { return received_ok; });
   EXPECT_TRUE(success);

@@ -96,12 +96,6 @@ public final class HttpFlagsLoader {
         }
     }
 
-    @VisibleForTesting
-    public static void flushHttpFlags() {
-        sHttpFlags = null;
-        sVersion = null;
-    }
-
     /**
      * Fetches and caches the available httpflags for the version provided
      *

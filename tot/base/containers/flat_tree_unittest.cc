@@ -76,7 +76,12 @@ class InputIterator {
     return tmp;
   }
 
-  friend bool operator==(const InputIterator&, const InputIterator&) = default;
+  friend bool operator==(const InputIterator& lhs, const InputIterator& rhs) {
+    return lhs.it_ == rhs.it_;
+  }
+  friend bool operator!=(const InputIterator& lhs, const InputIterator& rhs) {
+    return !(lhs == rhs);
+  }
 
  private:
   It it_;

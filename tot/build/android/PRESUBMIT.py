@@ -86,9 +86,8 @@ def CommonChecks(input_api, output_api, *, is_upload):
   })
 
   pytests = [
-      J('.', 'convert_dex_profile_tests.py'),
       J('.', 'list_class_verification_failures_test.py'),
-      J('.', 'test_runner_test.py'),
+      J('.', 'convert_dex_profile_tests.py'),
       J('gyp', 'compile_java_tests.py'),
       J('gyp', 'create_unwind_table_tests.py'),
       J('gyp', 'dex_test.py'),
@@ -121,6 +120,7 @@ def CommonChecks(input_api, output_api, *, is_upload):
       J('pylib', 'results', 'json_results_test.py'),
       J('pylib', 'utils', 'chrome_proxy_utils_test.py'),
       J('pylib', 'utils', 'code_coverage_utils_test.py'),
+      J('pylib', 'utils', 'decorators_test.py'),
       J('pylib', 'utils', 'device_dependencies_test.py'),
       J('pylib', 'utils', 'dexdump_test.py'),
       J('pylib', 'utils', 'gold_utils_test.py'),

@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/filter/gzip_source_stream.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
-#include <stdint.h>
+#include "net/filter/gzip_source_stream.h"
 
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -64,7 +64,9 @@ GzipSourceStream::GzipSourceStream(std::unique_ptr<SourceStream> upstream,
 
 bool GzipSourceStream::Init() {
   zlib_stream_ = std::make_unique<z_stream>();
-  *zlib_stream_ = {};
+  if (!zlib_stream_)
+    return false;
+  memset(zlib_stream_.get(), 0, sizeof(z_stream));
 
   int ret;
   if (type() == SourceStreamType::kGzip) {
@@ -95,16 +97,11 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
     size_t* consumed_bytes,
     bool upstream_end_reached) {
   *consumed_bytes = 0;
-
-  // Span that tracks the portion of `input_buffer` that has not yet been
-  // process. The data isn't const because the zlib API doesn't use consts for
-  // input, but it should not be modified in practice.
-  base::span<uint8_t> input_data =
-      input_buffer->span().first(input_buffer_size);
-
+  char* input_data = input_buffer->data();
+  size_t input_data_size = input_buffer_size;
   size_t bytes_out = 0;
   bool state_compressed_entered = false;
-  while (!input_data.empty() && bytes_out < output_buffer_size) {
+  while (input_data_size > 0 && bytes_out < output_buffer_size) {
     InputState state = input_state_;
     switch (state) {
       case STATE_START: {
@@ -112,7 +109,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
           input_state_ = STATE_SNIFFING_DEFLATE_HEADER;
           break;
         }
-        DCHECK(!input_data.empty());
+        DCHECK_GT(input_data_size, 0u);
         input_state_ = STATE_GZIP_HEADER;
         break;
       }
@@ -121,14 +118,17 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
 
         const size_t kGzipFooterBytes = 8;
         size_t header_end = 0u;
-        GZipHeader::Status status =
-            gzip_header_.ReadMore(input_data, header_end);
+        GZipHeader::Status status = gzip_header_.ReadMore(
+            base::as_bytes(base::span(input_data, input_data_size)),
+            header_end);
         if (status == GZipHeader::INCOMPLETE_HEADER) {
-          input_data = input_data.subspan(input_data.size());
+          input_data += input_data_size;
+          input_data_size = 0;
         } else if (status == GZipHeader::COMPLETE_HEADER) {
           // If there is a valid header, there should also be a valid footer.
           gzip_footer_bytes_left_ = kGzipFooterBytes;
-          input_data = input_data.subspan(header_end);
+          input_data += header_end;
+          input_data_size -= header_end;
           input_state_ = STATE_COMPRESSED_BODY;
         } else if (status == GZipHeader::INVALID_HEADER) {
           return base::unexpected(ERR_CONTENT_DECODING_FAILED);
@@ -138,9 +138,8 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
       case STATE_SNIFFING_DEFLATE_HEADER: {
         DCHECK_EQ(SourceStreamType::kDeflate, type());
 
-        zlib_stream_.get()->next_in =
-            reinterpret_cast<Bytef*>(input_data.data());
-        zlib_stream_.get()->avail_in = input_data.size();
+        zlib_stream_.get()->next_in = reinterpret_cast<Bytef*>(input_data);
+        zlib_stream_.get()->avail_in = input_data_size;
         zlib_stream_.get()->next_out =
             reinterpret_cast<Bytef*>(output_buffer->data());
         zlib_stream_.get()->avail_out = output_buffer_size;
@@ -161,7 +160,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
           break;
         }
 
-        size_t bytes_used = input_data.size() - zlib_stream_.get()->avail_in;
+        size_t bytes_used = input_data_size - zlib_stream_.get()->avail_in;
         bytes_out = output_buffer_size - zlib_stream_.get()->avail_out;
         // If any bytes are output, enough total bytes have been received, or at
         // the end of the stream, assume the response had a valid Zlib header.
@@ -175,11 +174,11 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
             input_state_ = STATE_COMPRESSED_BODY;
           }
         } else {
-          replay_data_.insert(replay_data_.end(), input_data.begin(),
-                              input_data.begin() + bytes_used);
+          replay_data_.append(input_data, bytes_used);
         }
 
-        input_data = input_data.subspan(bytes_used);
+        input_data_size -= bytes_used;
+        input_data += bytes_used;
         break;
       }
       case STATE_REPLAY_DATA: {
@@ -201,8 +200,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         base::expected<size_t, Error> result =
             FilterData(output_buffer, output_buffer_size, replay_buffer.get(),
                        replay_data_.size(), &bytes_used, upstream_end_reached);
-        replay_data_.erase(replay_data_.begin(),
-                           replay_data_.begin() + bytes_used);
+        replay_data_.erase(0, bytes_used);
         // Back up resulting state, and return state to STATE_REPLAY_DATA.
         replay_state_ = input_state_;
         input_state_ = STATE_REPLAY_DATA;
@@ -217,9 +215,8 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         DCHECK(!state_compressed_entered);
 
         state_compressed_entered = true;
-        zlib_stream_.get()->next_in =
-            reinterpret_cast<Bytef*>(input_data.data());
-        zlib_stream_.get()->avail_in = input_data.size();
+        zlib_stream_.get()->next_in = reinterpret_cast<Bytef*>(input_data);
+        zlib_stream_.get()->avail_in = input_data_size;
         zlib_stream_.get()->next_out =
             reinterpret_cast<Bytef*>(output_buffer->data());
         zlib_stream_.get()->avail_out = output_buffer_size;
@@ -228,9 +225,10 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         if (ret != Z_STREAM_END && ret != Z_OK)
           return base::unexpected(ERR_CONTENT_DECODING_FAILED);
 
-        size_t bytes_used = input_data.size() - zlib_stream_.get()->avail_in;
+        size_t bytes_used = input_data_size - zlib_stream_.get()->avail_in;
         bytes_out = output_buffer_size - zlib_stream_.get()->avail_out;
-        input_data = input_data.subspan(bytes_used);
+        input_data_size -= bytes_used;
+        input_data += bytes_used;
         if (ret == Z_STREAM_END)
           input_state_ = STATE_GZIP_FOOTER;
         // zlib has written as much data to |output_buffer| as it could.
@@ -239,20 +237,21 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         break;
       }
       case STATE_GZIP_FOOTER: {
-        size_t to_read = std::min(gzip_footer_bytes_left_, input_data.size());
+        size_t to_read = std::min(gzip_footer_bytes_left_, input_data_size);
         gzip_footer_bytes_left_ -= to_read;
-        input_data = input_data.subspan(to_read);
+        input_data_size -= to_read;
+        input_data += to_read;
         if (gzip_footer_bytes_left_ == 0)
           input_state_ = STATE_IGNORING_EXTRA_BYTES;
         break;
       }
       case STATE_IGNORING_EXTRA_BYTES: {
-        input_data = input_data.subspan(input_data.size());
+        input_data_size = 0;
         break;
       }
     }
   }
-  *consumed_bytes = input_buffer_size - input_data.size();
+  *consumed_bytes = input_buffer_size - input_data_size;
   return bytes_out;
 }
 

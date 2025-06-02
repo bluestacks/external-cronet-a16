@@ -16,7 +16,6 @@
 #include <string>
 
 #include "google/protobuf/unittest.pb.h"
-#include "google/protobuf/unittest_import.pb.h"
 #include "google/protobuf/unittest_mset.pb.h"
 #include "google/protobuf/unittest_mset_wire_format.pb.h"
 #include "google/protobuf/unittest_proto3_arena.pb.h"
@@ -31,6 +30,7 @@
 
 // Must include after defining UNITTEST, etc.
 // clang-format off
+#include "google/protobuf/test_util.inc"
 #include "google/protobuf/wire_format_unittest.inc"
 // clang-format on
 

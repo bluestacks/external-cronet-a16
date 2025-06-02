@@ -19,6 +19,7 @@
 #include "google/protobuf/arena.h"
 #include "google/protobuf/arena_test_util.h"
 #include "google/protobuf/map.h"
+#include "google/protobuf/map_field_inl.h"
 #include "google/protobuf/map_test_util.h"
 #include "google/protobuf/map_unittest.pb.h"
 #include "google/protobuf/message.h"
@@ -34,7 +35,7 @@ namespace protobuf {
 
 namespace internal {
 
-using proto2_unittest::TestAllTypes;
+using unittest::TestAllTypes;
 
 struct MapFieldTestPeer {
   static auto GetArena(const RepeatedPtrFieldBase& v) { return v.GetArena(); }
@@ -45,13 +46,13 @@ struct MapFieldTestPeer {
 };
 
 using TestMapField = ::google::protobuf::internal::MapField<
-    proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse, ::int32_t, ::int32_t,
+    unittest::TestMap_MapInt32Int32Entry_DoNotUse, ::int32_t, ::int32_t,
     ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
     ::google::protobuf::internal::WireFormatLite::TYPE_INT32>;
 
 class MapFieldBasePrimitiveTest : public testing::TestWithParam<bool> {
  protected:
-  typedef proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse EntryType;
+  typedef unittest::TestMap_MapInt32Int32Entry_DoNotUse EntryType;
   typedef MapField<EntryType, int32_t, int32_t, WireFormatLite::TYPE_INT32,
                    WireFormatLite::TYPE_INT32>
       MapFieldType;
@@ -61,7 +62,7 @@ class MapFieldBasePrimitiveTest : public testing::TestWithParam<bool> {
         map_field_(arena_.get()),
         map_field_base_(map_field_.get()) {
     // Get descriptors
-    map_descriptor_ = proto2_unittest::TestMap::descriptor()
+    map_descriptor_ = unittest::TestMap::descriptor()
                           ->FindFieldByName("map_int32_int32")
                           ->message_type();
     key_descriptor_ = map_descriptor_->map_key();
@@ -170,7 +171,7 @@ enum State { CLEAN, MAP_DIRTY, REPEATED_DIRTY };
 class MapFieldStateTest
     : public testing::TestWithParam<std::tuple<State, bool>> {
  protected:
-  typedef proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse EntryType;
+  typedef unittest::TestMap_MapInt32Int32Entry_DoNotUse EntryType;
   typedef MapField<EntryType, int32_t, int32_t, WireFormatLite::TYPE_INT32,
                    WireFormatLite::TYPE_INT32>
       MapFieldType;
@@ -440,8 +441,8 @@ TEST_P(MapFieldStateTest, MutableMapField) {
 }
 
 using MyMapField =
-    MapField<proto2_unittest::TestMap_MapInt32Int32Entry_DoNotUse, int32_t,
-             int32_t, internal::WireFormatLite::TYPE_INT32,
+    MapField<unittest::TestMap_MapInt32Int32Entry_DoNotUse, int32_t, int32_t,
+             internal::WireFormatLite::TYPE_INT32,
              internal::WireFormatLite::TYPE_INT32>;
 
 TEST(MapFieldTest, ConstInit) {

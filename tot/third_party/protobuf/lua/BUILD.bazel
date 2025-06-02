@@ -28,7 +28,7 @@ cc_library(
     hdrs = [
         "upb.h",
     ],
-    copts = UPB_DEFAULT_COPTS + ["-Wno-tautological-constant-out-of-range-compare"],
+    copts = UPB_DEFAULT_COPTS,
     visibility = ["//visibility:public"],
     deps = [
         "//upb:json",
@@ -70,6 +70,8 @@ cc_test(
         ":test_proto_lua",
         "//:descriptor_proto",
         "//conformance:conformance_proto",
+        "//third_party/lunit:console.lua",
+        "//third_party/lunit:lunit.lua",
     ],
     linkstatic = 1,
     deps = [

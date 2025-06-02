@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -759,18 +760,15 @@ std::optional<QuicSessionKey> QuicSessionPool::GetActiveJobToServerId(
                                       : std::nullopt;
 }
 
-QuicChromiumClientSession*
-QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
+bool QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
     const QuicSessionAliasKey& session_alias_key,
     const ServiceEndpoint& service_endpoint,
     const std::set<std::string>& dns_aliases,
     bool use_dns_aliases) {
-  if (QuicChromiumClientSession* session = HasMatchingIpSession(
-          session_alias_key, service_endpoint.ipv6_endpoints, dns_aliases,
-          use_dns_aliases)) {
-    return session;
-  }
   return HasMatchingIpSession(session_alias_key,
+                              service_endpoint.ipv6_endpoints, dns_aliases,
+                              use_dns_aliases) ||
+         HasMatchingIpSession(session_alias_key,
                               service_endpoint.ipv4_endpoints, dns_aliases,
                               use_dns_aliases);
 }
@@ -793,9 +791,9 @@ int QuicSessionPool::RequestSession(
                                              base::Time::Now())) {
     MarkAllActiveSessionsGoingAway(kClockSkewDetected);
   }
-  DCHECK_EQ(HostPortPair(session_key.server_id().host(),
-                         session_key.server_id().port()),
-            HostPortPair::FromURL(url));
+  DCHECK(HostPortPair(session_key.server_id().host(),
+                      session_key.server_id().port())
+             .Equals(HostPortPair::FromURL(url)));
 
   // Add the observer in the `management_config` for the
   // `ConnectionChangeNotifier`.
@@ -885,7 +883,7 @@ int QuicSessionPool::RequestSession(
   }
   if (rv == OK) {
     auto it = active_sessions_.find(session_key);
-    CHECK(it != active_sessions_.end());
+    CHECK(it != active_sessions_.end(), base::NotFatalUntil::M130);
     if (it == active_sessions_.end()) {
       return ERR_QUIC_PROTOCOL_ERROR;
     }
@@ -1555,7 +1553,7 @@ void QuicSessionPool::LogConnectionIpPooling(bool pooled) {
   base::UmaHistogramBoolean("Net.QuicSession.ConnectionIpPooled", pooled);
 }
 
-QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
+bool QuicSessionPool::HasMatchingIpSession(
     const QuicSessionAliasKey& key,
     const std::vector<IPEndPoint>& ip_endpoints,
     const std::set<std::string>& aliases,
@@ -1579,7 +1577,7 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
       ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
       LogFindMatchingIpSessionResult(net_log_, MATCHING_IP_SESSION_FOUND,
                                      session, key.destination());
-      return session;
+      return true;
     }
   }
 
@@ -1609,7 +1607,7 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
       ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
       LogFindMatchingIpSessionResult(net_log_, POOLED_WITH_DIFFERENT_IP_SESSION,
                                      session, key.destination());
-      return session;
+      return true;
     }
   }
   if (can_pool) {
@@ -1619,7 +1617,7 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
     LogFindMatchingIpSessionResult(net_log_, CANNOT_POOL_WITH_EXISTING_SESSIONS,
                                    /*session=*/nullptr, key.destination());
   }
-  return nullptr;
+  return false;
 }
 
 void QuicSessionPool::OnJobComplete(
@@ -1635,7 +1633,7 @@ void QuicSessionPool::OnJobComplete(
         base::TimeTicks::Now() - *proxy_connect_start_time);
   }
 
-  CHECK(iter != active_jobs_.end());
+  CHECK(iter != active_jobs_.end(), base::NotFatalUntil::M130);
   if (rv == OK) {
     if (!has_quic_ever_worked_on_current_network_) {
       set_has_quic_ever_worked_on_current_network(true);

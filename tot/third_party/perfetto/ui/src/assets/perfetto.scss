@@ -28,8 +28,7 @@
 @import "hiring_banner";
 @import "statusbar";
 
-// Widgets/components - keep these sorted alphabetically
-@import "components/data_grid";
+// Widgets - keep these sorted (they should NOT have any inter-dependencies)
 @import "widgets/anchor";
 @import "widgets/button";
 @import "widgets/callout";
@@ -48,8 +47,8 @@
 @import "widgets/icon";
 @import "widgets/menu";
 @import "widgets/middle_ellipsis";
-@import "widgets/multiselect_input";
 @import "widgets/multiselect";
+@import "widgets/multiselect_input";
 @import "widgets/popup";
 @import "widgets/section";
 @import "widgets/segmented_buttons";

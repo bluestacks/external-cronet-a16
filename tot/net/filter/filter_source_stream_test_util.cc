@@ -9,8 +9,6 @@
 
 #include "net/filter/filter_source_stream_test_util.h"
 
-#include <stdint.h>
-
 #include <cstring>
 
 #include "base/check_op.h"

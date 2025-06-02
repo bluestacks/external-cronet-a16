@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/filter/brotli_source_stream.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
 #include <string>
-#include <string_view>
 #include <utility>
-#include <vector>
 
-#include "base/check_op.h"
-#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
+#include "net/filter/brotli_source_stream.h"
 #include "net/filter/mock_source_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -52,42 +51,42 @@ class BrotliSourceStreamTest : public PlatformTest {
     base::FilePath data_dir = GetTestDataDir();
 
     // Read data from the original file into buffer.
-    base::FilePath file_path = data_dir.AppendASCII("google.txt");
+    base::FilePath file_path;
+    file_path = data_dir.AppendASCII("google.txt");
     ASSERT_TRUE(base::ReadFileToString(file_path, &source_data_));
     ASSERT_GE(kDefaultBufferSize, source_data_.size());
 
     // Read data from the encoded file into buffer.
-    base::FilePath encoded_file_path = data_dir.AppendASCII("google.br");
+    base::FilePath encoded_file_path;
+    encoded_file_path = data_dir.AppendASCII("google.br");
     ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &encoded_buffer_));
     ASSERT_GE(kDefaultBufferSize, encoded_buffer_.size());
 
     auto source = std::make_unique<MockSourceStream>();
     source_ = source.get();
     brotli_stream_ = CreateBrotliSourceStream(std::move(source));
-    out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   }
 
   int ReadStream(net::CompletionOnceCallback callback) {
-    return brotli_stream_->Read(out_buffer().get(), out_data_size(),
+    return brotli_stream_->Read(out_buffer(), out_data_size(),
                                 std::move(callback));
   }
 
-  char* out_data() { return out_buffer()->data(); }
-  size_t out_data_size() { return out_buffer()->size(); }
+  IOBuffer* out_buffer() { return out_buffer_.get(); }
+  char* out_data() { return out_buffer_->data(); }
+  size_t out_data_size() { return out_buffer_->size(); }
 
   std::string source_data() { return source_data_; }
 
   size_t source_data_len() { return source_data_.length(); }
 
-  std::string_view encoded_view() { return encoded_buffer_; }
+  char* encoded_buffer() { return &encoded_buffer_[0]; }
+
+  size_t encoded_len() { return encoded_buffer_.length(); }
 
   MockSourceStream* source() { return source_; }
   SourceStream* brotli_stream() { return brotli_stream_.get(); }
-
-  const scoped_refptr<IOBufferWithSize>& out_buffer() { return out_buffer_; }
-  void set_out_buffer(scoped_refptr<IOBufferWithSize> buffer) {
-    out_buffer_ = std::move(buffer);
-  }
+  scoped_refptr<IOBufferWithSize> out_buffer_;
 
  private:
   raw_ptr<MockSourceStream, DanglingUntriaged> source_;
@@ -96,19 +95,18 @@ class BrotliSourceStreamTest : public PlatformTest {
 
   std::string source_data_;
   std::string encoded_buffer_;
-
-  scoped_refptr<IOBufferWithSize> out_buffer_;
 };
 
 // Basic scenario: decoding brotli data with big enough buffer.
 TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockSync) {
-  source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_buffer(), encoded_len(), OK,
+                          MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
 
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
-  EXPECT_EQ(source_data(),
-            base::as_string_view(out_buffer()->first(source_data_len())));
+  EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
   EXPECT_EQ("BROTLI", brotli_stream()->Description());
 }
 
@@ -117,10 +115,12 @@ TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockSync) {
 // byte in the 6 available bytes and return 0.
 TEST_F(BrotliSourceStreamTest, IgnoreExtraData) {
   const unsigned char kResponse[] = {0x1A, 0xDF, 0x6E, 0x74, 0x74, 0x68};
-  source()->AddReadResult(base::as_string_view(kResponse), OK,
-                          MockSourceStream::SYNC);
+  source()->AddReadResult(reinterpret_cast<const char*>(kResponse),
+                          sizeof(kResponse), OK, MockSourceStream::SYNC);
   // Add an EOF.
-  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(reinterpret_cast<const char*>(kResponse), 0, OK,
+                          MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   std::string actual_output;
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
@@ -130,11 +130,15 @@ TEST_F(BrotliSourceStreamTest, IgnoreExtraData) {
 
 // If there are data after decoding is done, ignore the data. crbug.com/659311.
 TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInOneRead) {
-  std::string response_with_extra_data(encoded_view());
+  std::string response_with_extra_data(encoded_buffer(), encoded_len());
   response_with_extra_data.append(1000, 'x');
-  source()->AddReadResult(response_with_extra_data, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(response_with_extra_data.c_str(),
+                          response_with_extra_data.length(), OK,
+                          MockSourceStream::SYNC);
   // Add an EOF.
-  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(response_with_extra_data.c_str(), 0, OK,
+                          MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   std::string actual_output;
   while (true) {
     TestCompletionCallback callback;
@@ -153,10 +157,13 @@ TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInOneRead) {
 TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInDifferentRead) {
   std::string extra_data;
   extra_data.append(1000, 'x');
-  source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
-  source()->AddReadResult(extra_data, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_buffer(), encoded_len(), OK,
+                          MockSourceStream::SYNC);
+  source()->AddReadResult(extra_data.c_str(), extra_data.length(), OK,
+                          MockSourceStream::SYNC);
   // Add an EOF.
-  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(extra_data.c_str(), 0, OK, MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   std::string actual_output;
   while (true) {
     TestCompletionCallback callback;
@@ -173,21 +180,22 @@ TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInDifferentRead) {
 
 // Basic scenario: decoding brotli data with big enough buffer.
 TEST_F(BrotliSourceStreamTest, DecodeBrotliTwoBlockSync) {
-  source()->AddReadResult(encoded_view().substr(0, 10), OK,
+  source()->AddReadResult(encoded_buffer(), 10, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_buffer() + 10, encoded_len() - 10, OK,
                           MockSourceStream::SYNC);
-  source()->AddReadResult(encoded_view().substr(10), OK,
-                          MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
-  EXPECT_EQ(source_data(),
-            base::as_string_view(out_buffer()->first(source_data_len())));
+  EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
   EXPECT_EQ("BROTLI", brotli_stream()->Description());
 }
 
 // Basic scenario: decoding brotli data with big enough buffer.
 TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockAsync) {
-  source()->AddReadResult(encoded_view(), OK, MockSourceStream::ASYNC);
+  source()->AddReadResult(encoded_buffer(), encoded_len(), OK,
+                          MockSourceStream::ASYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
 
@@ -195,8 +203,7 @@ TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockAsync) {
   source()->CompleteNextRead();
   int rv = callback.WaitForResult();
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
-  EXPECT_EQ(source_data(),
-            base::as_string_view(out_buffer()->first(source_data_len())));
+  EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
   EXPECT_EQ("BROTLI", brotli_stream()->Description());
 }
 
@@ -204,24 +211,27 @@ TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockAsync) {
 // To do that, we create a filter with a small buffer that can not hold all
 // the input data.
 TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferSync) {
-  source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_buffer(), encoded_len(), OK,
+                          MockSourceStream::SYNC);
   // Add a 0 byte read to signal EOF.
-  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_buffer(), 0, OK, MockSourceStream::SYNC);
 
-  set_out_buffer(base::MakeRefCounted<IOBufferWithSize>(kSmallBufferSize));
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kSmallBufferSize);
 
-  std::string decoded_result;
-  decoded_result.reserve(source_data_len());
+  scoped_refptr<IOBuffer> buffer =
+      base::MakeRefCounted<IOBufferWithSize>(source_data_len());
+  size_t total_bytes_read = 0;
   int bytes_read = 0;
   do {
     TestCompletionCallback callback;
     bytes_read = ReadStream(callback.callback());
     EXPECT_LE(OK, bytes_read);
     EXPECT_GE(kSmallBufferSize, static_cast<size_t>(bytes_read));
-    decoded_result.append(out_data(), static_cast<size_t>(bytes_read));
+    memcpy(buffer->data() + total_bytes_read, out_data(), bytes_read);
+    total_bytes_read += bytes_read;
   } while (bytes_read > 0);
-  EXPECT_EQ(source_data_len(), decoded_result.size());
-  EXPECT_EQ(source_data(), decoded_result);
+  EXPECT_EQ(source_data_len(), total_bytes_read);
+  EXPECT_EQ(0, memcmp(buffer->data(), source_data().c_str(), total_bytes_read));
   EXPECT_EQ("BROTLI", brotli_stream()->Description());
 }
 
@@ -229,14 +239,16 @@ TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferSync) {
 // To do that, we create a filter with a small buffer that can not hold all
 // the input data.
 TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferAsync) {
-  source()->AddReadResult(encoded_view(), OK, MockSourceStream::ASYNC);
+  source()->AddReadResult(encoded_buffer(), encoded_len(), OK,
+                          MockSourceStream::ASYNC);
   // Add a 0 byte read to signal EOF.
-  source()->AddReadResult(std::string_view(), OK, MockSourceStream::ASYNC);
+  source()->AddReadResult(encoded_buffer(), 0, OK, MockSourceStream::ASYNC);
 
-  set_out_buffer(base::MakeRefCounted<IOBufferWithSize>(kSmallBufferSize));
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kSmallBufferSize);
 
-  std::string decoded_result;
-  decoded_result.reserve(source_data_len());
+  scoped_refptr<IOBuffer> buffer =
+      base::MakeRefCounted<IOBufferWithSize>(source_data_len());
+  size_t total_bytes_read = 0;
   int bytes_read = 0;
   do {
     TestCompletionCallback callback;
@@ -246,10 +258,11 @@ TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferAsync) {
       bytes_read = callback.WaitForResult();
     }
     EXPECT_GE(static_cast<int>(kSmallBufferSize), bytes_read);
-    decoded_result.append(out_data(), static_cast<size_t>(bytes_read));
+    memcpy(buffer->data() + total_bytes_read, out_data(), bytes_read);
+    total_bytes_read += bytes_read;
   } while (bytes_read > 0);
-  EXPECT_EQ(source_data_len(), decoded_result.size());
-  EXPECT_EQ(source_data(), decoded_result);
+  EXPECT_EQ(source_data_len(), total_bytes_read);
+  EXPECT_EQ(0, memcmp(buffer->data(), source_data().c_str(), total_bytes_read));
   EXPECT_EQ("BROTLI", brotli_stream()->Description());
 }
 
@@ -257,34 +270,40 @@ TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferAsync) {
 // The purpose of this test: sometimes the filter will consume input without
 // generating output. Verify filter can handle it correctly.
 TEST_F(BrotliSourceStreamTest, DecodeWithOneByteBuffer) {
-  source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_buffer(), encoded_len(), OK,
+                          MockSourceStream::SYNC);
   // Add a 0 byte read to signal EOF.
-  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
-  set_out_buffer(base::MakeRefCounted<IOBufferWithSize>(1));
-  std::string decoded_result;
-  decoded_result.reserve(source_data_len());
+  source()->AddReadResult(encoded_buffer(), 0, OK, MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(1);
+  scoped_refptr<IOBuffer> buffer =
+      base::MakeRefCounted<IOBufferWithSize>(source_data_len());
+  size_t total_bytes_read = 0;
   int bytes_read = 0;
   do {
     TestCompletionCallback callback;
     bytes_read = ReadStream(callback.callback());
     EXPECT_NE(ERR_IO_PENDING, bytes_read);
-    EXPECT_GE(bytes_read, 0);
-    EXPECT_LE(bytes_read, 1);
-    decoded_result.append(out_data(), static_cast<size_t>(bytes_read));
+    EXPECT_GE(1, bytes_read);
+    memcpy(buffer->data() + total_bytes_read, out_data(), bytes_read);
+    total_bytes_read += bytes_read;
   } while (bytes_read > 0);
-  EXPECT_EQ(source_data_len(), decoded_result.size());
-  EXPECT_EQ(source_data(), decoded_result);
+  EXPECT_EQ(source_data_len(), total_bytes_read);
+  EXPECT_EQ(0,
+            memcmp(buffer->data(), source_data().c_str(), source_data_len()));
   EXPECT_EQ("BROTLI", brotli_stream()->Description());
 }
 
 // Decoding deflate stream with corrupted data.
 TEST_F(BrotliSourceStreamTest, DecodeCorruptedData) {
-  std::vector<char> corrupt_data(encoded_view().begin(), encoded_view().end());
-  size_t pos = corrupt_data.size() / 2;
-  corrupt_data.at(pos) = !corrupt_data.at(pos);
+  char corrupt_data[kDefaultBufferSize];
+  int corrupt_data_len = encoded_len();
+  memcpy(corrupt_data, encoded_buffer(), encoded_len());
+  int pos = corrupt_data_len / 2;
+  corrupt_data[pos] = !corrupt_data[pos];
 
-  source()->AddReadResult(base::as_string_view(corrupt_data), OK,
+  source()->AddReadResult(corrupt_data, corrupt_data_len, OK,
                           MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   int error = OK;
   do {
     TestCompletionCallback callback;
@@ -304,15 +323,19 @@ TEST_F(BrotliSourceStreamTest, DecodeCorruptedData) {
 
 // Decoding deflate stream with missing data.
 TEST_F(BrotliSourceStreamTest, DecodeMissingData) {
-  std::vector<char> corrupt_data(encoded_view().begin(), encoded_view().end());
+  char corrupt_data[kDefaultBufferSize];
+  int corrupt_data_len = encoded_len();
+  memcpy(corrupt_data, encoded_buffer(), encoded_len());
 
-  size_t pos = corrupt_data.size() / 2;
-  CHECK_LT(pos, corrupt_data.size());
-  corrupt_data.erase(corrupt_data.begin() + pos);
+  int pos = corrupt_data_len / 2;
+  int len = corrupt_data_len - pos - 1;
+  memmove(&corrupt_data[pos], &corrupt_data[pos + 1], len);
+  --corrupt_data_len;
 
   // Decode the corrupted data with filter
-  source()->AddReadResult(base::as_string_view(corrupt_data), OK,
+  source()->AddReadResult(corrupt_data, corrupt_data_len, OK,
                           MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   int error = OK;
   do {
     TestCompletionCallback callback;
@@ -327,10 +350,11 @@ TEST_F(BrotliSourceStreamTest, DecodeMissingData) {
 // Decoding brotli stream with empty output data.
 TEST_F(BrotliSourceStreamTest, DecodeEmptyData) {
   char data[1] = {6};  // WBITS = 16, ISLAST = 1, ISLASTEMPTY = 1
+  int data_len = 1;
 
-  source()->AddReadResult(base::as_string_view(data), OK,
-                          MockSourceStream::SYNC);
-  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  source()->AddReadResult(data, data_len, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(data, 0, OK, MockSourceStream::SYNC);
+  out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
   EXPECT_EQ(OK, bytes_read);
@@ -343,30 +367,36 @@ TEST_F(BrotliSourceStreamTest, WithDictionary) {
 
   base::FilePath data_dir = GetTestDataDir();
   // Read data from the encoded file into buffer.
-  base::FilePath encoded_file_path = data_dir.AppendASCII("google.sbr");
+  base::FilePath encoded_file_path;
+  encoded_file_path = data_dir.AppendASCII("google.sbr");
   ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &encoded_buffer));
 
   // Read data from the dictionary file into buffer.
-  base::FilePath dictionary_file_path = data_dir.AppendASCII("test.dict");
+  base::FilePath dictionary_file_path;
+  dictionary_file_path = data_dir.AppendASCII("test.dict");
   ASSERT_TRUE(base::ReadFileToString(dictionary_file_path, &dictionary_data));
 
   scoped_refptr<net::IOBuffer> dictionary_buffer =
       base::MakeRefCounted<net::StringIOBuffer>(dictionary_data);
 
+  scoped_refptr<IOBufferWithSize> out_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+
   auto source = std::make_unique<MockSourceStream>();
-  source->AddReadResult(encoded_buffer, OK, MockSourceStream::SYNC);
+  source->AddReadResult(encoded_buffer.c_str(), encoded_buffer.size(), OK,
+                        MockSourceStream::SYNC);
 
   std::unique_ptr<SourceStream> brotli_stream =
       CreateBrotliSourceStreamWithDictionary(
           std::move(source), dictionary_buffer, dictionary_data.size());
 
   TestCompletionCallback callback;
-  int bytes_read = brotli_stream->Read(out_buffer().get(), kDefaultBufferSize,
+  int bytes_read = brotli_stream->Read(out_buffer.get(), kDefaultBufferSize,
                                        callback.callback());
 
   EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
-  EXPECT_EQ(base::as_string_view(out_buffer()->first(source_data_len())),
-            std::string_view(source_data()));
+  EXPECT_EQ(
+      0, memcmp(out_buffer->data(), source_data().c_str(), source_data_len()));
   EXPECT_EQ("BROTLI", brotli_stream->Description());
 }
 

@@ -25,9 +25,6 @@ namespace {
 // can return false, allowing deletion to be tested.
 std::vector<UserVerifyingKeyLabel> g_deleted_keys_;
 
-// When true, fake UV signing keys indicate that they are hardware backed.
-bool g_fake_hardware_backing_ = false;
-
 // Wraps a software `UnexportableSigningKey`.
 class FakeUserVerifyingSigningKey : public UserVerifyingSigningKey {
  public:
@@ -54,8 +51,6 @@ class FakeUserVerifyingSigningKey : public UserVerifyingSigningKey {
   }
 
   const UserVerifyingKeyLabel& GetKeyLabel() const override { return label_; }
-
-  bool IsHardwareBacked() const override { return g_fake_hardware_backing_; }
 
  private:
   const UserVerifyingKeyLabel label_;
@@ -168,15 +163,12 @@ std::unique_ptr<UserVerifyingKeyProvider> GetFailingUserVerifyingKeyProvider() {
 
 }  // namespace
 
-ScopedFakeUserVerifyingKeyProvider::ScopedFakeUserVerifyingKeyProvider(
-    bool fake_hardware_backing) {
-  g_fake_hardware_backing_ = fake_hardware_backing;
+ScopedFakeUserVerifyingKeyProvider::ScopedFakeUserVerifyingKeyProvider() {
   internal::SetUserVerifyingKeyProviderForTesting(
       GetMockUserVerifyingKeyProvider);
 }
 
 ScopedFakeUserVerifyingKeyProvider::~ScopedFakeUserVerifyingKeyProvider() {
-  g_fake_hardware_backing_ = false;
   internal::SetUserVerifyingKeyProviderForTesting(nullptr);
 }
 

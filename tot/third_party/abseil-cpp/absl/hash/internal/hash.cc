@@ -20,7 +20,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/hash/internal/city.h"
+#include "absl/hash/internal/low_level_hash.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -44,7 +44,7 @@ uint64_t MixingHashState::CombineLargeContiguousImpl32(
 uint64_t MixingHashState::CombineLargeContiguousImpl64(
     uint64_t state, const unsigned char* first, size_t len) {
   while (len >= PiecewiseChunkSize()) {
-    state = Hash64(first, PiecewiseChunkSize(), state);
+    state = Mix(state ^ Hash64(first, PiecewiseChunkSize()), kMul);
     len -= PiecewiseChunkSize();
     first += PiecewiseChunkSize();
   }
@@ -54,6 +54,11 @@ uint64_t MixingHashState::CombineLargeContiguousImpl64(
 }
 
 ABSL_CONST_INIT const void* const MixingHashState::kSeed = &kSeed;
+
+uint64_t MixingHashState::LowLevelHashImpl(const unsigned char* data,
+                                           size_t len) {
+  return LowLevelHashLenGt32(data, len, Seed(), &kStaticRandomData[0]);
+}
 
 }  // namespace hash_internal
 ABSL_NAMESPACE_END

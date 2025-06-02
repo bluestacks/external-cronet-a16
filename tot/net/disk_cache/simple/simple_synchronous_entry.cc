@@ -24,7 +24,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "crypto/hash.h"
+#include "crypto/secure_hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -90,6 +90,14 @@ bool TruncatePath(const FilePath& filename_to_truncate,
   if (!file_to_truncate.SetLength(0))
     return false;
   return true;
+}
+
+void CalculateSHA256OfKey(const std::string& key,
+                          net::SHA256HashValue* out_hash_value) {
+  std::unique_ptr<crypto::SecureHash> hash(
+      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+  hash->Update(key.data(), key.size());
+  hash->Finish(*out_hash_value);
 }
 
 SimpleFileTracker::SubFile SubFileForFileIndex(int file_index) {
@@ -1091,7 +1099,8 @@ void SimpleSynchronousEntry::Close(
         DVLOG(1) << "Could not write stream 0 data.";
         DoomInternal(file_operations.get());
       }
-      auto hash_value = crypto::hash::Sha256(key);
+      net::SHA256HashValue hash_value;
+      CalculateSHA256OfKey(key, &hash_value);
       if (!file->WriteAndCheck(stream_0_offset + entry_stat.data_size(0),
                                hash_value)) {
         RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
@@ -1696,7 +1705,8 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
 
   // If present, check the key SHA256.
   if (has_key_sha256) {
-    auto hash_value = crypto::hash::Sha256(key);
+    net::SHA256HashValue hash_value;
+    CalculateSHA256OfKey(key, &hash_value);
     if (base::byte_span_from_ref(hash_value) !=
         stream_prefetch_data[0].data->span().subspan(
             static_cast<uint32_t>(stream_0_size), sizeof(hash_value))) {
@@ -1910,7 +1920,7 @@ bool SimpleSynchronousEntry::TruncateSparseFile(base::File* sparse_file) {
 bool SimpleSynchronousEntry::InitializeSparseFile(base::File* sparse_file) {
   SimpleFileHeader header;
   header.initial_magic_number = kSimpleInitialMagicNumber;
-  header.version = kSimpleSparseEntryVersion;
+  header.version = kSimpleVersion;
   const std::string& key = *key_;
   header.key_length = key.size();
   header.key_hash = base::PersistentHash(key);
@@ -1946,7 +1956,8 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
     return false;
   }
 
-  if (header.version != kSimpleSparseEntryVersion) {
+  if (header.version < kLastCompatSparseVersion ||
+      header.version > kSimpleVersion) {
     DLOG(WARNING) << "Sparse file unreadable version.";
     return false;
   }

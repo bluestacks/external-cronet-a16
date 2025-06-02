@@ -22,7 +22,7 @@
 #include "quiche/quic/moqt/moqt_publisher.h"
 #include "quiche/quic/moqt/moqt_subscribe_windows.h"
 #include "quiche/common/platform/api/quiche_bug_tracker.h"
-#include "quiche/common/quiche_mem_slice.h"
+#include "quiche/common/platform/api/quiche_mem_slice.h"
 
 namespace moqt {
 
@@ -118,10 +118,10 @@ absl::StatusOr<MoqtTrackStatusCode> MoqtOutgoingQueue::GetTrackStatus() const {
   return MoqtTrackStatusCode::kInProgress;
 }
 
-Location MoqtOutgoingQueue::GetLargestLocation() const {
+Location MoqtOutgoingQueue::GetLargestSequence() const {
   if (queue_.empty()) {
-    QUICHE_BUG(MoqtOutgoingQueue_GetLargestLocation_not_begun)
-        << "Calling GetLargestLocation() on a track that hasn't begun";
+    QUICHE_BUG(MoqtOutgoingQueue_GetLargestSequence_not_begun)
+        << "Calling GetLargestSequence() on a track that hasn't begun";
     return Location{0, 0};
   }
   return Location{current_group_id_, queue_.back().size() - 1};

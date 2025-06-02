@@ -19,7 +19,6 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -180,7 +179,6 @@ ProcessMetrics::GetMemoryInfo() const {
 
 base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
-  TRACE_EVENT("base", "GetCumulativeCPUUsage");
 #if defined(ARCH_CPU_ARM64)
   // Precise CPU usage is not available on Arm CPUs because they don't support
   // constant rate TSC.

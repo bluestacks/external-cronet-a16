@@ -60,6 +60,7 @@
 #endif  // OPENSSL_LINUX
 
 #include <openssl/mem.h>
+#include <openssl/thread.h>
 
 #include "../internal.h"
 #include "getrandom_fillin.h"

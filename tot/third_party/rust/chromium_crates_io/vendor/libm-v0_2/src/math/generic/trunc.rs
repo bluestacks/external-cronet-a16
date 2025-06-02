@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: MIT
  * origin: musl src/math/trunc.c */
 
-use crate::support::{Float, FpResult, Int, IntTy, MinInt, Status};
+use super::super::support::{FpResult, Status};
+use super::super::{Float, Int, IntTy, MinInt};
 
 #[inline]
 pub fn trunc<F: Float>(x: F) -> F {

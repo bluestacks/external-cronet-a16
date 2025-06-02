@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <string>
+#include <vector>
 
-#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -17,7 +18,7 @@
 
 namespace net::ct {
 
-static constexpr uint8_t kSthRootHashLength = 32;
+static const uint8_t kSthRootHashLength = 32;
 
 // Signed Tree Head as defined in section 3.5. of RFC6962
 struct NET_EXPORT SignedTreeHead {
@@ -30,7 +31,7 @@ struct NET_EXPORT SignedTreeHead {
   SignedTreeHead(Version version,
                  const base::Time& timestamp,
                  uint64_t tree_size,
-                 base::span<const uint8_t, kSthRootHashLength> sha256_root_hash,
+                 const char sha256_root_hash[kSthRootHashLength],
                  const DigitallySigned& signature,
                  const std::string& log_id);
   SignedTreeHead(const SignedTreeHead& other);
@@ -50,6 +51,8 @@ struct NET_EXPORT SignedTreeHead {
 NET_EXPORT void PrintTo(const SignedTreeHead& sth, std::ostream* os);
 
 NET_EXPORT bool operator==(const SignedTreeHead& lhs,
+                           const SignedTreeHead& rhs);
+NET_EXPORT bool operator!=(const SignedTreeHead& lhs,
                            const SignedTreeHead& rhs);
 
 }  // namespace net::ct

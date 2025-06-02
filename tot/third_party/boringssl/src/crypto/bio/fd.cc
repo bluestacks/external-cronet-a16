@@ -161,9 +161,8 @@ static int fd_gets(BIO *bp, char *buf, int size) {
 }
 
 static const BIO_METHOD methods_fdp = {
-    BIO_TYPE_FD, "file descriptor", fd_write,
-    fd_read,     fd_gets,           fd_ctrl,
-    fd_new,      fd_free,           /*callback_ctrl=*/nullptr,
+    BIO_TYPE_FD, "file descriptor", fd_write, fd_read, NULL /* puts */,
+    fd_gets,     fd_ctrl,           fd_new,   fd_free, NULL /* callback_ctrl */,
 };
 
 const BIO_METHOD *BIO_s_fd(void) { return &methods_fdp; }

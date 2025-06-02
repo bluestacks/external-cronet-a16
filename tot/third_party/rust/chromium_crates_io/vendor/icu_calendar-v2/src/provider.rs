@@ -16,9 +16,9 @@
 #![allow(clippy::exhaustive_structs, clippy::exhaustive_enums)]
 
 pub mod chinese_based;
-pub mod hijri;
+pub mod islamic;
 pub use chinese_based::{CalendarChineseV1, CalendarDangiV1};
-pub use hijri::CalendarHijriSimulatedMeccaV1;
+pub use islamic::{CalendarIslamicObservationalV1, CalendarIslamicUmmalquraV1};
 
 use crate::types::Weekday;
 use icu_provider::fallback::{LocaleFallbackConfig, LocaleFallbackPriority};
@@ -43,15 +43,16 @@ const _: () = {
     use icu_calendar_data::*;
     pub mod icu {
         pub use crate as calendar;
-        pub use icu_locale as locale;
+        pub use icu_calendar_data::icu_locale as locale;
     }
     make_provider!(Baked);
     impl_calendar_chinese_v1!(Baked);
     impl_calendar_dangi_v1!(Baked);
-    impl_calendar_hijri_simulated_mecca_v1!(Baked);
+    impl_calendar_islamic_observational_v1!(Baked);
+    impl_calendar_islamic_ummalqura_v1!(Baked);
     impl_calendar_japanese_modern_v1!(Baked);
     impl_calendar_japanese_extended_v1!(Baked);
-    impl_calendar_week_v1!(Baked);
+    impl_calendar_week_v2!(Baked);
 };
 
 icu_provider::data_marker!(
@@ -70,8 +71,8 @@ icu_provider::data_marker!(
 );
 icu_provider::data_marker!(
     /// Week information
-    CalendarWeekV1,
-    "calendar/week/v1",
+    CalendarWeekV2,
+    "calendar/week/v2",
     WeekData,
     fallback_config = {
         let mut config = LocaleFallbackConfig::default();
@@ -85,10 +86,11 @@ icu_provider::data_marker!(
 pub const MARKERS: &[DataMarkerInfo] = &[
     CalendarChineseV1::INFO,
     CalendarDangiV1::INFO,
-    CalendarHijriSimulatedMeccaV1::INFO,
+    CalendarIslamicObservationalV1::INFO,
+    CalendarIslamicUmmalquraV1::INFO,
     CalendarJapaneseModernV1::INFO,
     CalendarJapaneseExtendedV1::INFO,
-    CalendarWeekV1::INFO,
+    CalendarWeekV2::INFO,
 ];
 
 /// The date at which an era started
@@ -117,7 +119,7 @@ pub struct EraStartDate {
 }
 
 /// A data structure containing the necessary era data for constructing a
-/// [`Japanese`](crate::cal::Japanese) calendar object
+/// [`Japanese`](crate::japanese::Japanese) calendar object
 ///
 /// <div class="stab unstable">
 /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
@@ -155,6 +157,8 @@ icu_provider::data_struct!(
 pub struct WeekData {
     /// The first day of a week.
     pub first_weekday: Weekday,
+    /// For a given week, the minimum number of that week's days present in a given month or year for the week to be considered part of that month or year.
+    pub min_week_days: u8,
     /// Bitset representing weekdays that are part of the 'weekend', for calendar purposes.
     /// The number of days can be different between locales, and may not be contiguous.
     pub weekend: WeekdaySet,
@@ -227,7 +231,7 @@ impl databake::Bake for WeekdaySet {
     fn bake(&self, ctx: &databake::CrateEnv) -> databake::TokenStream {
         ctx.insert("icu_calendar");
         let days =
-            crate::week::WeekdaySetIterator::new(Weekday::Monday, *self).map(|d| d.bake(ctx));
+            crate::week_of::WeekdaySetIterator::new(Weekday::Monday, *self).map(|d| d.bake(ctx));
         databake::quote! {
             icu_calendar::provider::WeekdaySet::new(&[#(#days),*])
         }
@@ -251,7 +255,7 @@ impl serde::Serialize for WeekdaySet {
             use serde::ser::SerializeSeq;
 
             let mut seq = serializer.serialize_seq(None)?;
-            for day in crate::week::WeekdaySetIterator::new(Weekday::Monday, *self) {
+            for day in crate::week_of::WeekdaySetIterator::new(Weekday::Monday, *self) {
                 seq.serialize_element(&day)?;
             }
             seq.end()

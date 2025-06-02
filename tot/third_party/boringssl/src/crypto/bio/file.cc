@@ -40,7 +40,6 @@
 #include <openssl/mem.h>
 
 #include "../internal.h"
-#include "internal.h"
 
 #if defined(OPENSSL_WINDOWS)
 #include <fcntl.h>
@@ -233,9 +232,11 @@ static int file_gets(BIO *bp, char *buf, int size) {
 }
 
 static const BIO_METHOD methods_filep = {
-    BIO_TYPE_FILE,      "FILE pointer", file_write,
-    file_read,          file_gets,      file_ctrl,
-    /*create=*/nullptr, file_free,      /*callback_ctrl=*/nullptr,
+    BIO_TYPE_FILE,   "FILE pointer",
+    file_write,      file_read,
+    NULL /* puts */, file_gets,
+    file_ctrl,       NULL /* create */,
+    file_free,       NULL /* callback_ctrl */,
 };
 
 const BIO_METHOD *BIO_s_file(void) { return &methods_filep; }

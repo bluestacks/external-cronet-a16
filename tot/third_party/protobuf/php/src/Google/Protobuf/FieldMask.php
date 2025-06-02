@@ -6,8 +6,8 @@
 namespace Google\Protobuf;
 
 use Google\Protobuf\Internal\GPBType;
+use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
-use Google\Protobuf\RepeatedField;
 
 /**
  * `FieldMask` represents a set of symbolic field paths, for example:
@@ -179,7 +179,7 @@ class FieldMask extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type string[] $paths
+     *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $paths
      *           The set of field mask paths.
      * }
      */
@@ -192,7 +192,7 @@ class FieldMask extends \Google\Protobuf\Internal\Message
      * The set of field mask paths.
      *
      * Generated from protobuf field <code>repeated string paths = 1;</code>
-     * @return RepeatedField<string>
+     * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getPaths()
     {
@@ -203,7 +203,7 @@ class FieldMask extends \Google\Protobuf\Internal\Message
      * The set of field mask paths.
      *
      * Generated from protobuf field <code>repeated string paths = 1;</code>
-     * @param string[] $var
+     * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setPaths($var)

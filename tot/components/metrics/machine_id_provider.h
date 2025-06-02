@@ -15,22 +15,21 @@ namespace metrics {
 // platform.
 class MachineIdProvider {
  public:
-  MachineIdProvider();
+  MachineIdProvider() = delete;
   MachineIdProvider(const MachineIdProvider&) = delete;
   MachineIdProvider& operator=(const MachineIdProvider&) = delete;
-  virtual ~MachineIdProvider();
 
   // Returns true if this platform provides a non-empty GetMachineId(). This is
   // useful to avoid an async call to GetMachineId() on platforms with no
   // implementation.
-  virtual bool HasId() const;
+  static bool HasId();
 
   // Get a string containing machine characteristics, to be used as a machine
   // id. The implementation is split into Windows and non-Windows. The former
   // returns the drive serial number and the latter returns the hardware
   // model name. Should not be called if HasId() returns false.
   // The return value should not be stored to disk or transmitted.
-  virtual std::string GetMachineId() const;
+  static std::string GetMachineId();
 };
 
 }  //  namespace metrics

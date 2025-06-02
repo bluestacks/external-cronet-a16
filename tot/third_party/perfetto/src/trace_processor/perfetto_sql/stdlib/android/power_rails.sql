@@ -23,7 +23,7 @@ INCLUDE PERFETTO MODULE time.conversion;
 -- NOTE: Requires dedicated hardware - table is only populated on Pixels.
 CREATE PERFETTO TABLE android_power_rails_counters (
   -- `counter.id`
-  id ID(counter.id),
+  id LONG,
   -- Timestamp of the energy measurement.
   ts TIMESTAMP,
   -- Time until the next energy measurement.
@@ -69,9 +69,7 @@ SELECT
   c.value AS energy_since_boot,
   c.next_value AS energy_since_boot_at_end,
   1e6 * (
-    (
-      c.next_value - c.value
-    ) / c.dur
+    c.delta_value / c.dur
   ) AS average_power,
   c.delta_value AS energy_delta,
   c.track_id,

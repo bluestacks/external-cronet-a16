@@ -16,18 +16,25 @@ import m from 'mithril';
 import {copyToClipboard} from '../../base/clipboard';
 import {QueryResponse} from './queries';
 import {Row} from '../../trace_processor/query_result';
+import {Anchor} from '../../widgets/anchor';
 import {Button} from '../../widgets/button';
 import {Callout} from '../../widgets/callout';
 import {DetailsShell} from '../../widgets/details_shell';
+import {downloadData} from '../../base/download_utils';
 import {Router} from '../../core/router';
 import {AppImpl} from '../../core/app_impl';
 import {Trace} from '../../public/trace';
 import {MenuItem, PopupMenu} from '../../widgets/menu';
 import {Icons} from '../../base/semantic_icons';
-import {DataGrid, renderCell} from '../widgets/data_grid/data_grid';
-import {DataGridDataSource} from '../widgets/data_grid/common';
-import {InMemoryDataSource} from '../widgets/data_grid/in_memory_data_source';
-import {Anchor} from '../../widgets/anchor';
+
+// Controls how many rows we see per page when showing paginated results.
+const ROWS_PER_PAGE = 50;
+
+interface QueryTableRowAttrs {
+  readonly trace: Trace;
+  readonly row: Row;
+  readonly columns: ReadonlyArray<string>;
+}
 
 type Numeric = bigint | number;
 
@@ -74,40 +81,127 @@ export function getSliceId(row: Row): number | undefined {
   return undefined;
 }
 
-interface QueryTableAttrs {
+class QueryTableRow implements m.ClassComponent<QueryTableRowAttrs> {
+  private readonly trace: Trace;
+
+  constructor({attrs}: m.Vnode<QueryTableRowAttrs>) {
+    this.trace = attrs.trace;
+  }
+
+  view(vnode: m.Vnode<QueryTableRowAttrs>) {
+    const {row, columns} = vnode.attrs;
+    const cells = columns.map((col) => this.renderCell(col, row[col]));
+
+    // TODO(dproy): Make click handler work from analyze page.
+    if (
+      Router.parseUrl(window.location.href).page === '/viewer' &&
+      isSliceish(row)
+    ) {
+      return m(
+        'tr',
+        {
+          onclick: () => this.selectAndRevealSlice(row, false),
+          // TODO(altimin): Consider improving the logic here (e.g. delay?) to
+          // account for cases when dblclick fires late.
+          ondblclick: () => this.selectAndRevealSlice(row, true),
+          clickable: true,
+          title: 'Go to slice',
+        },
+        cells,
+      );
+    } else {
+      return m('tr', cells);
+    }
+  }
+
+  private renderCell(name: string, value: Row[string]) {
+    if (value instanceof Uint8Array) {
+      return m('td', this.renderBlob(name, value));
+    } else {
+      return m('td', `${value}`);
+    }
+  }
+
+  private renderBlob(name: string, value: Uint8Array) {
+    return m(
+      Anchor,
+      {
+        onclick: () => downloadData(`${name}.blob`, value),
+      },
+      `Blob (${value.length} bytes)`,
+    );
+  }
+
+  private selectAndRevealSlice(
+    row: Row & Sliceish,
+    switchToCurrentSelectionTab: boolean,
+  ) {
+    const sliceId = getSliceId(row);
+    if (sliceId === undefined) {
+      return;
+    }
+    this.trace.selection.selectSqlEvent('slice', sliceId, {
+      switchToCurrentSelectionTab,
+      scrollToSelection: true,
+    });
+  }
+}
+
+interface QueryTableContentAttrs {
   readonly trace: Trace;
-  readonly query: string;
-  readonly resp?: QueryResponse;
-  readonly contextButtons?: m.Child[];
-  readonly fillParent: boolean;
+  readonly columns: ReadonlyArray<string>;
+  readonly rows: ReadonlyArray<Row>;
+}
+
+class QueryTableContent implements m.ClassComponent<QueryTableContentAttrs> {
+  view({attrs}: m.CVnode<QueryTableContentAttrs>) {
+    const cols = [];
+    for (const col of attrs.columns) {
+      cols.push(m('td', col));
+    }
+    const tableHeader = m('tr', cols);
+
+    const rows = attrs.rows.map((row) => {
+      return m(QueryTableRow, {
+        trace: attrs.trace,
+        row,
+        columns: attrs.columns,
+      });
+    });
+
+    return m('table.pf-query-table', m('thead', tableHeader), m('tbody', rows));
+  }
+}
+
+interface QueryTableAttrs {
+  trace: Trace;
+  query: string;
+  resp?: QueryResponse;
+  contextButtons?: m.Child[];
+  fillParent: boolean;
 }
 
 export class QueryTable implements m.ClassComponent<QueryTableAttrs> {
   private readonly trace: Trace;
-  private dataSource?: DataGridDataSource;
+  private pageNumber = 0;
 
   constructor({attrs}: m.CVnode<QueryTableAttrs>) {
     this.trace = attrs.trace;
-    if (attrs.resp) {
-      this.dataSource = new InMemoryDataSource(attrs.resp.rows);
-    }
-  }
-
-  onbeforeupdate(
-    vnode: m.Vnode<QueryTableAttrs, this>,
-    old: m.VnodeDOM<QueryTableAttrs, this>,
-  ): boolean | void {
-    if (vnode.attrs.resp !== old.attrs.resp) {
-      if (vnode.attrs.resp) {
-        this.dataSource = new InMemoryDataSource(vnode.attrs.resp.rows);
-      } else {
-        this.dataSource = undefined;
-      }
-    }
   }
 
   view({attrs}: m.CVnode<QueryTableAttrs>) {
     const {resp, query, contextButtons = [], fillParent} = attrs;
+
+    // Clamp the page number to ensure the page count doesn't exceed the number
+    // of rows in the results.
+    if (resp) {
+      const pageCount = this.getPageCount(resp.rows.length);
+      if (this.pageNumber >= pageCount) {
+        this.pageNumber = Math.max(0, pageCount - 1);
+      }
+    } else {
+      this.pageNumber = 0;
+    }
 
     return m(
       DetailsShell,
@@ -117,8 +211,22 @@ export class QueryTable implements m.ClassComponent<QueryTableAttrs> {
         buttons: this.renderButtons(query, contextButtons, resp),
         fillParent,
       },
-      resp && this.dataSource && this.renderTableContent(resp, this.dataSource),
+      resp && this.renderTableContent(resp),
     );
+  }
+
+  private getPageCount(rowCount: number) {
+    return Math.floor((rowCount - 1) / ROWS_PER_PAGE) + 1;
+  }
+
+  private getFirstRowInPage() {
+    return this.pageNumber * ROWS_PER_PAGE;
+  }
+
+  private getCountOfRowsInPage(totalRows: number) {
+    const firstRow = this.getFirstRowInPage();
+    const endStop = Math.min(firstRow + ROWS_PER_PAGE, totalRows);
+    return endStop - firstRow;
   }
 
   private renderTitle(resp?: QueryResponse) {
@@ -139,6 +247,7 @@ export class QueryTable implements m.ClassComponent<QueryTableAttrs> {
     resp?: QueryResponse,
   ) {
     return [
+      resp && this.renderPrevNextButtons(resp),
       contextButtons,
       m(
         PopupMenu,
@@ -167,10 +276,35 @@ export class QueryTable implements m.ClassComponent<QueryTableAttrs> {
     ];
   }
 
-  private renderTableContent(
-    resp: QueryResponse,
-    dataSource: DataGridDataSource,
-  ) {
+  private renderPrevNextButtons(resp: QueryResponse) {
+    const from = this.getFirstRowInPage();
+    const to = Math.min(from + this.getCountOfRowsInPage(resp.rows.length)) - 1;
+    const pageCount = this.getPageCount(resp.rows.length);
+
+    return [
+      `Showing rows ${from + 1} to ${to + 1} of ${resp.rows.length}`,
+      m(Button, {
+        label: 'Prev',
+        icon: 'skip_previous',
+        title: 'Go to previous page of results',
+        disabled: this.pageNumber === 0,
+        onclick: () => {
+          this.pageNumber = Math.max(0, this.pageNumber - 1);
+        },
+      }),
+      m(Button, {
+        label: 'Next',
+        icon: 'skip_next',
+        title: 'Go to next page of results',
+        disabled: this.pageNumber >= pageCount - 1,
+        onclick: () => {
+          this.pageNumber = Math.min(pageCount - 1, this.pageNumber + 1);
+        },
+      }),
+    ];
+  }
+
+  private renderTableContent(resp: QueryResponse) {
     return m(
       '.pf-query-panel',
       resp.statementWithOutputCount > 1 &&
@@ -184,57 +318,31 @@ export class QueryTable implements m.ClassComponent<QueryTableAttrs> {
             'Only the results for the last statement are displayed.',
           ),
         ),
-      this.renderContent(resp, dataSource),
+      this.renderContent(resp),
     );
   }
 
-  private renderContent(resp: QueryResponse, dataSource: DataGridDataSource) {
+  private renderContent(resp: QueryResponse) {
     if (resp.error) {
       return m('.query-error', `SQL error: ${resp.error}`);
     }
 
-    const onViewerPage =
-      Router.parseUrl(window.location.href).page === '/viewer';
+    // Pick out only the rows in this page.
+    const rowOffset = this.getFirstRowInPage();
+    const totalRows = this.getCountOfRowsInPage(resp.rows.length);
+    const rowsInPage: Row[] = [];
+    for (
+      let rowIndex = rowOffset;
+      rowIndex < rowOffset + totalRows;
+      ++rowIndex
+    ) {
+      rowsInPage.push(resp.rows[rowIndex]);
+    }
 
-    return m(DataGrid, {
-      // If filters are defined by no onFilterChanged handler, the grid operates
-      // in filter read only mode.
-      filters: [],
-      columns: resp.columns.map((c) => ({name: c})),
-      dataSource,
-      cellRenderer: (value, name, row) => {
-        const sliceId = getSliceId(row);
-        const cell = renderCell(value, name);
-        if (
-          name === 'id' &&
-          sliceId !== undefined &&
-          onViewerPage &&
-          isSliceish(row)
-        ) {
-          return m(
-            Anchor,
-            {
-              title: 'Go to slice',
-              icon: Icons.UpdateSelection,
-              onclick: () => this.goToSlice(sliceId, false),
-              ondblclick: () => this.goToSlice(sliceId, true),
-            },
-            cell,
-          );
-        } else {
-          return cell;
-        }
-      },
-    });
-  }
-
-  private goToSlice(
-    sliceId: number,
-    switchToCurrentSelectionTab: boolean,
-  ): void {
-    this.trace.selection.selectSqlEvent('slice', sliceId, {
-      switchToCurrentSelectionTab,
-      scrollToSelection: true,
+    return m(QueryTableContent, {
+      trace: this.trace,
+      columns: resp.columns,
+      rows: rowsInPage,
     });
   }
 }

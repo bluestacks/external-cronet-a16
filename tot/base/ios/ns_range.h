@@ -12,4 +12,9 @@ inline bool operator==(NSRange lhs, NSRange rhs) {
   return lhs.location == rhs.location && lhs.length == rhs.length;
 }
 
+// Returns whether the two NSRange are not equal.
+inline bool operator!=(NSRange lhs, NSRange rhs) {
+  return lhs.location != rhs.location || lhs.length != rhs.length;
+}
+
 #endif  // BASE_IOS_NS_RANGE_H_

@@ -348,16 +348,15 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
   DCHECK(!pool()->HasActiveSession(key().session_key()));
   // There may well now be an active session for this IP.  If so, use the
   // existing session instead.
-  if (QuicChromiumClientSession* matching_session =
-          pool()->HasMatchingIpSession(
-              key(), {ToIPEndPoint(session_->connection()->peer_address())},
-              /*aliases=*/{}, use_dns_aliases_)) {
+  if (pool()->HasMatchingIpSession(
+          key(), {ToIPEndPoint(session_->connection()->peer_address())},
+          /*aliases=*/{}, use_dns_aliases_)) {
     QuicSessionPool::LogConnectionIpPooling(true);
     session_->connection()->CloseConnection(
         quic::QUIC_CONNECTION_IP_POOLED,
         "An active session exists for the given IP.",
         quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
-    session_ = matching_session;
+    session_ = nullptr;
     return OK;
   }
   QuicSessionPool::LogConnectionIpPooling(false);

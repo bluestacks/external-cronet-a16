@@ -381,8 +381,8 @@ class MockNetworkLayer final : public HttpTransactionFactory {
   }
 
   // HttpTransactionFactory:
-  std::unique_ptr<HttpTransaction> CreateTransaction(
-      RequestPriority priority) override;
+  int CreateTransaction(RequestPriority priority,
+                        std::unique_ptr<HttpTransaction>* trans) override;
   HttpCache* GetCache() override;
   HttpNetworkSession* GetSession() override;
 

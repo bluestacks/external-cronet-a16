@@ -7,7 +7,8 @@
 //! performance seems to be better (based on icount) and it does not seem to experience rounding
 //! errors on i386.
 
-use crate::support::{Float, FpResult, Int, IntTy, MinInt, Status};
+use super::super::support::{FpResult, Status};
+use super::super::{Float, Int, IntTy, MinInt};
 
 #[inline]
 pub fn ceil<F: Float>(x: F) -> F {

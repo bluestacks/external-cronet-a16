@@ -265,23 +265,7 @@ impl<'a, T: TrieValue> CodePointMapDataBorrowed<'a, T> {
 }
 
 impl CodePointMapDataBorrowed<'_, GeneralCategory> {
-    /// Get a [`CodePointSetData`] for all elements corresponding to a particular value group
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
-    /// use icu::properties::CodePointMapData;
-    ///
-    /// let gc = CodePointMapData::<GeneralCategory>::new();
-    ///
-    /// let other_letter_set_data =
-    ///     gc.get_set_for_value_group(GeneralCategoryGroup::OtherLetter);
-    /// let other_letter_set = other_letter_set_data.as_borrowed();
-    ///
-    /// assert!(other_letter_set.contains('木')); // U+6728
-    /// assert!(!other_letter_set.contains('🎃')); // U+1F383 JACK-O-LANTERN
-    /// ```
+    /// TODO
     #[cfg(feature = "alloc")]
     pub fn get_set_for_value_group(self, value: GeneralCategoryGroup) -> crate::CodePointSetData {
         let matching_gc_ranges = self

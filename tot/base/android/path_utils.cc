@@ -90,10 +90,5 @@ bool GetExternalStorageDirectory(FilePath* result) {
   return true;
 }
 
-int64_t GetCacheQuotaBytes() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_PathUtils_getCacheQuotaBytes(env);
-}
-
 }  // namespace android
 }  // namespace base

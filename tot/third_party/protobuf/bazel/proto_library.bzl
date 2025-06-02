@@ -4,11 +4,12 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
-
-"""Definition of proto_library rule."""
+"""
+Macro of proto_library rule.
+"""
 
 load("@proto_bazel_features//:features.bzl", "bazel_features")
-load("//bazel/private:proto_library_rule.bzl", _proto_library = "proto_library")
+load("//bazel/private:bazel_proto_library_rule.bzl", _proto_library = "proto_library")
 
 def proto_library(**kwattrs):
     # This condition causes Starlark rules to be used only on Bazel >=7.0.0

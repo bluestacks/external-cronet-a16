@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -82,8 +87,9 @@ void CreateUDPAddress(const std::string& ip_str,
 void UDPSocketPerfTest::WritePacketsToSocket(UDPClientSocket* socket,
                                              int num_of_packets,
                                              base::OnceClosure* done_callback) {
-  auto io_buffer = base::MakeRefCounted<VectorIOBuffer>(
-      std::vector<uint8_t>(kPacketSize, 'G'));
+  scoped_refptr<IOBufferWithSize> io_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kPacketSize);
+  memset(io_buffer->data(), 'G', kPacketSize);
 
   while (num_of_packets) {
     int rv = socket->Write(

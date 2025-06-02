@@ -39,7 +39,7 @@ export interface ArgNode<T> {
 //
 // See unit tests for examples.
 export function convertArgsToTree<T extends {key: string}>(
-  input: ReadonlyArray<T>,
+  input: T[],
 ): ArgNode<T>[] {
   const result: ArgNode<T>[] = [];
   for (const arg of input) {

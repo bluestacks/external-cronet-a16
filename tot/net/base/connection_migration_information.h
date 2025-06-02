@@ -25,6 +25,8 @@ struct NET_EXPORT ConnectionMigrationInformation {
 
     bool operator==(const ConnectionMigrationInformation::NetworkEventCount&
                         other) const = default;
+    bool operator!=(const ConnectionMigrationInformation::NetworkEventCount&
+                        other) const = default;
     ConnectionMigrationInformation::NetworkEventCount operator-(
         const ConnectionMigrationInformation::NetworkEventCount& other) const;
 

@@ -52,15 +52,15 @@ impl<Wr: Writeable> Writeable for StringAndWriteable<'_, Wr> {
     }
 }
 
-pub(crate) struct FullCaseWriteable<'a, 'data, const IS_TITLE_CONTEXT: bool> {
-    data: &'data CaseMap<'data>,
+pub(crate) struct FullCaseWriteable<'a, const IS_TITLE_CONTEXT: bool> {
+    data: &'a CaseMap<'a>,
     src: &'a str,
     locale: CaseMapLocale,
     mapping: MappingKind,
     titlecase_tail_casing: TrailingCase,
 }
 
-impl<'a, const IS_TITLE_CONTEXT: bool> Writeable for FullCaseWriteable<'a, '_, IS_TITLE_CONTEXT> {
+impl<const IS_TITLE_CONTEXT: bool> Writeable for FullCaseWriteable<'_, IS_TITLE_CONTEXT> {
     #[allow(clippy::indexing_slicing)] // last_uncopied_index and i are known to be in bounds
     fn write_to<W: fmt::Write + ?Sized>(&self, sink: &mut W) -> fmt::Result {
         let src = self.src;
@@ -86,9 +86,6 @@ impl<'a, const IS_TITLE_CONTEXT: bool> Writeable for FullCaseWriteable<'a, '_, I
     }
     fn writeable_length_hint(&self) -> writeable::LengthHint {
         writeable::LengthHint::at_least(self.src.len())
-    }
-    fn write_to_string(&self) -> alloc::borrow::Cow<'a, str> {
-        writeable::to_string_or_borrow(self, self.src.as_bytes())
     }
 }
 
@@ -528,14 +525,14 @@ impl<'data> CaseMap<'data> {
     ///
     /// titlecase_tail_casing is only read in IS_TITLE_CONTEXT
     pub(crate) fn full_helper_writeable<'a: 'data, const IS_TITLE_CONTEXT: bool>(
-        &'data self,
+        &'a self,
         src: &'a str,
         locale: CaseMapLocale,
         mapping: MappingKind,
         titlecase_tail_casing: TrailingCase,
-    ) -> FullCaseWriteable<'a, 'data, IS_TITLE_CONTEXT> {
-        // Ensure that they are either both true or both false
-        debug_assert!(IS_TITLE_CONTEXT == (mapping == MappingKind::Title));
+    ) -> FullCaseWriteable<'a, IS_TITLE_CONTEXT> {
+        // Ensure that they are either both true or both false, i.e. an XNOR operation
+        debug_assert!(!(IS_TITLE_CONTEXT ^ (mapping == MappingKind::Title)));
 
         FullCaseWriteable::<IS_TITLE_CONTEXT> {
             data: self,

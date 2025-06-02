@@ -54,8 +54,6 @@ void AssertHasSampledAllocs(
 void AssertNoProfileContents(
     const std::vector<protos::gen::TracePacket>& packets);
 
-bool RunningWithNativeBridge();
-
 }  // namespace perfetto
 
 #endif  // TEST_CTS_HEAPPROFD_TEST_HELPER_H_

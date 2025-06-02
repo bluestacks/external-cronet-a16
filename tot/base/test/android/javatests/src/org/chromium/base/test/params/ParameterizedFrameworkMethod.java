@@ -17,8 +17,8 @@ import java.util.List;
  * represents the parameters for this test method
  */
 public class ParameterizedFrameworkMethod extends FrameworkMethod {
-    private final ParameterSet mParameterSet;
-    private final String mName;
+    private ParameterSet mParameterSet;
+    private String mName;
 
     public ParameterizedFrameworkMethod(
             Method method, ParameterSet parameterSet, String classParameterSetName) {

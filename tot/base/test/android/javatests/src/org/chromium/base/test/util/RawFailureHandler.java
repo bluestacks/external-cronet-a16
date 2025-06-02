@@ -18,7 +18,7 @@ import org.hamcrest.Matcher;
  */
 public class RawFailureHandler implements FailureHandler {
 
-    private static final RawFailureHandler sInstance = new RawFailureHandler();
+    private static RawFailureHandler sInstance = new RawFailureHandler();
 
     public static RawFailureHandler getInstance() {
         return sInstance;

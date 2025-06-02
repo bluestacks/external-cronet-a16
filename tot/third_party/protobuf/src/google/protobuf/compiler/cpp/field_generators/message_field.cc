@@ -26,9 +26,6 @@
 #include "google/protobuf/descriptor.pb.h"
 #include "google/protobuf/io/printer.h"
 
-// Must be included last.
-#include "google/protobuf/port_def.inc"
-
 namespace google {
 namespace protobuf {
 namespace compiler {
@@ -1063,5 +1060,3 @@ std::unique_ptr<FieldGeneratorBase> MakeOneofMessageGenerator(
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
-
-#include "google/protobuf/port_undef.inc"

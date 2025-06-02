@@ -45,7 +45,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
 
     // The executor thread will block on this after reaching a terminal method.
     // Terminal methods are (onSucceeded, onFailed or onCancelled)
-    private final ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
+    private ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
 
     // Conditionally fail on certain steps.
     private FailureType mFailureType = FailureType.NONE;

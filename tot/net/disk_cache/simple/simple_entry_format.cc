@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/disk_cache/simple/simple_entry_format.h"
 
-#include "base/containers/span.h"
+#include <cstring>
 
 namespace disk_cache {
 
 SimpleFileHeader::SimpleFileHeader() {
-  // We don't want unset holes in types stored to disk.
-  static_assert(std::has_unique_object_representations_v<SimpleFileHeader>,
-                "SimpleFileHeader should have no implicit padding bytes");
+  // Make hashing repeatable: leave no padding bytes untouched.
+  std::memset(this, 0, sizeof(*this));
 }
 
 SimpleFileEOF::SimpleFileEOF() {
-  // We don't want unset holes in types stored to disk.
-  static_assert(std::has_unique_object_representations_v<SimpleFileEOF>,
-                "SimpleFileEOF should have no implicit padding bytes");
+  // Make hashing repeatable: leave no padding bytes untouched.
+  std::memset(this, 0, sizeof(*this));
 }
 
 SimpleFileSparseRangeHeader::SimpleFileSparseRangeHeader() {
-  // We don't want unset holes in types stored to disk.
-  static_assert(
-      std::has_unique_object_representations_v<SimpleFileSparseRangeHeader>,
-      "SimpleFileSparseRangeHeader should have no implicit padding bytes");
+  // Make hashing repeatable: leave no padding bytes untouched.
+  std::memset(this, 0, sizeof(*this));
 }
 
 }  // namespace disk_cache

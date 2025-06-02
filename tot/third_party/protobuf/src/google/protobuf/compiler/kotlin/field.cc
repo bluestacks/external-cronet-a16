@@ -101,8 +101,7 @@ void FieldGenerator::GeneratePritimiveField(io::Printer* printer) const {
   }
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Print(
       "public fun ${$clear$kt_capitalized_name$$}$() {\n"
       "  $kt_dsl_builder$.${$clear$capitalized_name$$}$()\n"
@@ -110,8 +109,7 @@ void FieldGenerator::GeneratePritimiveField(io::Printer* printer) const {
 
   if (descriptor_->has_presence()) {
     WriteFieldAccessorDocComment(printer, descriptor_, java::HAZZER,
-                                 context_->options(), /* builder */ false,
-                                 /* kdoc */ true);
+                                 context_->options(), /* kdoc */ true);
     printer->Print(
         "public fun ${$has$kt_capitalized_name$$}$(): kotlin.Boolean {\n"
         "  return $kt_dsl_builder$.${$has$capitalized_name$$}$()\n"
@@ -144,8 +142,7 @@ void FieldGenerator::GenerateRepeatedPritimiveField(
       "  )\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("add$kt_capitalized_name$", name_ctx); }},
@@ -159,8 +156,7 @@ void FieldGenerator::GenerateRepeatedPritimiveField(
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -176,8 +172,7 @@ void FieldGenerator::GenerateRepeatedPritimiveField(
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -192,8 +187,7 @@ void FieldGenerator::GenerateRepeatedPritimiveField(
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -209,8 +203,7 @@ void FieldGenerator::GenerateRepeatedPritimiveField(
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_INDEXED_SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("set$kt_capitalized_name$", name_ctx); }},
@@ -224,8 +217,7 @@ void FieldGenerator::GenerateRepeatedPritimiveField(
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -271,16 +263,14 @@ void FieldGenerator::GenerateMessageField(io::Printer* printer) const {
       "  }\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Print(
       "public fun ${$clear$kt_capitalized_name$$}$() {\n"
       "  $kt_dsl_builder$.${$clear$capitalized_name$$}$()\n"
       "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::HAZZER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Print(
       "public fun ${$has$kt_capitalized_name$$}$(): kotlin.Boolean {\n"
       "  return $kt_dsl_builder$.${$has$capitalized_name$$}$()\n"
@@ -318,8 +308,7 @@ void FieldGenerator::GenerateRepeatedMessageField(io::Printer* printer) const {
       "  )\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("add$kt_capitalized_name$", name_ctx); }},
@@ -333,8 +322,7 @@ void FieldGenerator::GenerateRepeatedMessageField(io::Printer* printer) const {
       "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -350,8 +338,7 @@ void FieldGenerator::GenerateRepeatedMessageField(io::Printer* printer) const {
       "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -366,8 +353,7 @@ void FieldGenerator::GenerateRepeatedMessageField(io::Printer* printer) const {
       "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -383,8 +369,7 @@ void FieldGenerator::GenerateRepeatedMessageField(io::Printer* printer) const {
       "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_INDEXED_SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("set$kt_capitalized_name$", name_ctx); }},
@@ -398,8 +383,7 @@ void FieldGenerator::GenerateRepeatedMessageField(io::Printer* printer) const {
       "}\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -439,8 +423,7 @@ void FieldGenerator::GenerateStringField(io::Printer* printer) const {
       "  }\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Print(
       "public fun ${$clear$kt_capitalized_name$$}$() {\n"
       "  $kt_dsl_builder$.${$clear$capitalized_name$$}$()\n"
@@ -448,8 +431,7 @@ void FieldGenerator::GenerateStringField(io::Printer* printer) const {
 
   if (descriptor_->has_presence()) {
     WriteFieldAccessorDocComment(printer, descriptor_, java::HAZZER,
-                                 context_->options(), /* builder */ false,
-                                 /* kdoc */ true);
+                                 context_->options(), /* kdoc */ true);
     printer->Print(
         "public fun ${$has$kt_capitalized_name$$}$(): kotlin.Boolean {\n"
         "  return $kt_dsl_builder$.${$has$capitalized_name$$}$()\n"
@@ -471,8 +453,7 @@ void FieldGenerator::GenerateRepeatedStringField(io::Printer* printer) const {
 
   // property for List<String>
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_GETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Print(
       "$kt_deprecation$public val $kt_name$: "
       "com.google.protobuf.kotlin.DslList"
@@ -485,8 +466,7 @@ void FieldGenerator::GenerateRepeatedStringField(io::Printer* printer) const {
 
   // List<String>.add(String)
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("add$kt_capitalized_name$", name_ctx); }},
@@ -501,8 +481,7 @@ void FieldGenerator::GenerateRepeatedStringField(io::Printer* printer) const {
 
   // List<String> += String
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -519,8 +498,7 @@ void FieldGenerator::GenerateRepeatedStringField(io::Printer* printer) const {
 
   // List<String>.addAll(Iterable<String>)
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -536,8 +514,7 @@ void FieldGenerator::GenerateRepeatedStringField(io::Printer* printer) const {
 
   // List<String> += Iterable<String>
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -554,8 +531,7 @@ void FieldGenerator::GenerateRepeatedStringField(io::Printer* printer) const {
 
   // List<String>[Int] = String
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_INDEXED_SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("set$kt_capitalized_name$", name_ctx); }},
@@ -569,8 +545,7 @@ void FieldGenerator::GenerateRepeatedStringField(io::Printer* printer) const {
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("set$kt_capitalized_name$", name_ctx); }},
@@ -633,7 +608,7 @@ void FieldGenerator::GenerateEnumField(io::Printer* printer) const {
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
                                context_->options(),
-                               /* builder */ false, /* kdoc */ true);
+                               /* kdoc */ true);
   printer->Print(
       "public fun ${$clear$kt_capitalized_name$$}$() {\n"
       "  $kt_dsl_builder$.${$clear$capitalized_name$$}$()\n"
@@ -642,7 +617,7 @@ void FieldGenerator::GenerateEnumField(io::Printer* printer) const {
   if (descriptor_->has_presence()) {
     WriteFieldAccessorDocComment(printer, descriptor_, java::HAZZER,
                                  context_->options(),
-                                 /* builder */ false, /* kdoc */ true);
+                                 /* kdoc */ true);
     printer->Print(
         "public fun ${$has$kt_capitalized_name$$}$(): kotlin.Boolean {\n"
         "  return $kt_dsl_builder$.${$has$capitalized_name$$}$()\n"
@@ -674,8 +649,7 @@ void FieldGenerator::GenerateRepeatedEnumField(io::Printer* printer) const {
       "  )\n");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("add$kt_capitalized_name$", name_ctx); }},
@@ -689,8 +663,7 @@ void FieldGenerator::GenerateRepeatedEnumField(io::Printer* printer) const {
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -706,8 +679,7 @@ void FieldGenerator::GenerateRepeatedEnumField(io::Printer* printer) const {
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -722,8 +694,7 @@ void FieldGenerator::GenerateRepeatedEnumField(io::Printer* printer) const {
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",
@@ -739,8 +710,7 @@ void FieldGenerator::GenerateRepeatedEnumField(io::Printer* printer) const {
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::LIST_INDEXED_SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name", [&] { JvmName("set$kt_capitalized_name$", name_ctx); }},
@@ -754,8 +724,7 @@ void FieldGenerator::GenerateRepeatedEnumField(io::Printer* printer) const {
       "}");
 
   WriteFieldAccessorDocComment(printer, descriptor_, java::CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ true);
+                               context_->options(), /* kdoc */ true);
   printer->Emit(
       {
           {"jvm_name",

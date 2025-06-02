@@ -60,6 +60,8 @@ class BASE_EXPORT dict_iterator {
 
   BASE_EXPORT friend bool operator==(const dict_iterator& lhs,
                                      const dict_iterator& rhs);
+  BASE_EXPORT friend bool operator!=(const dict_iterator& lhs,
+                                     const dict_iterator& rhs);
 
   // Currently, there is no easy way to friend Value::Dict. Once dictionary
   // storage is updated to not require a proxy iterator, the implementation can
@@ -112,6 +114,8 @@ class BASE_EXPORT const_dict_iterator {
   const_dict_iterator operator--(int);
 
   BASE_EXPORT friend bool operator==(const const_dict_iterator& lhs,
+                                     const const_dict_iterator& rhs);
+  BASE_EXPORT friend bool operator!=(const const_dict_iterator& lhs,
                                      const const_dict_iterator& rhs);
 
   // Currently, there is no easy way to friend Value::Dict. Once dictionary

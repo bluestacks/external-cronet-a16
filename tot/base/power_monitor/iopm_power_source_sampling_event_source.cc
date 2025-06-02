@@ -26,7 +26,7 @@ bool IOPMPowerSourceSamplingEventSource::Start(SamplingEventCallback callback) {
   callback_ = callback;
 
   service_.reset(IOServiceGetMatchingService(
-      kIOMainPortDefault, IOServiceMatching("IOPMPowerSource")));
+      kIOMasterPortDefault, IOServiceMatching("IOPMPowerSource")));
 
   if (!service_) {
     VLOG(1) << "IOPMPowerSource service not found. This is expected on desktop "
@@ -34,7 +34,7 @@ bool IOPMPowerSourceSamplingEventSource::Start(SamplingEventCallback callback) {
     return false;
   }
 
-  notify_port_.reset(IONotificationPortCreate(kIOMainPortDefault));
+  notify_port_.reset(IONotificationPortCreate(kIOMasterPortDefault));
   if (!notify_port_.is_valid()) {
     LOG(ERROR) << "Could not create a notification port";
     return false;

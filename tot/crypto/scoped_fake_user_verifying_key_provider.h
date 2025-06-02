@@ -12,8 +12,7 @@ namespace crypto {
 // system APIs, while it is in scope.
 class ScopedFakeUserVerifyingKeyProvider {
  public:
-  explicit ScopedFakeUserVerifyingKeyProvider(
-      bool fake_hardware_backing = false);
+  ScopedFakeUserVerifyingKeyProvider();
   ~ScopedFakeUserVerifyingKeyProvider();
 };
 

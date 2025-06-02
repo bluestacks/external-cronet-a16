@@ -137,10 +137,6 @@ std::string QuicCryptoClientStream::chlo_hash() const {
   return handshaker_->chlo_hash();
 }
 
-bool QuicCryptoClientStream::MatchedTrustAnchorIdForTesting() const {
-  return handshaker_->MatchedTrustAnchorIdForTesting();
-}
-
 void QuicCryptoClientStream::OnOneRttPacketAcknowledged() {
   handshaker_->OnOneRttPacketAcknowledged();
 }

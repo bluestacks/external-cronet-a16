@@ -61,11 +61,6 @@ BASE_EXPORT bool GetUserSidString(std::wstring* user_sid);
 // if the OS is Vista or later.
 BASE_EXPORT bool UserAccountControlIsEnabled();
 
-// Returns true if the process is running at elevated permissions, but could
-// be at medium IL (eg. UAC is enabled and the account is not a built-in
-// administrator).
-BASE_EXPORT bool UserAccountIsUnnecessarilyElevated();
-
 // Sets the boolean value for a given key in given IPropertyStore.
 BASE_EXPORT bool SetBooleanValueForPropertyStore(
     IPropertyStore* property_store,
@@ -378,23 +373,6 @@ class BASE_EXPORT ScopedDomainStateForTesting {
       delete;
 
   ~ScopedDomainStateForTesting();
-
- private:
-  bool initial_state_;
-};
-
-// Allows changing the management registration state for the life time of the
-// object.  The original state is restored upon destruction.
-class BASE_EXPORT ScopedDeviceRegisteredWithManagementForTesting {
- public:
-  explicit ScopedDeviceRegisteredWithManagementForTesting(bool state);
-
-  ScopedDeviceRegisteredWithManagementForTesting(
-      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
-  ScopedDeviceRegisteredWithManagementForTesting& operator=(
-      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
-
-  ~ScopedDeviceRegisteredWithManagementForTesting();
 
  private:
   bool initial_state_;

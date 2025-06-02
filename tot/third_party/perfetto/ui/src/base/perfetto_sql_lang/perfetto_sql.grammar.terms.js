@@ -6,7 +6,6 @@ export const
   Number = 4,
   Boolean = 5,
   Identifier = 6,
-  Null = 7,
-  Keyword = 8,
-  Function = 9,
-  MacroVariable = 10
+  Keyword = 7,
+  Function = 8,
+  MacroVariable = 9

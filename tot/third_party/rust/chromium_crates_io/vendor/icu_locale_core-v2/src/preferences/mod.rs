@@ -65,7 +65,7 @@
 //! ```ignore
 //! let loc = locale!("en-US-u-hc-h12");
 //! let prefs = DateTimeFormatterPreferences {
-//!     hour_cycle: HourCycle::H23,
+//!     hour_cycle: HourCycle::H24,
 //! };
 //! let options = DateTimeFormatterOptions {
 //!     time_style: TimeStyle::Long,
@@ -232,7 +232,7 @@
 //! #         Self { data }
 //! #     }
 //! # }
-//! let loc = locale!("en-US");
+//! let loc = locale!("en-US-u-hc-h24");
 //!
 //! // Simulate OS preferences
 //! let os_prefs = ExampleComponentPreferences {
@@ -242,7 +242,7 @@
 //!
 //! // Application does not specify hour_cycle
 //! let app_prefs = ExampleComponentPreferences {
-//!     hour_cycle: None,
+//!     hour_cycle: Some(HourCycle::H12),
 //!     ..Default::default()
 //! };
 //!
@@ -251,7 +251,7 @@
 //! combined_prefs.extend(app_prefs);
 //!
 //! // HourCycle is set from the OS preferences since the application didn't specify it
-//! assert_eq!(combined_prefs.hour_cycle, Some(HourCycle::H23));
+//! assert_eq!(combined_prefs.hour_cycle, Some(HourCycle::H12));
 //!
 //! let tf = ExampleComponent::new(combined_prefs);
 //! ```
@@ -287,7 +287,7 @@
 //! #         Self { data }
 //! #     }
 //! # }
-//! let loc = locale!("en-US-u-hc-h23");
+//! let loc = locale!("en-US-u-hc-h24");
 //!
 //! // Simulate OS preferences
 //! let os_prefs = ExampleComponentPreferences::default(); // OS does not specify hour_cycle
@@ -298,7 +298,7 @@
 //! combined_prefs.extend(app_prefs);
 //!
 //! // HourCycle is taken from the locale
-//! assert_eq!(combined_prefs.hour_cycle, Some(HourCycle::H23));
+//! assert_eq!(combined_prefs.hour_cycle, Some(HourCycle::H24));
 //!
 //! let tf = ExampleComponent::new(combined_prefs);
 //! ```

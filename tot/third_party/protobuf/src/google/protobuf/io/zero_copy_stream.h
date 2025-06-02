@@ -84,9 +84,9 @@
 #ifndef GOOGLE_PROTOBUF_IO_ZERO_COPY_STREAM_H__
 #define GOOGLE_PROTOBUF_IO_ZERO_COPY_STREAM_H__
 
-#include <cstdint>
-
+#include "google/protobuf/stubs/common.h"
 #include "absl/strings/cord.h"
+#include "google/protobuf/port.h"
 
 
 // Must be included last.
@@ -175,10 +175,10 @@ class PROTOBUF_EXPORT ZeroCopyInputStream {
 // copying.
 class PROTOBUF_EXPORT ZeroCopyOutputStream {
  public:
-  ZeroCopyOutputStream() = default;
+  ZeroCopyOutputStream() {}
   ZeroCopyOutputStream(const ZeroCopyOutputStream&) = delete;
   ZeroCopyOutputStream& operator=(const ZeroCopyOutputStream&) = delete;
-  virtual ~ZeroCopyOutputStream() = default;
+  virtual ~ZeroCopyOutputStream() {}
 
   // Obtains a buffer into which data can be written.  Any data written
   // into this buffer will eventually (maybe instantly, maybe later on)

@@ -99,6 +99,8 @@ export class WattsonPackageSelectionAggregator
     ];
   }
 
+  async getExtra() {}
+
   getTabName() {
     return 'Wattson by package';
   }

@@ -207,16 +207,14 @@ void ImmutableEnumFieldLiteGenerator::GenerateMembers(
                    "}\n");
   }
   WriteFieldAccessorDocComment(printer, descriptor_, SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void set$capitalized_name$($type$ value) {\n"
                  "  $name$_ = value.getNumber();\n"
                  "  $set_has_field_bit_message$\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void clear$capitalized_name$() {\n"
                  "  $clear_has_field_bit_message$\n"
@@ -383,16 +381,14 @@ void ImmutableEnumOneofFieldLiteGenerator::GenerateMembers(
                    "}\n");
   }
   WriteFieldAccessorDocComment(printer, descriptor_, SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void set$capitalized_name$($type$ value) {\n"
                  "  $oneof_name$_ = value.getNumber();\n"
                  "  $set_oneof_case_message$;\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void clear$capitalized_name$() {\n"
                  "  if ($has_oneof_case_message$) {\n"
@@ -626,8 +622,7 @@ void RepeatedImmutableEnumFieldLiteGenerator::GenerateMembers(
       "  }\n"
       "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, LIST_INDEXED_SETTER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "@java.lang.SuppressWarnings(\"ReturnValueIgnored\")\n"
                  "private void set$capitalized_name$(\n"
@@ -637,8 +632,7 @@ void RepeatedImmutableEnumFieldLiteGenerator::GenerateMembers(
                  "  $name$_.setInt(index, value.getNumber());\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, LIST_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "@java.lang.SuppressWarnings(\"ReturnValueIgnored\")\n"
                  "private void add$capitalized_name$($type$ value) {\n"
@@ -647,8 +641,7 @@ void RepeatedImmutableEnumFieldLiteGenerator::GenerateMembers(
                  "  $name$_.addInt(value.getNumber());\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, LIST_MULTI_ADDER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void addAll$capitalized_name$(\n"
                  "    java.lang.Iterable<? extends $type$> values) {\n"
@@ -658,8 +651,7 @@ void RepeatedImmutableEnumFieldLiteGenerator::GenerateMembers(
                  "  }\n"
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, CLEARER,
-                               context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               context_->options());
   printer->Print(variables_,
                  "private void clear$capitalized_name$() {\n"
                  "  $name$_ = emptyIntList();\n"

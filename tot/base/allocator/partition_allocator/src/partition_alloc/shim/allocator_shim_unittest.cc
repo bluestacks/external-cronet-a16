@@ -19,7 +19,6 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/memory/page_size.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -883,7 +882,7 @@ class AllocatorShimCppOperatorTest : public AllocatorShimTest {
       // On ARM Apple devices, they store a pair of integers, one for element
       // size and the other for element count.
       return std::max(sizeof(size_t) * 2, std::alignment_of_v<T>);
-#endif  // !PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
+#endif  // !PA_BUILDFLAG(IS_IOS)
     } else {
       // Cookie is not used.
       return 0;
@@ -903,14 +902,6 @@ class AllocatorShimCppOperatorTest : public AllocatorShimTest {
   }
 
  protected:
-  static constexpr size_t GetAllocSize(size_t size, size_t alignment) {
-#if !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
-    return size;
-#else
-    return partition_alloc::internal::base::bits::AlignUp(size, alignment);
-#endif  // !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
-  }
-
   // Tests `operator new()` and `operator delete()` against `T`.
   template <typename T, bool use_nothrow>
   void NewAndDeleteSingle() {
@@ -1034,15 +1025,11 @@ class AllocatorShimCppOperatorTest : public AllocatorShimTest {
 };
 
 // `ASSERT_TRUE` when sized allocation is in use. Otherwise, `ASSERT_FALSE`.
-// On Apple component-builds, all deallocations are routed to `try_free_default`
-// and size information will be missing.
-#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC) && \
-    (!PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD))
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
 #define ASSERT_TRUE_IFF_SIZED(a) ASSERT_TRUE(a)
 #else
 #define ASSERT_TRUE_IFF_SIZED(a) ASSERT_FALSE(a)
-#endif  // PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC) && (!PA_BUILDFLAG(IS_APPLE)
-        // || !defined(COMPONENT_BUILD))
+#endif
 
 TEST_F(AllocatorShimCppOperatorTest, NewAndDeleteGlobalOperator) {
   InsertAllocatorDispatch(&g_mock_dispatch);
@@ -1084,12 +1071,12 @@ TEST_F(AllocatorShimCppOperatorTest, NewAndDeleteGlobalOperatorAligned) {
 
   void* new_ptr = ::operator new(kSize, std::align_val_t(kAlignment));
   ASSERT_NE(nullptr, new_ptr);
-  ASSERT_TRUE(allocs_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_TRUE(allocs_intercepted_by_size[kSize]);
   ASSERT_TRUE(allocs_intercepted_by_alignment[kAlignment]);
 
   ::operator delete(new_ptr, std::align_val_t(kAlignment));
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_FALSE(frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_FALSE(frees_intercepted_by_size[kSize]);
   ASSERT_TRUE_IFF_SIZED(frees_intercepted_by_alignment[kAlignment]);
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
@@ -1104,12 +1091,12 @@ TEST_F(AllocatorShimCppOperatorTest, NewAndDeleteGlobalOperatorAlignedNoThrow) {
   void* new_ptr =
       ::operator new(kSize, std::align_val_t(kAlignment), std::nothrow);
   ASSERT_NE(nullptr, new_ptr);
-  ASSERT_TRUE(allocs_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_TRUE(allocs_intercepted_by_size[kSize]);
   ASSERT_TRUE(allocs_intercepted_by_alignment[kAlignment]);
 
   ::operator delete(new_ptr, std::align_val_t(kAlignment), std::nothrow);
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_FALSE(frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_FALSE(frees_intercepted_by_size[kSize]);
   ASSERT_TRUE_IFF_SIZED(frees_intercepted_by_alignment[kAlignment]);
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
@@ -1128,7 +1115,7 @@ TEST_F(AllocatorShimCppOperatorTest, NewAndDeleteGlobalOperatorSized) {
 
   ::operator delete(new_ptr, kSize);
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_TRUE_IFF_SIZED(frees_intercepted_by_size[kSize]);
+  ASSERT_TRUE(frees_intercepted_by_size[kSize]);
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
@@ -1142,18 +1129,13 @@ TEST_F(AllocatorShimCppOperatorTest,
 
   void* new_ptr = ::operator new(kSize, std::align_val_t(kAlignment));
   ASSERT_NE(nullptr, new_ptr);
-  ASSERT_TRUE(allocs_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_TRUE(allocs_intercepted_by_size[kSize]);
   ASSERT_TRUE(allocs_intercepted_by_alignment[kAlignment]);
 
   ::operator delete(new_ptr, kSize, std::align_val_t(kAlignment));
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_TRUE_IFF_SIZED(
-      frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
-  // On Apple component build `try_free_default` is used and alignment
-  // information is missing.
-#if !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+  ASSERT_TRUE(frees_intercepted_by_size[kSize]);
   ASSERT_TRUE(frees_intercepted_by_alignment[kAlignment]);
-#endif  // !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
@@ -1199,12 +1181,12 @@ TEST_F(AllocatorShimCppOperatorTest, NewAndDeleteArrayGlobalOperatorAligned) {
 
   void* new_ptr = ::operator new[](kSize, std::align_val_t(kAlignment));
   ASSERT_NE(nullptr, new_ptr);
-  ASSERT_TRUE(allocs_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_TRUE(allocs_intercepted_by_size[kSize]);
   ASSERT_TRUE(allocs_intercepted_by_alignment[kAlignment]);
 
   ::operator delete[](new_ptr, std::align_val_t(kAlignment));
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_FALSE(frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_FALSE(frees_intercepted_by_size[kSize]);
   ASSERT_TRUE_IFF_SIZED(frees_intercepted_by_alignment[kAlignment]);
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
@@ -1220,12 +1202,12 @@ TEST_F(AllocatorShimCppOperatorTest,
   void* new_ptr =
       ::operator new[](kSize, std::align_val_t(kAlignment), std::nothrow);
   ASSERT_NE(nullptr, new_ptr);
-  ASSERT_TRUE(allocs_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_TRUE(allocs_intercepted_by_size[kSize]);
   ASSERT_TRUE(allocs_intercepted_by_alignment[kAlignment]);
 
   ::operator delete[](new_ptr, std::align_val_t(kAlignment), std::nothrow);
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_FALSE(frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_FALSE(frees_intercepted_by_size[kSize]);
   ASSERT_TRUE_IFF_SIZED(frees_intercepted_by_alignment[kAlignment]);
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
@@ -1244,7 +1226,7 @@ TEST_F(AllocatorShimCppOperatorTest, NewAndDeleteArrayGlobalOperatorSized) {
 
   ::operator delete[](new_ptr, kSize);
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_TRUE_IFF_SIZED(frees_intercepted_by_size[kSize]);
+  ASSERT_TRUE(frees_intercepted_by_size[kSize]);
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
@@ -1258,18 +1240,13 @@ TEST_F(AllocatorShimCppOperatorTest,
 
   void* new_ptr = ::operator new[](kSize, std::align_val_t(kAlignment));
   ASSERT_NE(nullptr, new_ptr);
-  ASSERT_TRUE(allocs_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
+  ASSERT_TRUE(allocs_intercepted_by_size[kSize]);
   ASSERT_TRUE(allocs_intercepted_by_alignment[kAlignment]);
 
   ::operator delete[](new_ptr, kSize, std::align_val_t(kAlignment));
   ASSERT_TRUE(frees_intercepted_by_addr[AllocatorShimTest::Hash(new_ptr)]);
-  ASSERT_TRUE_IFF_SIZED(
-      frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
-  // On Apple component build `try_free_default` is used and alignment
-  // information is missing.
-#if !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+  ASSERT_TRUE(frees_intercepted_by_size[kSize]);
   ASSERT_TRUE(frees_intercepted_by_alignment[kAlignment]);
-#endif  // !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }

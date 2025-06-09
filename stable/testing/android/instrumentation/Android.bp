@@ -21,27 +21,21 @@ package {
     ],
 }
 
-// GN: //testing/android/instrumentation:test_runner_java__compile_java__testing
+// GN: //testing/android/instrumentation:test_runner_java__testing
 java_library {
-    name: "stable_cronet_testing_android_instrumentation_test_runner_java__compile_java__testing",
-    srcs: [
-        "java/src/org/chromium/testing/TestListInstrumentationRunListener.java",
-    ],
+    name: "stable_cronet_testing_android_instrumentation_test_runner_java__testing",
     static_libs: [
-        "androidx.test.runner",
-        "junit",
+        "stable_cronet_build_android_build_java__testing",
+        "stable_cronet_testing_android_instrumentation_test_runner_java__testing__filtered",
+        "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
     ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.test.monitor",
-        "stable_cronet_build_android_build_java__compile_java__testing",
-        "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing",
-    ],
-    sdk_version: "current",
     visibility: [
         "//external/cronet:__subpackages__",
     ],
@@ -49,13 +43,16 @@ java_library {
 
 // GN: //testing/android/instrumentation:test_runner_java__testing
 java_library {
-    name: "stable_cronet_testing_android_instrumentation_test_runner_java__testing",
+    name: "stable_cronet_testing_android_instrumentation_test_runner_java__testing__unfiltered",
+    srcs: [
+        "java/src/org/chromium/testing/TestListInstrumentationRunListener.java",
+    ],
     static_libs: [
         "androidx.test.runner",
         "junit",
-        "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_testing_android_instrumentation_test_runner_java__process_device__testing",
-        "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
     ],
     apex_available: [
         "com.android.tethering",
@@ -64,8 +61,24 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
         "androidx.test.monitor",
+        "stable_cronet_build_android_build_java__testing__unfiltered",
+        "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing__unfiltered",
     ],
-    sdk_version: "current",
+}
+
+// GN: //testing/android/instrumentation:test_runner_permissions_java__testing
+java_library {
+    name: "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing",
+    static_libs: [
+        "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing__filtered",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
     visibility: [
         "//external/cronet:__subpackages__",
     ],
@@ -73,13 +86,12 @@ java_library {
 
 // GN: //testing/android/instrumentation:test_runner_permissions_java__testing
 java_library {
-    name: "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing",
+    name: "stable_cronet_testing_android_instrumentation_test_runner_permissions_java__testing__unfiltered",
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
 }

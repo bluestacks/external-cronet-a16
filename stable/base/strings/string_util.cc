@@ -15,6 +15,7 @@
 #include <wchar.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <optional>
 #include <string_view>
@@ -149,7 +150,7 @@ std::string_view TrimString(std::string_view input,
   return internal::TrimStringPieceT(input, trim_chars, positions);
 }
 
-void TruncateUTF8ToByteSize(const std::string& input,
+void TruncateUTF8ToByteSize(std::string_view input,
                             const size_t byte_size,
                             std::string* output) {
   DCHECK(output);
@@ -286,6 +287,46 @@ bool EndsWith(std::u16string_view str,
   return internal::EndsWithT(str, search_for, case_sensitivity);
 }
 
+std::optional<std::string_view> RemovePrefix(std::string_view string,
+                                             std::string_view prefix,
+                                             CompareCase case_sensitivity) {
+  if (!StartsWith(string, prefix, case_sensitivity)) {
+    return std::nullopt;
+  }
+  string.remove_prefix(prefix.size());
+  return string;
+}
+
+std::optional<std::u16string_view> RemovePrefix(std::u16string_view string,
+                                                std::u16string_view prefix,
+                                                CompareCase case_sensitivity) {
+  if (!StartsWith(string, prefix, case_sensitivity)) {
+    return std::nullopt;
+  }
+  string.remove_prefix(prefix.size());
+  return string;
+}
+
+std::optional<std::string_view> RemoveSuffix(std::string_view string,
+                                             std::string_view suffix,
+                                             CompareCase case_sensitivity) {
+  if (!EndsWith(string, suffix, case_sensitivity)) {
+    return std::nullopt;
+  }
+  string.remove_suffix(suffix.size());
+  return string;
+}
+
+std::optional<std::u16string_view> RemoveSuffix(std::u16string_view string,
+                                                std::u16string_view suffix,
+                                                CompareCase case_sensitivity) {
+  if (!EndsWith(string, suffix, case_sensitivity)) {
+    return std::nullopt;
+  }
+  string.remove_suffix(suffix.size());
+  return string;
+}
+
 char HexDigitToInt(char c) {
   DCHECK(IsHexDigit(c));
   if (c >= '0' && c <= '9') {
@@ -295,8 +336,14 @@ char HexDigitToInt(char c) {
                                 : static_cast<char>(c - 'a' + 10);
 }
 
-static const char* const kByteStringsUnlocalized[] = {" B",  " kB", " MB",
-                                                      " GB", " TB", " PB"};
+static const auto kByteStringsUnlocalized = std::to_array<const char*>({
+    " B",
+    " kB",
+    " MB",
+    " GB",
+    " TB",
+    " PB",
+});
 
 std::u16string FormatBytesUnlocalized(int64_t bytes) {
   double unit_amount = static_cast<double>(bytes);

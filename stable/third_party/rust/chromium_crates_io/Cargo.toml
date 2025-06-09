@@ -19,23 +19,20 @@ edition = "2021"
 base64 = "0.22"
 bitflags = "2"
 bytes = "1"
-cfg-if = "1"
 cxx = "1"
 fend-core = "1"
 font-types = "0.8"
 hex = "0.4"
 lazy_static = "1"
 libc = "0.2"
+llguidance = { version = "0.7.13", default-features = false, features = ["lark"] }
 png = "=0.18.0-rc"
 proc-macro2 = "1"
 prost = "0.13.3"
 qr_code = "2"
 quote = "1"
-rand = "0.8"
-rand_pcg = "0.3"
 read-fonts = "0.27.3"
 rustc-demangle-capi = "0.1"
-sfv = "0.10.4"
 skrifa = "0.29"
 small_ctor = "0.1"
 static_assertions = "1"
@@ -45,14 +42,36 @@ temporal_capi = "0.0.6"
 version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
 
+# Include temporarily here as a direct dependency during the import process
+# for authenticated-pseudonyms.
+# TODO(crbug.com/404604413): Stop exposing this here when it becomes a
+# transitive dependency.
+[dependencies.group]
+version = "0.13"
+
 [dependencies.icu_capi]
 version = "2.0.0-beta2"
 default-features = false
-features = ["calendar", "compiled_data", "experimental"]
+features = ["calendar", "compiled_data", "experimental", "casemap"]
 
-[dependencies.tinyvec]
-version = "1.6.0"
-features = ["rustc_1_55"]
+[dependencies.icu_casemap]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_experimental]
+version = "0.3.0-beta2"
+default-features = false
+[dependencies.icu_locale_core]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_normalizer]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_properties]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_provider]
+version = "2.0.0-beta2"
+default-features = false
 
 # Without the `artifact` field Cargo will only build the `[lib]` target from a
 # dependency.  Specifying `artifact = "bin"` below allows Cargo (and `gnrt`) to
@@ -68,6 +87,14 @@ version = "0.4"
 # when debug asserts are off, which is when DCHECK_IS_ON() is false.
 features = [ "std", "release_max_level_info" ]
 
+# Temporarily inform our cargo tooling that we need a new version of rand_core. Remove
+# default features to align with authenticated-pseudonyms use case (crbug.com/404604413)
+# TODO(crbug.com/404598090) Remove this when all upstreams have updated, and rand_core
+# moves to be a transitive dependency only.
+[dependencies.rand_core]
+version = "0.9.0"
+default-features = false
+
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
 # of CLs that move from the older to the newer.
@@ -75,6 +102,12 @@ features = [ "std", "release_max_level_info" ]
 package = "serde_json_lenient"
 version = "0.2"
 features = ["unbounded_depth", "float_roundtrip"]
+
+# Tweak required to transitive dependency to avoids some use of unsafe,
+# at the cost of requiring the nightly compiler.
+[dependencies.subtle]
+version = "2.6.1"
+features = ["core_hint_black_box"]
 
 [dependencies.syn]
 version = "2"

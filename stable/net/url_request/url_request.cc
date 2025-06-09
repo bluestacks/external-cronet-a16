@@ -444,6 +444,12 @@ void URLRequest::GetCharset(std::string* charset) const {
   job_->GetCharset(charset);
 }
 
+void URLRequest::GetClientSideContentDecodingTypes(
+    std::vector<net::SourceStreamType>* types) const {
+  CHECK(job_.get());
+  job_->GetClientSideContentDecodingTypes(types);
+}
+
 int URLRequest::GetResponseCode() const {
   DCHECK(job_.get());
   return job_->GetResponseCode();
@@ -1396,8 +1402,6 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
 }
 
 StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
-  CHECK_EQ(is_redirecting(), deferred_redirect_info_.has_value());
-
   // `Delegate::OnReceivedRedirect` may set `defer_redirect` inside of
   // `URLRequest::ReceivedRedirect` to true, which in turn sets the
   // `deferred_redirect_info_` that has to be used when calculating new storage
@@ -1405,34 +1409,12 @@ StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
   std::optional<net::cookie_util::StorageAccessStatus> storage_access_status =
       network_delegate()->GetStorageAccessStatus(*this,
                                                  deferred_redirect_info_);
-
-  auto get_storage_access_value_outcome_if_omitted =
-      [&]() -> std::optional<net::cookie_util::StorageAccessStatusOutcome> {
-    if (!network_delegate()->IsStorageAccessHeaderEnabled(
-            base::OptionalToPtr(isolation_info().top_frame_origin()), url())) {
-      return net::cookie_util::StorageAccessStatusOutcome::
-          kOmittedFeatureDisabled;
-    }
-    if (!storage_access_status) {
-      return net::cookie_util::StorageAccessStatusOutcome::kOmittedSameSite;
-    }
-    return std::nullopt;
-  };
-
-  auto storage_access_value_outcome =
-      get_storage_access_value_outcome_if_omitted();
-  if (storage_access_value_outcome) {
-    storage_access_status = std::nullopt;
-  } else {
-    storage_access_value_outcome =
-        ConvertSecFetchStorageAccessHeaderValueToOutcome(
-            storage_access_status.value());
-  }
-
   base::UmaHistogramEnumeration(
       "API.StorageAccessHeader.StorageAccessStatusOutcome",
-      storage_access_value_outcome.value());
-
+      storage_access_status
+          ? ConvertSecFetchStorageAccessHeaderValueToOutcome(
+                storage_access_status.value())
+          : net::cookie_util::StorageAccessStatusOutcome::kOmittedSameSite);
   return StorageAccessStatusCache(storage_access_status);
 }
 

@@ -15,29 +15,22 @@
 
 namespace moqt {
 
-bool SubscribeWindow::InWindow(const FullSequence& seq) const {
-  if (seq < start_) {
-    return false;
-  }
-  return (!end_.has_value() || seq <= *end_);
-}
-
 ReducedSequenceIndex::ReducedSequenceIndex(
-    FullSequence sequence, MoqtForwardingPreference preference) {
+    Location sequence, MoqtForwardingPreference preference) {
   switch (preference) {
     case MoqtForwardingPreference::kSubgroup:
-      sequence_ = FullSequence(sequence.group, 0, sequence.subgroup);
+      sequence_ = Location(sequence.group, 0, sequence.subgroup);
       break;
     case MoqtForwardingPreference::kDatagram:
-      sequence_ = FullSequence(sequence.group, 0, sequence.object);
+      sequence_ = Location(sequence.group, 0, sequence.object);
       return;
   }
 }
 
 std::optional<webtransport::StreamId> SendStreamMap::GetStreamForSequence(
-    FullSequence sequence) const {
+    Location sequence) const {
   QUICHE_DCHECK(forwarding_preference_ == MoqtForwardingPreference::kSubgroup);
-  FullSequence index =
+  Location index =
       ReducedSequenceIndex(sequence, forwarding_preference_).sequence();
   auto group_it = send_streams_.find(index.group);
   if (group_it == send_streams_.end()) {
@@ -50,18 +43,18 @@ std::optional<webtransport::StreamId> SendStreamMap::GetStreamForSequence(
   return subgroup_it->second;
 }
 
-void SendStreamMap::AddStream(FullSequence sequence,
+void SendStreamMap::AddStream(Location sequence,
                               webtransport::StreamId stream_id) {
-  FullSequence index =
+  Location index =
       ReducedSequenceIndex(sequence, forwarding_preference_).sequence();
   auto [it, result] = send_streams_.insert({index.group, Group()});
   auto [sg, success] = it->second.try_emplace(index.subgroup, stream_id);
   QUIC_BUG_IF(quic_bug_moqt_draft_03_02, !success) << "Stream already added";
 }
 
-void SendStreamMap::RemoveStream(FullSequence sequence,
+void SendStreamMap::RemoveStream(Location sequence,
                                  webtransport::StreamId stream_id) {
-  FullSequence index =
+  Location index =
       ReducedSequenceIndex(sequence, forwarding_preference_).sequence();
   auto group_it = send_streams_.find(index.group);
   if (group_it == send_streams_.end()) {
@@ -77,17 +70,27 @@ void SendStreamMap::RemoveStream(FullSequence sequence,
   group_it->second.erase(subgroup_it);
 }
 
-bool SubscribeWindow::UpdateStartEnd(FullSequence start,
-                                     std::optional<FullSequence> end) {
-  // Can't make the subscription window bigger.
-  if (!InWindow(start)) {
-    return false;
-  }
-  if (end_.has_value() && (!end.has_value() || *end_ < *end)) {
+bool SubscribeWindow::TruncateStart(Location start) {
+  if (start < start_) {
     return false;
   }
   start_ = start;
-  end_ = end;
+  return true;
+}
+
+bool SubscribeWindow::TruncateEnd(uint64_t end_group) {
+  if (end_group > end_.group) {
+    return false;
+  }
+  end_ = Location(end_group, UINT64_MAX);
+  return true;
+}
+
+bool SubscribeWindow::TruncateEnd(Location largest_id) {
+  if (largest_id > end_) {
+    return false;
+  }
+  end_ = largest_id;
   return true;
 }
 

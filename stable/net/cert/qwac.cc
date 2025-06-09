@@ -4,6 +4,7 @@
 
 #include "net/cert/qwac.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "third_party/boringssl/src/pki/parser.h"
 
@@ -73,7 +74,8 @@ std::optional<std::vector<bssl::der::Input>> ParseQcTypeInfo(
   return results;
 }
 
-bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
+QwacQcStatementsStatus HasQwacQcStatements(
+    const std::vector<QcStatement>& qc_statements) {
   // ETSI TS 119 411-5 - V2.1.1 - section 6.1.2:
   //   the QWAC includes QCStatements as specified in clause 4.2 of ETSI EN 319
   //   412-4 [4]
@@ -110,7 +112,7 @@ bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
       std::optional<std::vector<bssl::der::Input>> qc_types =
           ParseQcTypeInfo(statement.info);
       if (!qc_types.has_value()) {
-        return false;
+        return QwacQcStatementsStatus::kNotQwac;
       }
       for (const auto& qc_type_id : qc_types.value()) {
         if (qc_type_id == bssl::der::Input(kEtsiQctWebOid)) {
@@ -120,10 +122,16 @@ bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
     }
   }
 
-  return has_qc_compliance && has_qctype_web;
+  if (has_qc_compliance && has_qctype_web) {
+    return QwacQcStatementsStatus::kHasQwacStatements;
+  } else if (has_qc_compliance || has_qctype_web) {
+    return QwacQcStatementsStatus::kInconsistent;
+  }
+  return QwacQcStatementsStatus::kNotQwac;
 }
 
-bool Has1QwacPolicies(const std::set<bssl::der::Input>& policy_set) {
+QwacPoliciesStatus Has1QwacPolicies(
+    const std::set<bssl::der::Input>& policy_set) {
   // ETSI TS 119 411-5 - V2.1.1 - section 4.1.1:
   //   The 1-QWAC certificate shall be issued in accordance with one of the
   //   following certificate policies as specified in ETSI EN 319 411-2 [3]:
@@ -153,11 +161,47 @@ bool Has1QwacPolicies(const std::set<bssl::der::Input>& policy_set) {
   const bool has_qncpw = policy_set.contains(bssl::der::Input(kQncpwOid));
 
   if (has_ev && has_qevcpw) {
-    return true;
+    return QwacPoliciesStatus::kHasQwacPolicies;
   } else if ((has_ov || has_iv) && has_qncpw) {
-    return true;
+    return QwacPoliciesStatus::kHasQwacPolicies;
+  } else if (has_qevcpw || has_qncpw) {
+    return QwacPoliciesStatus::kInconsistent;
   }
-  return false;
+  return QwacPoliciesStatus::kNotQwac;
+}
+
+QwacPoliciesStatus Has2QwacPolicies(
+    const std::set<bssl::der::Input>& policy_set) {
+  // ETSI TS 119 411-5 V2.1.1 - 4.2.1:
+  // The 2-QWAC certificate shall be issued in accordance with the QNCP-w-gen
+  // certificate policy
+  //
+  // ETSI EN 319 411-2 - V2.6.1 - section 4.2.2:
+  // A policy for EU qualified website certificates (QNCP-w-gen) offering the
+  // level of quality defined in Regulation (EU) No 910/2014 [i.1] for EU
+  // qualified certificates used in support of websites authentication for
+  // general purpose certificate for qualified website authentication
+  return policy_set.contains(bssl::der::Input(kQncpwgenOid))
+             ? QwacPoliciesStatus::kHasQwacPolicies
+             : QwacPoliciesStatus::kNotQwac;
+}
+
+QwacEkuStatus Has2QwacEku(const bssl::ParsedCertificate* cert) {
+  // ETSI TS 119 411-5 V2.1.1 - 4.2.2:
+  // the extKeyUsage value shall only assert the extendedKeyUsage purpose of
+  // id-kp-tls-binding as specified in Annex A.
+  if (!cert->has_extended_key_usage()) {
+    return QwacEkuStatus::kNotQwac;
+  }
+  if (!base::Contains(cert->extended_key_usage(),
+                      bssl::der::Input(kIdKpTlsBinding))) {
+    return QwacEkuStatus::kNotQwac;
+  }
+  if (cert->extended_key_usage().size() != 1) {
+    return QwacEkuStatus::kInconsistent;
+    ;
+  }
+  return QwacEkuStatus::kHasQwacEku;
 }
 
 }  // namespace net

@@ -9,6 +9,12 @@ states and transitions between them.
 
 See the [Getting Started with Public Transit](getting_started.md) guide.
 
+See some example tests:
+
+* [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
+* [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
+* [ExampleReusedCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleReusedCtaTest.java)
+
 ## Why Use Public Transit?
 
 **Scalability**
@@ -155,6 +161,9 @@ The `BatchedPublicTransitRule` is not necessary. Returning to the home station
 is not necessary. However, this does not run as fast as "reusing the Activity"
 below, especially in Release.
 
+
+Example: [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
+
 #### How to Batch reusing the Activity between tests but resetting tab state
 
 This keeps the Activity, but closes all tabs between tests and returns to a
@@ -170,6 +179,8 @@ Using `AutoResetCtaTransitTestRule`:
 Tests don't need to return to the home station. Only some reset paths are
 supported - this is best effort since this reset transition is not part of a
 regular user flow.
+
+Example: [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
 
 #### How to Batch reusing the Activity between tests staying on the same state
 
@@ -188,6 +199,8 @@ Using `ReusedCtaTransitTestRule`:
 Each test should return to the home station. If a test does not end in the
 home station, it will fail (if it already hasn't) with a descriptive message.
 The following tests will also fail right at the start.
+
+Example: [ExampleReusedCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleReusedCtaTest.java)
 
 ### ViewPrinter
 
@@ -287,7 +300,7 @@ An example of Test Layer code:
 ```java
 @Test
 public void testOpenTabSwitcher() {
-    BasePageStation page = mTransitEntryPoints.startOnBlankPage();
+    PageStation page = mTransitEntryPoints.startOnBlankPage();
     AppMenuFacility appMenu = page.openAppMenu();
     page = appMenu.openNewIncognitoTab();
     TabSwitcherStation tabSwitcher = page.openTabSwitcher();
@@ -335,24 +348,21 @@ Example of a concrete `Station`:
 
 ```java
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
-public class TabSwitcherStation extends Station {
-    public static final ViewSpec NEW_TAB_BUTTON =
-            viewSpec(withId(R.id.new_tab_button));
-    public static final ViewSpec INCOGNITO_TOGGLE_TABS =
-            viewSpec(withId(R.id.incognito_toggle_tabs));
-
-    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
+public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
+    public ViewElement<View> newTabButtonElement;
+    public ViewElement<View> incognitoToggleTabsElement;
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
-        elements.declareView(NEW_TAB_BUTTON);
-        elements.declareView(INCOGNITO_TOGGLE_TABS);
+        newTabButtonElement =
+                elements.declareView(viewSpec(withId(R.id.new_tab_button)));
+        incognitoToggleTabsElement =
+                elements.declareView(viewSpec(withId(R.id.incognito_toggle_tabs)));
     }
 
     public NewTabPageStation openNewTabFromButton() {
         NewTabPageStation newTab = new NewTabPageStation();
-        return travelToSync(this, newTab, () -> NEW_TAB_BUTTON.perform(click()))
+        return travelToSync(this, newTab, newTabButtonElement.getClickTrigger())
     }
 }
 ```
@@ -427,9 +437,9 @@ method.
 
 Custom Conditions may require a dependency to be checked which might not exist
 before the transition's trigger is run. They should take the dependency as a
-constructor argument of type `Condition` that implements `Supplier<DependencyT>`
-and call `dependOnSupplier()`. The dependency should supply `DependencyT` when
-fulfilled.
+constructor argument of type `Condition` or `Element` that implements
+`Supplier<DependencyT>` and call `dependOnSupplier()`. The dependency should
+supply `DependencyT` when fulfilled.
 
 An example of a custom condition:
 
@@ -437,8 +447,8 @@ An example of a custom condition:
 class PageLoadedCondition extends UiThreadCondition {
     private Supplier<Tab> mTabSupplier;
 
-    PageLoadedCondition(ConditionWithResult<Tab> tabCondition) {
-        mTabSupplier = dependOnCondition(tabCondition, "Tab");
+    PageLoadedCondition(Supplier<Tab> tabCondition) {
+        mTabSupplier = dependOnSupplier(tabCondition, "Tab");
     }
 
     @Override

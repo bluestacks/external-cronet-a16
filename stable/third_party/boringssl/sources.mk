@@ -58,7 +58,9 @@ stable_cronet_crypto_sources := \
   src/crypto/blake2/blake2.cc\
   src/crypto/bn/bn_asn1.cc\
   src/crypto/bn/convert.cc\
+  src/crypto/bn/div.cc\
   src/crypto/bn/exponentiation.cc\
+  src/crypto/bn/sqrt.cc\
   src/crypto/buf/buf.cc\
   src/crypto/bytestring/asn1_compat.cc\
   src/crypto/bytestring/ber.cc\
@@ -78,6 +80,7 @@ stable_cronet_crypto_sources := \
   src/crypto/cipher/e_tls.cc\
   src/crypto/cipher/get_cipher.cc\
   src/crypto/cipher/tls_cbc.cc\
+  src/crypto/cms/cms.cc\
   src/crypto/conf/conf.cc\
   src/crypto/cpu_aarch64_apple.cc\
   src/crypto/cpu_aarch64_fuchsia.cc\
@@ -103,6 +106,7 @@ stable_cronet_crypto_sources := \
   src/crypto/ec/hash_to_curve.cc\
   src/crypto/ecdh/ecdh.cc\
   src/crypto/ecdsa/ecdsa_asn1.cc\
+  src/crypto/ecdsa/ecdsa_p1363.cc\
   src/crypto/engine/engine.cc\
   src/crypto/err/err.cc\
   src/crypto/evp/evp.cc\

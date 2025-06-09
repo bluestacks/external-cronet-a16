@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<!-- LINT.IfChange -->
 <configuration description="Runs coverage tests for NetHttp">
     <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
         <option name="test-file-name" value="StableNetHttpCoverageTests.apk" />
@@ -37,12 +38,8 @@
     <test class="com.android.tradefed.testtype.AndroidJUnitTest" >
         <option name="package" value="com.android.net.http.tests.coverage" />
         <option name="runner" value="androidx.test.runner.AndroidJUnitRunner" />
-        <!-- b/298380508 -->
-        <option name="exclude-filter" value="org.chromium.net.CronetUrlRequestContextTest#testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider" />
-        <!-- b/316559294 -->
-        <option name="exclude-filter" value="org.chromium.net.NQETest#testQuicDisabled" />
-        <!-- b/316559294 -->
-        <option name="exclude-filter" value="org.chromium.net.NQETest#testPrefsWriteRead" />
+        <!-- Chromium disables tests via this annotation. -->
+        <option name="exclude-annotation" value="org.chromium.base.test.util.DisabledTest" />
         <!-- b/316554711-->
         <option name="exclude-filter" value="org.chromium.net.NetworkChangesTest" />
         <!-- b/316550794 -->
@@ -63,3 +60,4 @@
             value="com.android.modules.utils.testing.NativeCoverageHackInstrumentationListener" />
     </test>
 </configuration>
+<!-- LINT.ThenChange(/android/tests/common/AndroidTest.xml) -->

@@ -40,10 +40,6 @@
         <option name="runner" value="androidx.test.runner.AndroidJUnitRunner" />
         <!-- Chromium disables tests via this annotation. -->
         <option name="exclude-annotation" value="org.chromium.base.test.util.DisabledTest" />
-        <!-- b/316559294 -->
-        <option name="exclude-filter" value="org.chromium.net.NQETest#testQuicDisabled" />
-        <!-- b/316559294 -->
-        <option name="exclude-filter" value="org.chromium.net.NQETest#testPrefsWriteRead" />
         <!-- b/316554711-->
         <option name="exclude-filter" value="org.chromium.net.NetworkChangesTest" />
         <!-- b/316550794 -->

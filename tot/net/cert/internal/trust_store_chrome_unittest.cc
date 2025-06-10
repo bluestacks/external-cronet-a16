@@ -5,6 +5,7 @@
 #include "net/cert/internal/trust_store_chrome.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
@@ -363,9 +364,6 @@ TEST(TrustStoreChromeTestNoFixture,
 
     // Check that the certificate is present in the trust store as an anchor,
     // with the expected settings for expiry and X.509 constraints.
-    // TODO(crbug.com/414630735): check that the correct Trust Anchor ID is
-    // stored in TrustStoreChrome, once implemented. (Right now TrustStoreChrome
-    // throws out Trust Anchor IDs and doesn't keep them around.)
     bssl::CertificateTrust trust =
         trust_store_chrome->GetTrust(parsed_cert.get());
     EXPECT_TRUE(trust.IsTrustAnchor());
@@ -373,8 +371,11 @@ TEST(TrustStoreChromeTestNoFixture,
               expected_trust.enforce_anchor_expiry);
     EXPECT_EQ(trust.enforce_anchor_constraints,
               expected_trust.enforce_anchor_constraints);
+    EXPECT_TRUE(trust_store_chrome->trust_anchor_ids().contains(
+        base::ToVector(base::as_byte_span(cert.trust_anchor_id))));
   }
   EXPECT_EQ(4u, certs_with_tai);
+  EXPECT_EQ(trust_store_chrome->trust_anchor_ids().size(), 4u);
 }
 
 // Tests that, for a compiled-in root store, certificates in |additional_certs|
@@ -422,7 +423,7 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoAdditionalCertsAsTrustAnchors) {
       anchor->set_enforce_anchor_expiry(enforce_anchor_expiry);
       anchor->set_enforce_anchor_constraints(enforce_anchor_constraints);
       anchor->set_tls_trust_anchor(true);
-      anchor->set_trust_anchor_id("1.2.3.4");
+      anchor->set_trust_anchor_id("\x01\x02\x03\x04");
 
       std::optional<ChromeRootStoreData> root_store_data =
           ChromeRootStoreData::CreateFromRootStoreProto(root_store);
@@ -435,10 +436,8 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoAdditionalCertsAsTrustAnchors) {
       EXPECT_TRUE(trust.IsTrustAnchor());
       EXPECT_EQ(trust.enforce_anchor_expiry, enforce_anchor_expiry);
       EXPECT_EQ(trust.enforce_anchor_constraints, enforce_anchor_constraints);
-      // TODO(crbug.com/414630735): check that the correct Trust Anchor ID is
-      // stored in TrustStoreChrome, once implemented. (Right now
-      // TrustStoreChrome throws out Trust Anchor IDs and doesn't keep them
-      // around.)
+      EXPECT_TRUE(trust_store_chrome.trust_anchor_ids().contains(
+          {0x01, 0x02, 0x03, 0x04}));
     }
   }
 }
@@ -483,7 +482,7 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
   anchor->set_enforce_anchor_expiry(true);
   anchor->set_enforce_anchor_constraints(true);
   // |tls_trust_anchor| is left unset here.
-  anchor->set_trust_anchor_id("1.2.3.4");
+  anchor->set_trust_anchor_id("\x01\x02\x03\x04");
 
   std::optional<ChromeRootStoreData> root_store_data =
       ChromeRootStoreData::CreateFromRootStoreProto(root_store);
@@ -493,9 +492,22 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       ToParsedCertificate(*root);
   EXPECT_FALSE(trust_store_chrome.Contains(parsed.get()));
-  // TODO(crbug.com/414630735): check that the above Trust Anchor ID is
-  // not present in TrustStoreChrome, once implemented. (Right now
-  // TrustStoreChrome throws out Trust Anchor IDs and doesn't keep them around.)
+  EXPECT_FALSE(
+      trust_store_chrome.trust_anchor_ids().contains({0x01, 0x02, 0x03, 0x04}));
+}
+
+// Tests that TLS Trust Anchor IDs are loaded correctly from the compiled-in
+// root store.
+TEST(TrustStoreChromeTestNoFixture, LoadCompiledInTrustAnchorIDs) {
+  std::vector<std::vector<uint8_t>> trust_anchor_ids =
+      TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(
+          base::span<const ChromeRootCertInfo>(kChromeRootCertList));
+  EXPECT_THAT(trust_anchor_ids,
+              testing::UnorderedElementsAre(
+                  std::vector<uint8_t>({0x05u, 0x05u, 0x05u}),
+                  std::vector<uint8_t>({0x01u, 0x01u, 0x01u, 0x01u}),
+                  std::vector<uint8_t>({0x03u, 0x03u, 0x03u, 0x03u}),
+                  std::vector<uint8_t>({0x02u, 0x02u, 0x02u, 0x02u})));
 }
 
 TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {

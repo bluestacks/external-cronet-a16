@@ -179,7 +179,6 @@ void MoqtControlParser::ReadAndDispatchMessages() {
   auto on_return = absl::MakeCleanup([&] { processing_ = false; });
   while (!no_more_data_) {
     bool fin_read = false;
-
     // Read the message type.
     if (!message_type_.has_value()) {
       message_type_ = ReadVarInt62FromStream(stream_, fin_read);
@@ -195,15 +194,23 @@ void MoqtControlParser::ReadAndDispatchMessages() {
 
     // Read the message length.
     if (!message_size_.has_value()) {
-      message_size_ = ReadVarInt62FromStream(stream_, fin_read);
-      if (fin_read) {
+      if (stream_.ReadableBytes() < 2) {
+        return;
+      }
+      std::array<char, 2> size_bytes;
+      quiche::ReadStream::ReadResult result =
+          stream_.Read(absl::MakeSpan(size_bytes));
+      if (result.bytes_read != 2) {
+        ParseError(MoqtError::kInternalError,
+                   "Stream returned incorrect ReadableBytes");
+        return;
+      }
+      if (result.fin) {
         ParseError("FIN on control stream");
         return;
       }
-      if (!message_size_.has_value()) {
-        return;
-      }
-
+      message_size_ = static_cast<uint16_t>(size_bytes[0]) << 8 |
+                      static_cast<uint16_t>(size_bytes[1]);
       if (*message_size_ > kMaxMessageHeaderSize) {
         ParseError(MoqtError::kInternalError,
                    absl::StrCat("Cannot parse control messages more than ",
@@ -395,23 +402,30 @@ size_t MoqtControlParser::ProcessServerSetup(quic::QuicDataReader& reader) {
 size_t MoqtControlParser::ProcessSubscribe(quic::QuicDataReader& reader) {
   MoqtSubscribe subscribe;
   uint64_t filter, group, object;
-  uint8_t group_order;
+  uint8_t group_order, forward;
   absl::string_view track_name;
-  if (!reader.ReadVarInt62(&subscribe.subscribe_id) ||
+  if (!reader.ReadVarInt62(&subscribe.request_id) ||
       !reader.ReadVarInt62(&subscribe.track_alias) ||
       !ReadTrackNamespace(reader, subscribe.full_track_name) ||
       !reader.ReadStringPieceVarInt62(&track_name) ||
       !reader.ReadUInt8(&subscribe.subscriber_priority) ||
-      !reader.ReadUInt8(&group_order) || !reader.ReadVarInt62(&filter)) {
+      !reader.ReadUInt8(&group_order) || !reader.ReadUInt8(&forward) ||
+      !reader.ReadVarInt62(&filter)) {
     return 0;
   }
   subscribe.full_track_name.AddElement(track_name);
   if (!ParseDeliveryOrder(group_order, subscribe.group_order)) {
-    ParseError("Invalid group order value in SUBSCRIBE message");
+    ParseError("Invalid group order value in SUBSCRIBE");
     return 0;
   }
-  MoqtFilterType filter_type = static_cast<MoqtFilterType>(filter);
-  switch (filter_type) {
+  if (forward > 1) {
+    ParseError("Invalid forward value in SUBSCRIBE");
+    return 0;
+  }
+  subscribe.forward = (forward == 1);
+  subscribe.filter_type = static_cast<MoqtFilterType>(filter);
+  switch (subscribe.filter_type) {
+    case MoqtFilterType::kNextGroupStart:
     case MoqtFilterType::kLatestObject:
       break;
     case MoqtFilterType::kAbsoluteStart:
@@ -420,7 +434,7 @@ size_t MoqtControlParser::ProcessSubscribe(quic::QuicDataReader& reader) {
         return 0;
       }
       subscribe.start = Location(group, object);
-      if (filter_type == MoqtFilterType::kAbsoluteStart) {
+      if (subscribe.filter_type == MoqtFilterType::kAbsoluteStart) {
         break;
       }
       if (!reader.ReadVarInt62(&group)) {
@@ -458,7 +472,7 @@ size_t MoqtControlParser::ProcessSubscribeOk(quic::QuicDataReader& reader) {
   uint64_t milliseconds;
   uint8_t group_order;
   uint8_t content_exists;
-  if (!reader.ReadVarInt62(&subscribe_ok.subscribe_id) ||
+  if (!reader.ReadVarInt62(&subscribe_ok.request_id) ||
       !reader.ReadVarInt62(&milliseconds) || !reader.ReadUInt8(&group_order) ||
       !reader.ReadUInt8(&content_exists)) {
     return 0;
@@ -474,9 +488,9 @@ size_t MoqtControlParser::ProcessSubscribeOk(quic::QuicDataReader& reader) {
   subscribe_ok.expires = quic::QuicTimeDelta::FromMilliseconds(milliseconds);
   subscribe_ok.group_order = static_cast<MoqtDeliveryOrder>(group_order);
   if (content_exists) {
-    subscribe_ok.largest_id = Location();
-    if (!reader.ReadVarInt62(&subscribe_ok.largest_id->group) ||
-        !reader.ReadVarInt62(&subscribe_ok.largest_id->object)) {
+    subscribe_ok.largest_location = Location();
+    if (!reader.ReadVarInt62(&subscribe_ok.largest_location->group) ||
+        !reader.ReadVarInt62(&subscribe_ok.largest_location->object)) {
       return 0;
     }
   }
@@ -500,13 +514,13 @@ size_t MoqtControlParser::ProcessSubscribeOk(quic::QuicDataReader& reader) {
 size_t MoqtControlParser::ProcessSubscribeError(quic::QuicDataReader& reader) {
   MoqtSubscribeError subscribe_error;
   uint64_t error_code;
-  if (!reader.ReadVarInt62(&subscribe_error.subscribe_id) ||
+  if (!reader.ReadVarInt62(&subscribe_error.request_id) ||
       !reader.ReadVarInt62(&error_code) ||
       !reader.ReadStringVarInt62(subscribe_error.reason_phrase) ||
       !reader.ReadVarInt62(&subscribe_error.track_alias)) {
     return 0;
   }
-  subscribe_error.error_code = static_cast<SubscribeErrorCode>(error_code);
+  subscribe_error.error_code = static_cast<RequestErrorCode>(error_code);
   visitor_.OnSubscribeErrorMessage(subscribe_error);
   return reader.PreviouslyReadPayload().length();
 }
@@ -537,10 +551,12 @@ size_t MoqtControlParser::ProcessSubscribeDone(quic::QuicDataReader& reader) {
 size_t MoqtControlParser::ProcessSubscribeUpdate(quic::QuicDataReader& reader) {
   MoqtSubscribeUpdate subscribe_update;
   uint64_t start_group, start_object, end_group;
-  if (!reader.ReadVarInt62(&subscribe_update.subscribe_id) ||
+  uint8_t forward;
+  if (!reader.ReadVarInt62(&subscribe_update.request_id) ||
       !reader.ReadVarInt62(&start_group) ||
       !reader.ReadVarInt62(&start_object) || !reader.ReadVarInt62(&end_group) ||
-      !reader.ReadUInt8(&subscribe_update.subscriber_priority)) {
+      !reader.ReadUInt8(&subscribe_update.subscriber_priority) ||
+      !reader.ReadUInt8(&forward)) {
     return 0;
   }
   KeyValuePairList parameters;
@@ -564,6 +580,11 @@ size_t MoqtControlParser::ProcessSubscribeUpdate(quic::QuicDataReader& reader) {
       return 0;
     }
   }
+  if (forward > 1) {
+    ParseError("Invalid forward value in SUBSCRIBE_UPDATE");
+    return 0;
+  }
+  subscribe_update.forward = (forward == 1);
   visitor_.OnSubscribeUpdateMessage(subscribe_update);
   return reader.PreviouslyReadPayload().length();
 }
@@ -609,7 +630,7 @@ size_t MoqtControlParser::ProcessAnnounceError(quic::QuicDataReader& reader) {
       !reader.ReadStringVarInt62(announce_error.reason_phrase)) {
     return 0;
   }
-  announce_error.error_code = static_cast<SubscribeErrorCode>(error_code);
+  announce_error.error_code = static_cast<RequestErrorCode>(error_code);
   visitor_.OnAnnounceErrorMessage(announce_error);
   return reader.PreviouslyReadPayload().length();
 }
@@ -624,7 +645,7 @@ size_t MoqtControlParser::ProcessAnnounceCancel(quic::QuicDataReader& reader) {
       !reader.ReadStringVarInt62(announce_cancel.reason_phrase)) {
     return 0;
   }
-  announce_cancel.error_code = static_cast<SubscribeErrorCode>(error_code);
+  announce_cancel.error_code = static_cast<RequestErrorCode>(error_code);
   visitor_.OnAnnounceCancelMessage(announce_cancel);
   return reader.PreviouslyReadPayload().length();
 }
@@ -752,7 +773,7 @@ size_t MoqtControlParser::ProcessSubscribeAnnouncesError(
     return 0;
   }
   subscribe_namespace_error.error_code =
-      static_cast<SubscribeErrorCode>(error_code);
+      static_cast<RequestErrorCode>(error_code);
   visitor_.OnSubscribeAnnouncesErrorMessage(subscribe_namespace_error);
   return reader.PreviouslyReadPayload().length();
 }
@@ -892,7 +913,7 @@ size_t MoqtControlParser::ProcessFetchError(quic::QuicDataReader& reader) {
       !reader.ReadStringVarInt62(fetch_error.reason_phrase)) {
     return 0;
   }
-  fetch_error.error_code = static_cast<SubscribeErrorCode>(error_code);
+  fetch_error.error_code = static_cast<RequestErrorCode>(error_code);
   visitor_.OnFetchErrorMessage(fetch_error);
   return reader.PreviouslyReadPayload().length();
 }

@@ -68,7 +68,7 @@ public abstract class Transition {
         // At least one Condition should be not fulfilled, or this is likely an incorrectly
         // designed Transition. Exceptions to this rule:
         //     1. null Trigger, for example when focusing on secondary elements of a screen that
-        //        aren't declared in the Station's constructor or in its declareElements().
+        //        aren't declared in the Station's constructor or in its declareExtraElements().
         //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
         //        E.g. when not possible to determine whether the trigger needs to be run.
         return !mOptions.mPossiblyAlreadyFulfilled && mTrigger != null;
@@ -233,12 +233,16 @@ public abstract class Transition {
 
         static final TransitionOptions DEFAULT = new TransitionOptions();
         @Nullable List<Condition> mTransitionConditions;
-        long mTimeoutMs;
+        private long mTimeoutMs;
         int mTries = 1;
         boolean mPossiblyAlreadyFulfilled;
         boolean mRunTriggerOnUiThread;
 
         private TransitionOptions() {}
+
+        long getTimeoutMs() {
+            return mTimeoutMs != 0 ? mTimeoutMs : ConditionWaiter.MAX_TIME_TO_POLL;
+        }
 
         /** Builder for TransitionOptions. Call {@link Transition#newOptions()} to instantiate. */
         public class Builder {

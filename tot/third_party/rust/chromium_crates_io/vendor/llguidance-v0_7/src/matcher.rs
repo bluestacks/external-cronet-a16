@@ -1,4 +1,4 @@
-use anyhow::{anyhow, ensure, Result};
+use anyhow::{anyhow, bail, ensure, Result};
 use toktrie::{SimpleVob, TokEnv, TokenId};
 
 use crate::{api::StopReason, earley::ParserStats, panic_utils, TokenParser};
@@ -48,8 +48,9 @@ impl Matcher {
                 match r {
                     Ok(r) => Ok(r),
                     Err(e) => {
-                        self.0 = MatcherState::Error(e.to_string());
-                        Err(e)
+                        let msg = inner.parser.augment_err(e);
+                        self.0 = MatcherState::Error(msg.clone());
+                        bail!(msg);
                     }
                 }
             }
@@ -83,6 +84,10 @@ impl Matcher {
 
     pub fn consume_token(&mut self, token: TokenId) -> Result<()> {
         self.consume_tokens(&[token])
+    }
+
+    pub fn test_trigger_lexer_error(&mut self) -> Result<()> {
+        self.with_inner(|inner| inner.parser.parser.test_trigger_lexer_error())
     }
 
     pub fn rollback(&mut self, num_tokens: usize) -> Result<()> {

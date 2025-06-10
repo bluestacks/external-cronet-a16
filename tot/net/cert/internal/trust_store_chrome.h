@@ -15,6 +15,7 @@
 #include "crypto/sha2.h"
 #include "net/base/net_export.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
@@ -42,12 +43,12 @@ struct ChromeRootCertInfo {
   // True if the certificate verifier should enforce X.509 constraints encoded
   // in the certificate.
   bool enforce_anchor_constraints;
-  // If non-empty, the ASCII representation of the Trust Anchor ID
+  // If non-empty, the binary representation of the Trust Anchor ID
   // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html)
   // associated with this anchor -- that is, a relative object identifier in
-  // dotted decimal form (e.g., "1234.1"). If empty, this anchor has no
-  // associated Trust Anchor ID.
-  std::string trust_anchor_id;
+  // binary representation. If empty, this anchor has no associated Trust Anchor
+  // ID.
+  base::span<const uint8_t> trust_anchor_id;
 };
 
 struct NET_EXPORT ChromeRootCertConstraints {
@@ -88,7 +89,8 @@ class NET_EXPORT ChromeRootStoreData {
            std::vector<ChromeRootCertConstraints> constraints,
            bool eutl,
            bool enforce_anchor_expiry,
-           bool enforce_anchor_constraints);
+           bool enforce_anchor_constraints,
+           std::vector<uint8_t> trust_anchor_id);
     ~Anchor();
 
     Anchor(const Anchor& other);
@@ -103,6 +105,7 @@ class NET_EXPORT ChromeRootStoreData {
     // True if the certificate verifier should enforce X.509 constraints encoded
     // in the certificate.
     bool enforce_anchor_constraints;
+    std::vector<uint8_t> trust_anchor_id;
   };
 
   // CreateFromRootStoreProto converts |proto| into a usable
@@ -183,6 +186,13 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
       int64_t version,
       ConstraintOverrideMap override_constraints = {});
 
+  // Returns the list of TLS Trust Anchor IDs from the compiled-in root store.
+  // If |cert_list_for_testing| is non-empty, it will override the compiled-in
+  // production root store.
+  static std::vector<std::vector<uint8_t>>
+  GetTrustAnchorIDsFromCompiledInRootStore(
+      base::span<const ChromeRootCertInfo> cert_list_for_testing = {});
+
   // Creates a TrustStoreChrome that uses the compiled in Chrome Root Store.
   TrustStoreChrome();
 
@@ -217,6 +227,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
 
   bssl::TrustStore* eutl_trust_store() { return &eutl_trust_store_; }
 
+  const absl::flat_hash_set<std::vector<uint8_t>>& trust_anchor_ids() const {
+    return trust_anchor_ids_;
+  }
+
  private:
   TrustStoreChrome(const ChromeRootStoreData& root_store_data,
                    ConstraintOverrideMap override_constraints);
@@ -239,6 +253,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   bssl::TrustStoreInMemory eutl_trust_store_;
 
   int64_t version_;
+
+  // The set of Trust Anchor IDs associated with this trust store's TLS trust
+  // anchors.
+  absl::flat_hash_set<std::vector<uint8_t>> trust_anchor_ids_;
 };
 
 // Returns the version # of the Chrome Root Store that was compiled into the

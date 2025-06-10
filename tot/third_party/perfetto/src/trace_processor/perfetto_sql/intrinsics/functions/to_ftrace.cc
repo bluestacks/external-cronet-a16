@@ -57,6 +57,7 @@
 #include "protos/perfetto/trace/ftrace/power.pbzero.h"
 #include "protos/perfetto/trace/ftrace/samsung.pbzero.h"
 #include "protos/perfetto/trace/ftrace/sched.pbzero.h"
+#include "protos/perfetto/trace/ftrace/timer.pbzero.h"
 #include "protos/perfetto/trace/ftrace/workqueue.pbzero.h"
 #include "src/trace_processor/types/version_number.h"
 
@@ -531,6 +532,11 @@ void ArgsSerializer::SerializeArgs() {
     WriteArgForField(CAT::kPidFieldNumber, DVW());
     WriteArgForField(CAT::kCommFieldNumber, DVW());
     return;
+  } else if (event_name_ == "hrtimer_expire_entry") {
+    using HEE = protos::pbzero::HrtimerExpireEntryFtraceEvent;
+    WriteArgForField(HEE::kFunctionFieldNumber,
+                     Wrap(&ArgsSerializer::WriteKernelFnValue));
+    return;
   }
   for (; it_; ++it_) {
     WriteArgAtRow(it_.row_number().row_number(), DVW());
@@ -656,9 +662,9 @@ void SystraceSerializer::SerializePrefix(uint32_t raw_row,
   auto cpu = cpu_table.cpu()[ucpu.value];
 
   UniqueTid utid = raw.utid()[raw_row];
-  uint32_t tid = storage_->thread_table().tid()[utid];
+  int64_t tid = storage_->thread_table().tid()[utid];
 
-  uint32_t tgid = 0;
+  int64_t tgid = 0;
   auto opt_upid = storage_->thread_table().upid()[utid];
   if (opt_upid.has_value()) {
     tgid = storage_->process_table().pid()[*opt_upid];

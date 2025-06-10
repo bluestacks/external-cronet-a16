@@ -142,6 +142,10 @@ export class Time {
     return a - b;
   }
 
+  static durationBetween(a: time, b: time): duration {
+    return a >= b ? a - b : b - a;
+  }
+
   static min(a: time, b: time): time {
     return Time.fromRaw(BigintMath.min(a, b));
   }
@@ -176,6 +180,16 @@ export class Time {
 
   static toTimecode(time: time): Timecode {
     return new Timecode(time);
+  }
+
+  static formatTimezone(minutes: number): string {
+    const sign = minutes >= 0 ? '+' : '-';
+    const absMins = Math.abs(minutes);
+    const hours = Math.floor(absMins / 60);
+    const mins = absMins % 60;
+    const hoursStr = String(hours).padStart(2, '0');
+    const minsStr = String(mins).padStart(2, '0');
+    return `UTC${sign}${hoursStr}:${minsStr}`;
   }
 }
 

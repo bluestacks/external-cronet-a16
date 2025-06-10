@@ -65,45 +65,65 @@ MultivaluedHeadersSet* buildMultivaluedHeaders() {
   return multivalued_headers;
 }
 
-std::array<bool, 256> buildInvalidHeaderKeyCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(false);
+constexpr std::array<bool, 256> buildInvalidHeaderKeyCharLookupTable() {
+  std::array<bool, 256> invalidCharTable{};
   for (uint8_t c : kInvalidHeaderKeyCharList) {
     invalidCharTable[c] = true;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidHeaderKeyCharLookupTableAllowDoubleQuote() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(false);
+constexpr std::array<bool, 256>
+buildInvalidHeaderKeyCharLookupTableAllowDoubleQuote() {
+  std::array<bool, 256> invalidCharTable{};
   for (uint8_t c : kInvalidHeaderKeyCharListAllowDoubleQuote) {
     invalidCharTable[c] = true;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(false);
+constexpr std::array<bool, 256> buildInvalidCharLookupTable() {
+  std::array<bool, 256> invalidCharTable{};
   for (uint8_t c : kInvalidHeaderCharList) {
     invalidCharTable[c] = true;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidPathCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(true);
+constexpr std::array<bool, 256> kAllTrueArray = {
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true};
+
+constexpr std::array<bool, 256> buildInvalidPathCharLookupTable() {
+  std::array<bool, 256> invalidCharTable = kAllTrueArray;
   for (uint8_t c : kValidPathCharList) {
     invalidCharTable[c] = false;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidQueryCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(true);
+constexpr std::array<bool, 256> buildInvalidQueryCharLookupTable() {
+  std::array<bool, 256> invalidCharTable = kAllTrueArray;
   for (uint8_t c : kValidQueryCharList) {
     invalidCharTable[c] = false;
   }
@@ -119,21 +139,21 @@ bool IsMultivaluedHeader(absl::string_view header) {
 }
 
 bool IsInvalidHeaderKeyChar(uint8_t c) {
-  static const std::array<bool, 256> invalidHeaderKeyCharTable =
+  static constexpr std::array<bool, 256> invalidHeaderKeyCharTable =
       buildInvalidHeaderKeyCharLookupTable();
 
   return invalidHeaderKeyCharTable[c];
 }
 
 bool IsInvalidHeaderKeyCharAllowDoubleQuote(uint8_t c) {
-  static const std::array<bool, 256> invalidHeaderKeyCharTable =
+  static constexpr std::array<bool, 256> invalidHeaderKeyCharTable =
       buildInvalidHeaderKeyCharLookupTableAllowDoubleQuote();
 
   return invalidHeaderKeyCharTable[c];
 }
 
 bool IsInvalidHeaderChar(uint8_t c) {
-  static const std::array<bool, 256> invalidCharTable =
+  static constexpr std::array<bool, 256> invalidCharTable =
       buildInvalidCharLookupTable();
 
   return invalidCharTable[c];
@@ -149,7 +169,7 @@ bool HasInvalidHeaderChars(absl::string_view value) {
 }
 
 bool HasInvalidPathChar(absl::string_view value) {
-  static const std::array<bool, 256> invalidCharTable =
+  static constexpr std::array<bool, 256> invalidCharTable =
       buildInvalidPathCharLookupTable();
   for (const char c : value) {
     if (invalidCharTable[c]) {
@@ -160,7 +180,7 @@ bool HasInvalidPathChar(absl::string_view value) {
 }
 
 bool HasInvalidQueryChar(absl::string_view value) {
-  static const std::array<bool, 256> invalidCharTable =
+  static constexpr std::array<bool, 256> invalidCharTable =
       buildInvalidQueryCharLookupTable();
   for (const char c : value) {
     if (invalidCharTable[c]) {

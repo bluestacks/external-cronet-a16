@@ -20,21 +20,28 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/hash/internal/low_level_hash.h"
+#include "absl/hash/internal/city.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace hash_internal {
 
 uint64_t MixingHashState::CombineLargeContiguousImpl32(
-    uint64_t state, const unsigned char* first, size_t len) {
+    const unsigned char* first, size_t len, uint64_t state) {
   while (len >= PiecewiseChunkSize()) {
-    state = Mix(
-        state ^ hash_internal::CityHash32(reinterpret_cast<const char*>(first),
+    // TODO(b/417141985): avoid code duplication with CombineContiguousImpl.
+    state =
+        Mix(PrecombineLengthMix(state, PiecewiseChunkSize()) ^
+                hash_internal::CityHash32(reinterpret_cast<const char*>(first),
                                           PiecewiseChunkSize()),
-        kMul);
+            kMul);
     len -= PiecewiseChunkSize();
     first += PiecewiseChunkSize();
+  }
+  // Do not call CombineContiguousImpl for empty range since it is modifying
+  // state.
+  if (len == 0) {
+    return state;
   }
   // Handle the remainder.
   return CombineContiguousImpl(state, first, len,
@@ -42,11 +49,16 @@ uint64_t MixingHashState::CombineLargeContiguousImpl32(
 }
 
 uint64_t MixingHashState::CombineLargeContiguousImpl64(
-    uint64_t state, const unsigned char* first, size_t len) {
+    const unsigned char* first, size_t len, uint64_t state) {
   while (len >= PiecewiseChunkSize()) {
-    state = Mix(state ^ Hash64(first, PiecewiseChunkSize()), kMul);
+    state = Hash64(first, PiecewiseChunkSize(), state);
     len -= PiecewiseChunkSize();
     first += PiecewiseChunkSize();
+  }
+  // Do not call CombineContiguousImpl for empty range since it is modifying
+  // state.
+  if (len == 0) {
+    return state;
   }
   // Handle the remainder.
   return CombineContiguousImpl(state, first, len,
@@ -54,11 +66,6 @@ uint64_t MixingHashState::CombineLargeContiguousImpl64(
 }
 
 ABSL_CONST_INIT const void* const MixingHashState::kSeed = &kSeed;
-
-uint64_t MixingHashState::LowLevelHashImpl(const unsigned char* data,
-                                           size_t len) {
-  return LowLevelHashLenGt32(data, len, Seed(), &kStaticRandomData[0]);
-}
 
 }  // namespace hash_internal
 ABSL_NAMESPACE_END

@@ -19,7 +19,7 @@
 #include "quiche/quic/moqt/tools/moqt_mock_visitor.h"
 #include "quiche/quic/platform/api/quic_test.h"
 #include "quiche/quic/test_tools/quic_test_utils.h"
-#include "quiche/common/platform/api/quiche_mem_slice.h"
+#include "quiche/common/quiche_mem_slice.h"
 
 namespace moqt {
 
@@ -54,6 +54,8 @@ class SubscribeRemoteTrackTest : public quic::test::QuicTest {
       /*full_track_name=*/FullTrackName("foo", "bar"),
       /*subscriber_priority=*/128,
       /*group_order=*/std::nullopt,
+      /*forward=*/true,
+      /*filter_type=*/MoqtFilterType::kAbsoluteStart,
       /*start=*/Location(2, 0),
       std::nullopt,
       VersionSpecificParameters(),
@@ -63,7 +65,7 @@ class SubscribeRemoteTrackTest : public quic::test::QuicTest {
 
 TEST_F(SubscribeRemoteTrackTest, Queries) {
   EXPECT_EQ(track_.full_track_name(), FullTrackName("foo", "bar"));
-  EXPECT_EQ(track_.subscribe_id(), 1);
+  EXPECT_EQ(track_.request_id(), 1);
   EXPECT_EQ(track_.track_alias(), 2);
   EXPECT_EQ(track_.visitor(), &visitor_);
   EXPECT_FALSE(track_.is_fetch());
@@ -78,7 +80,7 @@ TEST_F(SubscribeRemoteTrackTest, UpdateDataStreamType) {
 
 TEST_F(SubscribeRemoteTrackTest, AllowError) {
   EXPECT_TRUE(track_.ErrorIsAllowed());
-  EXPECT_EQ(track_.GetSubscribe().subscribe_id, subscribe_.subscribe_id);
+  EXPECT_EQ(track_.GetSubscribe().request_id, subscribe_.request_id);
   track_.OnObjectOrOk();
   EXPECT_FALSE(track_.ErrorIsAllowed());
 }
@@ -99,7 +101,7 @@ class UpstreamFetchTest : public quic::test::QuicTest {
         }) {}
 
   MoqtFetch fetch_message_ = {
-      /*fetch_id=*/1,
+      /*request_id=*/1,
       /*subscriber_priority=*/128,
       /*group_order=*/std::nullopt,
       /*joining_fetch=*/std::nullopt,
@@ -115,7 +117,7 @@ class UpstreamFetchTest : public quic::test::QuicTest {
 };
 
 TEST_F(UpstreamFetchTest, Queries) {
-  EXPECT_EQ(fetch_.subscribe_id(), 1);
+  EXPECT_EQ(fetch_.request_id(), 1);
   EXPECT_EQ(fetch_.full_track_name(), FullTrackName("foo", "bar"));
   EXPECT_FALSE(
       fetch_.CheckDataStreamType(MoqtDataStreamType::kStreamHeaderSubgroup));

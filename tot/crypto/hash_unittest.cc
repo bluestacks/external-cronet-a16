@@ -58,6 +58,26 @@ TEST(HashTest, Sha256) {
   }
 }
 
+TEST(HashTest, Sha384) {
+  // FIPS 180-4 "SHA384ShortMsg" test vector:
+  TestCase c = {
+      .message = "e1bb967b5d379a4aa39050274d09bd93",
+      .digest =
+          "3b04f96965ad2fbabd4df25d5d8c95589d069c312ee48539090b2d7b495d2446c31e"
+          "b2b8f8ffb3012bdce065323d9f48",
+  };
+
+  std::vector<uint8_t> message;
+  std::array<uint8_t, 48> digest;
+  PrepareTestCase(c, &message, digest);
+
+  std::vector<uint8_t> computed_digest(
+      crypto::hash::DigestSizeForHashKind(crypto::hash::kSha384));
+  crypto::hash::Hash(crypto::hash::kSha384, base::as_byte_span(message),
+                     computed_digest);
+  EXPECT_EQ(base::as_byte_span(digest), base::as_byte_span(computed_digest));
+}
+
 TEST(HashTest, Sha512) {
   const auto cases = std::to_array<TestCase>(
       {// FIPS 180-4 "SHA512ShortMsg" test vector:
@@ -79,7 +99,7 @@ TEST(HashTest, Sha512) {
   }
 }
 
-TEST(HashTest, WrongDigestSizeDies) {
+TEST(HashDeathTest, WrongDigestSizeDies) {
   std::array<uint8_t, 16> small_digest;
   std::array<uint8_t, 128> big_digest;
   std::array<uint8_t, 16> input;
@@ -90,6 +110,16 @@ TEST(HashTest, WrongDigestSizeDies) {
   EXPECT_DEATH_IF_SUPPORTED(
       crypto::hash::Hash(crypto::hash::HashKind::kSha256, input, big_digest),
       "");
+}
+
+TEST(HashDeathTest, UseAfterFinishDies) {
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
+  hasher.Update(base::span<const uint8_t>());
+
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  hasher.Finish(result);
+  EXPECT_DEATH_IF_SUPPORTED(hasher.Update(base::span<const uint8_t>()), "");
+  EXPECT_DEATH_IF_SUPPORTED(hasher.Finish(result), "");
 }
 
 TEST(HashTest, StringViewHash) {

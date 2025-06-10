@@ -490,11 +490,14 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root) {
 
 ThreadCache::ThreadCache(PartitionRoot* root)
     : should_purge_(false),
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+      offset_lookup_(root->GetOffsetLookup()),
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       root_(root),
       thread_id_(internal::base::PlatformThread::CurrentId()),
       next_(nullptr),
       prev_(nullptr),
-      scheduler_loop_quarantine_branch_(root) {
+      scheduler_loop_quarantine_branch_(root, this) {
   ThreadCacheRegistry::Instance().RegisterThreadCache(this);
 
   memset(&stats_, 0, sizeof(stats_));
@@ -516,17 +519,17 @@ ThreadCache::ThreadCache(PartitionRoot* root)
   }
 
   // When enabled, initialize scheduler loop quarantine branch.
-  // This branch is only used within this thread, so not `lock_required`.
   const auto& scheduler_loop_quarantine_config =
       root_->settings.scheduler_loop_quarantine_thread_local_config;
-  PA_CHECK(!scheduler_loop_quarantine_config.enable_quarantine ||
-           !scheduler_loop_quarantine_config.quarantine_config.lock_required);
   scheduler_loop_quarantine_branch_.Configure(
       root_->scheduler_loop_quarantine_root, scheduler_loop_quarantine_config);
 }
 
 ThreadCache::~ThreadCache() {
   ThreadCacheRegistry::Instance().UnregisterThreadCache(this);
+  // Ordering is important here, as `scheduler_loop_quarantine_branch_` may
+  // return quarantined allocations to this thread cache through `Purge()`.
+  scheduler_loop_quarantine_branch_.Destroy();
   Purge();
 }
 
@@ -688,11 +691,20 @@ void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+      head = head->GetNextForThreadCache(bucket.slot_size, offset_lookup_);
+#else
       head = head->GetNextForThreadCache(bucket.slot_size);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       items++;
     }
 
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    FreeAfter(head->GetNextForThreadCache(bucket.slot_size, offset_lookup_),
+              bucket.slot_size);
+#else
     FreeAfter(head->GetNextForThreadCache(bucket.slot_size), bucket.slot_size);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     head->SetNext(nullptr);
   }
   bucket.count = limit;
@@ -711,7 +723,11 @@ void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
   internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   while (head) {
     uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    head = head->GetNextForThreadCache(slot_size, offset_lookup_);
+#else
     head = head->GetNextForThreadCache(slot_size);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     root_->RawFreeLocked(slot_start);
   }
 }
@@ -810,6 +826,10 @@ void ThreadCache::PurgeInternal() {
   }
 }
 
+PartitionRoot* ThreadCache::GetRoot() {
+  return root_;
+}
+
 bool ThreadCache::IsInFreelist(uintptr_t address,
                                size_t bucket_index,
                                size_t& position) {
@@ -835,8 +855,13 @@ bool ThreadCache::IsInFreelist(uintptr_t address,
       position = index;
       return true;
     }
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    internal::FreelistEntry* next =
+        entry->GetNextForThreadCache(bucket.slot_size, offset_lookup_);
+#else
     internal::FreelistEntry* next =
         entry->GetNextForThreadCache(bucket.slot_size);
+#endif
     entry = next;
     ++index;
   }

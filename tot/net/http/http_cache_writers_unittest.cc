@@ -4,15 +4,19 @@
 
 #include "net/http/http_cache_writers.h"
 
+#include <stdint.h>
+
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "crypto/secure_hash.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_cache_transaction.h"
@@ -35,8 +39,8 @@ namespace net {
 namespace {
 // Helper function, generating valid HTTP cache key from `url`.
 // See also: HttpCache::GenerateCacheKey(..)
-std::string GenerateCacheKey(const std::string& url) {
-  return "1/0/" + url;
+std::string GenerateCacheKey(const std::string_view url) {
+  return base::StrCat({"1/0/", url});
 }
 }  // namespace
 
@@ -114,10 +118,8 @@ class WritersTest : public TestWithTaskEnvironment {
   }
 
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
-    std::unique_ptr<HttpTransaction> transaction;
     MockNetworkLayer* network_layer = cache_.network_layer();
-    network_layer->CreateTransaction(DEFAULT_PRIORITY, &transaction);
-    return transaction;
+    return network_layer->CreateTransaction(DEFAULT_PRIORITY);
   }
 
   void CreateWritersAddTransaction(

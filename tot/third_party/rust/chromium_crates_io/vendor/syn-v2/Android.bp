@@ -108,6 +108,8 @@ rust_ffi_static {
     crate_name: "syn",
     crate_root: "src/lib.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
+        "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
         "libproc_macro2__d957ddb2eb267eaf",
         "libquote__62704bfea487e463",
         "libunicode_ident__df6840ce9d3a78ba",
@@ -117,7 +119,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             features: [
                 "clone-impls",
@@ -132,7 +134,7 @@ rust_ffi_static {
                 "visit",
             ],
             flags: [
-                "--cap-lints=allow",
+                "-Awarnings",
                 "-Cmetadata=syn-2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -140,8 +142,6 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
             ],
         },
     },
@@ -220,6 +220,8 @@ rust_ffi_static {
     crate_name: "syn",
     crate_root: "src/lib.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__b3956dbf57d32035",
+        "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
         "libproc_macro2__20eacb95c0df0bdc",
         "libquote__60de3151f3dcc02e",
         "libunicode_ident__a7d0ec0588bafe5d",
@@ -229,7 +231,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             features: [
                 "clone-impls",
@@ -244,7 +246,7 @@ rust_ffi_static {
                 "visit",
             ],
             flags: [
-                "--cap-lints=allow",
+                "-Awarnings",
                 "-Cmetadata=syn-2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -252,8 +254,6 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
             ],
         },
     },

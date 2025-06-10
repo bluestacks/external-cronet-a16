@@ -94,7 +94,8 @@ else:
 
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
-ADB_TOOL = THIRD_PARTY_DIR / 'catapult/devil/bin/deps/linux2/x86_64/bin/adb'
+ADB_TOOL = THIRD_PARTY_DIR / 'android_sdk/public/platform-tools/adb'
+BUNDLETOOL = THIRD_PARTY_DIR / 'android_build_tools/bundletool/cipd/bundletool.jar'  # pylint: disable=line-too-long
 GSUTIL_DIR = THIRD_PARTY_DIR / 'catapult/third_party/gsutil'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
@@ -726,14 +727,20 @@ class CrossbenchTest(object):
   EXECUTABLE = 'cb.py'
   OUTDIR = '--out-dir=%s/output'
   CHROME_BROWSER = '--browser=%s'
-  ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
+  ANDROID_HJSON = ('{browser:"%s", driver:{type:"Android", '
+                   f'adb_bin:"{ADB_TOOL}", '
+                   f'bundletool:"{BUNDLETOOL}'
+                   '"}}')
   STORY_LABEL = 'default'
   BENCHMARK_FILESERVERS = {
       'speedometer_3.1': 'third_party/speedometer/v3.1',
       'speedometer_3.0': 'third_party/speedometer/v3.0',
+      'speedometer_3': 'third_party/speedometer/v3.1',
       'speedometer_2.1': 'third_party/speedometer/v2.1',
       'speedometer_2.0': 'third_party/speedometer/v2.0',
+      'speedometer_2': 'third_party/speedometer/v2.1',
       'jetstream_2.2': 'third_party/jetstream/v2.2',
+      'jetstream_2': 'third_party/jetstream/v2.2',
       'motionmark_1.3': 'third_party/blink/perf_tests/MotionMark'
   }
 
@@ -742,6 +749,9 @@ class CrossbenchTest(object):
     self._parse_arguments()
     self.isolated_out_dir = isolated_out_dir
     self.network = self._get_network_arg(options.passthrough_args)
+    self.is_chrome = (not self.cb_options.official_browser
+                      or self.cb_options.official_browser.startswith('chrome'))
+    self.env = self._create_env_arg()
     if self.options.luci_chromium:
       # In luci.chromium the Chrome and driver are in the user path.
       self.browser = '--browser=%s' % get_abs_user_path('chrome')
@@ -779,6 +789,13 @@ class CrossbenchTest(object):
       arg = '--fileserver'
       args.append(arg)
       return self._create_fileserver_network(arg)
+    return []
+
+  def _create_env_arg(self):
+    if (self.options.benchmarks.startswith('motionmark')
+        and sys.platform == 'darwin'):
+      # Set screen refresh rate to 60Hz on Mac due to crbug.com/415318275.
+      return ['--env={screen_refresh_rate:60}']
     return []
 
   def _create_fileserver_network(self, arg):
@@ -829,9 +846,10 @@ class CrossbenchTest(object):
     ]
     if self.cb_options.official_browser:
       if self.is_android:
-        raise RuntimeError(
-            'Running official build not yet supported on Android')
-      self.browser = self.CHROME_BROWSER % self.cb_options.official_browser
+        android_json = self.ANDROID_HJSON % self.cb_options.official_browser
+        self.browser = self.CHROME_BROWSER % android_json
+      else:
+        self.browser = self.CHROME_BROWSER % self.cb_options.official_browser
       self.driver_path_arg = []
       return
     self.driver_path_arg = self._find_chromedriver()
@@ -850,7 +868,7 @@ class CrossbenchTest(object):
       # Check for an arg with embedder package name to override browser (WV)
       browser_app = (self._check_for_embedder_arg()
                      or possible_browser.settings.package)
-      android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
+      android_json = self.ANDROID_HJSON % browser_app
       self.browser = self.CHROME_BROWSER % android_json
     else:
       assert hasattr(possible_browser, 'local_executable')
@@ -866,12 +884,11 @@ class CrossbenchTest(object):
     return []
 
   def _get_default_args(self):
-    default_args = [
-        '--no-symlinks',
-        # Required until crbug/41491492 and crbug/346323630 are fixed.
-        '--enable-features=DisablePrivacySandboxPrompts',
-    ]
-    if not self.is_android:
+    default_args = ['--no-symlinks']
+    if self.is_chrome:
+      # Required until crbug.com/41491492 and crbug.com/346323630 are fixed.
+      default_args.append('--enable-features=DisablePrivacySandboxPrompts')
+    if self.is_chrome and not self.is_android:
       # See http://shortn/_xGSaVM9P5g
       default_args.append('--enable-field-trial-config')
     if self.options.luci_chromium:
@@ -882,7 +899,7 @@ class CrossbenchTest(object):
     return (['vpython3', '-Xutf8'] + [self.options.executable] + [benchmark] +
             ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
             [self.browser] + benchmark_args + self.driver_path_arg +
-            self.network + self._get_default_args())
+            self.network + self.env + self._get_default_args())
 
   def execute_benchmark(self,
                         benchmark,
@@ -893,7 +910,7 @@ class CrossbenchTest(object):
 
     env = os.environ.copy()
     env['CHROME_HEADLESS'] = '1'
-    env['PATH'] = f'{GSUTIL_DIR}:' + env['PATH']
+    env['PATH'] = f"{GSUTIL_DIR}{';' if IsWindows() else ':'}{env['PATH']}"
 
     return_code = 1
     output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()

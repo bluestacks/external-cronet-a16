@@ -5,6 +5,11 @@
 #ifndef CRYPTO_HASH_H_
 #define CRYPTO_HASH_H_
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "crypto/crypto_export.h"
@@ -14,6 +19,7 @@ namespace crypto::hash {
 
 inline constexpr size_t kSha1Size = 20;
 inline constexpr size_t kSha256Size = 32;
+inline constexpr size_t kSha384Size = 48;
 inline constexpr size_t kSha512Size = 64;
 
 // Unless your code needs to be generic over HashKind, use one of these
@@ -35,6 +41,7 @@ CRYPTO_EXPORT std::array<uint8_t, kSha512Size> Sha512(std::string_view data);
 enum HashKind {
   kSha1,
   kSha256,
+  kSha384,
   kSha512,
 };
 
@@ -44,6 +51,8 @@ inline constexpr size_t DigestSizeForHashKind(HashKind k) {
       return kSha1Size;
     case kSha256:
       return kSha256Size;
+    case kSha384:
+      return kSha384Size;
     case kSha512:
       return kSha512Size;
   }
@@ -73,7 +82,9 @@ class CRYPTO_EXPORT Hasher {
   void Update(base::span<const uint8_t> data);
   void Update(std::string_view data);
 
-  // The digest span must be the right size.
+  // The digest span must be the right size. Once Finish() has been called on a
+  // Hasher instance, it cannot be used any further: subsequent calls to either
+  // Update() or Finish() are illegal and will crash.
   void Finish(base::span<uint8_t> digest);
 
  private:

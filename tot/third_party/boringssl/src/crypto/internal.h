@@ -18,7 +18,6 @@
 #include <openssl/crypto.h>
 #include <openssl/ex_data.h>
 #include <openssl/stack.h>
-#include <openssl/thread.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -528,7 +527,7 @@ OPENSSL_EXPORT void CRYPTO_once(CRYPTO_once_t *once, void (*init)(void));
 
 using CRYPTO_atomic_u32 = std::atomic<uint32_t>;
 
-static_assert(sizeof(CRYPTO_atomic_u32) == sizeof(uint32_t), "");
+static_assert(sizeof(CRYPTO_atomic_u32) == sizeof(uint32_t));
 
 inline uint32_t CRYPTO_atomic_load_u32(const CRYPTO_atomic_u32 *val) {
   return val->load(std::memory_order_seq_cst);
@@ -579,6 +578,8 @@ static_assert(alignof(CRYPTO_atomic_u32) == alignof(uint32_t),
 
 // CRYPTO_REFCOUNT_MAX is the value at which the reference count saturates.
 #define CRYPTO_REFCOUNT_MAX 0xffffffff
+
+using CRYPTO_refcount_t = CRYPTO_atomic_u32;
 
 // CRYPTO_refcount_inc atomically increments the value at |*count| unless the
 // value would overflow. It's safe for multiple threads to concurrently call
@@ -714,6 +715,10 @@ OPENSSL_EXPORT int CRYPTO_set_thread_local(
 
 // ex_data
 
+struct crypto_ex_data_st {
+  STACK_OF(void) *sk;
+} /* CRYPTO_EX_DATA */;
+
 typedef struct crypto_ex_data_func_st CRYPTO_EX_DATA_FUNCS;
 
 // CRYPTO_EX_DATA_CLASS tracks the ex_indices registered for a type which
@@ -755,10 +760,9 @@ OPENSSL_EXPORT void *CRYPTO_get_ex_data(const CRYPTO_EX_DATA *ad, int index);
 // CRYPTO_new_ex_data initialises a newly allocated |CRYPTO_EX_DATA|.
 OPENSSL_EXPORT void CRYPTO_new_ex_data(CRYPTO_EX_DATA *ad);
 
-// CRYPTO_free_ex_data frees |ad|, which is embedded inside |obj|, which is an
-// object of the given class.
+// CRYPTO_free_ex_data frees |ad|, which is an object of the given class.
 OPENSSL_EXPORT void CRYPTO_free_ex_data(CRYPTO_EX_DATA_CLASS *ex_data_class,
-                                        void *obj, CRYPTO_EX_DATA *ad);
+                                        CRYPTO_EX_DATA *ad);
 
 
 // Endianness conversions.
@@ -1105,6 +1109,11 @@ extern uint32_t OPENSSL_ia32cap_P[4];
 // entry of |OPENSSL_ia32cap_P|. It is marked as a const function so duplicate
 // calls can be merged by the compiler, at least when indices match.
 OPENSSL_ATTR_CONST uint32_t OPENSSL_get_ia32cap(int idx);
+
+// OPENSSL_adjust_ia32cap adjusts |cap|, which should contain
+// |OPENSSL_ia32cap_P|, based on the environment variable value in |env|. This
+// function is exposed for unit tests.
+void OPENSSL_adjust_ia32cap(uint32_t cap[4], const char *env);
 
 // See Intel manual, volume 2A, table 3-11.
 

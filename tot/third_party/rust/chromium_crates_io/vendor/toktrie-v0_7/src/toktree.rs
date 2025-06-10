@@ -295,26 +295,25 @@ impl TokTrie {
     }
 
     fn tokens_dbg_ext(&self, toks: &[u32], quote: bool) -> String {
+        // if the token list is too long, we are typically interested in the most recent ones
         let (limited, toks) = if toks.len() > Self::MAX_DBG_TOKENS {
-            (true, &toks[0..Self::MAX_DBG_TOKENS])
+            ("…", &toks[toks.len() - Self::MAX_DBG_TOKENS..])
         } else {
-            (false, toks)
+            ("", toks)
         };
 
-        let mut joined = toks
+        let joined = toks
             .iter()
             .map(|t| self.token_dbg_ext(*t, false))
             .collect::<Vec<_>>()
             .join("‧");
 
-        if limited {
-            joined.push('…');
-        }
-
         if quote {
-            format!("⟦{}⟧", joined)
-        } else {
+            format!("⟦{}{}⟧", limited, joined)
+        } else if limited.is_empty() {
             joined
+        } else {
+            format!("{}{}", limited, joined)
         }
     }
 
@@ -514,6 +513,68 @@ impl TokTrie {
             i = last_idx + 1;
         }
         tokens
+    }
+
+    /// Tokenize a string, interpreting `<name>` as special tokens.
+    pub fn tokenize_with_special<F>(&self, s: &str, str_tokenize: F) -> Vec<TokenId>
+    where
+        F: Fn(&str) -> Vec<TokenId>,
+    {
+        let max_len = 100;
+
+        let bytes = s.as_bytes();
+        let mut out = Vec::new();
+        let mut last = 0; // byte‐offset of the next “raw” segment
+        let mut i = 0; // current byte index
+
+        while i < bytes.len() {
+            if bytes[i] != b'<' {
+                i += 1;
+                continue;
+            }
+            // Potential start of `<...>`
+            let mut valid = true;
+            let mut j = i + 1;
+            let mut len_inside = 0;
+            // scan up to max_len chars or until we hit `>` or `<`
+            while j < bytes.len() && len_inside < max_len {
+                match bytes[j] {
+                    b'<' => {
+                        valid = false;
+                        break;
+                    }
+                    b'>' => break,
+                    _ => {
+                        len_inside += 1;
+                        j += 1;
+                    }
+                }
+            }
+            if !valid || j >= bytes.len() || bytes[j] != b'>' || len_inside == 0 {
+                // treat this `<` as literal
+                i += 1;
+                continue;
+            }
+
+            let name = &s[i..=j];
+            if let Some(special_tok) = self.get_special_token(name) {
+                if last < i {
+                    out.extend(str_tokenize(&s[last..i]));
+                }
+                out.push(special_tok);
+            } else {
+                // fallback: tokenize `<name>` literally
+                out.extend(str_tokenize(&s[last..=j]));
+            }
+            // advance past the `>`
+            i = j + 1;
+            last = i;
+        }
+        // any trailing text:
+        if last < bytes.len() {
+            out.extend(str_tokenize(&s[last..]));
+        }
+        out
     }
 
     pub fn tokenize_with_greedy_fallback(
@@ -1037,9 +1098,12 @@ impl TrieHash {
         self.children.sort_by_key(|e| e.byte);
         for entry in &mut self.children {
             num_ch -= 1;
+            assert!(num_parents < 0xff);
             entry.serialize(data, if num_ch == 0 { num_parents + 1 } else { 1 });
         }
-        data[idx].bits2 |= ((data.len() - idx) as u32) << 8;
+        let subtree_size = data.len() - idx;
+        assert!(subtree_size < 0x100_0000);
+        data[idx].bits2 |= (subtree_size as u32) << 8;
     }
 }
 

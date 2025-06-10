@@ -21,6 +21,7 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -33,6 +34,50 @@
 namespace partition_alloc {
 
 namespace internal {
+
+// Utility class to calculate offset within a known pool.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PoolOffsetLookup {
+ public:
+  // Under default-constructed values all lookup will hit DCHECK.
+  PoolOffsetLookup()
+      : base_address_(0), base_mask_(static_cast<uintptr_t>(-1)) {}
+
+  PA_ALWAYS_INLINE uintptr_t GetOffset(uintptr_t address) const {
+    PA_DCHECK(Includes(address));
+    return address & ~base_mask_;
+  }
+
+  // Similar to `GetOffset()`, but with MTE tag left in the top bits.
+  PA_ALWAYS_INLINE uintptr_t GetTaggedOffset(void* ptr) const {
+    const uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+    PA_DCHECK((address & base_mask_) == base_address_);
+    return address & (kPtrTagMask | ~base_mask_);
+  }
+
+  PA_ALWAYS_INLINE void* GetPointer(uintptr_t tagged_offset) const {
+    PA_DCHECK(IsValidTaggedOffset(tagged_offset));
+    return reinterpret_cast<void*>(base_address_ | tagged_offset);
+  }
+
+  // Determines if a given address belongs to address range for this pool.
+  PA_ALWAYS_INLINE bool Includes(uintptr_t address) const {
+    return (UntagAddr(address) & base_mask_) == base_address_;
+  }
+
+  // Ensures that a given offset does not contain a bit for "base" part.
+  PA_ALWAYS_INLINE bool IsValidTaggedOffset(uintptr_t tagged_offset) const {
+    return !(tagged_offset & base_mask_ & ~kPtrTagMask);
+  }
+
+ private:
+  PoolOffsetLookup(uintptr_t base_address, uintptr_t base_mask)
+      : base_address_(base_address), base_mask_(base_mask) {}
+
+  uintptr_t base_address_;
+  uintptr_t base_mask_;
+
+  friend class PartitionAddressSpace;
+};
 
 // Manages PartitionAlloc address space, which is split into pools.
 // See `glossary.md`.
@@ -101,13 +146,34 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return kConfigurablePoolMinSize;
   }
 
+  PA_ALWAYS_INLINE static PoolOffsetLookup GetOffsetLookup(pool_handle pool) {
+    switch (pool) {
+      case kRegularPoolHandle:
+        return PoolOffsetLookup(setup_.regular_pool_base_address_,
+                                CorePoolBaseMask());
+      case kBRPPoolHandle:
+        return PoolOffsetLookup(setup_.brp_pool_base_address_,
+                                CorePoolBaseMask());
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+      case kThreadIsolatedPoolHandle:
+        return PoolOffsetLookup(setup_.thread_isolated_pool_base_address_,
+                                kThreadIsolatedPoolBaseMask);
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+      case kConfigurablePoolHandle:
+        return PoolOffsetLookup(setup_.configurable_pool_base_address_,
+                                setup_.configurable_pool_base_mask_);
+      default:
+        PA_NOTREACHED();
+    }
+  }
+
   // Initialize pools (except for the configurable one).
   //
   // This function must only be called from the main thread.
   static void Init();
   // Initialize the ConfigurablePool at the given address |pool_base|. It must
   // be aligned to the size of the pool. The size must be a power of two and
-  // must be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()].
+  // must be within [kConfigurablePoolMinSize, kConfigurablePoolMaxSize].
   //
   // This function must only be called from the main thread.
   static void InitConfigurablePool(uintptr_t pool_base, size_t size);
@@ -329,10 +395,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   void* operator new(size_t) = delete;
   void* operator new(size_t, void*) = delete;
 
- private:
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+ private:
   static bool IsIOSTestProcess();
 
+ public:
   PA_ALWAYS_INLINE static size_t CorePoolSize() {
     return IsIOSTestProcess() ? kCorePoolSizeForIOSTestProcess : kCorePoolSize;
   }
@@ -343,12 +410,19 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
+  // Almost always equals to `CorePoolSize()`, except on iOS.
+  // Guaranteed to be a compile-time constant.
+  PA_ALWAYS_INLINE static constexpr size_t CorePoolMaxSize() {
+    return kCorePoolSize;
+  }
+
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PA_ALWAYS_INLINE static constexpr size_t ThreadIsolatedPoolSize() {
     return kThreadIsolatedPoolSize;
   }
 #endif
 
+ private:
   // On 64-bit systems, PA allocates from several contiguous, mutually disjoint
   // pools. The BRP pool is where all allocations have a BRP ref-count, thus
   // pointers pointing there can use a BRP protection against UaF. Allocations

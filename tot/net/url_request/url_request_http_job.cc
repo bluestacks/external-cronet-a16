@@ -702,7 +702,7 @@ void URLRequestHttpJob::StartTransactionInternal() {
   // If we already have a transaction, then we should restart the transaction
   // with auth provided by auth_credentials_.
 
-  int rv;
+  int rv = OK;
 
   // Notify NetworkQualityEstimator.
   NetworkQualityEstimator* network_quality_estimator =
@@ -717,11 +717,12 @@ void URLRequestHttpJob::StartTransactionInternal() {
     auth_credentials_ = AuthCredentials();
   } else {
     DCHECK(request_->context()->http_transaction_factory());
+    transaction_ =
+        request_->context()->http_transaction_factory()->CreateTransaction(
+            priority_);
+    CHECK(transaction_);
 
-    rv = request_->context()->http_transaction_factory()->CreateTransaction(
-        priority_, &transaction_);
-
-    if (rv == OK && request_info_.url.SchemeIsWSOrWSS()) {
+    if (request_info_.url.SchemeIsWSOrWSS()) {
       base::SupportsUserData::Data* data =
           request_->GetUserData(kWebSocketHandshakeUserDataKey);
       if (data) {
@@ -952,7 +953,8 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
       request_->context()->device_bound_session_service();
   if (service) {
     std::optional<device_bound_sessions::SessionService::DeferralParams>
-        deferral = service->ShouldDefer(request_, first_party_set_metadata_);
+        deferral = service->ShouldDefer(request_, &request_info_.extra_headers,
+                                        first_party_set_metadata_);
     // If the request needs to be deferred while waiting for refresh, do not
     // start the transaction at this time. This may also kick off a refresh.
     if (deferral) {
@@ -964,15 +966,15 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
           request_, *deferral,
           // restart with new cookies callback
           base::BindOnce(&URLRequestHttpJob::RestartTransactionForRefresh,
-                         weak_factory_.GetWeakPtr()),
-          // continue callback
-          base::BindOnce(&URLRequestHttpJob::StartTransaction,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), *deferral));
       return;
     }
 
     base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferralCount",
                                 device_bound_session_deferral_count_);
+    base::UmaHistogramEnumeration(
+        "Net.DeviceBoundSessions.RequestDeferralDecision",
+        request_->device_bound_session_usage());
     if (device_bound_session_deferral_count_ > 0) {
       base::UmaHistogramTimes(
           "Net.DeviceBoundSessions.TotalRequestDeferredDuration",
@@ -1169,29 +1171,29 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
-  if (!request_->allows_device_bound_session_registration() &&
-      !features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
-    return;
-  }
-
   device_bound_sessions::SessionService* service =
       request_->context()->device_bound_session_service();
   if (!service) {
     return;
   }
 
+  const auto& request_url = request_->url();
+  auto* headers = GetResponseHeaders();
+
   // If response header Sec-Session-Registration is present and configured
   // appropriately, trigger a registration request per header value to attempt
   // to create a new session.
-  const auto& request_url = request_->url();
-  auto* headers = GetResponseHeaders();
-  std::vector<device_bound_sessions::RegistrationFetcherParam> params =
-      device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
-          request_url, headers);
-  for (auto& param : params) {
-    service->RegisterBoundSession(
-        request_->device_bound_session_access_callback(), std::move(param),
-        request_->isolation_info(), request_->net_log(), request_->initiator());
+  if (request_->allows_device_bound_session_registration() ||
+      features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
+    std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+        device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
+            request_url, headers);
+    for (auto& param : params) {
+      service->RegisterBoundSession(
+          request_->device_bound_session_access_callback(), std::move(param),
+          request_->isolation_info(), request_->net_log(),
+          request_->initiator());
+    }
   }
 
   // If response header Sec-Session-Challenge is present and configured
@@ -1402,9 +1404,23 @@ void URLRequestHttpJob::RestartTransaction() {
   }
 }
 
-void URLRequestHttpJob::RestartTransactionForRefresh() {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+void URLRequestHttpJob::RestartTransactionForRefresh(
+    const device_bound_sessions::SessionService::DeferralParams&
+        deferral_params,
+    device_bound_sessions::SessionService::RefreshResult result) {
+  // Some deferrals are not associated with a particular session
+  // (e.g. session service initialization).
+  if (deferral_params.session_id.has_value()) {
+    request_->AddDeviceBoundSessionDeferral(
+        device_bound_sessions::SessionKey{SchemefulSite(request_->url()),
+                                          *deferral_params.session_id},
+        result);
+  }
+
   RestartTransaction();
 }
+#endif
 
 void URLRequestHttpJob::RestartTransactionWithAuth(
     const AuthCredentials& credentials) {
@@ -1527,9 +1543,17 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
       FilterSourceStream::GetContentEncodingTypes(
           request_->accepted_stream_types(), *headers);
 
-  if (request()->client_side_content_decoding_enabled()) {
+  if (request()->client_side_content_decoding_enabled() &&
+      !headers->HasHeader("use-as-dictionary")) {
     // When client side content encoding is enabled, the client will decode the
     // body. So returns the original stream.
+    //
+    // Currently, the write logic for SharedDictionary assumes that the
+    // dictionary itself is not compressed when it reaches
+    // network::CorsURLLoader::OnReceiveResponse. Therefore, if there is a
+    // possibility that the response will be used as a dictionary, meaning the
+    // use-as-dictionary header is set, we will decode it within
+    // URLRequestHttpJob.
     client_side_content_decoding_types_ = std::move(types);
     return upstream;
   }

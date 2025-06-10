@@ -30,18 +30,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_entropy_pool__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -69,6 +66,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -134,9 +132,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -151,18 +146,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_entropy_pool__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -190,6 +182,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -255,9 +248,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -269,18 +259,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_nonsecure_base__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -308,6 +295,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -373,9 +361,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -387,18 +372,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_nonsecure_base__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -426,6 +408,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -491,9 +474,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -508,18 +488,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_platform__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -547,6 +524,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -612,9 +590,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -629,18 +604,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_platform__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -668,6 +640,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -733,9 +706,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -750,18 +720,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -789,6 +756,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -854,9 +822,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -871,18 +836,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -910,6 +872,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -975,9 +938,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -989,18 +949,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_engine__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1028,6 +985,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1093,9 +1051,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1107,18 +1062,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_engine__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1146,6 +1098,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1211,9 +1164,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1228,18 +1178,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1267,6 +1214,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1332,9 +1280,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1349,18 +1294,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1388,6 +1330,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1453,9 +1396,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1470,18 +1410,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes_impl__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1509,6 +1446,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1574,9 +1512,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1591,18 +1526,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes_impl__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1630,6 +1562,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1695,9 +1628,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1712,18 +1642,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_slow__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1751,6 +1678,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1816,9 +1744,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1833,18 +1758,15 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "tot_cronet_build_chromeos_buildflags__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_random_internal_randen_slow__testing__concatenated_headers_common",
     ],
     defaults: [
         "tot_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1872,6 +1794,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -1937,9 +1860,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -1958,8 +1878,8 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -1987,6 +1907,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -2052,9 +1973,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },
@@ -2073,8 +1991,8 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-10851-gcd6c4b61-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -2102,6 +2020,7 @@ cc_library_static {
     ldflags: [
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -2167,9 +2086,6 @@ cc_library_static {
                 "-fno-asynchronous-unwind-tables",
                 "-fno-unwind-tables",
                 "-msse3",
-            ],
-            ldflags: [
-                "-Wl,--icf=all",
             ],
         },
     },

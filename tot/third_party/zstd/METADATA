@@ -3,10 +3,10 @@
 name: "Zstandard"
 third_party {
   license_type: NOTICE
-  version: "d654fca78690fa15cceb8058ac47454d914a0e63"
+  version: "f9938c217da17ec3e9dcd2a2d99c5cf39536aeb94"
   identifier {
     value: "https://github.com/facebook/zstd"
     type: "Git"
-    version: "d654fca78690fa15cceb8058ac47454d914a0e63"
+    version: "f9938c217da17ec3e9dcd2a2d99c5cf39536aeb94"
   }
 }

@@ -23,7 +23,6 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
@@ -38,7 +37,7 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/startup_information.h"
@@ -99,8 +98,8 @@ bool GetAppOutputInternal(
 
   const ElapsedTimer timer;
 
+  bool process_exited = false;
   do {
-    bool process_exited = false;
     {
       // It is okay to allow this process to wait on the launched process as a
       // process launched with GetAppOutput*() shouldn't wait back on the
@@ -108,7 +107,7 @@ bool GetAppOutputInternal(
       internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
       ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                               BlockingType::MAY_BLOCK);
-      process_exited = process.WaitForExitWithTimeout(Seconds(1), nullptr);
+      process_exited = process.WaitForExitWithTimeout(Seconds(1), exit_code);
     }
 
     // Read output from the child process's pipe for STDOUT
@@ -150,13 +149,11 @@ bool GetAppOutputInternal(
     still_waiting({});
   } while (timer.Elapsed() < timeout);
 
-  TerminationStatus status = GetTerminationStatus(process.Handle(), exit_code);
   if (final_status) {
-    *final_status = status;
+    *final_status = process_exited ? TERMINATION_STATUS_NORMAL_TERMINATION
+                                   : TERMINATION_STATUS_STILL_RUNNING;
   }
-  return status != TERMINATION_STATUS_PROCESS_CRASHED &&
-         status != TERMINATION_STATUS_STILL_RUNNING &&
-         status != TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  return process_exited;
 }
 
 Process LaunchElevatedProcess(const CommandLine& cmdline,
@@ -490,7 +487,8 @@ bool GetAppOutput(const CommandLine& cl, std::string* output) {
 bool GetAppOutputAndError(const CommandLine& cl, std::string* output) {
   int exit_code;
   return GetAppOutputInternal(cl.GetCommandLineString(), true, output,
-                              &exit_code);
+                              &exit_code) &&
+         !exit_code;
 }
 
 bool GetAppOutputWithExitCode(const CommandLine& cl,
@@ -515,7 +513,7 @@ bool GetAppOutputWithExitCodeAndTimeout(
 
 bool GetAppOutput(CommandLine::StringViewType cl, std::string* output) {
   int exit_code;
-  return GetAppOutputInternal(cl, false, output, &exit_code);
+  return GetAppOutputInternal(cl, false, output, &exit_code) && !exit_code;
 }
 
 void RaiseProcessToHighPriority() {

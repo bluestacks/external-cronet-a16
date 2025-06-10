@@ -16,6 +16,17 @@ namespace crypto::obsolete {
 class Md5;
 }
 
+namespace ash::printing {
+crypto::obsolete::Md5 MakeMd5HasherForPrinterConfigurer();
+crypto::obsolete::Md5 MakeMd5HasherForUsbPrinterUtil();
+crypto::obsolete::Md5 MakeMd5HasherForZeroconf();
+std::string ServerPrinterId(const std::string& url);
+}  // namespace ash::printing
+
+namespace drive::util {
+crypto::obsolete::Md5 MakeMd5HasherForDriveApi();
+}
+
 namespace extensions::image_writer {
 crypto::obsolete::Md5 MakeMd5HasherForImageWriter();
 }
@@ -45,6 +56,7 @@ class CRYPTO_EXPORT Md5 {
   Md5& operator=(Md5&& other);
   ~Md5();
 
+  void Update(std::string_view data);
   void Update(base::span<const uint8_t> data);
 
   void Finish(base::span<uint8_t, kSize> result);
@@ -60,12 +72,20 @@ class CRYPTO_EXPORT Md5 {
   // The friends listed here are the areas required to continue using MD5 for
   // compatibility with existing specs, on-disk data, or similar.
   friend Md5 policy::MakeMd5HasherForPolicyEventId();
+  friend Md5 drive::util::MakeMd5HasherForDriveApi();
   friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
+
+  // TODO(b/298652869): get rid of these.
+  friend Md5 ash::printing::MakeMd5HasherForPrinterConfigurer();
+  friend Md5 ash::printing::MakeMd5HasherForUsbPrinterUtil();
+  friend Md5 ash::printing::MakeMd5HasherForZeroconf();
+  friend std::string ash::printing::ServerPrinterId(const std::string& url);
 
   // TODO(https://crbug.com/416304903): get rid of this.
   friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();
 
   Md5();
+  static std::array<uint8_t, kSize> Hash(std::string_view data);
   static std::array<uint8_t, kSize> Hash(base::span<const uint8_t> data);
 
   bssl::ScopedEVP_MD_CTX ctx_;

@@ -38,9 +38,8 @@ rust_ffi_static {
     crate_name: "chromium",
     crate_root: "chromium_prelude.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__b3956dbf57d32035",
         "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
-        "libcxx__3d5c3771dead539b",
-        "libfoldhash__9d82c8b43061ff92",
     ],
     proc_macros: [
         "libimport_attribute__72347f7c8f0d0ccb",
@@ -49,7 +48,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -67,7 +66,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -85,7 +84,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -103,7 +102,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -121,7 +120,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -160,9 +159,8 @@ rust_ffi_static {
     crate_name: "chromium",
     crate_root: "chromium_prelude.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
         "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
-        "libcxx__2cd805ef869e78fa",
-        "libfoldhash__3d2886e384b4e895",
     ],
     proc_macros: [
         "libimport_attribute__dc5b375ee6533a5c",
@@ -171,7 +169,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -189,7 +187,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -207,7 +205,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -225,7 +223,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -243,7 +241,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -262,7 +260,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -302,6 +300,8 @@ rust_proc_macro {
     crate_name: "import_attribute",
     crate_root: "import_attribute.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__b3956dbf57d32035",
+        "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
         "libproc_macro2__20eacb95c0df0bdc",
         "libquote__60de3151f3dcc02e",
         "libsyn__15bed5acc529ae0f",
@@ -312,7 +312,7 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -345,6 +345,8 @@ rust_proc_macro {
     crate_name: "import_attribute",
     crate_root: "import_attribute.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
+        "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
         "libproc_macro2__d957ddb2eb267eaf",
         "libquote__62704bfea487e463",
         "libsyn__11104b519a39d1d2",
@@ -355,7 +357,7 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-10851-gcd6c4b61\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",

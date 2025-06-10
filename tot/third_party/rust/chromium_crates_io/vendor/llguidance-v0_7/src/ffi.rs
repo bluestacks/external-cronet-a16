@@ -330,6 +330,7 @@ pub struct LlgConstraint {
     last_commit_result: CommitResult,
 }
 
+#[derive(Clone)]
 pub struct LlgStopController {
     stop_controller: StopController,
     last_result: String,
@@ -554,9 +555,12 @@ pub extern "C" fn llg_get_temperature(cc: &LlgConstraint) -> f32 {
 /// Check if constraint is stopped (cannot be extended further).
 #[no_mangle]
 pub extern "C" fn llg_is_stopped(cc: &LlgConstraint) -> bool {
-    cc.constraint
-        .as_ref()
-        .is_none_or(|c| c.step_result().is_stop())
+    if let Some(c) = &cc.constraint {
+        c.step_result().is_stop()
+    } else {
+        // if there is no constraint, we consider it stopped
+        true
+    }
 }
 
 /// Compute mask for the next token sampling
@@ -920,6 +924,16 @@ pub extern "C" fn llg_stop_commit_token(
     stop_ctrl.last_result.as_ptr() as *const c_char
 }
 
+/// Clone the stop-sequence controller.
+/// The cloned controller shares (under mutex) regex caches if any, so that
+/// cloning is cheap.
+#[no_mangle]
+pub extern "C" fn llg_clone_stop_controller(
+    stop_ctrl: &LlgStopController,
+) -> *mut LlgStopController {
+    Box::into_raw(Box::new(stop_ctrl.clone()))
+}
+
 /// Free the stop-sequence controller
 /// # Safety
 /// This function should only be called from C code.
@@ -1102,7 +1116,7 @@ pub extern "C" fn llg_matcher_get_mask(matcher: &mut LlgMatcher) -> *const u32 {
         .map_or(std::ptr::null(), |m| m.as_ptr())
 }
 
-/// Return pointer to the mask computed by llg_matcher_compute_mask(), if any.
+/// Return the size of the mask in bytes.
 #[no_mangle]
 pub extern "C" fn llg_matcher_get_mask_byte_size(matcher: &mut LlgMatcher) -> usize {
     matcher.mask_elts() * 4

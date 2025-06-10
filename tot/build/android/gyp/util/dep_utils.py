@@ -124,9 +124,8 @@ class ClassLookupIndex:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
-        'build/android/list_java_targets.py', '--gn-labels',
-        '--print-params-paths',
-        f'--output-directory={self._abs_build_output_dir}'
+        'build/android/list_java_targets.py', '--print-params-paths',
+        '--omit-targets', f'--output-directory={self._abs_build_output_dir}'
     ]
     if self._should_build:
       list_java_targets_command += ['--build']
@@ -144,16 +143,9 @@ class ClassLookupIndex:
 
     # Parse output of list_java_targets.py into BuildConfig objects.
     path_to_build_config: Dict[str, BuildConfig] = {}
-    target_lines = list_java_targets_run.stdout.splitlines()
-    for target_line in target_lines:
-      # Skip empty lines
-      if not target_line:
-        continue
-
-      target_line_parts = target_line.split(': ')
-      assert len(target_line_parts) == 2, target_line_parts
-      target_name, params_path = target_line_parts
-
+    for params_path in list_java_targets_run.stdout.splitlines():
+      params_path = os.path.join(_SRC_PATH, params_path)
+      # .params.json can not exist when running remote builds.
       if not os.path.exists(params_path):
         assert not self._should_build
         continue
@@ -174,7 +166,7 @@ class ClassLookupIndex:
       full_class_names = self._compute_full_class_names_for_build_config(
           params_json)
       build_config = BuildConfig(relpath=relpath,
-                                 target_name=target_name,
+                                 target_name=params_json['gn_target'],
                                  is_group=is_group,
                                  preferred_dep=preferred_dep,
                                  dependent_config_paths=dependent_config_paths,

@@ -191,11 +191,6 @@ constexpr bool operator==(const ok<T>& lhs, const ok<U>& rhs) noexcept {
   }
 }
 
-template <typename T, typename U>
-constexpr bool operator!=(const ok<T>& lhs, const ok<U>& rhs) noexcept {
-  return !(lhs == rhs);
-}
-
 template <typename T>
 ok(T) -> ok<T>;
 
@@ -270,7 +265,7 @@ unexpected(E) -> unexpected<E>;
 // [expected.expected], class template expected
 // https://eel.is/c++draft/expected#expected
 template <typename T, typename E>
-class [[nodiscard]] expected final {
+class [[nodiscard, gsl::Owner]] expected final {
   // Note: A partial specialization for void value types follows below.
   static_assert(!std::is_void_v<T>, "Error: T must not be void");
 

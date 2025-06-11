@@ -507,12 +507,8 @@ class QUICHE_NO_EXPORT SubscribeMessage : public TestMessageBase {
       QUIC_LOG(INFO) << "SUBSCRIBE group order mismatch";
       return false;
     }
-    if (cast.start_group != subscribe_.start_group) {
-      QUIC_LOG(INFO) << "SUBSCRIBE start group mismatch";
-      return false;
-    }
-    if (cast.start_object != subscribe_.start_object) {
-      QUIC_LOG(INFO) << "SUBSCRIBE start object mismatch";
+    if (cast.start != subscribe_.start) {
+      QUIC_LOG(INFO) << "SUBSCRIBE start mismatch";
       return false;
     }
     if (cast.end_group != subscribe_.end_group) {
@@ -557,8 +553,7 @@ class QUICHE_NO_EXPORT SubscribeMessage : public TestMessageBase {
       /*full_track_name=*/FullTrackName({"foo", "abcd"}),
       /*subscriber_priority=*/0x20,
       /*group_order=*/MoqtDeliveryOrder::kDescending,
-      /*start_group=*/4,
-      /*start_object=*/1,
+      /*start=*/Location(4, 1),
       /*end_group=*/std::nullopt,
       /*parameters=*/
       MoqtSubscribeParameters{
@@ -628,7 +623,7 @@ class QUICHE_NO_EXPORT SubscribeOkMessage : public TestMessageBase {
       /*subscribe_id=*/1,
       /*expires=*/quic::QuicTimeDelta::FromMilliseconds(3),
       /*group_order=*/MoqtDeliveryOrder::kDescending,
-      /*largest_id=*/FullSequence(12, 20),
+      /*largest_id=*/Location(12, 20),
       /*parameters=*/
       MoqtSubscribeParameters{
           std::nullopt, quic::QuicTimeDelta::FromMilliseconds(10000),
@@ -778,11 +773,7 @@ class QUICHE_NO_EXPORT SubscribeUpdateMessage : public TestMessageBase {
       QUIC_LOG(INFO) << "SUBSCRIBE_UPDATE subscribe ID mismatch";
       return false;
     }
-    if (cast.start_group != subscribe_update_.start_group) {
-      QUIC_LOG(INFO) << "SUBSCRIBE_UPDATE start group mismatch";
-      return false;
-    }
-    if (cast.start_object != subscribe_update_.start_object) {
+    if (cast.start != subscribe_update_.start) {
       QUIC_LOG(INFO) << "SUBSCRIBE_UPDATE start group mismatch";
       return false;
     }
@@ -818,8 +809,7 @@ class QUICHE_NO_EXPORT SubscribeUpdateMessage : public TestMessageBase {
 
   MoqtSubscribeUpdate subscribe_update_ = {
       /*subscribe_id=*/2,
-      /*start_group=*/3,
-      /*start_object=*/1,
+      /*start=*/Location(3, 1),
       /*end_group=*/4,
       /*subscriber_priority=*/0xaa,
       /*parameters=*/
@@ -1410,7 +1400,7 @@ class QUICHE_NO_EXPORT FetchMessage : public TestMessageBase {
       /*group_order=*/MoqtDeliveryOrder::kAscending,
       /*joining_fetch=*/std::optional<JoiningFetch>(),
       /*full_track_name=*/FullTrackName{"foo", "bar"},
-      /*start_object=*/FullSequence{1, 2},
+      /*start_object=*/Location{1, 2},
       /*end_group=*/5,
       /*end_object=*/6,
       /*parameters=*/
@@ -1510,7 +1500,7 @@ class QUICHE_NO_EXPORT JoiningFetchMessage : public TestMessageBase {
       /*joining_fetch=*/JoiningFetch{2, 2},
       /* the next four are ignored for joining fetches*/
       /*full_track_name=*/FullTrackName{"foo", "bar"},
-      /*start_object=*/FullSequence{1, 2},
+      /*start_object=*/Location{1, 2},
       /*end_group=*/5,
       /*end_object=*/6,
       /*parameters=*/
@@ -1593,7 +1583,7 @@ class QUICHE_NO_EXPORT FetchOkMessage : public TestMessageBase {
   MoqtFetchOk fetch_ok_ = {
       /*subscribe_id =*/1,
       /*group_order=*/MoqtDeliveryOrder::kAscending,
-      /*start_object=*/FullSequence{5, 4},
+      /*start_object=*/Location{5, 4},
       /*parameters=*/
       MoqtSubscribeParameters{"baz", std::nullopt, std::nullopt, std::nullopt},
   };

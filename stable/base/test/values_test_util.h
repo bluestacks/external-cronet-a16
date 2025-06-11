@@ -17,33 +17,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-
-// All the functions below expect that the value for the given path in
-// the given dictionary equals the given expected value.
-
-void ExpectDictBooleanValue(bool expected_value,
-                            const Value::Dict& dict,
-                            std::string_view path);
-
-void ExpectDictIntegerValue(int expected_value,
-                            const Value::Dict& dict,
-                            std::string_view path);
-
-void ExpectDictStringValue(std::string_view expected_value,
-                           const Value::Dict& dict,
-                           std::string_view path);
-
-void ExpectDictValue(const Value::Dict& expected_value,
-                     const Value::Dict& dict,
-                     std::string_view path);
-
-void ExpectDictValue(const Value& expected_value,
-                     const Value::Dict& dict,
-                     std::string_view path);
-
-namespace test {
-
+namespace base::test {
 namespace internal {
 
 // Default parsing options for the json util functions. By default, the content
@@ -54,7 +28,7 @@ inline constexpr int kDefaultJsonParseOptions =
 
 class DictionaryHasValueMatcher {
  public:
-  DictionaryHasValueMatcher(std::string key, const base::Value& expected_value);
+  DictionaryHasValueMatcher(std::string key, const Value& expected_value);
   DictionaryHasValueMatcher(std::string key, Value&& expected_value);
 
   DictionaryHasValueMatcher(const DictionaryHasValueMatcher&);
@@ -64,9 +38,9 @@ class DictionaryHasValueMatcher {
 
   ~DictionaryHasValueMatcher();
 
-  bool MatchAndExplain(const base::Value::Dict& value,
+  bool MatchAndExplain(const Value::Dict& value,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const base::Value& dict,
+  bool MatchAndExplain(const Value& dict,
                        testing::MatchResultListener* listener) const;
 
   void DescribeTo(std::ostream* os) const;
@@ -75,12 +49,12 @@ class DictionaryHasValueMatcher {
 
  private:
   std::string key_;
-  base::Value expected_value_;
+  Value expected_value_;
 };
 
 class DictionaryHasValuesMatcher {
  public:
-  explicit DictionaryHasValuesMatcher(const base::Value::Dict& template_value);
+  explicit DictionaryHasValuesMatcher(const Value::Dict& template_value);
   explicit DictionaryHasValuesMatcher(Value::Dict&& template_value);
 
   DictionaryHasValuesMatcher(const DictionaryHasValuesMatcher&);
@@ -90,9 +64,9 @@ class DictionaryHasValuesMatcher {
 
   ~DictionaryHasValuesMatcher();
 
-  bool MatchAndExplain(const base::Value::Dict& dict,
+  bool MatchAndExplain(const Value::Dict& dict,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const base::Value& dict,
+  bool MatchAndExplain(const Value& dict,
                        testing::MatchResultListener* listener) const;
 
   void DescribeTo(std::ostream* os) const;
@@ -100,17 +74,17 @@ class DictionaryHasValuesMatcher {
   void DescribeNegationTo(std::ostream* os) const;
 
  private:
-  base::Value::Dict template_value_;
+  Value::Dict template_value_;
 };
 
 class IsSupersetOfValueMatcher {
  public:
-  explicit IsSupersetOfValueMatcher(const base::Value& template_value);
-  explicit IsSupersetOfValueMatcher(const base::Value::Dict& template_value);
-  explicit IsSupersetOfValueMatcher(const base::Value::List& template_value);
-  explicit IsSupersetOfValueMatcher(base::Value&& template_value);
-  explicit IsSupersetOfValueMatcher(base::Value::Dict&& template_value);
-  explicit IsSupersetOfValueMatcher(base::Value::List&& template_value);
+  explicit IsSupersetOfValueMatcher(const Value& template_value);
+  explicit IsSupersetOfValueMatcher(const Value::Dict& template_value);
+  explicit IsSupersetOfValueMatcher(const Value::List& template_value);
+  explicit IsSupersetOfValueMatcher(Value&& template_value);
+  explicit IsSupersetOfValueMatcher(Value::Dict&& template_value);
+  explicit IsSupersetOfValueMatcher(Value::List&& template_value);
 
   IsSupersetOfValueMatcher(const IsSupersetOfValueMatcher&);
   IsSupersetOfValueMatcher& operator=(const IsSupersetOfValueMatcher&);
@@ -119,11 +93,11 @@ class IsSupersetOfValueMatcher {
 
   ~IsSupersetOfValueMatcher();
 
-  bool MatchAndExplain(const base::Value& value,
+  bool MatchAndExplain(const Value& value,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const base::Value::Dict& value,
+  bool MatchAndExplain(const Value::Dict& value,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const base::Value::List& value,
+  bool MatchAndExplain(const Value::List& value,
                        testing::MatchResultListener* listener) const;
 
   void DescribeTo(std::ostream* os) const;
@@ -131,7 +105,7 @@ class IsSupersetOfValueMatcher {
   void DescribeNegationTo(std::ostream* os) const;
 
  private:
-  base::Value template_value_;
+  Value template_value_;
 };
 
 // A custom GMock matcher.  For details, see
@@ -139,9 +113,9 @@ class IsSupersetOfValueMatcher {
 class IsJsonMatcher {
  public:
   explicit IsJsonMatcher(std::string_view json);
-  explicit IsJsonMatcher(const base::Value& value);
-  explicit IsJsonMatcher(const base::Value::Dict& value);
-  explicit IsJsonMatcher(const base::Value::List& value);
+  explicit IsJsonMatcher(const Value& value);
+  explicit IsJsonMatcher(const Value::Dict& value);
+  explicit IsJsonMatcher(const Value::List& value);
   explicit IsJsonMatcher(Value&& value);
   explicit IsJsonMatcher(Value::Dict&& value);
   explicit IsJsonMatcher(Value::List&& value);
@@ -153,17 +127,17 @@ class IsJsonMatcher {
 
   bool MatchAndExplain(std::string_view json,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const base::Value& value,
+  bool MatchAndExplain(const Value& value,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const base::Value::Dict& dict,
+  bool MatchAndExplain(const Value::Dict& dict,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const base::Value::List& list,
+  bool MatchAndExplain(const Value::List& list,
                        testing::MatchResultListener* listener) const;
   void DescribeTo(std::ostream* os) const;
   void DescribeNegationTo(std::ostream* os) const;
 
  private:
-  base::Value expected_value_;
+  Value expected_value_;
 };
 
 }  // namespace internal
@@ -244,7 +218,6 @@ enum class WriteJsonError {
 expected<void, WriteJsonError> WriteJsonFile(const FilePath& json_file_path,
                                              ValueView root);
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test
 
 #endif  // BASE_TEST_VALUES_TEST_UTIL_H_

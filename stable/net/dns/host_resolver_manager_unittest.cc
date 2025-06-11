@@ -10,6 +10,7 @@
 #include "net/dns/host_resolver_manager_unittest.h"
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <limits>
 #include <optional>
@@ -535,7 +536,7 @@ void HostResolverManagerTest::PopulateCache(const HostCache::Key& key,
       resolve_context_->host_cache(), key,
       HostCache::Entry(OK, std::move(endpoints), /*aliases=*/{},
                        HostCache::Entry::SOURCE_UNKNOWN),
-      base::Seconds(1));
+      kDefaultTtl);
 }
 
 const std::pair<const HostCache::Key, HostCache::Entry>*
@@ -4145,11 +4146,11 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
     const char* cached_ip_address;
   };
 
-  const CacheEntry kCacheEntries[] = {
+  const auto kCacheEntries = std::to_array<CacheEntry>({
       {NetworkAnonymizationKey(), "192.168.1.42"},
       {kNetworkAnonymizationKey1, "192.168.1.43"},
       {kNetworkAnonymizationKey2, "192.168.1.44"},
-  };
+  });
 
   // Add entries to cache for the empty NAK, NAK1, and NAK2. Only the
   // HostResolverManager obeys network state partitioning, so this is fine to do
@@ -5310,6 +5311,95 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
                   testing::ElementsAre(CreateExpected("::1", 80))))));
   EXPECT_THAT(response_specified_ipv6.request()->GetDnsAliasResults(),
               testing::Pointee(ElementsAre("nx_ipv6")));
+}
+
+// Test the case where a Hosts file contains both IPv4 and IPv6 results for a
+// name but IPv6 is unreachable.
+TEST_F(HostResolverManagerDnsTest, ServeOnlyIpv4FromHostsWhenIpv6Unreachable) {
+  constexpr IPAddress kIpv4Address(192, 0, 2, 33);
+  constexpr IPAddress kIpv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, 33);
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV4)] = kIpv4Address;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV6)] = kIpv6Address;
+
+  CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/false,
+                                    /*check_ipv6_on_wifi=*/true,
+                                    /*is_async=*/false);
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = hosts;
+  ChangeDnsConfig(config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+
+  // Expect to resolve only the IPv4 address. The IPv6 in the Hosts file should
+  // be ignored and not included in resolution while IPv6 is unreachable.
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              ElementsAre(IPEndPoint(kIpv4Address, 80)));
+}
+
+// Test for the case where IPv6 is unreachable but the Hosts file only contains
+// IPv6 addresses for a name.
+TEST_F(HostResolverManagerDnsTest, ServeIpv6FromHostsWhenNoIpv4) {
+  constexpr IPAddress kIpv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, 100);
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV6)] = kIpv6Address;
+
+  CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/false,
+                                    /*check_ipv6_on_wifi=*/true,
+                                    /*is_async=*/false);
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = hosts;
+  ChangeDnsConfig(config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+
+  // Expect to IPv6 address to resolve despite IPv6 being unreachable because
+  // there are no IPv4 addresses for the query name in the Hosts file.
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              ElementsAre(IPEndPoint(kIpv6Address, 80)));
+}
+
+// Test for the case where IPv6 is unreachable but the Hosts file only contains
+// IPv6 addresses and Localhost IPv4 addresses for a name.
+TEST_F(HostResolverManagerDnsTest, ServeIpv6FromHostsWhenIpv4OnlyLocalhost) {
+  constexpr IPAddress kIpv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, 12);
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV4)] =
+      IPAddress::IPv4Localhost();
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV6)] = kIpv6Address;
+
+  CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/false,
+                                    /*check_ipv6_on_wifi=*/true,
+                                    /*is_async=*/false);
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = hosts;
+  ChangeDnsConfig(config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+
+  // Expect to IPv6 address to resolve despite IPv6 being unreachable because
+  // the only IPv4 addresses for the query name in the Hosts file are Localhost.
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              UnorderedElementsAre(IPEndPoint(IPAddress::IPv4Localhost(), 80),
+                                   IPEndPoint(kIpv6Address, 80)));
 }
 
 TEST_F(HostResolverManagerDnsTest,
@@ -7994,14 +8084,13 @@ TEST_F(HostResolverManagerDnsTest, DnsAliasesAreFixedUp) {
 
   // Need to manually encode non-URL-canonical names because DNSDomainFromDot()
   // requires URL-canonical names.
-  constexpr char kNonCanonicalName[] = "\005HOST2\004test\000";
-
+  constexpr const uint8_t kNonCanonicalName[] = {
+      0x05, 'H', 'O', 'S', 'T', '2', 0x04, 't', 'e', 's', 't', 0x00};
   DnsResponse expected_A_response = BuildTestDnsResponse(
       "host.test", dns_protocol::kTypeA,
       {BuildTestAddressRecord("host2.test", IPAddress::IPv4Localhost()),
-       BuildTestDnsRecord(
-           "host.test", dns_protocol::kTypeCNAME,
-           std::string(kNonCanonicalName, sizeof(kNonCanonicalName) - 1))});
+       BuildTestDnsRecord("host.test", dns_protocol::kTypeCNAME,
+                          kNonCanonicalName)});
 
   AddDnsRule(&rules, "host.test", dns_protocol::kTypeA,
              std::move(expected_A_response), false /* delay */);
@@ -8009,9 +8098,8 @@ TEST_F(HostResolverManagerDnsTest, DnsAliasesAreFixedUp) {
   DnsResponse expected_AAAA_response = BuildTestDnsResponse(
       "host.test", dns_protocol::kTypeAAAA,
       {BuildTestAddressRecord("host2.test", IPAddress::IPv6Localhost()),
-       BuildTestDnsRecord(
-           "host.test", dns_protocol::kTypeCNAME,
-           std::string(kNonCanonicalName, sizeof(kNonCanonicalName) - 1))});
+       BuildTestDnsRecord("host.test", dns_protocol::kTypeCNAME,
+                          kNonCanonicalName)});
 
   AddDnsRule(&rules, "host.test", dns_protocol::kTypeAAAA,
              std::move(expected_AAAA_response), false /* delay */);
@@ -9044,15 +9132,19 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryRejectsIpLiteral) {
 // unrecognized record types.
 TEST_F(HostResolverManagerDnsTest, TxtQuery_MixedWithUnrecognizedType) {
   std::vector<std::string> text_strings = {"foo"};
+  const uint8_t fake_test_rdata_1[] = {'f', 'a', 'k', 'e', ' ', 'r',
+                                       'd', 'a', 't', 'a', ' ', '1'};
+  const uint8_t fake_test_rdata_2[] = {'f', 'a', 'k', 'e', ' ', 'r',
+                                       'd', 'a', 't', 'a', ' ', '2'};
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
       "host", dns_protocol::kTypeTXT, false /* secure */,
       MockDnsClientRule::Result(BuildTestDnsResponse(
           "host", dns_protocol::kTypeTXT,
-          {BuildTestDnsRecord("host", 3u /* type */, "fake rdata 1"),
+          {BuildTestDnsRecord("host", 3u /* type */, fake_test_rdata_1),
            BuildTestTextRecord("host", std::move(text_strings)),
-           BuildTestDnsRecord("host", 3u /* type */, "fake rdata 2")})),
+           BuildTestDnsRecord("host", 3u /* type */, fake_test_rdata_2)})),
       false /* delay */);
 
   CreateResolver();
@@ -11045,7 +11137,9 @@ TEST_F(HostResolverManagerDnsTest,
 TEST_F(HostResolverManagerDnsTest,
        MalformedHttpsRdataInAddressRequestIsIgnored) {
   const char kName[] = "name.test";
-
+  const uint8_t malformed_test_rdata[] = {'m', 'a', 'l', 'f', 'o',
+                                          'r', 'm', 'e', 'd', ' ',
+                                          'r', 'd', 'a', 't', 'a'};
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
@@ -11063,7 +11157,7 @@ TEST_F(HostResolverManagerDnsTest,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, /*answers=*/
                          {BuildTestDnsRecord(kName, dns_protocol::kTypeHttps,
-                                             /*rdata=*/"malformed rdata")})),
+                                             /*rdata=*/malformed_test_rdata)})),
                      /*delay=*/false);
   rules.emplace_back(
       kName, dns_protocol::kTypeA, /*secure=*/true,
@@ -14066,6 +14160,8 @@ TEST_F(HostResolverManagerDnsTest,
 
   constexpr std::string_view kHost = "host.test";
   constexpr base::TimeDelta kTtl = base::Minutes(30);
+  const uint8_t fake_test_rdata[] = {'f', 'a', 'k', 'e', ' ',
+                                     'r', 'd', 'a', 't', 'a'};
 
   MockDnsClientRuleList rules;
   DnsResponse a_response = BuildTestDnsResponse(
@@ -14075,7 +14171,7 @@ TEST_F(HostResolverManagerDnsTest,
        BuildTestCnameRecord("alias1.test", "alias2.test")},
       /*authority=*/
       {BuildTestDnsRecord("authority.test", dns_protocol::kTypeSOA,
-                          "fake rdata", kTtl)});
+                          fake_test_rdata, kTtl)});
   AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
              std::move(a_response),
              /*delay=*/false);

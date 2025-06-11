@@ -30,23 +30,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_entropy_pool__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -79,7 +75,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -87,7 +83,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -98,7 +94,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -106,7 +102,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -115,7 +111,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -150,23 +146,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_entropy_pool__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -199,7 +191,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -207,7 +199,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -218,7 +210,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -226,7 +218,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -235,7 +227,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -267,23 +259,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_nonsecure_base__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -316,7 +304,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -324,7 +312,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -335,7 +323,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -343,7 +331,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -352,7 +340,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -384,23 +372,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_nonsecure_base__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -433,7 +417,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -441,7 +425,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -452,7 +436,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -460,7 +444,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -469,7 +453,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -504,23 +488,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_platform__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -553,7 +533,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -561,7 +541,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -572,7 +552,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -580,7 +560,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -589,7 +569,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -624,23 +604,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_platform__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -673,7 +649,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -681,7 +657,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -692,7 +668,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -700,7 +676,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -709,7 +685,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -744,23 +720,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -793,7 +765,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -801,7 +773,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -812,7 +784,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -820,7 +792,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -829,7 +801,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -864,23 +836,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -913,7 +881,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -921,7 +889,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -932,7 +900,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -940,7 +908,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -949,7 +917,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -981,23 +949,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_engine__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1030,7 +994,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1038,7 +1002,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1049,7 +1013,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1057,7 +1021,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1066,7 +1030,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1098,23 +1062,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_engine__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1147,7 +1107,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1155,7 +1115,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1166,7 +1126,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1174,7 +1134,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1183,7 +1143,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1218,23 +1178,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1267,7 +1223,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1275,7 +1231,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1286,7 +1242,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1294,7 +1250,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1303,7 +1259,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1338,23 +1294,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1387,7 +1339,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1395,7 +1347,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1406,7 +1358,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1414,7 +1366,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1423,7 +1375,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1458,23 +1410,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes_impl__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1507,7 +1455,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1515,7 +1463,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1526,7 +1474,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1534,7 +1482,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1543,7 +1491,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1578,23 +1526,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_hwaes_impl__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1627,7 +1571,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1635,7 +1579,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1646,7 +1590,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1654,7 +1598,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1663,7 +1607,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1698,23 +1642,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_slow__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1747,7 +1687,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1755,7 +1695,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1766,7 +1706,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1774,7 +1714,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1783,7 +1723,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1818,23 +1758,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_abseil_cpp_absl_random_internal_randen_slow__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1867,7 +1803,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1875,7 +1811,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -1886,7 +1822,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1894,7 +1830,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -1903,7 +1839,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -1942,13 +1878,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1981,7 +1916,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -1989,7 +1924,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -2000,7 +1935,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2008,7 +1943,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -2017,7 +1952,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -2056,13 +1991,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -2095,7 +2029,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2103,7 +2037,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -2114,7 +2048,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2122,7 +2056,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -2131,7 +2065,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",

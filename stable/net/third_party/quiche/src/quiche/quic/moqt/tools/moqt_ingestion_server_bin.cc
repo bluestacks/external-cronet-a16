@@ -154,7 +154,8 @@ class MoqtIngestionHandler {
     for (absl::string_view track : tracks_to_subscribe) {
       FullTrackName full_track_name = track_namespace;
       full_track_name.AddElement(track);
-      session_->SubscribeCurrentGroup(full_track_name, &it->second);
+      session_->JoiningFetch(full_track_name, &it->second, 0,
+                             MoqtSubscribeParameters());
     }
 
     return std::nullopt;
@@ -168,7 +169,7 @@ class MoqtIngestionHandler {
 
     void OnReply(
         const FullTrackName& full_track_name,
-        std::optional<FullSequence> /*largest_id*/,
+        std::optional<Location> /*largest_id*/,
         std::optional<absl::string_view> error_reason_phrase) override {
       if (error_reason_phrase.has_value()) {
         QUICHE_LOG(ERROR) << "Failed to subscribe to the peer track "
@@ -179,10 +180,9 @@ class MoqtIngestionHandler {
     void OnCanAckObjects(MoqtObjectAckFunction) override {}
 
     void OnObjectFragment(const FullTrackName& full_track_name,
-                          FullSequence sequence,
+                          Location sequence,
                           MoqtPriority /*publisher_priority*/,
-                          MoqtObjectStatus /*status*/,
-                          absl::string_view object,
+                          MoqtObjectStatus /*status*/, absl::string_view object,
                           bool /*end_of_message*/) override {
       std::string file_name = absl::StrCat(sequence.group, "-", sequence.object,
                                            ".", full_track_name.tuple().back());

@@ -35,6 +35,256 @@ license {
     ],
 }
 
+// GN: //third_party/protobuf:proto_runtime_lite_java
+java_library {
+    name: "stable_cronet_third_party_protobuf_proto_runtime_lite_java",
+    static_libs: [
+        "stable_cronet_third_party_protobuf_proto_runtime_lite_java__filtered",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //third_party/protobuf:proto_runtime_lite_java__testing
+java_library {
+    name: "stable_cronet_third_party_protobuf_proto_runtime_lite_java__testing",
+    static_libs: [
+        "stable_cronet_third_party_protobuf_proto_runtime_lite_java__testing__filtered",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //third_party/protobuf:proto_runtime_lite_java__testing
+java_library {
+    name: "stable_cronet_third_party_protobuf_proto_runtime_lite_java__testing__unfiltered",
+    srcs: [
+        "java/core/src/main/java/com/google/protobuf/AbstractMessageLite.java",
+        "java/core/src/main/java/com/google/protobuf/AbstractParser.java",
+        "java/core/src/main/java/com/google/protobuf/AbstractProtobufList.java",
+        "java/core/src/main/java/com/google/protobuf/AllocatedBuffer.java",
+        "java/core/src/main/java/com/google/protobuf/Android.java",
+        "java/core/src/main/java/com/google/protobuf/ArrayDecoders.java",
+        "java/core/src/main/java/com/google/protobuf/BinaryReader.java",
+        "java/core/src/main/java/com/google/protobuf/BinaryWriter.java",
+        "java/core/src/main/java/com/google/protobuf/BooleanArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/BufferAllocator.java",
+        "java/core/src/main/java/com/google/protobuf/ByteBufferWriter.java",
+        "java/core/src/main/java/com/google/protobuf/ByteOutput.java",
+        "java/core/src/main/java/com/google/protobuf/ByteString.java",
+        "java/core/src/main/java/com/google/protobuf/CanIgnoreReturnValue.java",
+        "java/core/src/main/java/com/google/protobuf/CheckReturnValue.java",
+        "java/core/src/main/java/com/google/protobuf/CodedInputStream.java",
+        "java/core/src/main/java/com/google/protobuf/CodedInputStreamReader.java",
+        "java/core/src/main/java/com/google/protobuf/CodedOutputStream.java",
+        "java/core/src/main/java/com/google/protobuf/CodedOutputStreamWriter.java",
+        "java/core/src/main/java/com/google/protobuf/CompileTimeConstant.java",
+        "java/core/src/main/java/com/google/protobuf/DoubleArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/ExperimentalApi.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionLite.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionRegistryFactory.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionRegistryLite.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionSchema.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/FieldInfo.java",
+        "java/core/src/main/java/com/google/protobuf/FieldSet.java",
+        "java/core/src/main/java/com/google/protobuf/FieldType.java",
+        "java/core/src/main/java/com/google/protobuf/FloatArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/GeneratedMessageInfoFactory.java",
+        "java/core/src/main/java/com/google/protobuf/GeneratedMessageLite.java",
+        "java/core/src/main/java/com/google/protobuf/InlineMe.java",
+        "java/core/src/main/java/com/google/protobuf/IntArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/Internal.java",
+        "java/core/src/main/java/com/google/protobuf/InvalidProtocolBufferException.java",
+        "java/core/src/main/java/com/google/protobuf/IterableByteBufferInputStream.java",
+        "java/core/src/main/java/com/google/protobuf/Java8Compatibility.java",
+        "java/core/src/main/java/com/google/protobuf/JavaType.java",
+        "java/core/src/main/java/com/google/protobuf/LazyField.java",
+        "java/core/src/main/java/com/google/protobuf/LazyFieldLite.java",
+        "java/core/src/main/java/com/google/protobuf/LazyStringArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/LazyStringList.java",
+        "java/core/src/main/java/com/google/protobuf/ListFieldSchema.java",
+        "java/core/src/main/java/com/google/protobuf/ListFieldSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/ListFieldSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/LongArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/ManifestSchemaFactory.java",
+        "java/core/src/main/java/com/google/protobuf/MapEntryLite.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldLite.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldSchema.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/MessageInfo.java",
+        "java/core/src/main/java/com/google/protobuf/MessageInfoFactory.java",
+        "java/core/src/main/java/com/google/protobuf/MessageLite.java",
+        "java/core/src/main/java/com/google/protobuf/MessageLiteOrBuilder.java",
+        "java/core/src/main/java/com/google/protobuf/MessageLiteToString.java",
+        "java/core/src/main/java/com/google/protobuf/MessageSchema.java",
+        "java/core/src/main/java/com/google/protobuf/MessageSetSchema.java",
+        "java/core/src/main/java/com/google/protobuf/MutabilityOracle.java",
+        "java/core/src/main/java/com/google/protobuf/NewInstanceSchema.java",
+        "java/core/src/main/java/com/google/protobuf/NewInstanceSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/NewInstanceSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/OneofInfo.java",
+        "java/core/src/main/java/com/google/protobuf/Parser.java",
+        "java/core/src/main/java/com/google/protobuf/PrimitiveNonBoxingCollection.java",
+        "java/core/src/main/java/com/google/protobuf/ProtoSyntax.java",
+        "java/core/src/main/java/com/google/protobuf/Protobuf.java",
+        "java/core/src/main/java/com/google/protobuf/ProtobufArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/ProtocolStringList.java",
+        "java/core/src/main/java/com/google/protobuf/RawMessageInfo.java",
+        "java/core/src/main/java/com/google/protobuf/Reader.java",
+        "java/core/src/main/java/com/google/protobuf/RopeByteString.java",
+        "java/core/src/main/java/com/google/protobuf/RuntimeVersion.java",
+        "java/core/src/main/java/com/google/protobuf/Schema.java",
+        "java/core/src/main/java/com/google/protobuf/SchemaFactory.java",
+        "java/core/src/main/java/com/google/protobuf/SchemaUtil.java",
+        "java/core/src/main/java/com/google/protobuf/SmallSortedMap.java",
+        "java/core/src/main/java/com/google/protobuf/StructuralMessageInfo.java",
+        "java/core/src/main/java/com/google/protobuf/TextFormatEscaper.java",
+        "java/core/src/main/java/com/google/protobuf/UninitializedMessageException.java",
+        "java/core/src/main/java/com/google/protobuf/UnknownFieldSchema.java",
+        "java/core/src/main/java/com/google/protobuf/UnknownFieldSetLite.java",
+        "java/core/src/main/java/com/google/protobuf/UnknownFieldSetLiteSchema.java",
+        "java/core/src/main/java/com/google/protobuf/UnmodifiableLazyStringList.java",
+        "java/core/src/main/java/com/google/protobuf/UnsafeUtil.java",
+        "java/core/src/main/java/com/google/protobuf/Utf8.java",
+        "java/core/src/main/java/com/google/protobuf/WireFormat.java",
+        "java/core/src/main/java/com/google/protobuf/Writer.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "libcore_private.stubs",
+    ],
+    sdk_version: "core_current",
+}
+
+// GN: //third_party/protobuf:proto_runtime_lite_java
+java_library {
+    name: "stable_cronet_third_party_protobuf_proto_runtime_lite_java__unfiltered",
+    srcs: [
+        "java/core/src/main/java/com/google/protobuf/AbstractMessageLite.java",
+        "java/core/src/main/java/com/google/protobuf/AbstractParser.java",
+        "java/core/src/main/java/com/google/protobuf/AbstractProtobufList.java",
+        "java/core/src/main/java/com/google/protobuf/AllocatedBuffer.java",
+        "java/core/src/main/java/com/google/protobuf/Android.java",
+        "java/core/src/main/java/com/google/protobuf/ArrayDecoders.java",
+        "java/core/src/main/java/com/google/protobuf/BinaryReader.java",
+        "java/core/src/main/java/com/google/protobuf/BinaryWriter.java",
+        "java/core/src/main/java/com/google/protobuf/BooleanArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/BufferAllocator.java",
+        "java/core/src/main/java/com/google/protobuf/ByteBufferWriter.java",
+        "java/core/src/main/java/com/google/protobuf/ByteOutput.java",
+        "java/core/src/main/java/com/google/protobuf/ByteString.java",
+        "java/core/src/main/java/com/google/protobuf/CanIgnoreReturnValue.java",
+        "java/core/src/main/java/com/google/protobuf/CheckReturnValue.java",
+        "java/core/src/main/java/com/google/protobuf/CodedInputStream.java",
+        "java/core/src/main/java/com/google/protobuf/CodedInputStreamReader.java",
+        "java/core/src/main/java/com/google/protobuf/CodedOutputStream.java",
+        "java/core/src/main/java/com/google/protobuf/CodedOutputStreamWriter.java",
+        "java/core/src/main/java/com/google/protobuf/CompileTimeConstant.java",
+        "java/core/src/main/java/com/google/protobuf/DoubleArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/ExperimentalApi.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionLite.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionRegistryFactory.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionRegistryLite.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionSchema.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/ExtensionSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/FieldInfo.java",
+        "java/core/src/main/java/com/google/protobuf/FieldSet.java",
+        "java/core/src/main/java/com/google/protobuf/FieldType.java",
+        "java/core/src/main/java/com/google/protobuf/FloatArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/GeneratedMessageInfoFactory.java",
+        "java/core/src/main/java/com/google/protobuf/GeneratedMessageLite.java",
+        "java/core/src/main/java/com/google/protobuf/InlineMe.java",
+        "java/core/src/main/java/com/google/protobuf/IntArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/Internal.java",
+        "java/core/src/main/java/com/google/protobuf/InvalidProtocolBufferException.java",
+        "java/core/src/main/java/com/google/protobuf/IterableByteBufferInputStream.java",
+        "java/core/src/main/java/com/google/protobuf/Java8Compatibility.java",
+        "java/core/src/main/java/com/google/protobuf/JavaType.java",
+        "java/core/src/main/java/com/google/protobuf/LazyField.java",
+        "java/core/src/main/java/com/google/protobuf/LazyFieldLite.java",
+        "java/core/src/main/java/com/google/protobuf/LazyStringArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/LazyStringList.java",
+        "java/core/src/main/java/com/google/protobuf/ListFieldSchema.java",
+        "java/core/src/main/java/com/google/protobuf/ListFieldSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/ListFieldSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/LongArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/ManifestSchemaFactory.java",
+        "java/core/src/main/java/com/google/protobuf/MapEntryLite.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldLite.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldSchema.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/MapFieldSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/MessageInfo.java",
+        "java/core/src/main/java/com/google/protobuf/MessageInfoFactory.java",
+        "java/core/src/main/java/com/google/protobuf/MessageLite.java",
+        "java/core/src/main/java/com/google/protobuf/MessageLiteOrBuilder.java",
+        "java/core/src/main/java/com/google/protobuf/MessageLiteToString.java",
+        "java/core/src/main/java/com/google/protobuf/MessageSchema.java",
+        "java/core/src/main/java/com/google/protobuf/MessageSetSchema.java",
+        "java/core/src/main/java/com/google/protobuf/MutabilityOracle.java",
+        "java/core/src/main/java/com/google/protobuf/NewInstanceSchema.java",
+        "java/core/src/main/java/com/google/protobuf/NewInstanceSchemaLite.java",
+        "java/core/src/main/java/com/google/protobuf/NewInstanceSchemas.java",
+        "java/core/src/main/java/com/google/protobuf/OneofInfo.java",
+        "java/core/src/main/java/com/google/protobuf/Parser.java",
+        "java/core/src/main/java/com/google/protobuf/PrimitiveNonBoxingCollection.java",
+        "java/core/src/main/java/com/google/protobuf/ProtoSyntax.java",
+        "java/core/src/main/java/com/google/protobuf/Protobuf.java",
+        "java/core/src/main/java/com/google/protobuf/ProtobufArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/ProtocolStringList.java",
+        "java/core/src/main/java/com/google/protobuf/RawMessageInfo.java",
+        "java/core/src/main/java/com/google/protobuf/Reader.java",
+        "java/core/src/main/java/com/google/protobuf/RopeByteString.java",
+        "java/core/src/main/java/com/google/protobuf/RuntimeVersion.java",
+        "java/core/src/main/java/com/google/protobuf/Schema.java",
+        "java/core/src/main/java/com/google/protobuf/SchemaFactory.java",
+        "java/core/src/main/java/com/google/protobuf/SchemaUtil.java",
+        "java/core/src/main/java/com/google/protobuf/SmallSortedMap.java",
+        "java/core/src/main/java/com/google/protobuf/StructuralMessageInfo.java",
+        "java/core/src/main/java/com/google/protobuf/TextFormatEscaper.java",
+        "java/core/src/main/java/com/google/protobuf/UninitializedMessageException.java",
+        "java/core/src/main/java/com/google/protobuf/UnknownFieldSchema.java",
+        "java/core/src/main/java/com/google/protobuf/UnknownFieldSetLite.java",
+        "java/core/src/main/java/com/google/protobuf/UnknownFieldSetLiteSchema.java",
+        "java/core/src/main/java/com/google/protobuf/UnmodifiableLazyStringList.java",
+        "java/core/src/main/java/com/google/protobuf/UnsafeUtil.java",
+        "java/core/src/main/java/com/google/protobuf/Utf8.java",
+        "java/core/src/main/java/com/google/protobuf/WireFormat.java",
+        "java/core/src/main/java/com/google/protobuf/Writer.java",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "libcore_private.stubs",
+    ],
+    sdk_version: "core_current",
+}
+
 // GN: //third_party/protobuf:protobuf_full
 cc_library_static {
     name: "stable_cronet_third_party_protobuf_protobuf_full",
@@ -70,17 +320,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protobuf_full__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -89,7 +336,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -166,24 +412,20 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protobuf_full__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -223,7 +465,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -231,7 +473,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -242,7 +484,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -250,7 +492,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -259,7 +501,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -321,24 +563,20 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protobuf_lite__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -379,7 +617,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -387,7 +625,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -397,7 +635,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -405,7 +643,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -414,7 +652,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -474,24 +712,20 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protobuf_lite__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -532,7 +766,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -540,7 +774,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -550,7 +784,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -558,7 +792,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -567,7 +801,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -676,6 +910,7 @@ cc_binary {
         "stable_cronet_third_party_abseil_cpp_absl_time_internal_cctz_civil_time",
         "stable_cronet_third_party_abseil_cpp_absl_time_internal_cctz_time_zone",
         "stable_cronet_third_party_abseil_cpp_absl_time_time",
+        "stable_cronet_third_party_compiler_rt_atomic",
         "stable_cronet_third_party_protobuf_protobuf_full",
         "stable_cronet_third_party_protobuf_protobuf_lite",
         "stable_cronet_third_party_protobuf_protoc_cpp",
@@ -690,12 +925,15 @@ cc_binary {
     host_supported: true,
     host_cross_supported: false,
     device_supported: false,
+    generated_headers: [
+        "stable_cronet_third_party_protobuf_protoc__concatenated_headers_common",
+    ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -704,7 +942,6 @@ cc_binary {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -832,6 +1069,7 @@ cc_binary {
         "stable_cronet_third_party_abseil_cpp_absl_time_internal_cctz_civil_time__testing",
         "stable_cronet_third_party_abseil_cpp_absl_time_internal_cctz_time_zone__testing",
         "stable_cronet_third_party_abseil_cpp_absl_time_time__testing",
+        "stable_cronet_third_party_compiler_rt_atomic__testing",
         "stable_cronet_third_party_protobuf_protobuf_full__testing",
         "stable_cronet_third_party_protobuf_protobuf_lite__testing",
         "stable_cronet_third_party_protobuf_protoc_cpp__testing",
@@ -846,12 +1084,15 @@ cc_binary {
     host_supported: true,
     host_cross_supported: false,
     device_supported: false,
+    generated_headers: [
+        "stable_cronet_third_party_protobuf_protoc__testing__concatenated_headers_common",
+    ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -860,7 +1101,6 @@ cc_binary {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -932,17 +1172,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_cpp__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -951,7 +1188,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1023,17 +1259,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_cpp__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1042,7 +1275,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1106,17 +1338,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1125,7 +1354,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1189,17 +1417,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1208,7 +1433,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1258,17 +1482,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java_all_headers__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1277,7 +1498,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1327,17 +1547,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java_all_headers__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1346,7 +1563,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1410,17 +1626,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java_full__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1429,7 +1642,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1493,17 +1705,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java_full__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1512,7 +1721,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1575,17 +1783,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java_lite__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1594,7 +1799,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1657,17 +1861,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java_lite__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1676,7 +1877,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1737,17 +1937,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_lib__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1756,7 +1953,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1817,17 +2013,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_lib__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1836,7 +2029,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1891,17 +2083,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_python__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1910,7 +2099,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -1965,17 +2153,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_python__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1984,7 +2169,6 @@ cc_library_static {
         "-DNO_UNWIND_TABLES",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-DUSE_AURA=1",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
@@ -2037,22 +2221,18 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_utf8_range__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -2091,7 +2271,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2099,7 +2279,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -2110,7 +2290,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2118,7 +2298,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -2127,7 +2307,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -2163,22 +2343,18 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_utf8_range__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-5118-g52cd27e6-5\"",
-        "-DCR_LIBCXX_REVISION=4f05e20cbe1d02fa0871ac88b30eead9e38cab3a",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
+        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DTMP_REBUILD_HACK",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -2217,7 +2393,7 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2225,7 +2401,7 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -2236,7 +2412,7 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2244,7 +2420,7 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -2253,7 +2429,7 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r27_1",
+                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",

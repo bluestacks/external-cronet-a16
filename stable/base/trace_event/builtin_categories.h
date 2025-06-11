@@ -132,11 +132,16 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("memory"),
     perfetto::Category("midi"),
     perfetto::Category("mojom"),
+    perfetto::Category("mojom.flow").SetDescription(
+        "Includes flow events related to mojom. Notably, records flows between "
+        "senders and receivers."),
     perfetto::Category("mus"),
     perfetto::Category("native"),
     perfetto::Category("navigation"),
     perfetto::Category("navigation.debug"),
     perfetto::Category("net"),
+    perfetto::Category("net.stream").SetDescription(
+        "Includes events related to creating HTTP streams to serve requests."),
     perfetto::Category("network.scheduler"),
     perfetto::Category("netlog"),
     perfetto::Category("offline_pages"),
@@ -150,6 +155,13 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("page-serialization"),
     perfetto::Category("paint_preview"),
     perfetto::Category("pepper"),
+    perfetto::Category("performance_scenarios").SetDescription(
+        "Includes events when processes enter and leave states defined in "
+        "//components/performance_manager/scenario_api/"
+        "performance_scenarios.h. For each scenario type, events for "
+        "ScenarioScope::kCurrentProcess are emitted to an async track under "
+        "each process track, and events for ScenarioScope::kGlobal are emitted "
+        "to global async tracks."),
     perfetto::Category("persistent_cache"),
     perfetto::Category("PlatformMalloc"),
     perfetto::Category("power"),
@@ -400,7 +412,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category::Group("toplevel,graphics.pipeline"),
     perfetto::Category::Group("toplevel,Java"),
     perfetto::Category::Group("toplevel,latency"),
+    perfetto::Category::Group("toplevel,mojom"),
     perfetto::Category::Group("toplevel,viz"),
+    perfetto::Category::Group("toplevel.flow,mojom.flow"),
     perfetto::Category::Group("ui,input"),
     perfetto::Category::Group("ui,latency"),
     perfetto::Category::Group("ui,toplevel"),

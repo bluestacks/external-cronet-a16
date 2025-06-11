@@ -52,7 +52,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
-#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -819,6 +818,20 @@ void SetAbortBehaviorForCrashReporting() {
   // is left in place, however this allows us to crash earlier. And it also
   // lets us crash in response to code which might directly call raise(SIGABRT)
   signal(SIGABRT, ForceCrashOnSigAbort);
+
+  // Also call the setters in the UCRT dll if it is loaded into the process.
+  // This will handle aborts originating from other modules that dynamically
+  // load UCRT.
+  HMODULE ucrtbase = ::GetModuleHandle(L"ucrtbase.dll");
+  if (!ucrtbase) {
+    return;
+  }
+
+  const auto ucrtbase_signal_fn = reinterpret_cast<decltype(&::signal)>(
+      ::GetProcAddress(ucrtbase, "signal"));
+  if (ucrtbase_signal_fn) {
+    ucrtbase_signal_fn(SIGABRT, ForceCrashOnSigAbort);
+  }
 }
 
 // This method is used to set the right interactions media queries,
@@ -1176,21 +1189,6 @@ expected<std::wstring, NTSTATUS> GetObjectTypeName(HANDLE handle) {
                       type_info->TypeName.Length / sizeof(wchar_t));
 }
 
-expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
-    HANDLE handle,
-    std::wstring_view object_type_name) {
-  auto type_name = GetObjectTypeName(handle);
-  if (!type_name.has_value()) {
-    // `handle` is invalid. Return the error to the caller.
-    return unexpected(type_name.error());
-  }
-  // Crash if `handle` is an unexpected type. This represents a dangerous
-  // type confusion condition that should never happen.
-  base::debug::Alias(&handle);
-  CHECK_EQ(*type_name, object_type_name);
-  return ScopedHandle(handle);  // Ownership of `handle` goes to the caller.
-}
-
 ProcessPowerState GetProcessEcoQoSState(HANDLE process) {
   return GetProcessPowerThrottlingState(
       process, PROCESS_POWER_THROTTLING_EXECUTION_SPEED);
@@ -1239,17 +1237,6 @@ ScopedDomainStateForTesting::ScopedDomainStateForTesting(bool state)
 
 ScopedDomainStateForTesting::~ScopedDomainStateForTesting() {
   *GetDomainEnrollmentStateStorage() = initial_state_;
-}
-
-ScopedDeviceRegisteredWithManagementForTesting::
-    ScopedDeviceRegisteredWithManagementForTesting(bool state)
-    : initial_state_(IsDeviceRegisteredWithManagement()) {
-  *GetRegisteredWithManagementStateStorage() = state;
-}
-
-ScopedDeviceRegisteredWithManagementForTesting::
-    ~ScopedDeviceRegisteredWithManagementForTesting() {
-  *GetRegisteredWithManagementStateStorage() = initial_state_;
 }
 
 ScopedAzureADJoinStateForTesting::ScopedAzureADJoinStateForTesting(bool state)

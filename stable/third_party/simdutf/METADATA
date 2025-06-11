@@ -3,10 +3,10 @@
 name: "simdutf unicode transcoder"
 third_party {
   license_type: NOTICE
-  version: "6.0.2"
+  version: "6.4.0"
   identifier {
     value: "https://github.com/simdutf/simdutf"
     type: "Git"
-    version: "6.0.2"
+    version: "6.4.0"
   }
 }

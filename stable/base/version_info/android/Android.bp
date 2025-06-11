@@ -25,8 +25,45 @@ package {
 java_library {
     name: "stable_cronet_base_version_info_android_channel_enum_java",
     static_libs: [
-        "stable_cronet_base_version_info_android_channel_enum_java__process_device",
+        "stable_cronet_base_version_info_android_channel_enum_java__filtered",
         "stable_cronet_build_android_build_java",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base/version_info/android:channel_enum_java__testing
+java_library {
+    name: "stable_cronet_base_version_info_android_channel_enum_java__testing",
+    static_libs: [
+        "stable_cronet_base_version_info_android_channel_enum_java__testing__filtered",
+        "stable_cronet_build_android_build_java__testing",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base/version_info/android:channel_enum_java__testing
+java_library {
+    name: "stable_cronet_base_version_info_android_channel_enum_java__testing__unfiltered",
+    srcs: [
+        ":stable_cronet_base_version_info_android_channel_enum_srcjar__testing",
     ],
     defaults: [
         "stable_cronet_java_framework_defaults",
@@ -37,15 +74,13 @@ java_library {
     min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
+        "stable_cronet_build_android_build_java__testing__unfiltered",
     ],
 }
 
-// GN: //base/version_info/android:channel_enum_java__compile_java
+// GN: //base/version_info/android:channel_enum_java
 java_library {
-    name: "stable_cronet_base_version_info_android_channel_enum_java__compile_java",
+    name: "stable_cronet_base_version_info_android_channel_enum_java__unfiltered",
     srcs: [
         ":stable_cronet_base_version_info_android_channel_enum_srcjar",
     ],
@@ -58,50 +93,7 @@ java_library {
     min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation",
-        "stable_cronet_build_android_build_java__compile_java",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base/version_info/android:channel_enum_java__compile_java__testing
-java_library {
-    name: "stable_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
-    srcs: [
-        ":stable_cronet_base_version_info_android_channel_enum_srcjar__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "stable_cronet_build_android_build_java__compile_java__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base/version_info/android:channel_enum_java__testing
-java_library {
-    name: "stable_cronet_base_version_info_android_channel_enum_java__testing",
-    static_libs: [
-        "stable_cronet_base_version_info_android_channel_enum_java__process_device__testing",
-        "stable_cronet_build_android_build_java__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
+        "stable_cronet_build_android_build_java__unfiltered",
     ],
 }
 
@@ -110,7 +102,7 @@ java_library {
     name: "stable_cronet_base_version_info_android_version_constants_java",
     static_libs: [
         "stable_cronet_base_version_info_android_channel_enum_java",
-        "stable_cronet_base_version_info_android_version_constants_java__process_device",
+        "stable_cronet_base_version_info_android_version_constants_java__filtered",
         "stable_cronet_build_android_build_java",
         "stable_cronet_third_party_jni_zero_jni_zero_java",
     ],
@@ -121,17 +113,60 @@ java_library {
         "com.android.tethering",
     ],
     min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-    ],
     visibility: [
         "//external/cronet:__subpackages__",
     ],
 }
 
-// GN: //base/version_info/android:version_constants_java__compile_java
+// GN: //base/version_info/android:version_constants_java__testing
 java_library {
-    name: "stable_cronet_base_version_info_android_version_constants_java__compile_java",
+    name: "stable_cronet_base_version_info_android_version_constants_java__testing",
+    static_libs: [
+        "stable_cronet_base_version_info_android_channel_enum_java__testing",
+        "stable_cronet_base_version_info_android_version_constants_java__testing__filtered",
+        "stable_cronet_build_android_build_java__testing",
+        "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base/version_info/android:version_constants_java__testing
+java_library {
+    name: "stable_cronet_base_version_info_android_version_constants_java__testing__unfiltered",
+    srcs: [
+        ":stable_cronet_base_version_info_android_generate_version_constants__testing",
+        "java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
+        "java/src/org/chromium/base/version_info/VersionInfo.java",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "androidx.annotation_annotation",
+        "stable_cronet_base_version_info_android_channel_enum_java__testing__unfiltered",
+        "stable_cronet_build_android_build_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_jni_zero_java__testing__unfiltered",
+    ],
+}
+
+// GN: //base/version_info/android:version_constants_java
+java_library {
+    name: "stable_cronet_base_version_info_android_version_constants_java__unfiltered",
     srcs: [
         ":stable_cronet_base_version_info_android_generate_version_constants",
         "java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
@@ -146,61 +181,10 @@ java_library {
     min_sdk_version: "30",
     libs: [
         "androidx.annotation_annotation",
-        "stable_cronet_base_version_info_android_channel_enum_java__compile_java",
-        "stable_cronet_build_android_build_java__compile_java",
-        "stable_cronet_third_party_jni_zero_gendeps_java__compile_java",
-        "stable_cronet_third_party_jni_zero_generate_jni_java__compile_java",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__compile_java",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base/version_info/android:version_constants_java__compile_java__testing
-java_library {
-    name: "stable_cronet_base_version_info_android_version_constants_java__compile_java__testing",
-    srcs: [
-        ":stable_cronet_base_version_info_android_generate_version_constants__testing",
-        "java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
-        "java/src/org/chromium/base/version_info/VersionInfo.java",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "stable_cronet_base_version_info_android_channel_enum_java__compile_java__testing",
-        "stable_cronet_build_android_build_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_gendeps_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_generate_jni_java__compile_java__testing",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__compile_java__testing",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base/version_info/android:version_constants_java__testing
-java_library {
-    name: "stable_cronet_base_version_info_android_version_constants_java__testing",
-    static_libs: [
-        "stable_cronet_base_version_info_android_channel_enum_java__testing",
-        "stable_cronet_base_version_info_android_version_constants_java__process_device__testing",
-        "stable_cronet_build_android_build_java__testing",
-        "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-    ],
-    sdk_version: "current",
-    visibility: [
-        "//external/cronet:__subpackages__",
+        "stable_cronet_base_version_info_android_channel_enum_java__unfiltered",
+        "stable_cronet_build_android_build_java__unfiltered",
+        "stable_cronet_third_party_jni_zero_gendeps_java__unfiltered",
+        "stable_cronet_third_party_jni_zero_generate_jni_java__unfiltered",
+        "stable_cronet_third_party_jni_zero_jni_zero_java__unfiltered",
     ],
 }

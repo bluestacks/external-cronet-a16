@@ -25,6 +25,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/net_errors.h"
@@ -77,8 +78,6 @@
 #elif BUILDFLAG(IS_IOS)
 #include "base/ios/ios_util.h"
 #include "net/cert/cert_verify_proc_ios.h"
-#elif BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -519,8 +518,7 @@ TEST_P(CertVerifyProcInternalTest, EVVerificationMultipleOID) {
   std::string_view spki;
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(
       x509_util::CryptoBufferAsStringPiece(root->GetCertBuffer()), &spki));
-  SHA256HashValue spki_sha256;
-  crypto::SHA256HashString(spki, spki_sha256.data, sizeof(spki_sha256.data));
+  SHA256HashValue spki_sha256 = crypto::hash::Sha256(base::as_byte_span(spki));
   SetUpCertVerifyProc(CRLSet::ForTesting(false, &spki_sha256, "", "", {}));
 
   // Consider the root of the test chain a valid EV root for the test policy.
@@ -1353,10 +1351,10 @@ TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
   int flags = 0;
   CertVerifyResult verify_result;
   int error =
-      Verify(cert_chain.get(), "timberfirepizza.com", flags, &verify_result);
+      Verify(cert_chain.get(), "arabianhorseplay.com", flags, &verify_result);
   EXPECT_THAT(error, IsOk())
       << "This test relies on a real certificate that "
-      << "expires on Nov 09 2025. If failing on/after "
+      << "expires on May 18 2026. If failing on/after "
       << "that date, please disable and file a bug "
       << "against mattm. Current time: " << base::Time::Now();
   EXPECT_TRUE(verify_result.is_issued_by_known_root);

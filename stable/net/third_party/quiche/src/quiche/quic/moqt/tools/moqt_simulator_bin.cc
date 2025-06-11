@@ -289,7 +289,7 @@ class ObjectReceiver : public SubscribeRemoteTrack::Visitor {
       : clock_(clock), deadline_(deadline) {}
 
   void OnReply(const FullTrackName& full_track_name,
-               std::optional<FullSequence> /*largest_id*/,
+               std::optional<Location> /*largest_id*/,
                std::optional<absl::string_view> error_reason_phrase) override {
     QUICHE_CHECK(full_track_name == TrackName());
     QUICHE_CHECK(!error_reason_phrase.has_value()) << *error_reason_phrase;
@@ -299,8 +299,7 @@ class ObjectReceiver : public SubscribeRemoteTrack::Visitor {
     object_ack_function_ = std::move(ack_function);
   }
 
-  void OnObjectFragment(const FullTrackName& full_track_name,
-                        FullSequence sequence,
+  void OnObjectFragment(const FullTrackName& full_track_name, Location sequence,
                         MoqtPriority /*publisher_priority*/,
                         MoqtObjectStatus status, absl::string_view object,
                         bool end_of_message) override {
@@ -318,7 +317,7 @@ class ObjectReceiver : public SubscribeRemoteTrack::Visitor {
 
   void OnSubscribeDone(FullTrackName /*full_track_name*/) override {}
 
-  void OnFullObject(FullSequence sequence, absl::string_view payload) {
+  void OnFullObject(Location sequence, absl::string_view payload) {
     QUICHE_CHECK_GE(payload.size(), 8u);
     quiche::QuicheDataReader reader(payload);
     uint64_t time_us;
@@ -354,7 +353,7 @@ class ObjectReceiver : public SubscribeRemoteTrack::Visitor {
  private:
   const QuicClock* clock_ = nullptr;
   // TODO: figure out when partial objects should be discarded.
-  absl::flat_hash_map<FullSequence, std::string> partial_objects_;
+  absl::flat_hash_map<Location, std::string> partial_objects_;
   MoqtObjectAckFunction object_ack_function_ = nullptr;
 
   size_t full_objects_received_ = 0;
@@ -421,24 +420,10 @@ class MoqtSimulator {
 
   // Runs the simulation and outputs the results to stdout.
   void Run() {
-    // Timeout for establishing the connection.
-    constexpr QuicTimeDelta kConnectionTimeout = QuicTimeDelta::FromSeconds(1);
-
     // Perform the QUIC and the MoQT handshake.
     client_session()->set_support_object_acks(true);
-    client_session()->callbacks().session_established_callback = [this] {
-      client_established_ = true;
-    };
     server_session()->set_support_object_acks(true);
-    server_session()->callbacks().session_established_callback = [this] {
-      server_established_ = true;
-    };
-    client_endpoint_.quic_session()->CryptoConnect();
-    simulator_.RunUntilOrTimeout(
-        [&]() { return client_established_ && server_established_; },
-        kConnectionTimeout);
-    QUICHE_CHECK(client_established_) << "Client failed to establish session";
-    QUICHE_CHECK(server_established_) << "Server failed to establish session";
+    RunHandshakeOrDie(simulator_, client_endpoint_, server_endpoint_);
 
     generator_.queue()->SetDeliveryOrder(parameters_.delivery_order);
     client_session()->set_publisher(&publisher_);
@@ -461,8 +446,8 @@ class MoqtSimulator {
     if (!parameters_.delivery_timeout.IsInfinite()) {
       subscription_parameters.delivery_timeout = parameters_.delivery_timeout;
     }
-    server_session()->SubscribeCurrentGroup(TrackName(), &receiver_,
-                                            subscription_parameters);
+    server_session()->JoiningFetch(TrackName(), &receiver_, 0,
+                                   subscription_parameters);
     simulator_.RunFor(parameters_.duration);
 
     // At the end, we wait for eight RTTs until the connection settles down.
@@ -531,8 +516,6 @@ class MoqtSimulator {
   MoqtBitrateAdjuster adjuster_;
   SimulationParameters parameters_;
 
-  bool client_established_ = false;
-  bool server_established_ = false;
   absl::Duration wait_at_the_end_;
 };
 

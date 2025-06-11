@@ -55,9 +55,9 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
   // MoqtTrackPublisher implementation.
   const FullTrackName& GetTrackName() const override { return track_; }
   std::optional<PublishedObject> GetCachedObject(
-      FullSequence sequence) const override;
-  std::vector<FullSequence> GetCachedObjectsInRange(
-      FullSequence start, FullSequence end) const override;
+      Location sequence) const override;
+  std::vector<Location> GetCachedObjectsInRange(Location start,
+                                                Location end) const override;
   void AddObjectListener(MoqtObjectListener* listener) override {
     listeners_.insert(listener);
     listener->OnSubscribeAccepted();
@@ -66,7 +66,7 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
     listeners_.erase(listener);
   }
   absl::StatusOr<MoqtTrackStatusCode> GetTrackStatus() const override;
-  FullSequence GetLargestSequence() const override;
+  Location GetLargestSequence() const override;
   MoqtForwardingPreference GetForwardingPreference() const override {
     return forwarding_preference_;
   }
@@ -76,7 +76,7 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
   MoqtDeliveryOrder GetDeliveryOrder() const override {
     return delivery_order_;
   }
-  std::unique_ptr<MoqtFetchTask> Fetch(FullSequence start, uint64_t end_group,
+  std::unique_ptr<MoqtFetchTask> Fetch(Location start, uint64_t end_group,
                                        std::optional<uint64_t> end_object,
                                        MoqtDeliveryOrder order) override;
 
@@ -95,6 +95,9 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
     }
   }
 
+  // Sends an "End of Track" object.
+  void Close();
+
  private:
   // The number of recent groups to keep around for newly joined subscribers.
   static constexpr size_t kMaxQueuedGroups = 3;
@@ -102,12 +105,12 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
   // Fetch task for a fetch from the cache.
   class FetchTask : public MoqtFetchTask {
    public:
-    FetchTask(MoqtOutgoingQueue* queue, std::vector<FullSequence> objects)
+    FetchTask(MoqtOutgoingQueue* queue, std::vector<Location> objects)
         : queue_(queue), objects_(objects.begin(), objects.end()) {}
 
     GetNextObjectResult GetNextObject(PublishedObject&) override;
     absl::Status GetStatus() override { return status_; }
-    FullSequence GetLargestId() const override { return objects_.back(); }
+    Location GetLargestId() const override { return objects_.back(); }
 
     void SetObjectAvailableCallback(
         ObjectsAvailableCallback /*callback*/) override {
@@ -119,13 +122,16 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
     GetNextObjectResult GetNextObjectInner(PublishedObject&);
 
     MoqtOutgoingQueue* queue_;
-    quiche::QuicheCircularDeque<FullSequence> objects_;
+    quiche::QuicheCircularDeque<Location> objects_;
     absl::Status status_ = absl::OkStatus();
   };
 
   using Group = std::vector<CachedObject>;
 
+  // Appends an object to the end of the current group.
   void AddRawObject(MoqtObjectStatus status, quiche::QuicheMemSlice payload);
+  // Closes the current group, if there is any, and opens a new one.
+  void OpenNewGroup();
 
   // The number of the oldest group available.
   uint64_t first_group_in_queue() const {
@@ -137,6 +143,7 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
   MoqtForwardingPreference forwarding_preference_;
   MoqtPriority publisher_priority_ = 128;
   MoqtDeliveryOrder delivery_order_ = MoqtDeliveryOrder::kAscending;
+  bool closed_ = false;
   absl::InlinedVector<Group, kMaxQueuedGroups> queue_;
   uint64_t current_group_id_ = -1;
   absl::flat_hash_set<MoqtObjectListener*> listeners_;

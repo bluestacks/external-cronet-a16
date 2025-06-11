@@ -120,11 +120,12 @@ UpstreamFetch::~UpstreamFetch() {
   }
 }
 
-void UpstreamFetch::OnFetchResult(FullSequence largest_id, absl::Status status,
+void UpstreamFetch::OnFetchResult(Location largest_id, absl::Status status,
                                   TaskDestroyedCallback callback) {
   auto task = std::make_unique<UpstreamFetchTask>(largest_id, status,
                                                   std::move(callback));
   task_ = task->weak_ptr();
+  window().TruncateEnd(largest_id);
   std::move(ok_callback_)(std::move(task));
   if (can_read_callback_) {
     task_.GetIfAvailable()->set_can_read_callback(
@@ -162,9 +163,9 @@ UpstreamFetch::UpstreamFetchTask::GetNextObject(PublishedObject& output) {
     quiche::QuicheMemSlice message_slice(std::move(payload_));
     output.payload = std::move(message_slice);
   }
-  output.sequence = FullSequence(next_object_->group_id,
-                                 next_object_->subgroup_id.value_or(0),
-                                 next_object_->object_id);
+  output.sequence =
+      Location(next_object_->group_id, next_object_->subgroup_id.value_or(0),
+               next_object_->object_id);
   output.status = next_object_->object_status;
   output.publisher_priority = next_object_->publisher_priority;
   output.fin_after_this = false;

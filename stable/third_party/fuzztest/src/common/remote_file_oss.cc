@@ -53,7 +53,7 @@
 #include "riegeli/bytes/writer.h"
 #endif  // CENTIPEDE_DISABLE_RIEGELI
 
-namespace centipede {
+namespace fuzztest::internal {
 namespace {
 
 class LocalRemoteFile : public RemoteFile {
@@ -300,28 +300,27 @@ absl::StatusOr<RemoteFile *> RemoteFileOpen(std::string_view path,
   return LocalRemoteFile::Create(std::string(path), mode);
 }
 
-absl::Status RemoteFileClose(absl::Nonnull<RemoteFile *> f) {
+absl::Status RemoteFileClose(RemoteFile *absl_nonnull f) {
   auto *file = static_cast<LocalRemoteFile *>(f);
   RETURN_IF_NOT_OK(file->Close());
   delete file;
   return absl::OkStatus();
 }
 
-absl::Status RemoteFileSetWriteBufferSize(absl::Nonnull<RemoteFile *> f,
+absl::Status RemoteFileSetWriteBufferSize(RemoteFile *absl_nonnull f,
                                           size_t size) {
   return static_cast<LocalRemoteFile *>(f)->SetWriteBufSize(size);
 }
 
-absl::Status RemoteFileAppend(absl::Nonnull<RemoteFile *> f,
-                              const ByteArray &ba) {
+absl::Status RemoteFileAppend(RemoteFile *absl_nonnull f, const ByteArray &ba) {
   return static_cast<LocalRemoteFile *>(f)->Write(ba);
 }
 
-absl::Status RemoteFileFlush(absl::Nonnull<RemoteFile *> f) {
+absl::Status RemoteFileFlush(RemoteFile *absl_nonnull f) {
   return static_cast<LocalRemoteFile *>(f)->Flush();
 }
 
-absl::Status RemoteFileRead(absl::Nonnull<RemoteFile *> f, ByteArray &ba) {
+absl::Status RemoteFileRead(RemoteFile *absl_nonnull f, ByteArray &ba) {
   return static_cast<LocalRemoteFile *>(f)->Read(ba);
 }
 
@@ -402,4 +401,4 @@ absl::StatusOr<std::unique_ptr<riegeli::Writer>> CreateRiegeliFileWriter(
 }
 #endif  // CENTIPEDE_DISABLE_RIEGELI
 
-}  // namespace centipede
+}  // namespace fuzztest::internal

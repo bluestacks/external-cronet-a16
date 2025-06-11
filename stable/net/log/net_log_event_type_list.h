@@ -104,8 +104,9 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_CREATE_JOB)
 // The BEGIN phase contains the following parameters:
 //
 //   {
-//     "dns_query_type": <DnsQueryType of the job>,
+//     "dns_query_types": <DnsQueryTypes of the job>,
 //     "host": <Serialized scheme/host/port associated with the job>,
+//     "tasks": <TaskTypes of the job>,
 //     "network_anonymization_key": <NetworkAnonymizationKey associated with the
 //                                   job>,
 //     "secure_dns_mode": <SecureDnsMode of the job>,
@@ -986,8 +987,8 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 // StreamAttempt and subclasses
 // ------------------------------------------------------------------------
 
-// Emitted when a StreamAttempt is created by HttpStreamPool.
-EVENT_TYPE(STREAM_ATTEMPT_BOUND_TO_POOL)
+// Emitted when a TcpBasedAttempt is created by HttpStreamPool.
+EVENT_TYPE(TCP_BASED_ATTEMPT_BOUND_TO_POOL)
 
 // Marks the creation/destruction of a TcpStreamAttempt.
 // For the BEGIN phase, the following parameter is attached:
@@ -1569,23 +1570,24 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 //     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
 //     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
 //                           treated as slow>,
-//     "quic_task_alive": <True when a QuicTask is alive>,
-//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//     "quic_attempt_alive": <True when a QuicAttempt is alive>,
+//     "quic_attempt_result": <The result of a QuicAttempt, if it is already
+//                             finished>
 //   }
 
-// Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
+// Emitted when an HttpStreamPool::AttemptManager started a TcpBasedAttempt.
 // This event has the common event parameters (see above).
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::AttemptManager received completion from a
-// StreamAttempt.
+// TcpBasedAttempt.
 // This event has the common event parameters (see above).
 // In addition to the common event parameters, this event has the following
 // parameter:
 //   {
 //     "result": <String representation of the result>,
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_END)
 
 // Emitted when an HttpStreamPool::AttemptManager is going to notify failure.
 // In addition to the common event parameters, this event has the following
@@ -1634,20 +1636,13 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED)
 //   {
 //     "stream_attempt_delay": <The stream attempt delay in milliseconds>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_DELAY_PASSED)
 
 // Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
-// HttpStreamPool::QuicTask is bound to the AttemptManager.
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
+// HttpStreamPool::AttemptManager::QuicAttempt is bound to the AttemptManager.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_BOUND)
 
-// Emitted when an HttpStreamPool::QuicTask tries to attempt a session.
-// The event parameters are:
-//   {
-//     "endpoint": <The endpoint of the attempt, if any>,
-//   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_MAYBE_ATTEMPT)
-
-// Emitted when an HttpStreamPool::QuicTask is completed.
+// Emitted when an HttpStreamPool::AttemptManager::QuicAttempt is completed.
 // This event has the common event parameters (see above).
 // In addition to the common event parameters, this event has the following
 // parameters:
@@ -1657,31 +1652,23 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_MAYBE_ATTEMPT)
 //     "source_dependency": <The source identifier of the QUIC session, if the
 //                           task succeeded>,
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_COMPLETED)
 
-// Marks the start/end of a HttpStreamPool::QuicTask.
-// For the BEGIN event, the event parameters are:
+// Marks the start/end of a HttpStreamPool::AttemptManager::QuicAttempt.
+// For the BEGIN phase, the following parameters are attached:
 //   {
 //     "quic_version": <The known QUIC version>,
-//     "source_dependency": <The source identifier of the parent AttemptManager>
-//   }
-EVENT_TYPE(HTTP_STREAM_POOL_QUIC_TASK_ALIVE)
-
-// Emitted when an HttpStreamPool::QuicTask started a QuicSessionAttempt.
-// The event parameters are:
-//   {
-//     "quic_version": <The QUIC version of the attempt>,
 //     "ip_endpoint": <The IPEndPoint to connect>,
 //     "metadata": <ConnectionEndpointMetadata of the attempt>
+//     "source_dependency": <The source identifier of the parent AttemptManager>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_START)
-
-// Emitted when an HttpStreamPool::QuicTask received completion from a
-// QuicSessionAttempt. The event parameter is:
+//
+// For the END phase, if there is a result of the attempt, the the following
+// parameter is attached:
 //   {
-//      "net_error": <Net error code integer>,
+//      "net_error": <OK or net error code of the failure>,
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_END)
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_ALIVE)
 
 // ------------------------------------------------------------------------
 // HttpNetworkTransaction
@@ -3831,6 +3818,19 @@ EVENT_TYPE(CERT_VERIFY_PROC_CREATED)
 //                       if running within the sandbox.>
 //   }
 EVENT_TYPE(CERT_VERIFY_PROC)
+
+// This event is created when CertVerifyProc is verifying a 2-QWAC certificate.
+// The BEGIN phase event parameters are:
+// {
+//   "certificates": <A list of PEM encoded certificates, the first one
+//                    being the certificate to verify and the remaining
+//                    being intermediate certificates to assist path
+//                    building.>
+//   "host": <The hostname verification is being performed for.>
+// }
+//
+// The END phase event parameters are the same as for CERT_VERIFY_PROC event.
+EVENT_TYPE(CERT_VERIFY_PROC_2QWAC)
 
 // This event is created for the target cert passed into CertVerifyProcBulitin.
 // The event parameters are:

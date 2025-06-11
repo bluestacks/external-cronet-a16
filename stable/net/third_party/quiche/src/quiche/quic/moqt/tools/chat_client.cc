@@ -69,7 +69,7 @@ std::optional<MoqtAnnounceErrorReason> ChatClient::OnIncomingAnnounce(
                  "do not subscribe\n";
     return std::nullopt;
   }
-  if (session_->SubscribeCurrentGroup(
+  if (session_->SubscribeCurrentObject(
           *track_name, &remote_track_visitor_,
           MoqtSubscribeParameters{std::string(GetUsername(my_track_name_)),
                                   std::nullopt, std::nullopt, std::nullopt})) {
@@ -165,7 +165,7 @@ void ChatClient::OnTerminalLineInput(absl::string_view input_message) {
 
 void ChatClient::RemoteTrackVisitor::OnReply(
     const FullTrackName& full_track_name,
-    std::optional<FullSequence> /*largest_id*/,
+    std::optional<Location> /*largest_id*/,
     std::optional<absl::string_view> reason_phrase) {
   auto it = client_->other_users_.find(full_track_name);
   if (it == client_->other_users_.end()) {
@@ -184,7 +184,7 @@ void ChatClient::RemoteTrackVisitor::OnReply(
 }
 
 void ChatClient::RemoteTrackVisitor::OnObjectFragment(
-    const FullTrackName& full_track_name, FullSequence /*sequence*/,
+    const FullTrackName& full_track_name, Location /*sequence*/,
     MoqtPriority /*publisher_priority*/, MoqtObjectStatus /*status*/,
     absl::string_view object, bool end_of_message) {
   if (!end_of_message) {

@@ -110,6 +110,7 @@ gen_file_lists(
         # Libraries:
         ":protobuf": "libprotobuf",
         ":protobuf_lite": "libprotobuf_lite",
+        ":protoc_public": "libprotoc_public",
         ":protoc": "libprotoc",
         ":upb": "libupb",
         ":protoc-gen-upb": "protoc-gen-upb",
@@ -210,6 +211,32 @@ cc_dist_library(
 )
 
 cc_dist_library(
+    name = "protoc_public",
+    dist_deps = [
+        ":protobuf",
+        ":protobuf_lite",
+    ],
+    tags = ["manual"],
+    deps = [
+        "//src/google/protobuf/compiler:command_line_interface",
+        "//src/google/protobuf/compiler/cpp:names",
+        "//src/google/protobuf/compiler/csharp:names",
+        "//src/google/protobuf/compiler/java:names",
+        "//src/google/protobuf/compiler/objectivec:names",
+        "//src/google/protobuf/compiler/php:names",
+        # TODO Make these private in the next breaking C++ release.
+        "//src/google/protobuf/compiler/cpp:generator_headers",
+        "//src/google/protobuf/compiler/csharp:generator_headers",
+        "//src/google/protobuf/compiler/java:generator_headers",
+        "//src/google/protobuf/compiler/kotlin:generator_headers",
+        "//src/google/protobuf/compiler/objectivec:generator_headers",
+        "//src/google/protobuf/compiler/php",
+        "//src/google/protobuf/compiler/python:generator_headers",
+        "//src/google/protobuf/compiler/ruby:generator_headers",
+    ],
+)
+
+cc_dist_library(
     name = "upb",
     tags = ["manual"],
     deps = [
@@ -218,6 +245,7 @@ cc_dist_library(
         "//upb/message:compare",
         "//upb/message:copy",
         "//upb/text",
+        "//upb/text:debug",
         "//upb/util:def_to_proto",
         "//upb/util:required_fields",
         "//upb/wire:byte_size",

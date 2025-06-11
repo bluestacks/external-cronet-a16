@@ -794,8 +794,8 @@ public class CronetUrlRequestContextTest {
         // Fake disconnect event for the default network, this should destroy the underlying
         // network-bound context.
         FutureTask<Void> task =
-                new FutureTask<Void>(
-                        new Callable<Void>() {
+                new FutureTask<>(
+                        new Callable<>() {
                             @Override
                             public Void call() {
                                 NetworkChangeNotifier.fakeNetworkDisconnected(
@@ -2499,8 +2499,8 @@ public class CronetUrlRequestContextTest {
         public static boolean doesContextExistForNetwork(CronetEngine engine, Network network)
                 throws Exception {
             FutureTask<Boolean> task =
-                    new FutureTask<Boolean>(
-                            new Callable<Boolean>() {
+                    new FutureTask<>(
+                            new Callable<>() {
                                 @Override
                                 public Boolean call() {
                                     return CronetTestUtil.doesURLRequestContextExistForTesting(
@@ -2516,8 +2516,8 @@ public class CronetUrlRequestContextTest {
      * @returns the thread priority of {@code engine}'s network thread.
      */
     private FutureTask<Integer> getThreadPriorityTask() {
-        return new FutureTask<Integer>(
-                new Callable<Integer>() {
+        return new FutureTask<>(
+                new Callable<>() {
                     @Override
                     public Integer call() {
                         return Process.getThreadPriority(Process.myTid());

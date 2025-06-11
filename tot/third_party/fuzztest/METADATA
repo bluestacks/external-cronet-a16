@@ -3,10 +3,10 @@
 name: "Fuzztest"
 third_party {
   license_type: NOTICE
-  version: "DEPS"
+  version: "890b53c3485bf7e31ac8b6b637f9850e4d596ced"
   identifier {
     value: "https://github.com/google/fuzztest"
     type: "Git"
-    version: "DEPS"
+    version: "890b53c3485bf7e31ac8b6b637f9850e4d596ced"
   }
 }

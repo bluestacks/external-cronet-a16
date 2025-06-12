@@ -246,6 +246,7 @@ cc_library_static {
 cc_library_static {
     name: "tot_cronet_third_party_fuzztest_fuzztest_internal__testing",
     srcs: [
+        "src/fuzztest/fuzzing_bit_gen.cc",
         "src/fuzztest/fuzztest_macros.cc",
         "src/fuzztest/internal/configuration.cc",
         "src/fuzztest/internal/corpus_database.cc",
@@ -253,8 +254,8 @@ cc_library_static {
         "src/fuzztest/internal/domains/in_grammar_impl.cc",
         "src/fuzztest/internal/domains/in_regexp_impl.cc",
         "src/fuzztest/internal/domains/regexp_dfa.cc",
+        "src/fuzztest/internal/escaping.cc",
         "src/fuzztest/internal/fixture_driver.cc",
-        "src/fuzztest/internal/fuzzing_bit_gen.cc",
         "src/fuzztest/internal/googletest_adaptor.cc",
         "src/fuzztest/internal/io.cc",
         "src/fuzztest/internal/logging.cc",

@@ -35,6 +35,7 @@
 #include "absl/time/time.h"
 #include "./common/temp_dir.h"
 #include "./e2e_tests/test_binary_util.h"
+#include "./fuzztest/internal/escaping.h"
 #include "./fuzztest/internal/io.h"
 #include "./fuzztest/internal/logging.h"
 #include "./fuzztest/internal/printer.h"
@@ -638,6 +639,7 @@ class GenericCommandLineInterfaceTest : public ::testing::Test {
     return RunBinary(BinaryPath(binary),
                      RunOptions{/*flags=*/non_fuzztest_flags,
                                 /*fuzztest_flags=*/flags,
+                                /*raw_args=*/{},
                                 /*env=*/WithTestSanitizerOptions(env),
                                 /*timeout=*/timeout});
   }
@@ -1102,32 +1104,6 @@ TEST_F(FuzzingModeCommandLineInterfaceTest, ConfiguresStackLimitByFlag) {
 }
 
 TEST_F(FuzzingModeCommandLineInterfaceTest,
-       ConfiguresStackLimitByEnvVarWithWarning) {
-  auto [status, std_out, std_err] =
-      RunWith({{"fuzz", "MySuite.DataDependentStackOverflow"}},
-              {{"FUZZTEST_STACK_LIMIT", "512000"}});
-  EXPECT_THAT(std_err, HasSubstr("argument 0: "));
-  EXPECT_THAT(std_err,
-              HasSubstr(absl::StrCat(
-                  "Stack limit is set by FUZZTEST_STACK_LIMIT env var - this "
-                  "is going to be deprecated soon. Consider switching to ",
-                  CreateFuzzTestFlag("stack_limit_kb", ""), " flag.")));
-  ExpectStackLimitExceededMessage(std_err, 512000);
-  ExpectTargetAbort(status, std_err);
-}
-
-TEST_F(FuzzingModeCommandLineInterfaceTest,
-       ConfiguresStackLimitByEnvVarAndOverridesFlag) {
-  auto [status, std_out, std_err] =
-      RunWith({{"fuzz", "MySuite.DataDependentStackOverflow"},
-               {"stack_limit_kb", "1000"}},
-              {{"FUZZTEST_STACK_LIMIT", "512000"}});
-  EXPECT_THAT(std_err, HasSubstr("argument 0: "));
-  ExpectStackLimitExceededMessage(std_err, 512000);
-  ExpectTargetAbort(status, std_err);
-}
-
-TEST_F(FuzzingModeCommandLineInterfaceTest,
        DoesNotPrintWarningForDisabledLimitFlagsByDefault) {
   auto [status, std_out, std_err] = RunWith(
       {{"fuzz", "MySuite.PassesWithPositiveInput"}, {"fuzz_for", "10s"}},
@@ -1235,7 +1211,7 @@ TEST_F(FuzzingModeCommandLineInterfaceTest,
       {
           {"fuzz_for", "1s"},
           {"corpus_database", temp_dir.path()},
-          {"internal_centipede_binary_path", CentipedePath()},
+          {"internal_centipede_command", ShellEscape(CentipedePath())},
       },
       /*env=*/{},
       /*timeout=*/absl::Minutes(1), "testdata/unit_test_and_fuzz_tests");
@@ -1295,7 +1271,7 @@ class FuzzingModeFixtureTest
         run_options.fuzztest_flags = {
             {"fuzz", std::string(test_name)},
             {"print_subprocess_log", "true"},
-            {"internal_centipede_binary_path", CentipedePath()}};
+            {"internal_centipede_command", ShellEscape(CentipedePath())}};
         run_options.env = {
             {"FUZZTEST_MAX_FUZZING_RUNS", absl::StrCat(iterations)}};
         run_options.timeout = absl::InfiniteDuration();
@@ -1469,8 +1445,8 @@ class FuzzingModeCrashFindingTest
       run_options.timeout = timeout + absl::Seconds(10);
       if (GetParam() ==
           ExecutionModelParam::kTestBinaryInvokingCentipedeBinary) {
-        run_options.fuzztest_flags["internal_centipede_binary_path"] =
-            CentipedePath();
+        run_options.fuzztest_flags["internal_centipede_command"] =
+            ShellEscape(CentipedePath());
       }
       return RunBinary(BinaryPath(target_binary), run_options);
   }

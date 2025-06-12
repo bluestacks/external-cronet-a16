@@ -598,7 +598,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.139.0.7231.0",
+    stem: "libmainlinecronet.139.0.7234.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -956,7 +956,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.139.0.7231.0",
+    stem: "libmainlinecronet.139.0.7234.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -2581,7 +2581,9 @@ java_library {
         "test/javatests/src/org/chromium/net/ProxyTest.java",
         "test/javatests/src/org/chromium/net/QuicTest.java",
         "test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",
+        "test/javatests/src/org/chromium/net/ScopedSystemProperty.java",
         "test/javatests/src/org/chromium/net/SharedDictionaryTest.java",
+        "test/javatests/src/org/chromium/net/SystemProxyTest.java",
         "test/javatests/src/org/chromium/net/TestBidirectionalStreamCallback.java",
         "test/javatests/src/org/chromium/net/TestDrivenDataProvider.java",
         "test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
@@ -3681,7 +3683,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.139.0.7231.0_for_testing",
+    stem: "libmainlinecronet.139.0.7234.0_for_testing",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

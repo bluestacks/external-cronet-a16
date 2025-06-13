@@ -145,8 +145,8 @@ enable_cronet_tot_license {
                     "stable/LICENSE",
                 ],
             },
-        }
-    }
+        },
+    },
 }
 
 java_library {

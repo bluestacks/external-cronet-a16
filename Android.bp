@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+package {
+    default_team: "trendy_team_fwk_core_networking",
+}
+
 soong_config_module_type {
     name: "enable_cronet_tot_java_defaults",
     module_type: "java_defaults",
@@ -20,6 +24,7 @@ soong_config_module_type {
         "enable_cronet_tot",
     ],
     properties: [
+        "manifest",
         "static_libs",
         "jni_libs",
         "asset_dirs",
@@ -145,8 +150,8 @@ enable_cronet_tot_license {
                     "stable/LICENSE",
                 ],
             },
-        }
-    }
+        },
+    },
 }
 
 java_library {
@@ -305,6 +310,8 @@ enable_cronet_tot_java_defaults {
                 "tot_cronet_third_party_netty_tcnative_netty_tcnative_so__testing",
             ],
             data: [":tot_cronet_javatests_resources"],
+            manifest: "tot/components/cronet/android/test/javatests/AndroidManifest.xml",
+            resource_dirs: ["tot/components/cronet/android/test/res"],
             conditions_default: {
                 static_libs: [
                     "stable_cronet_java_tests",
@@ -315,6 +322,8 @@ enable_cronet_tot_java_defaults {
                     "stable_cronet_third_party_netty_tcnative_netty_tcnative_so__testing",
                 ],
                 data: [":stable_cronet_javatests_resources"],
+                manifest: "stable/components/cronet/android/test/javatests/AndroidManifest.xml",
+                resource_dirs: ["stable/components/cronet/android/test/res"],
             },
         },
     },
@@ -421,4 +430,66 @@ android_test_helper_app {
     resource_dirs: [
         "stable/net/android/unittest_support/res",
     ],
+}
+
+android_test {
+    name: "NetHttpCoverageTests",
+    enforce_default_target_sdk_version: true,
+    min_sdk_version: "30",
+    test_suites: [
+        "general-tests",
+        "mts-tethering",
+    ],
+    defaults: [
+        "cronet_java_tests",
+    ],
+    static_libs: [
+        "modules-utils-native-coverage-listener",
+        "CtsNetHttpTestsLib",
+        "cronet_aml_api_java",
+        "cronet_aml_java__testing",
+    ],
+    compile_multilib: "both", // Include both the 32 and 64 bit versions
+    jni_libs: [
+        "libnativecoverage",
+    ],
+    manifest_values: {
+        applicationId: "com.android.net.http.tests.coverage",
+    },
+    test_config: "android/tests/common/AndroidTest.xml",
+}
+
+// This is required to keep testing Cronet Stable. TH does not support, trivially, presubmit
+// testing of non-trunk_staging targets. In trunk_staging, Cronet ToT is "selected", while
+// Stable is selected everywhere else. To circumvent that, we expose a targets which are
+// always backed by Cronet Stable (hence the stable_ prefix).
+android_test {
+    name: "StableNetHttpCoverageTests",
+    enforce_default_target_sdk_version: true,
+    min_sdk_version: "30",
+    test_suites: [
+        "general-tests",
+        "mts-tethering",
+    ],
+    static_libs: [
+        "modules-utils-native-coverage-listener",
+        "CtsNetHttpTestsLib",
+        "stable_cronet_java_tests",
+        "stable_cronet_api_java",
+        "stable_cronet_java__testing",
+    ],
+    data: [":stable_cronet_javatests_resources"],
+    compile_multilib: "both", // Include both the 32 and 64 bit versions
+    jni_libs: [
+        "libnativecoverage",
+        "stable_cronet_components_cronet_android_cronet_tests__testing",
+        "stable_cronet_components_cronet_android_cronet__testing",
+        "stable_cronet_third_party_netty_tcnative_netty_tcnative_so__testing",
+    ],
+    manifest: "stable/components/cronet/android/test/javatests/AndroidManifest.xml",
+    manifest_values: {
+        applicationId: "com.android.net.http.tests.coverage",
+    },
+    resource_dirs: ["stable/components/cronet/android/test/res"],
+    test_config: "android/tests/common/StableAndroidTest.xml",
 }

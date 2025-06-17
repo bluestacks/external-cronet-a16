@@ -55,6 +55,7 @@
         <option name="hidden-api-checks" value="false"/>
         <option name="isolated-storage" value="false"/>
         <option name="orchestrator" value="true"/>
+        <option name="fail-on-empty-instrumentation" value="true"/>
         <option
             name="device-listeners"
             value="com.android.modules.utils.testing.NativeCoverageHackInstrumentationListener" />

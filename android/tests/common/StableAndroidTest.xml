@@ -36,7 +36,7 @@
     <option name="config-descriptor:metadata" key="mainline-param"
             value="CaptivePortalLoginGoogle.apk+NetworkStackGoogle.apk+com.google.android.resolv.apex+com.google.android.tethering.apex" />
     <test class="com.android.tradefed.testtype.AndroidJUnitTest" >
-        <option name="package" value="com.android.net.http.tests.coverage" />
+        <option name="package" value="org.chromium.net.tests" />
         <option name="runner" value="androidx.test.runner.AndroidJUnitRunner" />
         <!-- Chromium disables tests via this annotation. -->
         <option name="exclude-annotation" value="org.chromium.base.test.util.DisabledTest" />

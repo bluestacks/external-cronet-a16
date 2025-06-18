@@ -977,8 +977,9 @@ bool BackendImpl::ShouldUpdateStats() {
 
 void BackendImpl::FirstEviction() {
   DCHECK(data_->header.create_time);
-  if (!GetEntryCount())
+  if (!GetEntryCountSync()) {
     return;  // This is just for unit tests.
+  }
 
   stats_.ResetRatios();
 }
@@ -1157,7 +1158,12 @@ void BackendImpl::FlushIndex() {
 
 // ------------------------------------------------------------------------
 
-int32_t BackendImpl::GetEntryCount() const {
+int32_t BackendImpl::GetEntryCount(
+    net::Int32CompletionOnceCallback callback) const {
+  return GetEntryCountSync();
+}
+
+int32_t BackendImpl::GetEntryCountSync() const {
   if (!index_.get() || disabled_)
     return 0;
   // num_entries includes entries already evicted.
@@ -1309,7 +1315,7 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   header.table_len = DesiredIndexTableLen(max_size_);
   header.create_time = Time::Now().ToInternalValue();
 
-  if (!file->Write(&header, sizeof(header), 0)) {
+  if (!file->Write(base::byte_span_from_ref(header), 0)) {
     return false;
   }
 
@@ -1446,7 +1452,7 @@ bool BackendImpl::InitStats() {
   auto data = base::HeapArray<uint8_t>::Uninit(size);
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  if (!file->Read(data.data(), size, offset)) {
+  if (!file->Read(data.as_span(), offset)) {
     return false;
   }
 
@@ -1474,7 +1480,8 @@ void BackendImpl::StoreStats() {
 
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
-  file->Write(data.data(), size, offset);  // ignore result.
+  file->Write(data.as_span().first(static_cast<size_t>(size)),
+              offset);  // ignore result.
 }
 
 void BackendImpl::RestartCache(bool failure) {
@@ -1859,8 +1866,9 @@ void BackendImpl::UpdateStats() {
   if (use_hours)
     use_hours = total_hours - use_hours;
 
-  if (!use_hours || !GetEntryCount() || !data_->header.num_bytes)
+  if (!use_hours || !GetEntryCountSync() || !data_->header.num_bytes) {
     return;
+  }
 
   stats_.ResetRatios();
   stats_.SetCounter(Stats::TRIM_ENTRY, 0);

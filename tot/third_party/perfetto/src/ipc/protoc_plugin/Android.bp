@@ -186,13 +186,6 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }
 
 // GN: //third_party/perfetto/src/ipc/protoc_plugin:ipc_plugin__testing
@@ -360,11 +353,4 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }

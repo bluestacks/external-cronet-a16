@@ -3,6 +3,6 @@
 name: "clap_lex"
 third_party {
   license_type: NOTICE
-  version: "0.7.4"
+  version: "0.7.5"
   homepage: "https://crates.io/crates/clap_lex"
 }

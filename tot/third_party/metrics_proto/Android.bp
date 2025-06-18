@@ -43,7 +43,6 @@ cc_library_static {
     ],
     shared_libs: [
         "liblog",
-        "libprotobuf-cpp-lite",
     ],
     host_cross_supported: false,
     generated_headers: [
@@ -134,7 +133,6 @@ cc_library_static {
     ],
     shared_libs: [
         "liblog",
-        "libprotobuf-cpp-lite",
     ],
     host_cross_supported: false,
     generated_headers: [

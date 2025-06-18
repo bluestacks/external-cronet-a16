@@ -27,9 +27,6 @@ cc_library_static {
     srcs: [
         ":tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen",
     ],
-    shared_libs: [
-        "libprotobuf-cpp-lite",
-    ],
     host_cross_supported: false,
     generated_headers: [
         "tot_cronet_base_tracing_protos_chrome_track_event_zero__concatenated_headers_common",
@@ -113,9 +110,6 @@ cc_library_static {
     name: "tot_cronet_base_tracing_protos_chrome_track_event_zero__testing",
     srcs: [
         ":tot_cronet_ac9dbdc7_protos_chrome_track_event_zero_gen__testing",
-    ],
-    shared_libs: [
-        "libprotobuf-cpp-lite",
     ],
     host_supported: true,
     host_cross_supported: false,

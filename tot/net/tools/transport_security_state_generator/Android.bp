@@ -28,7 +28,6 @@ cc_binary {
         "transport_security_state_generator.cc",
     ],
     shared_libs: [
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     whole_static_libs: [
@@ -326,7 +325,6 @@ cc_library_static {
         "transport_security_state_entry.cc",
     ],
     shared_libs: [
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_supported: true,

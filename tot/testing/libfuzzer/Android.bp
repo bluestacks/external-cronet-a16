@@ -31,7 +31,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_cross_supported: false,

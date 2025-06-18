@@ -105,7 +105,6 @@ cc_library_static {
     ],
     shared_libs: [
         "liblog",
-        "libprotobuf-cpp-lite",
     ],
     host_cross_supported: false,
     generated_headers: [
@@ -196,7 +195,6 @@ cc_library_static {
     ],
     shared_libs: [
         "liblog",
-        "libprotobuf-cpp-lite",
     ],
     host_cross_supported: false,
     generated_headers: [
@@ -289,7 +287,6 @@ cc_library_shared {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
         "tot_cronet_libcrypto",
         "tot_cronet_libpki",
@@ -598,7 +595,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.139.0.7234.0",
+    stem: "libmainlinecronet.139.0.7247.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -651,7 +648,6 @@ cc_library_shared {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     whole_static_libs: [
@@ -956,7 +952,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.139.0.7234.0",
+    stem: "libmainlinecronet.139.0.7247.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -1407,7 +1403,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
         "tot_cronet_libcrypto",
         "tot_cronet_libpki",
@@ -1513,7 +1508,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_cross_supported: false,
@@ -1613,7 +1607,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_cross_supported: false,
@@ -2867,7 +2860,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
         "tot_cronet_libcrypto",
         "tot_cronet_libpki",
@@ -2984,7 +2976,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_cross_supported: false,
@@ -3316,7 +3307,6 @@ cc_library_shared {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     whole_static_libs: [
@@ -3683,7 +3673,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.139.0.7234.0_for_testing",
+    stem: "libmainlinecronet.139.0.7247.0_for_testing",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -4182,7 +4172,6 @@ cc_library_static {
     ],
     shared_libs: [
         "liblog",
-        "libprotobuf-cpp-lite",
     ],
     host_cross_supported: false,
     generated_headers: [
@@ -4273,7 +4262,6 @@ cc_library_static {
     ],
     shared_libs: [
         "liblog",
-        "libprotobuf-cpp-lite",
     ],
     host_cross_supported: false,
     generated_headers: [

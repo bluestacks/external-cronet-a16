@@ -151,7 +151,6 @@ cc_library_shared {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     whole_static_libs: [

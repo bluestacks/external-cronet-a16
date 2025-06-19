@@ -26,7 +26,6 @@ cc_library_static {
     name: "tot_cronet_third_party_perfetto_include_perfetto_ext_tracing_ipc_ipc",
     shared_libs: [
         "liblog",
-        "libprotobuf-cpp-lite",
     ],
     host_cross_supported: false,
     generated_headers: [
@@ -109,9 +108,6 @@ cc_library_static {
 // GN: //third_party/perfetto/include/perfetto/ext/tracing/ipc:ipc__testing
 cc_library_static {
     name: "tot_cronet_third_party_perfetto_include_perfetto_ext_tracing_ipc_ipc__testing",
-    shared_libs: [
-        "libprotobuf-cpp-lite",
-    ],
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
@@ -158,12 +154,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -173,6 +167,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -185,6 +182,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -193,6 +193,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -203,6 +206,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",

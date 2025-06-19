@@ -3,6 +3,6 @@
 name: "clap_builder"
 third_party {
   license_type: NOTICE
-  version: "4.5.39"
+  version: "4.5.40"
   homepage: "https://crates.io/crates/clap_builder"
 }

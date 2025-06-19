@@ -83,6 +83,7 @@ class DiskCacheEntryTest : public DiskCacheTestWithCache {
   void DoomedEntry(int stream_index);
   void BasicSparseIO();
   void HugeSparseIO();
+  void LargeOffsetSparseIO();
   void GetAvailableRangeTest();
   void CouldBeSparse();
   void UpdateSparseEntry();
@@ -186,7 +187,7 @@ void DiskCacheEntryTest::InternalSyncIO() {
   entry->Doom();
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheEntryTest, InternalSyncIO) {
@@ -346,7 +347,7 @@ void DiskCacheEntryTest::InternalAsyncIO() {
   entry->Doom();
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_P(DiskCacheGenericEntryTest, InternalAsyncIO) {
@@ -408,7 +409,7 @@ void DiskCacheEntryTest::ExternalSyncIO() {
   entry->Doom();
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheEntryTest, ExternalSyncIO) {
@@ -540,7 +541,7 @@ void DiskCacheEntryTest::ExternalAsyncIO() {
   entry->Doom();
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_P(DiskCacheGenericEntryTest, ExternalAsyncIO) {
@@ -1360,7 +1361,7 @@ void DiskCacheEntryTest::DoomNormalEntry() {
   entry->Close();
 
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_P(DiskCacheGenericEntryTest, DoomEntry) {
@@ -1418,7 +1419,7 @@ void DiskCacheEntryTest::DoomedEntry(int stream_index) {
   entry->Doom();
 
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
   Time initial = Time::Now();
   AddDelay();
 
@@ -1616,6 +1617,38 @@ TEST_P(DiskCacheGenericEntryTest, HugeSparseIO) {
   HugeSparseIO();
 }
 
+void DiskCacheEntryTest::LargeOffsetSparseIO() {
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB so that we cover multiple entries.
+  static constexpr size_t kSize = 4 * 1024 * 1024;
+
+  auto buf_1 = CacheTestCreateAndFillBuffer(kSize, false);
+  auto buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
+
+  // Write sparse data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t offset = 4LL * 1024 * 1024 * 1024 - 2 * 1024 * 1024;
+
+  VerifySparseIO(entry, offset, buf_1.get(), kSize, buf_2.get());
+  entry->Close();
+
+  // Check it again.
+  ASSERT_THAT(OpenEntry(key, &entry), IsOk());
+  VerifyContentSparseIO(entry, offset, buf_1->span());
+  entry->Close();
+}
+
+// The test only works on SimpleCache now since other backend does not support
+// 2GB+ offset for 32 bits architecture.
+// TODO(crbug.com/391398191): Expand the test target to all cache backend.
+TEST_F(DiskCacheEntryTest, SimpleCacheLargeOffsetSparseIO) {
+  SetBackendToTest(BackendToTest::kSimple);
+  InitCache();
+  LargeOffsetSparseIO();
+}
+
 void DiskCacheEntryTest::GetAvailableRangeTest() {
   std::string key("the first key");
   disk_cache::Entry* entry;
@@ -1696,6 +1729,45 @@ void DiskCacheEntryTest::GetAvailableRangeTest() {
 TEST_P(DiskCacheGenericEntryTest, GetAvailableRange) {
   InitCache();
   GetAvailableRangeTest();
+}
+
+// The test only works on SimpleCache now since other backend does not support
+// 2GB+ offset for 32 bits architecture.
+// TODO(crbug.com/391398191): Expand the test target to all cache backend.
+TEST_F(DiskCacheEntryTest, SimpleCacheGetAvailableRangeForLargeOffset) {
+  SetBackendToTest(BackendToTest::kSimple);
+  InitCache();
+
+  std::string key("the first key");
+  disk_cache::Entry* entry;
+  ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+  // Write 4 MB so that we cover multiple entries.
+  static constexpr size_t kSize = 4 * 1024 * 1024;
+  auto buf = CacheTestCreateAndFillBuffer(kSize, false);
+
+  // Write sparse data from 4GB - 2MB to 4GB + 2MB.
+  constexpr int64_t offset = 4LL * 1024 * 1024 * 1024 - 2 * 1024 * 1024;
+
+  EXPECT_EQ(kSize, WriteSparseData(entry, offset, buf.get(), kSize));
+
+  TestRangeResultCompletionCallback cb;
+  RangeResult result =
+      cb.GetResult(entry->GetAvailableRange(offset, kSize * 2, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(kSize, result.available_len);
+  EXPECT_EQ(offset, result.start);
+
+  result = cb.GetResult(entry->GetAvailableRange(0, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+
+  result = cb.GetResult(
+      entry->GetAvailableRange(offset - kSize, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+
+  entry->Close();
 }
 
 TEST_F(DiskCacheEntryTest, GetAvailableRangeBlockFileDiscontinuous) {
@@ -2070,9 +2142,9 @@ void DiskCacheEntryTest::UpdateSparseEntry() {
 
   // Blockfile has a quick where it counts subentries.
   if (backend_to_test() != BackendToTest::kBlockfile) {
-    EXPECT_EQ(2, cache_->GetEntryCount());
+    EXPECT_EQ(2, GetEntryCount());
   } else {
-    EXPECT_EQ(3, cache_->GetEntryCount());
+    EXPECT_EQ(3, GetEntryCount());
   }
 }
 
@@ -2104,9 +2176,9 @@ void DiskCacheEntryTest::DoomSparseEntry() {
 
   // Blockfile has a quick where it counts subentries.
   if (backend_to_test() != BackendToTest::kBlockfile) {
-    EXPECT_EQ(2, cache_->GetEntryCount());
+    EXPECT_EQ(2, GetEntryCount());
   } else {
-    EXPECT_EQ(15, cache_->GetEntryCount());
+    EXPECT_EQ(15, GetEntryCount());
   }
 
   // Doom the first entry while it's still open.
@@ -2123,16 +2195,16 @@ void DiskCacheEntryTest::DoomSparseEntry() {
   base::RunLoop().RunUntilIdle();
 
   if (backend_to_test() == BackendToTest::kMemory) {
-    EXPECT_EQ(0, cache_->GetEntryCount());
+    EXPECT_EQ(0, GetEntryCount());
   } else {
-    if (5 == cache_->GetEntryCount()) {
+    if (5 == GetEntryCount()) {
       // Most likely we are waiting for the result of reading the sparse info
       // (it's always async on Posix so it is easy to miss). Unfortunately we
       // don't have any signal to watch for so we can only wait.
       base::PlatformThread::Sleep(base::Milliseconds(500));
       base::RunLoop().RunUntilIdle();
     }
-    EXPECT_EQ(0, cache_->GetEntryCount());
+    EXPECT_EQ(0, GetEntryCount());
   }
 }
 
@@ -2186,7 +2258,7 @@ TEST_F(DiskCacheEntryTest, DoomSparseEntry2) {
                                             net::CompletionOnceCallback()));
     offset *= 4;
   }
-  EXPECT_EQ(9, cache_->GetEntryCount());
+  EXPECT_EQ(9, GetEntryCount());
 
   entry->Close();
   disk_cache::Backend* cache = cache_.get();
@@ -2446,7 +2518,7 @@ TEST_F(DiskCacheEntryTest, CleanupSparseEntry) {
   EXPECT_EQ(kSize, WriteSparseData(entry, k1Meg + 8192, buf1.get(), kSize));
   EXPECT_EQ(kSize, WriteSparseData(entry, 2 * k1Meg + 8192, buf1.get(), kSize));
   entry->Close();
-  EXPECT_EQ(4, cache_->GetEntryCount());
+  EXPECT_EQ(4, GetEntryCount());
 
   std::unique_ptr<TestIterator> iter = CreateIterator();
   int count = 0;
@@ -2465,7 +2537,7 @@ TEST_F(DiskCacheEntryTest, CleanupSparseEntry) {
     entry->Close();
   }
 
-  EXPECT_EQ(4, cache_->GetEntryCount());
+  EXPECT_EQ(4, GetEntryCount());
   ASSERT_THAT(OpenEntry(key, &entry), IsOk());
 
   // Two children should be gone. One while reading and one while writing.
@@ -2478,7 +2550,7 @@ TEST_F(DiskCacheEntryTest, CleanupSparseEntry) {
   entry->Close();
 
   // We re-created one of the corrupt children.
-  EXPECT_EQ(3, cache_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 }
 
 TEST_F(DiskCacheEntryTest, CancelSparseIO) {
@@ -2618,7 +2690,7 @@ TEST_F(DiskCacheEntryTest, KeySanityCheck3) {
       base::MakeRefCounted<disk_cache::File>(true /* want sync ops*/);
   ASSERT_TRUE(key_file->Init(cache_impl_->GetFileName(key_addr)));
 
-  ASSERT_TRUE(key_file->Write("b", 1u, kVeryLong));
+  ASSERT_TRUE(key_file->Write(base::byte_span_from_cstring("b"), kVeryLong));
   key_file = nullptr;
 
   // This case gets graceful recovery.
@@ -2791,7 +2863,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheCreateAfterDiskLayerDoom) {
   ASSERT_EQ(net::ERR_FAILED, CreateEntry(key, &entry2));
   ASSERT_TRUE(entry2 == nullptr);
 
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 
   // Should be able to create properly next time, though.
   disk_cache::Entry* entry3 = nullptr;
@@ -2839,7 +2911,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheQueuedOpenOnDoomedEntry) {
   result.ReleaseEntry()->Close();
 
   EXPECT_EQ(net::OK, cb2.WaitForResult());
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheEntryTest, SimpleCacheDoomErrorRace) {

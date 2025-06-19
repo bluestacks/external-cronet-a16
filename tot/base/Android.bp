@@ -906,6 +906,7 @@ cc_library_static {
         "android/scoped_hardware_buffer_fence_sync.cc",
         "android/scoped_hardware_buffer_handle.cc",
         "android/scoped_input_event.cc",
+        "android/self_compaction_manager.cc",
         "android/shared_preferences/shared_preferences_manager.cc",
         "android/statistics_recorder_android.cc",
         "android/sys_utils.cc",
@@ -1311,6 +1312,7 @@ cc_library_static {
         "trace_event/trace_log.cc",
         "trace_event/traced_value.cc",
         "trace_event/tracing_agent.cc",
+        "trace_event/user_action.cc",
         "tracing/perfetto_platform.cc",
         "tracing/perfetto_task_runner.cc",
         "tracing/trace_time.cc",
@@ -1327,7 +1329,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
         "tot_cronet_libcrypto",
         "tot_cronet_libpki",
@@ -1831,6 +1832,7 @@ cc_library_static {
         "trace_event/trace_log.cc",
         "trace_event/traced_value.cc",
         "trace_event/tracing_agent.cc",
+        "trace_event/user_action.cc",
         "tracing/perfetto_platform.cc",
         "tracing/perfetto_task_runner.cc",
         "tracing/trace_time.cc",
@@ -1843,7 +1845,6 @@ cc_library_static {
         "vlog.cc",
     ],
     shared_libs: [
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_supported: true,
@@ -1903,18 +1904,11 @@ cc_library_static {
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
         "-Wl,--icf=all",
-        "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
-            shared_libs: [
-                "libandroid",
-                "liblog",
-            ],
-        },
         android_arm: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
@@ -1975,6 +1969,7 @@ cc_library_static {
                 "android/scoped_hardware_buffer_fence_sync.cc",
                 "android/scoped_hardware_buffer_handle.cc",
                 "android/scoped_input_event.cc",
+                "android/self_compaction_manager.cc",
                 "android/shared_preferences/shared_preferences_manager.cc",
                 "android/statistics_recorder_android.cc",
                 "android/sys_utils.cc",
@@ -2006,6 +2001,7 @@ cc_library_static {
                 "version_info/android/channel_getter.cc",
             ],
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -2023,6 +2019,9 @@ cc_library_static {
                 "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_arm",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
+            ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
             ],
         },
         android_arm64: {
@@ -2085,6 +2084,7 @@ cc_library_static {
                 "android/scoped_hardware_buffer_fence_sync.cc",
                 "android/scoped_hardware_buffer_handle.cc",
                 "android/scoped_input_event.cc",
+                "android/self_compaction_manager.cc",
                 "android/shared_preferences/shared_preferences_manager.cc",
                 "android/statistics_recorder_android.cc",
                 "android/sys_utils.cc",
@@ -2116,6 +2116,7 @@ cc_library_static {
                 "version_info/android/channel_getter.cc",
             ],
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -2135,6 +2136,9 @@ cc_library_static {
                 "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_arm64",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
+            ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
             ],
         },
         android_riscv64: {
@@ -2197,6 +2201,7 @@ cc_library_static {
                 "android/scoped_hardware_buffer_fence_sync.cc",
                 "android/scoped_hardware_buffer_handle.cc",
                 "android/scoped_input_event.cc",
+                "android/self_compaction_manager.cc",
                 "android/shared_preferences/shared_preferences_manager.cc",
                 "android/statistics_recorder_android.cc",
                 "android/sys_utils.cc",
@@ -2226,6 +2231,7 @@ cc_library_static {
                 "version_info/android/channel_getter.cc",
             ],
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -2242,6 +2248,9 @@ cc_library_static {
                 "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_riscv64",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
+            ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
             ],
         },
         android_x86: {
@@ -2304,6 +2313,7 @@ cc_library_static {
                 "android/scoped_hardware_buffer_fence_sync.cc",
                 "android/scoped_hardware_buffer_handle.cc",
                 "android/scoped_input_event.cc",
+                "android/self_compaction_manager.cc",
                 "android/shared_preferences/shared_preferences_manager.cc",
                 "android/statistics_recorder_android.cc",
                 "android/sys_utils.cc",
@@ -2333,6 +2343,7 @@ cc_library_static {
                 "version_info/android/channel_getter.cc",
             ],
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -2351,6 +2362,9 @@ cc_library_static {
                 "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_x86",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
+            ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
             ],
         },
         android_x86_64: {
@@ -2413,6 +2427,7 @@ cc_library_static {
                 "android/scoped_hardware_buffer_fence_sync.cc",
                 "android/scoped_hardware_buffer_handle.cc",
                 "android/scoped_input_event.cc",
+                "android/self_compaction_manager.cc",
                 "android/shared_preferences/shared_preferences_manager.cc",
                 "android/statistics_recorder_android.cc",
                 "android/sys_utils.cc",
@@ -2442,6 +2457,7 @@ cc_library_static {
                 "version_info/android/channel_getter.cc",
             ],
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -2460,6 +2476,9 @@ cc_library_static {
                 "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_x86_64",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
+            ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
             ],
         },
         host: {
@@ -5301,7 +5320,6 @@ cc_library_static {
         "libandroid",
         "libbinder_ndk",
         "liblog",
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_cross_supported: false,

@@ -32,7 +32,6 @@ cc_library_static {
         "trie_entry.cc",
     ],
     shared_libs: [
-        "libprotobuf-cpp-lite",
         "libz",
     ],
     host_supported: true,
@@ -80,20 +79,14 @@ cc_library_static {
         "-Wl,--as-needed",
         "-Wl,--gc-sections",
         "-Wl,--icf=all",
-        "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
-            shared_libs: [
-                "libandroid",
-                "liblog",
-            ],
-        },
         android_arm: {
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -109,9 +102,13 @@ cc_library_static {
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_arm",
             ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
+            ],
         },
         android_arm64: {
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -130,9 +127,13 @@ cc_library_static {
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_arm64",
             ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
+            ],
         },
         android_riscv64: {
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -147,9 +148,13 @@ cc_library_static {
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_riscv64",
             ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
+            ],
         },
         android_x86: {
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -166,9 +171,13 @@ cc_library_static {
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_x86",
             ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
+            ],
         },
         android_x86_64: {
             shared_libs: [
+                "libandroid",
                 "libbinder_ndk",
                 "liblog",
             ],
@@ -185,6 +194,9 @@ cc_library_static {
                 "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_x86_64",
+            ],
+            ldflags: [
+                "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
             ],
         },
         host: {

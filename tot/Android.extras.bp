@@ -119,7 +119,7 @@ filegroup {
         "components/cronet/testing/test_server/data/**/*",
     ],
     visibility: [
-        "//external/cronet/android/tests:__subpackages__",
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -152,7 +152,7 @@ android_library {
         test: true,
     },
     visibility: [
-        "//external/cronet/android/tests:__subpackages__",
+        "//external/cronet:__subpackages__",
     ],
 }
 

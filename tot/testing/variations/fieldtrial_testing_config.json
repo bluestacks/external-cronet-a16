@@ -195,6 +195,21 @@
             ]
         }
     ],
+    "AccessibilityManifestV3GoogleTts": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityManifestV3GoogleTts"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityManifestV3SelectToSpeak": [
         {
             "platforms": [
@@ -617,23 +632,6 @@
             ]
         }
     ],
-    "AndroidGridTabSwitcherUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidThemeModule",
-                        "GridTabSwitcherSurfaceColorUpdate",
-                        "GridTabSwitcherUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidHatsNext": [
         {
             "platforms": [
@@ -941,6 +939,21 @@
             ]
         }
     ],
+    "AndroidTabGroupsColorUpdateGm3": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabGroupsColorUpdateGM3"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidTabStripLayoutOptimization": [
         {
             "platforms": [
@@ -951,6 +964,33 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabStripLayoutOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidThemeModule": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidThemeModule",
+                        "CpaSpecUpdate",
+                        "GridTabSwitcherSurfaceColorUpdate",
+                        "GridTabSwitcherUpdate",
+                        "TabletTabStripAnimation"
+                    ]
+                },
+                {
+                    "name": "Enabled_Gts",
+                    "enable_features": [
+                        "AndroidThemeModule",
+                        "GridTabSwitcherSurfaceColorUpdate",
+                        "GridTabSwitcherUpdate"
                     ]
                 }
             ]
@@ -5213,6 +5253,24 @@
             ]
         }
     ],
+    "ChromnientPermissionBubbleAlt": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayPermissionBubbleAlt"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientSidePanelOpenInNewTab": [
         {
             "platforms": [
@@ -7422,23 +7480,6 @@
                     },
                     "enable_features": [
                         "DefaultPassthroughCommandDecoder"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DefaultProfileEnterpriseBadging": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterpriseProfileBadgingForAvatar"
                     ]
                 }
             ]
@@ -13166,24 +13207,6 @@
             ]
         }
     ],
-    "InputScenarioPriorityBoostDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InputScenarioPriorityBoost"
-                    ]
-                }
-            ]
-        }
-    ],
     "InputVizard": [
         {
             "platforms": [
@@ -15132,6 +15155,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MvcUpdateViewWhenModelChanged"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NavBarColorAnimationEnabled": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "disable_bottom_chin_color_animation": "false",
+                        "disable_edge_to_edge_layout_color_animation": "false"
+                    },
+                    "enable_features": [
+                        "NavBarColorAnimation"
                     ]
                 }
             ]
@@ -23100,6 +23142,23 @@
             ]
         }
     ],
+    "SignInPromoMaterialNextUI": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SignInPromoMaterialNextUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "SimdutfBase64Support": [
         {
             "platforms": [
@@ -24256,6 +24315,59 @@
             ]
         }
     ],
+    "TcpConnectionPoolSizeTrial": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_255",
+                    "params": {
+                        "TcpConnectionPoolSizeTrialNormal": "255",
+                        "TcpConnectionPoolSizeTrialWebSocket": "255"
+                    },
+                    "enable_features": [
+                        "TcpConnectionPoolSizeTrial"
+                    ]
+                },
+                {
+                    "name": "Enabled_257",
+                    "params": {
+                        "TcpConnectionPoolSizeTrialNormal": "257",
+                        "TcpConnectionPoolSizeTrialWebSocket": "257"
+                    },
+                    "enable_features": [
+                        "TcpConnectionPoolSizeTrial"
+                    ]
+                },
+                {
+                    "name": "Enabled_512",
+                    "params": {
+                        "TcpConnectionPoolSizeTrialNormal": "512",
+                        "TcpConnectionPoolSizeTrialWebSocket": "512"
+                    },
+                    "enable_features": [
+                        "TcpConnectionPoolSizeTrial"
+                    ]
+                },
+                {
+                    "name": "Enabled_1024",
+                    "params": {
+                        "TcpConnectionPoolSizeTrialNormal": "1024",
+                        "TcpConnectionPoolSizeTrialWebSocket": "1024"
+                    },
+                    "enable_features": [
+                        "TcpConnectionPoolSizeTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "TcpPortRandomizationWin": [
         {
             "platforms": [
@@ -24263,7 +24375,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Dogfood",
+                    "name": "Enabled",
                     "params": {
                         "TcpPortRandomizationWinVersionMinimum": "16"
                     },

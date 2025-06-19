@@ -17739,7 +17739,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1750240656",
+         "1750306177",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -17761,7 +17761,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1750240656",
+         "1750306177",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -31692,7 +31692,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=37 " +
+         "API_LEVEL=38 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/api/src/org/chromium/net/ApiVersion.template)'",
@@ -31722,7 +31722,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=37 " +
+         "API_LEVEL=38 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/api/src/org/chromium/net/ApiVersion.template)'",
@@ -32016,10 +32016,10 @@ cc_genrule {
          "$(locations :tot_cronet_components_cronet_android_cronet_jni_registration) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action) " +
          "$(locations :tot_cronet_crypto_buildflags) " +
          "$(locations :tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen_h) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_regular_zero_gen_h) " +
          "$(locations :tot_cronet_ff61d121_android_zero_gen_h) " +
@@ -32151,8 +32151,8 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
         "components/cronet/android/cronet_jni_registration_generated.h",
         "components/cronet/android/proto/base_feature_overrides.pb.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -32568,6 +32568,7 @@ cc_genrule {
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
         "components/cronet/android/proto",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -32669,10 +32670,10 @@ cc_genrule {
         ":tot_cronet_components_cronet_android_cronet_jni_registration",
         ":tot_cronet_components_cronet_cronet_buildflags",
         ":tot_cronet_components_cronet_cronet_version_header_action",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen_h",
         ":tot_cronet_components_prefs_android_jni_headers__action",
         ":tot_cronet_crypto_buildflags",
         ":tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen_h",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen_h",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
         ":tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
         ":tot_cronet_ff61d121_android_zero_gen_h",
@@ -32791,10 +32792,10 @@ cc_genrule {
          "$(locations :tot_cronet_components_cronet_android_cronet_jni_registration__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action__testing) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action__testing) " +
          "$(locations :tot_cronet_crypto_buildflags__testing) " +
          "$(locations :tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_zero_gen__testing_h) " +
@@ -32870,8 +32871,8 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
         "components/cronet/android/cronet_jni_registration_generated.h",
         "components/cronet/android/proto/base_feature_overrides.pb.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -33287,6 +33288,7 @@ cc_genrule {
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
         "components/cronet/android/proto",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -33365,10 +33367,10 @@ cc_genrule {
         ":tot_cronet_components_cronet_android_cronet_jni_registration__testing",
         ":tot_cronet_components_cronet_cronet_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_version_header_action__testing",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
         ":tot_cronet_components_prefs_android_jni_headers__action__testing",
         ":tot_cronet_crypto_buildflags__testing",
         ":tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -36855,10 +36857,10 @@ cc_genrule {
          "$(locations :tot_cronet_components_cronet_android_cronet_jni_registration) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action) " +
          "$(locations :tot_cronet_crypto_buildflags) " +
          "$(locations :tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen_h) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_regular_zero_gen_h) " +
          "$(locations :tot_cronet_ff61d121_android_zero_gen_h) " +
@@ -36990,8 +36992,8 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
         "components/cronet/android/cronet_jni_registration_generated.h",
         "components/cronet/android/proto/base_feature_overrides.pb.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -37407,6 +37409,7 @@ cc_genrule {
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
         "components/cronet/android/proto",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -37508,10 +37511,10 @@ cc_genrule {
         ":tot_cronet_components_cronet_android_cronet_jni_registration",
         ":tot_cronet_components_cronet_cronet_buildflags",
         ":tot_cronet_components_cronet_cronet_version_header_action",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen_h",
         ":tot_cronet_components_prefs_android_jni_headers__action",
         ":tot_cronet_crypto_buildflags",
         ":tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen_h",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen_h",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
         ":tot_cronet_ff61d121_android_winscope_regular_zero_gen_h",
         ":tot_cronet_ff61d121_android_zero_gen_h",
@@ -37630,10 +37633,10 @@ cc_genrule {
          "$(locations :tot_cronet_components_cronet_android_cronet_jni_registration__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action__testing) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action__testing) " +
          "$(locations :tot_cronet_crypto_buildflags__testing) " +
          "$(locations :tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_zero_gen__testing_h) " +
@@ -37709,8 +37712,8 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
         "components/cronet/android/cronet_jni_registration_generated.h",
         "components/cronet/android/proto/base_feature_overrides.pb.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -38126,6 +38129,7 @@ cc_genrule {
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
         "components/cronet/android/proto",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -38204,10 +38208,10 @@ cc_genrule {
         ":tot_cronet_components_cronet_android_cronet_jni_registration__testing",
         ":tot_cronet_components_cronet_cronet_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_version_header_action__testing",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
         ":tot_cronet_components_prefs_android_jni_headers__action__testing",
         ":tot_cronet_crypto_buildflags__testing",
         ":tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -38606,10 +38610,10 @@ cc_genrule {
          "$(locations :tot_cronet_components_cronet_android_cronet_tests_jni_headers__action__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action__testing) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action__testing) " +
          "$(locations :tot_cronet_crypto_buildflags__testing) " +
          "$(locations :tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_zero_gen__testing_h) " +
@@ -38703,8 +38707,8 @@ cc_genrule {
         "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestTest_jni.h",
         "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h",
         "components/cronet/android/proto/base_feature_overrides.pb.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -39122,6 +39126,7 @@ cc_genrule {
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
         "components/cronet/android/proto",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -39208,10 +39213,10 @@ cc_genrule {
         ":tot_cronet_components_cronet_android_cronet_tests_jni_headers__action__testing",
         ":tot_cronet_components_cronet_cronet_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_version_header_action__testing",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
         ":tot_cronet_components_prefs_android_jni_headers__action__testing",
         ":tot_cronet_crypto_buildflags__testing",
         ":tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -39638,11 +39643,11 @@ cc_library_shared {
         "tot_cronet_components_cronet_android_cronet_base_feature__testing",
         "tot_cronet_components_cronet_android_cronet_base_feature_unittest__testing",
         "tot_cronet_components_cronet_android_cronet_static__testing",
-        "tot_cronet_components_cronet_android_request_context_config_proto__testing",
         "tot_cronet_components_cronet_cronet_common__testing",
         "tot_cronet_components_cronet_cronet_common_unittests__testing",
         "tot_cronet_components_cronet_cronet_version_header__testing",
         "tot_cronet_components_cronet_metrics_util__testing",
+        "tot_cronet_components_cronet_request_context_config_proto__testing",
         "tot_cronet_components_metrics_library_support__testing",
         "tot_cronet_components_miracle_parameter_common_common__testing",
         "tot_cronet_components_network_time_time_tracker_time_tracker__testing",
@@ -39720,7 +39725,6 @@ cc_library_shared {
         "tot_cronet_third_party_abseil_cpp_absl_full__testing",
         "tot_cronet_third_party_abseil_cpp_absl_hash_city__testing",
         "tot_cronet_third_party_abseil_cpp_absl_hash_hash__testing",
-        "tot_cronet_third_party_abseil_cpp_absl_hash_low_level_hash__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_die_if_null__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_globals__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_initialize__testing",
@@ -40076,10 +40080,10 @@ cc_genrule {
          "$(locations :tot_cronet_components_cronet_android_cronet_jni_registration__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action__testing) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action__testing) " +
          "$(locations :tot_cronet_crypto_buildflags__testing) " +
          "$(locations :tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_android_zero_gen__testing_h) " +
@@ -40166,8 +40170,8 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
         "components/cronet/android/cronet_jni_registration_generated.h",
         "components/cronet/android/proto/base_feature_overrides.pb.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -40587,6 +40591,7 @@ cc_genrule {
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
         "components/cronet/android/proto",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -40671,10 +40676,10 @@ cc_genrule {
         ":tot_cronet_components_cronet_android_cronet_jni_registration__testing",
         ":tot_cronet_components_cronet_cronet_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_version_header_action__testing",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
         ":tot_cronet_components_prefs_android_jni_headers__action__testing",
         ":tot_cronet_crypto_buildflags__testing",
         ":tot_cronet_dc9d4cee_android_base_feature_overrides_proto_gen__testing_h",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_winscope_regular_zero_gen__testing_h",
         ":tot_cronet_ff61d121_android_zero_gen__testing_h",
@@ -41093,7 +41098,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=37 " +
+         "API_LEVEL=38 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template)'",
@@ -41123,7 +41128,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=37 " +
+         "API_LEVEL=38 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template)'",
@@ -41389,186 +41394,6 @@ java_genrule {
     ],
     visibility: [
         "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_java_proto
-java_genrule {
-    name: "tot_cronet_components_cronet_android_request_context_config_java_proto__filtered",
-    srcs: [
-        ":tot_cronet_components_cronet_android_request_context_config_java_proto__unfiltered",
-    ],
-    cmd: "$(location build/android/gyp/filter_zip.py) " +
-         "--input " +
-         "'$(in)' " +
-         "--output " +
-         "'$(out)' " +
-         "--exclude-globs " +
-         "'[  ]' " +
-         "--include-globs " +
-         "'[  ]'",
-    out: [
-        "tot_cronet_components_cronet_android_request_context_config_java_proto__filtered.jar",
-    ],
-    tool_files: [
-        "build/action_helpers.py",
-        "build/android/gyp/filter_zip.py",
-        "build/android/gyp/util/__init__.py",
-        "build/android/gyp/util/build_utils.py",
-        "build/gn_helpers.py",
-        "build/zip_helpers.py",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_java_proto__protoc_java
-java_genrule {
-    name: "tot_cronet_components_cronet_android_request_context_config_java_proto__protoc_java",
-    srcs: [
-        "components/cronet/android/proto/request_context_config.proto",
-    ],
-    tools: [
-        "tot_cronet_third_party_protobuf_protoc",
-    ],
-    cmd: "mkdir -p $(genDir)/components/cronet/android &&  " +
-         "$(location build/protoc_java.py) " +
-         "--protoc " +
-         "'$(location tot_cronet_third_party_protobuf_protoc)' " +
-         "--proto-path " +
-         "external/cronet/tot/components/cronet/android " +
-         "--srcjar " +
-         "'$(out)' " +
-         "'$(location components/cronet/android/proto/request_context_config.proto)'",
-    out: [
-        "components/cronet/android/request_context_config_java_proto__protoc_java.srcjar",
-    ],
-    tool_files: [
-        "build/action_helpers.py",
-        "build/android/gyp/util/__init__.py",
-        "build/android/gyp/util/build_utils.py",
-        "build/gn_helpers.py",
-        "build/protoc_java.py",
-        "build/zip_helpers.py",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_java_proto__protoc_java__testing
-java_genrule {
-    name: "tot_cronet_components_cronet_android_request_context_config_java_proto__protoc_java__testing",
-    srcs: [
-        "components/cronet/android/proto/request_context_config.proto",
-    ],
-    tools: [
-        "tot_cronet_third_party_protobuf_protoc",
-    ],
-    cmd: "mkdir -p $(genDir)/components/cronet/android &&  " +
-         "$(location build/protoc_java.py) " +
-         "--protoc " +
-         "'$(location tot_cronet_third_party_protobuf_protoc)' " +
-         "--proto-path " +
-         "external/cronet/tot/components/cronet/android " +
-         "--srcjar " +
-         "'$(out)' " +
-         "'$(location components/cronet/android/proto/request_context_config.proto)'",
-    out: [
-        "components/cronet/android/request_context_config_java_proto__protoc_java.srcjar",
-    ],
-    tool_files: [
-        "build/action_helpers.py",
-        "build/android/gyp/util/__init__.py",
-        "build/android/gyp/util/build_utils.py",
-        "build/gn_helpers.py",
-        "build/protoc_java.py",
-        "build/zip_helpers.py",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_java_proto__testing
-java_genrule {
-    name: "tot_cronet_components_cronet_android_request_context_config_java_proto__testing__filtered",
-    srcs: [
-        ":tot_cronet_components_cronet_android_request_context_config_java_proto__testing__unfiltered",
-    ],
-    cmd: "$(location build/android/gyp/filter_zip.py) " +
-         "--input " +
-         "'$(in)' " +
-         "--output " +
-         "'$(out)' " +
-         "--exclude-globs " +
-         "'[  ]' " +
-         "--include-globs " +
-         "'[  ]'",
-    out: [
-        "tot_cronet_components_cronet_android_request_context_config_java_proto__testing__filtered.jar",
-    ],
-    tool_files: [
-        "build/action_helpers.py",
-        "build/android/gyp/filter_zip.py",
-        "build/android/gyp/util/__init__.py",
-        "build/android/gyp/util/build_utils.py",
-        "build/gn_helpers.py",
-        "build/zip_helpers.py",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_proto
-cc_genrule {
-    name: "tot_cronet_components_cronet_android_request_context_config_proto__concatenated_headers_common",
-    cmd: "python $(location components/cronet/gn2bp/headers_copy.py) --gen-dir $(genDir) --headers " +
-         "$(locations :tot_cronet_build_chromeos_buildflags) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen_h)",
-    out: [
-        "build/chromeos_buildflags.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
-    ],
-    export_include_dirs: [
-        ".",
-        "components/cronet/android/proto",
-        "protos",
-    ],
-    tool_files: [
-        ":tot_cronet_build_chromeos_buildflags",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen_h",
-        "components/cronet/gn2bp/headers_copy.py",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_proto__testing
-cc_genrule {
-    name: "tot_cronet_components_cronet_android_request_context_config_proto__testing__concatenated_headers_common",
-    cmd: "python $(location components/cronet/gn2bp/headers_copy.py) --gen-dir $(genDir) --headers " +
-         "$(locations :tot_cronet_build_chromeos_buildflags__testing) " +
-         "$(locations :tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h)",
-    out: [
-        "build/chromeos_buildflags.h",
-        "components/cronet/android/proto/request_context_config.pb.h",
-    ],
-    export_include_dirs: [
-        ".",
-        "components/cronet/android/proto",
-        "protos",
-    ],
-    tool_files: [
-        ":tot_cronet_build_chromeos_buildflags__testing",
-        ":tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h",
-        "components/cronet/gn2bp/headers_copy.py",
-    ],
-    apex_available: [
-        "com.android.tethering",
     ],
 }
 
@@ -41879,6 +41704,7 @@ cc_genrule {
          "$(locations :tot_cronet_build_robolectric_buildflags) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action) " +
          "$(locations :tot_cronet_crypto_buildflags) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen_h) " +
@@ -42006,6 +41832,7 @@ cc_genrule {
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -42420,6 +42247,7 @@ cc_genrule {
         ".",
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -42519,6 +42347,7 @@ cc_genrule {
         ":tot_cronet_build_robolectric_buildflags",
         ":tot_cronet_components_cronet_cronet_buildflags",
         ":tot_cronet_components_cronet_cronet_version_header_action",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen_h",
         ":tot_cronet_components_prefs_android_jni_headers__action",
         ":tot_cronet_crypto_buildflags",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen_h",
@@ -42637,6 +42466,7 @@ cc_genrule {
          "$(locations :tot_cronet_build_robolectric_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action__testing) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action__testing) " +
          "$(locations :tot_cronet_crypto_buildflags__testing) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h) " +
@@ -42708,6 +42538,7 @@ cc_genrule {
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -43122,6 +42953,7 @@ cc_genrule {
         ".",
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -43198,6 +43030,7 @@ cc_genrule {
         ":tot_cronet_build_robolectric_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_version_header_action__testing",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
         ":tot_cronet_components_prefs_android_jni_headers__action__testing",
         ":tot_cronet_crypto_buildflags__testing",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
@@ -43321,6 +43154,7 @@ cc_genrule {
          "$(locations :tot_cronet_build_robolectric_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_buildflags__testing) " +
          "$(locations :tot_cronet_components_cronet_cronet_version_header_action__testing) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen__testing_h) " +
          "$(locations :tot_cronet_components_prefs_android_jni_headers__action__testing) " +
          "$(locations :tot_cronet_crypto_buildflags__testing) " +
          "$(locations :tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h) " +
@@ -43401,6 +43235,7 @@ cc_genrule {
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
         "components/cronet/cronet_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
         "components/cronet/version.h",
         "components/prefs/android/jni_headers/PrefChangeRegistrar_jni.h",
         "components/prefs/android/jni_headers/PrefService_jni.h",
@@ -43817,6 +43652,7 @@ cc_genrule {
         ".",
         "base/allocator/partition_allocator/src/",
         "base/tracing/protos",
+        "components/cronet/proto",
         "net/base",
         "net/nqe/proto",
         "net/third_party/quiche/src",
@@ -43899,6 +43735,7 @@ cc_genrule {
         ":tot_cronet_build_robolectric_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_buildflags__testing",
         ":tot_cronet_components_cronet_cronet_version_header_action__testing",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
         ":tot_cronet_components_prefs_android_jni_headers__action__testing",
         ":tot_cronet_crypto_buildflags__testing",
         ":tot_cronet_ff61d121_android_winscope_common_zero_gen__testing_h",
@@ -45270,6 +45107,300 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_java_proto
+java_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto__filtered",
+    srcs: [
+        ":tot_cronet_components_cronet_request_context_config_java_proto__unfiltered",
+    ],
+    cmd: "$(location build/android/gyp/filter_zip.py) " +
+         "--input " +
+         "'$(in)' " +
+         "--output " +
+         "'$(out)' " +
+         "--exclude-globs " +
+         "'[  ]' " +
+         "--include-globs " +
+         "'[  ]'",
+    out: [
+        "tot_cronet_components_cronet_request_context_config_java_proto__filtered.jar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/filter_zip.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_java_proto__protoc_java
+java_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto__protoc_java",
+    srcs: [
+        "components/cronet/proto/request_context_config.proto",
+    ],
+    tools: [
+        "tot_cronet_third_party_protobuf_protoc",
+    ],
+    cmd: "mkdir -p $(genDir)/components/cronet &&  " +
+         "$(location build/protoc_java.py) " +
+         "--protoc " +
+         "'$(location tot_cronet_third_party_protobuf_protoc)' " +
+         "--proto-path " +
+         "external/cronet/tot/components/cronet " +
+         "--srcjar " +
+         "'$(out)' " +
+         "'$(location components/cronet/proto/request_context_config.proto)'",
+    out: [
+        "components/cronet/request_context_config_java_proto__protoc_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/protoc_java.py",
+        "build/zip_helpers.py",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_java_proto__protoc_java__testing
+java_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto__protoc_java__testing",
+    srcs: [
+        "components/cronet/proto/request_context_config.proto",
+    ],
+    tools: [
+        "tot_cronet_third_party_protobuf_protoc",
+    ],
+    cmd: "mkdir -p $(genDir)/components/cronet &&  " +
+         "$(location build/protoc_java.py) " +
+         "--protoc " +
+         "'$(location tot_cronet_third_party_protobuf_protoc)' " +
+         "--proto-path " +
+         "external/cronet/tot/components/cronet " +
+         "--srcjar " +
+         "'$(out)' " +
+         "'$(location components/cronet/proto/request_context_config.proto)'",
+    out: [
+        "components/cronet/request_context_config_java_proto__protoc_java.srcjar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/protoc_java.py",
+        "build/zip_helpers.py",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_java_proto__testing
+java_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto__testing__filtered",
+    srcs: [
+        ":tot_cronet_components_cronet_request_context_config_java_proto__testing__unfiltered",
+    ],
+    cmd: "$(location build/android/gyp/filter_zip.py) " +
+         "--input " +
+         "'$(in)' " +
+         "--output " +
+         "'$(out)' " +
+         "--exclude-globs " +
+         "'[  ]' " +
+         "--include-globs " +
+         "'[  ]'",
+    out: [
+        "tot_cronet_components_cronet_request_context_config_java_proto__testing__filtered.jar",
+    ],
+    tool_files: [
+        "build/action_helpers.py",
+        "build/android/gyp/filter_zip.py",
+        "build/android/gyp/util/__init__.py",
+        "build/android/gyp/util/build_utils.py",
+        "build/gn_helpers.py",
+        "build/zip_helpers.py",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_proto
+cc_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_proto__concatenated_headers_common",
+    cmd: "python $(location components/cronet/gn2bp/headers_copy.py) --gen-dir $(genDir) --headers " +
+         "$(locations :tot_cronet_build_chromeos_buildflags) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen_h)",
+    out: [
+        "build/chromeos_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
+    ],
+    export_include_dirs: [
+        ".",
+        "components/cronet/proto",
+        "protos",
+    ],
+    tool_files: [
+        ":tot_cronet_build_chromeos_buildflags",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen_h",
+        "components/cronet/gn2bp/headers_copy.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_proto__testing
+cc_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_proto__testing__concatenated_headers_common",
+    cmd: "python $(location components/cronet/gn2bp/headers_copy.py) --gen-dir $(genDir) --headers " +
+         "$(locations :tot_cronet_build_chromeos_buildflags__testing) " +
+         "$(locations :tot_cronet_components_cronet_request_context_config_proto_gen__testing_h)",
+    out: [
+        "build/chromeos_buildflags.h",
+        "components/cronet/proto/request_context_config.pb.h",
+    ],
+    export_include_dirs: [
+        ".",
+        "components/cronet/proto",
+        "protos",
+    ],
+    tool_files: [
+        ":tot_cronet_build_chromeos_buildflags__testing",
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
+        "components/cronet/gn2bp/headers_copy.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_proto_gen
+cc_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_proto_gen",
+    srcs: [
+        "components/cronet/proto/request_context_config.proto",
+        "third_party/protobuf/src/google/protobuf/descriptor.proto",
+    ],
+    tools: [
+        "tot_cronet_third_party_protobuf_protoc",
+    ],
+    cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
+         "--proto_path=external/cronet/tot/components/cronet/proto " +
+         "--cpp_out=lite=true:$(genDir)/components/cronet/proto/ " +
+         "external/cronet/tot/components/cronet/proto/request_context_config.proto",
+    host_cross_supported: false,
+    out: [
+        "components/cronet/proto/request_context_config.pb.cc",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_proto_gen__testing
+cc_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_proto_gen__testing",
+    srcs: [
+        "components/cronet/proto/request_context_config.proto",
+        "third_party/protobuf/src/google/protobuf/descriptor.proto",
+    ],
+    tools: [
+        "tot_cronet_third_party_protobuf_protoc__testing",
+    ],
+    cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
+         "--proto_path=external/cronet/tot/components/cronet/proto " +
+         "--cpp_out=lite=true:$(genDir)/components/cronet/proto/ " +
+         "external/cronet/tot/components/cronet/proto/request_context_config.proto",
+    host_cross_supported: false,
+    out: [
+        "components/cronet/proto/request_context_config.pb.cc",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_proto_gen__testing
+cc_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_proto_gen__testing_h",
+    srcs: [
+        "components/cronet/proto/request_context_config.proto",
+        "third_party/protobuf/src/google/protobuf/descriptor.proto",
+    ],
+    tools: [
+        "tot_cronet_third_party_protobuf_protoc__testing",
+    ],
+    cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
+         "--proto_path=external/cronet/tot/components/cronet/proto " +
+         "--cpp_out=lite=true:$(genDir)/components/cronet/proto/ " +
+         "external/cronet/tot/components/cronet/proto/request_context_config.proto",
+    host_cross_supported: false,
+    out: [
+        "components/cronet/proto/request_context_config.pb.h",
+    ],
+    export_include_dirs: [
+        ".",
+        "components/cronet/proto",
+        "protos",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_proto_gen
+cc_genrule {
+    name: "tot_cronet_components_cronet_request_context_config_proto_gen_h",
+    srcs: [
+        "components/cronet/proto/request_context_config.proto",
+        "third_party/protobuf/src/google/protobuf/descriptor.proto",
+    ],
+    tools: [
+        "tot_cronet_third_party_protobuf_protoc",
+    ],
+    cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
+         "--proto_path=external/cronet/tot/components/cronet/proto " +
+         "--cpp_out=lite=true:$(genDir)/components/cronet/proto/ " +
+         "external/cronet/tot/components/cronet/proto/request_context_config.proto",
+    host_cross_supported: false,
+    out: [
+        "components/cronet/proto/request_context_config.pb.h",
+    ],
+    export_include_dirs: [
+        ".",
+        "components/cronet/proto",
+        "protos",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
     ],
 }
 
@@ -53720,120 +53851,6 @@ cc_genrule {
     host_cross_supported: false,
     out: [
         "components/cronet/android/proto/base_feature_overrides.pb.h",
-    ],
-    export_include_dirs: [
-        ".",
-        "components/cronet/android/proto",
-        "protos",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_proto_gen
-cc_genrule {
-    name: "tot_cronet_dc9d4cee_android_request_context_config_proto_gen",
-    srcs: [
-        "components/cronet/android/proto/request_context_config.proto",
-        "third_party/protobuf/src/google/protobuf/descriptor.proto",
-    ],
-    tools: [
-        "tot_cronet_third_party_protobuf_protoc",
-    ],
-    cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
-         "--proto_path=external/cronet/tot/components/cronet/android/proto " +
-         "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
-         "external/cronet/tot/components/cronet/android/proto/request_context_config.proto",
-    host_cross_supported: false,
-    out: [
-        "components/cronet/android/proto/request_context_config.pb.cc",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_proto_gen__testing
-cc_genrule {
-    name: "tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing",
-    srcs: [
-        "components/cronet/android/proto/request_context_config.proto",
-        "third_party/protobuf/src/google/protobuf/descriptor.proto",
-    ],
-    tools: [
-        "tot_cronet_third_party_protobuf_protoc__testing",
-    ],
-    cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
-         "--proto_path=external/cronet/tot/components/cronet/android/proto " +
-         "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
-         "external/cronet/tot/components/cronet/android/proto/request_context_config.proto",
-    host_cross_supported: false,
-    out: [
-        "components/cronet/android/proto/request_context_config.pb.cc",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_proto_gen__testing
-cc_genrule {
-    name: "tot_cronet_dc9d4cee_android_request_context_config_proto_gen__testing_h",
-    srcs: [
-        "components/cronet/android/proto/request_context_config.proto",
-        "third_party/protobuf/src/google/protobuf/descriptor.proto",
-    ],
-    tools: [
-        "tot_cronet_third_party_protobuf_protoc__testing",
-    ],
-    cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
-         "--proto_path=external/cronet/tot/components/cronet/android/proto " +
-         "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
-         "external/cronet/tot/components/cronet/android/proto/request_context_config.proto",
-    host_cross_supported: false,
-    out: [
-        "components/cronet/android/proto/request_context_config.pb.h",
-    ],
-    export_include_dirs: [
-        ".",
-        "components/cronet/android/proto",
-        "protos",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //components/cronet/android:request_context_config_proto_gen
-cc_genrule {
-    name: "tot_cronet_dc9d4cee_android_request_context_config_proto_gen_h",
-    srcs: [
-        "components/cronet/android/proto/request_context_config.proto",
-        "third_party/protobuf/src/google/protobuf/descriptor.proto",
-    ],
-    tools: [
-        "tot_cronet_third_party_protobuf_protoc",
-    ],
-    cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
-         "--proto_path=external/cronet/tot/components/cronet/android/proto " +
-         "--cpp_out=lite=true:$(genDir)/components/cronet/android/proto/ " +
-         "external/cronet/tot/components/cronet/android/proto/request_context_config.proto",
-    host_cross_supported: false,
-    out: [
-        "components/cronet/android/proto/request_context_config.pb.h",
     ],
     export_include_dirs: [
         ".",

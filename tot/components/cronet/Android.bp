@@ -27,6 +27,7 @@ cc_library_static {
     srcs: [
         "cronet_context.cc",
         "cronet_prefs_manager.cc",
+        "cronet_proxy_delegate.cc",
         "cronet_upload_data_stream.cc",
         "cronet_url_request.cc",
         "host_cache_persistence_manager.cc",
@@ -140,6 +141,7 @@ cc_library_static {
     srcs: [
         "cronet_context.cc",
         "cronet_prefs_manager.cc",
+        "cronet_proxy_delegate.cc",
         "cronet_upload_data_stream.cc",
         "cronet_url_request.cc",
         "host_cache_persistence_manager.cc",
@@ -694,6 +696,262 @@ cc_library_static {
         "-Wl,--gc-sections",
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+    target: {
+        android_arm: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+            ],
+        },
+        android_arm64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ARM_NEON__=1",
+                "-O2",
+                "-mno-outline",
+            ],
+        },
+        android_x86: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-msse3",
+            ],
+        },
+        android_x86_64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-O2",
+                "-msse3",
+            ],
+        },
+    },
+}
+
+// GN: //components/cronet:request_context_config_java_proto
+java_library {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto",
+    static_libs: [
+        "tot_cronet_components_cronet_request_context_config_java_proto__filtered",
+        "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_java_proto__testing
+java_library {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto__testing",
+    static_libs: [
+        "tot_cronet_components_cronet_request_context_config_java_proto__testing__filtered",
+        "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_java_proto__testing
+java_library {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto__testing__unfiltered",
+    srcs: [
+        ":tot_cronet_components_cronet_request_context_config_java_proto__protoc_java__testing",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing__unfiltered",
+        "tot_cronet_third_party_protobuf_proto_runtime_lite_java__testing__unfiltered",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_java_proto
+java_library {
+    name: "tot_cronet_components_cronet_request_context_config_java_proto__unfiltered",
+    srcs: [
+        ":tot_cronet_components_cronet_request_context_config_java_proto__protoc_java",
+    ],
+    defaults: [
+        "tot_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java__unfiltered",
+        "tot_cronet_third_party_protobuf_proto_runtime_lite_java__unfiltered",
+    ],
+}
+
+// GN: //components/cronet:request_context_config_proto
+cc_library_static {
+    name: "tot_cronet_components_cronet_request_context_config_proto",
+    srcs: [
+        ":tot_cronet_components_cronet_request_context_config_proto_gen",
+    ],
+    shared_libs: [
+        "liblog",
+    ],
+    host_cross_supported: false,
+    generated_headers: [
+        "tot_cronet_components_cronet_request_context_config_proto__concatenated_headers_common",
+    ],
+    defaults: [
+        "tot_cronet_cc_defaults",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
+        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
+        "-DGOOGLE_PROTOBUF_NO_RTTI",
+        "-DHAVE_PTHREAD",
+        "-DHAVE_SYS_UIO_H",
+        "-DNDEBUG",
+        "-DNVALGRIND",
+        "-DOFFICIAL_BUILD",
+        "-D_GNU_SOURCE",
+        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
+        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
+        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+        "-D__STDC_CONSTANT_MACROS",
+        "-D__STDC_FORMAT_MACROS",
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fstack-protector",
+        "-fvisibility-inlines-hidden",
+        "-fvisibility=hidden",
+        "-g1",
+    ],
+    include_dirs: [
+        "external/cronet/tot/",
+        "external/cronet/tot/buildtools/third_party/libc++/",
+        "external/cronet/tot/third_party/abseil-cpp/",
+        "external/cronet/tot/third_party/libc++/src/include",
+        "external/cronet/tot/third_party/libc++abi/src/include",
+        "external/cronet/tot/third_party/protobuf/src/",
+    ],
+    cpp_std: "c++20",
+    ldflags: [
+        "-Wl,--as-needed",
+        "-Wl,--gc-sections",
+        "-Wl,--icf=all",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+    target: {
+        android_arm: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+            ],
+        },
+        android_arm64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ARM_NEON__=1",
+                "-O2",
+                "-mno-outline",
+            ],
+        },
+        android_x86: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-msse3",
+            ],
+        },
+        android_x86_64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-O2",
+                "-msse3",
+            ],
+        },
+    },
+}
+
+// GN: //components/cronet:request_context_config_proto__testing
+cc_library_static {
+    name: "tot_cronet_components_cronet_request_context_config_proto__testing",
+    srcs: [
+        ":tot_cronet_components_cronet_request_context_config_proto_gen__testing",
+    ],
+    shared_libs: [
+        "liblog",
+    ],
+    host_cross_supported: false,
+    generated_headers: [
+        "tot_cronet_components_cronet_request_context_config_proto__testing__concatenated_headers_common",
+    ],
+    defaults: [
+        "tot_cronet_cc_defaults",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-DANDROID_NDK_VERSION_ROLL=r28_1",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
+        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
+        "-DGOOGLE_PROTOBUF_NO_RTTI",
+        "-DHAVE_PTHREAD",
+        "-DHAVE_SYS_UIO_H",
+        "-DNDEBUG",
+        "-DNVALGRIND",
+        "-DOFFICIAL_BUILD",
+        "-D_GNU_SOURCE",
+        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
+        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
+        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+        "-D__STDC_CONSTANT_MACROS",
+        "-D__STDC_FORMAT_MACROS",
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fstack-protector",
+        "-fvisibility-inlines-hidden",
+        "-fvisibility=hidden",
+        "-g1",
+    ],
+    include_dirs: [
+        "external/cronet/tot/",
+        "external/cronet/tot/buildtools/third_party/libc++/",
+        "external/cronet/tot/third_party/abseil-cpp/",
+        "external/cronet/tot/third_party/libc++/src/include",
+        "external/cronet/tot/third_party/libc++abi/src/include",
+        "external/cronet/tot/third_party/protobuf/src/",
+    ],
+    cpp_std: "c++20",
+    ldflags: [
+        "-Wl,--as-needed",
+        "-Wl,--gc-sections",
+        "-Wl,--icf=all",
     ],
     visibility: [
         "//external/cronet:__subpackages__",

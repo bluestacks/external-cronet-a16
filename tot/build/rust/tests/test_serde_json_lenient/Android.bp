@@ -238,7 +238,6 @@ cc_library_shared {
         "tot_cronet_third_party_abseil_cpp_absl_full__testing",
         "tot_cronet_third_party_abseil_cpp_absl_hash_city__testing",
         "tot_cronet_third_party_abseil_cpp_absl_hash_hash__testing",
-        "tot_cronet_third_party_abseil_cpp_absl_hash_low_level_hash__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_die_if_null__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_globals__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_initialize__testing",

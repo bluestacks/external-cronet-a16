@@ -533,6 +533,11 @@ const base::FeatureParam<bool> kIpPrivacyDisableForEnterpriseByDefault{
     /*name=*/"IpPrivacyDisableForEnterpriseByDefault",
     /*default_value=*/false};
 
+const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyEnableIppInDevTools",
+    /*default_value=*/false};
+
 BASE_FEATURE(kExcludeLargeBodyReports,
              "ExcludeLargeReportBodies",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -785,5 +790,21 @@ BASE_FEATURE(kRestrictAbusePortsOnLocalhost,
 BASE_FEATURE(kTLSTrustAnchorIDs,
              "TLSTrustAnchorIDs",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTcpConnectionPoolSizeTrial,
+             "TcpConnectionPoolSizeTrial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kTcpConnectionPoolSizeTrialNormal,
+                   &kTcpConnectionPoolSizeTrial,
+                   "TcpConnectionPoolSizeTrialNormal",
+                   256);
+
+BASE_FEATURE_PARAM(int,
+                   kTcpConnectionPoolSizeTrialWebSocket,
+                   &kTcpConnectionPoolSizeTrial,
+                   "TcpConnectionPoolSizeTrialWebSocket",
+                   256);
 
 }  // namespace net::features

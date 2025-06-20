@@ -4,8 +4,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cerrno>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
+#include <initializer_list>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -20,22 +24,37 @@
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
 #include "absl/types/span.h"
+#include "quiche/http2/core/spdy_framer.h"
+#include "quiche/http2/core/spdy_protocol.h"
+#include "openssl/ssl.h"
+#include "quiche/quic/core/congestion_control/rtt_stats.h"
 #include "quiche/quic/core/crypto/crypto_protocol.h"
 #include "quiche/quic/core/crypto/quic_client_session_cache.h"
+#include "quiche/quic/core/crypto/quic_crypto_client_config.h"
+#include "quiche/quic/core/crypto/quic_random.h"
+#include "quiche/quic/core/crypto/transport_parameters.h"
 #include "quiche/quic/core/frames/quic_blocked_frame.h"
 #include "quiche/quic/core/frames/quic_crypto_frame.h"
+#include "quiche/quic/core/frames/quic_ping_frame.h"
+#include "quiche/quic/core/frames/quic_window_update_frame.h"
 #include "quiche/quic/core/http/http_constants.h"
 #include "quiche/quic/core/http/quic_spdy_client_stream.h"
 #include "quiche/quic/core/http/quic_spdy_session.h"
 #include "quiche/quic/core/http/web_transport_http3.h"
 #include "quiche/quic/core/io/quic_default_event_loop.h"
 #include "quiche/quic/core/io/quic_event_loop.h"
+#include "quiche/quic/core/qpack/qpack_encoder.h"
+#include "quiche/quic/core/qpack/qpack_instruction_encoder.h"
 #include "quiche/quic/core/qpack/value_splitting_header_list.h"
+#include "quiche/quic/core/quic_ack_listener_interface.h"
+#include "quiche/quic/core/quic_bandwidth.h"
 #include "quiche/quic/core/quic_connection.h"
 #include "quiche/quic/core/quic_connection_id.h"
+#include "quiche/quic/core/quic_connection_stats.h"
 #include "quiche/quic/core/quic_constants.h"
 #include "quiche/quic/core/quic_default_clock.h"
 #include "quiche/quic/core/quic_dispatcher.h"
+#include "quiche/quic/core/quic_dispatcher_stats.h"
 #include "quiche/quic/core/quic_error_codes.h"
 #include "quiche/quic/core/quic_framer.h"
 #include "quiche/quic/core/quic_interval.h"
@@ -46,10 +65,14 @@
 #include "quiche/quic/core/quic_packet_writer_wrapper.h"
 #include "quiche/quic/core/quic_packets.h"
 #include "quiche/quic/core/quic_session.h"
+#include "quiche/quic/core/quic_stream.h"
 #include "quiche/quic/core/quic_tag.h"
+#include "quiche/quic/core/quic_time.h"
 #include "quiche/quic/core/quic_types.h"
+#include "quiche/quic/core/quic_udp_socket.h"
 #include "quiche/quic/core/quic_utils.h"
 #include "quiche/quic/core/quic_versions.h"
+#include "quiche/quic/core/web_transport_interface.h"
 #include "quiche/quic/platform/api/quic_expect_bug.h"
 #include "quiche/quic/platform/api/quic_flags.h"
 #include "quiche/quic/platform/api/quic_ip_address.h"
@@ -84,11 +107,17 @@
 #include "quiche/quic/test_tools/simple_quic_framer.h"
 #include "quiche/quic/test_tools/web_transport_test_tools.h"
 #include "quiche/quic/tools/quic_backend_response.h"
+#include "quiche/quic/tools/quic_default_client.h"
 #include "quiche/quic/tools/quic_server.h"
+#include "quiche/quic/tools/quic_simple_server_backend.h"
 #include "quiche/quic/tools/quic_simple_server_stream.h"
+#include "quiche/quic/tools/quic_spdy_client_base.h"
 #include "quiche/common/http/http_header_block.h"
+#include "quiche/common/platform/api/quiche_logging.h"
+#include "quiche/common/platform/api/quiche_reference_counted.h"
 #include "quiche/common/platform/api/quiche_test.h"
 #include "quiche/common/quiche_stream.h"
+#include "quiche/common/simple_buffer_allocator.h"
 #include "quiche/common/test_tools/quiche_test_utils.h"
 #include "quiche/web_transport/web_transport_headers.h"
 
@@ -5739,6 +5768,110 @@ TEST_P(EndToEndTest, ClientMultiPortConnection) {
   }));
   // Verify that the previous path was retired.
   EXPECT_EQ(1u, client_connection->GetStats().num_retire_connection_id_sent);
+  stream->Reset(QuicRstStreamErrorCode::QUIC_STREAM_NO_ERROR);
+}
+
+TEST_P(EndToEndTest, ClientMultiPortProbeOnRto) {
+  client_config_.SetClientConnectionOptions(QuicTagVector{kMPQC, kMPR1});
+  ASSERT_TRUE(Initialize());
+  if (!version_.HasIetfQuicFrames()) {
+    return;
+  }
+  client_.reset(EndToEndTest::CreateQuicClient(nullptr));
+  ASSERT_TRUE(client_->client()->WaitForHandshakeConfirmed());
+
+  QuicConnection* client_connection = GetClientConnection();
+  QuicSpdyClientStream* stream = client_->GetOrCreateStream();
+  ASSERT_TRUE(stream);
+
+  // Increase the probing frequency to speed up this test.
+  client_connection->SetMultiPortProbingInterval(
+      QuicTime::Delta::FromMilliseconds(100));
+
+  SendSynchronousFooRequestAndCheckResponse();
+
+  // Verify that no multiport connection is established before RTO.
+  EXPECT_TRUE(QuicConnectionPeer::GetServerConnectionIdOnAlternativePath(
+                  client_connection)
+                  .IsEmpty() ||
+              client_connection->GetStats().pto_count > 0);
+
+  // If no multiport connection is established, simulate a RTO and verify that
+  // the probing on RTO is triggered.
+  if (client_connection->multi_port_stats()->num_multi_port_paths_created ==
+      0) {
+    server_writer_->set_fake_packet_loss_percentage(100);
+    EXPECT_TRUE(client_->WaitUntil(
+        1000, [&]() { return client_->client()->HasPendingPathValidation(); }));
+    server_writer_->set_fake_packet_loss_percentage(0);
+    // Now wait for path validation to complete.
+    EXPECT_TRUE(client_->WaitUntil(2000, [&]() {
+      return !client_->client()->HasPendingPathValidation();
+    }));
+  }
+
+  // Verify that a multiport connection is established.
+  EXPECT_EQ(client_connection->multi_port_stats()->num_multi_port_paths_created,
+            1);
+
+  // Verify that the probing is triggered after multiport connection is
+  // established.
+  EXPECT_TRUE(client_->WaitUntil(1000, [&]() {
+    return 1u == client_connection->GetStats().num_path_response_received;
+  }));
+
+  // Verify that the alternative path keeps sending probes periodically.
+  EXPECT_TRUE(client_->WaitUntil(1000, [&]() {
+    return 2u == client_connection->GetStats().num_path_response_received;
+  }));
+
+  // This will cause the next periodic probing to fail.
+  server_writer_->set_fake_packet_loss_percentage(100);
+  EXPECT_TRUE(client_->WaitUntil(
+      1000, [&]() { return client_->client()->HasPendingPathValidation(); }));
+  // Now wait for path validation to timeout.
+  EXPECT_TRUE(client_->WaitUntil(
+      2000, [&]() { return !client_->client()->HasPendingPathValidation(); }));
+  server_writer_->set_fake_packet_loss_percentage(0);
+  // Verify no new path response received on alternate path
+  EXPECT_TRUE(client_->WaitUntil(1000, [&]() {
+    return 2u == client_connection->GetStats().num_path_response_received;
+  }));
+
+  // Verify that the previous path is retired after path validation times out.
+  EXPECT_TRUE(client_->WaitUntil(1000, [&]() {
+    return 1u == client_connection->GetStats().num_retire_connection_id_sent;
+  }));
+
+  // Wait for new connection id to be received before new multiport connection
+  // is established.
+  WaitForNewConnectionIds();
+
+  // Send another request to make sure the server will have a chance to
+  // establish new multiport connection on RTO.
+  SendSynchronousFooRequestAndCheckResponse();
+
+  // Simulate another RTO and verify that the probing on RTO is triggered again.
+  server_writer_->set_fake_packet_loss_percentage(100);
+
+  // Verify that a new multiport connection is established on RTO.
+  EXPECT_TRUE(client_->WaitUntil(2000, [&]() {
+    return client_connection->multi_port_stats()
+               ->num_multi_port_paths_created == 2;
+  }));
+  EXPECT_TRUE(client_->WaitUntil(
+      2000, [&]() { return client_->client()->HasPendingPathValidation(); }));
+  server_writer_->set_fake_packet_loss_percentage(0);
+  // Now wait for path validation to complete.
+  EXPECT_TRUE(client_->WaitUntil(
+      1000, [&]() { return !client_->client()->HasPendingPathValidation(); }));
+
+  // Verify new path is validated after establishing a new multiport connection.
+  // Sometimes the path validation is trigerred more than 3 times.
+  EXPECT_TRUE(client_->WaitUntil(2000, [&]() {
+    return 3u >= client_connection->GetStats().num_path_response_received;
+  }));
+
   stream->Reset(QuicRstStreamErrorCode::QUIC_STREAM_NO_ERROR);
 }
 

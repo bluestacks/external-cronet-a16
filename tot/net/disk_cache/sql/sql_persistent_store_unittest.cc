@@ -19,8 +19,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_future.h"
 #include "net/base/cache_type.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
@@ -70,17 +72,9 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Initializes the store and waits for the operation to complete.
   SqlPersistentStore::Error Init() {
-    base::RunLoop run_loop;
-    SqlPersistentStore::Error result;
-    store_->Initialize(base::BindOnce(
-        [](base::RunLoop* run_loop, SqlPersistentStore::Error* result,
-           SqlPersistentStore::Error error) {
-          *result = error;
-          run_loop->Quit();
-        },
-        &run_loop, &result));
-    run_loop.Run();
-    return result;
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->Initialize(future.GetCallback());
+    return future.Get();
   }
 
   void CreateAndInitStore() {
@@ -111,30 +105,16 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Synchronously gets the entry count.
   int32_t GetEntryCount() {
-    base::RunLoop run_loop;
-    int32_t result = 0;
-    store_->GetEntryCount(base::BindOnce(
-        [](base::RunLoop* run_loop, int32_t* result, int32_t count) {
-          *result = count;
-          run_loop->Quit();
-        },
-        &run_loop, &result));
-    run_loop.Run();
-    return result;
+    base::test::TestFuture<int32_t> future;
+    store_->GetEntryCount(future.GetCallback());
+    return future.Get();
   }
 
   // Synchronously gets the total size of all entries.
   int64_t GetSizeOfAllEntries() {
-    base::RunLoop run_loop;
-    int64_t result = 0;
-    store_->GetSizeOfAllEntries(base::BindOnce(
-        [](base::RunLoop* run_loop, int64_t* result, int64_t size) {
-          *result = size;
-          run_loop->Quit();
-        },
-        &run_loop, &result));
-    run_loop.Run();
-    return result;
+    base::test::TestFuture<int64_t> future;
+    store_->GetSizeOfAllEntries(future.GetCallback());
+    return future.Get();
   }
 
   // Ensures all tasks on the background thread have completed.
@@ -169,110 +149,65 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Synchronous wrapper for CreateEntry.
   SqlPersistentStore::EntryInfoOrError CreateEntry(const CacheEntryKey& key) {
-    base::RunLoop run_loop;
-    std::optional<SqlPersistentStore::EntryInfoOrError> maybe_result;
-    store_->CreateEntry(key,
-                        base::BindLambdaForTesting(
-                            [&](SqlPersistentStore::EntryInfoOrError result) {
-                              maybe_result = std::move(result);
-                              run_loop.Quit();
-                            }));
-    run_loop.Run();
-    CHECK(maybe_result.has_value());
-    return std::move(*maybe_result);
+    base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> future;
+    store_->CreateEntry(key, future.GetCallback());
+    return future.Take();
   }
 
   // Synchronous wrapper for OpenEntry.
   SqlPersistentStore::OptionalEntryInfoOrError OpenEntry(
       const CacheEntryKey& key) {
-    base::RunLoop run_loop;
-    std::optional<SqlPersistentStore::OptionalEntryInfoOrError> maybe_result;
-    store_->OpenEntry(
-        key, base::BindLambdaForTesting(
-                 [&](SqlPersistentStore::OptionalEntryInfoOrError result) {
-                   maybe_result = std::move(result);
-                   run_loop.Quit();
-                 }));
-    run_loop.Run();
-    CHECK(maybe_result.has_value());
-    return std::move(*maybe_result);
+    base::test::TestFuture<SqlPersistentStore::OptionalEntryInfoOrError> future;
+    store_->OpenEntry(key, future.GetCallback());
+    return future.Take();
   }
 
   // Synchronous wrapper for OpenOrCreateEntry.
   SqlPersistentStore::EntryInfoOrError OpenOrCreateEntry(
       const CacheEntryKey& key) {
-    base::RunLoop run_loop;
-    std::optional<SqlPersistentStore::EntryInfoOrError> maybe_result;
-    store_->OpenOrCreateEntry(
-        key, base::BindLambdaForTesting(
-                 [&](SqlPersistentStore::EntryInfoOrError result) {
-                   maybe_result = std::move(result);
-                   run_loop.Quit();
-                 }));
-    run_loop.Run();
-    CHECK(maybe_result.has_value());
-    return std::move(*maybe_result);
+    base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> future;
+    store_->OpenOrCreateEntry(key, future.GetCallback());
+    return future.Take();
   }
 
   // Synchronous wrapper for DoomEntry.
   SqlPersistentStore::Error DoomEntry(const CacheEntryKey& key,
                                       const base::UnguessableToken& token) {
-    base::RunLoop run_loop;
-    std::optional<SqlPersistentStore::Error> maybe_result;
-    store_->DoomEntry(
-        key, token,
-        base::BindLambdaForTesting([&](SqlPersistentStore::Error result) {
-          maybe_result = result;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    CHECK(maybe_result.has_value());
-    return *maybe_result;
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->DoomEntry(key, token, future.GetCallback());
+    return future.Get();
   }
 
   // Synchronous wrapper for DeleteDoomedEntry.
   SqlPersistentStore::Error DeleteDoomedEntry(
       const CacheEntryKey& key,
       const base::UnguessableToken& token) {
-    base::RunLoop run_loop;
-    std::optional<SqlPersistentStore::Error> maybe_result;
-    store_->DeleteDoomedEntry(
-        key, token,
-        base::BindLambdaForTesting([&](SqlPersistentStore::Error result) {
-          maybe_result = result;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    CHECK(maybe_result.has_value());
-    return *maybe_result;
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->DeleteDoomedEntry(key, token, future.GetCallback());
+    return future.Get();
   }
 
   // Synchronous wrapper for DeleteLiveEntry.
   SqlPersistentStore::Error DeleteLiveEntry(const CacheEntryKey& key) {
-    base::RunLoop run_loop;
-    std::optional<SqlPersistentStore::Error> maybe_result;
-    store_->DeleteLiveEntry(
-        key, base::BindLambdaForTesting([&](SqlPersistentStore::Error result) {
-          maybe_result = result;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    CHECK(maybe_result.has_value());
-    return *maybe_result;
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->DeleteLiveEntry(key, future.GetCallback());
+    return future.Get();
   }
 
   // Synchronous wrapper for DeleteAllEntries.
   SqlPersistentStore::Error DeleteAllEntries() {
-    base::RunLoop run_loop;
-    std::optional<SqlPersistentStore::Error> maybe_result;
-    store_->DeleteAllEntries(
-        base::BindLambdaForTesting([&](SqlPersistentStore::Error result) {
-          maybe_result = result;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    CHECK(maybe_result.has_value());
-    return *maybe_result;
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    store_->DeleteAllEntries(future.GetCallback());
+    return future.Get();
+  }
+
+  // Synchronous wrapper for OpenLatestEntryBeforeResId.
+  SqlPersistentStore::OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
+      int64_t res_id) {
+    base::test::TestFuture<SqlPersistentStore::OptionalEntryInfoWithIdAndKey>
+        future;
+    store_->OpenLatestEntryBeforeResId(res_id, future.GetCallback());
+    return future.Take();
   }
 
   // Helper to count rows in the resource table.
@@ -1265,6 +1200,152 @@ TEST_F(SqlPersistentStoreTest, StaticResourceSizeEstimation) {
          "be too conservative.";
 }
 
+TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdEmptyCache) {
+  CreateAndInitStore();
+  auto result = OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSingleEntry) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+
+  auto create_result = CreateEntry(kKey);
+  ASSERT_TRUE(create_result.has_value());
+
+  // Open the first (and only) entry.
+  auto next_result1 =
+      OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
+  ASSERT_TRUE(next_result1.has_value());
+  EXPECT_EQ(next_result1->key, kKey);
+  EXPECT_EQ(next_result1->info.token, create_result->token);
+  EXPECT_TRUE(next_result1->info.opened);
+  EXPECT_EQ(next_result1->info.body_end, 0);
+  ASSERT_NE(next_result1->info.head, nullptr);
+  EXPECT_EQ(next_result1->info.head->size(), 0);
+
+  // Try to open again, should be no more entries.
+  auto next_result2 = OpenLatestEntryBeforeResId(next_result1->res_id);
+  EXPECT_FALSE(next_result2.has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdMultipleEntries) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("key1");
+  const CacheEntryKey kKey2("key2");
+  const CacheEntryKey kKey3("key3");
+
+  auto create_result1 = CreateEntry(kKey1);
+  ASSERT_TRUE(create_result1.has_value());
+  auto create_result2 = CreateEntry(kKey2);
+  ASSERT_TRUE(create_result2.has_value());
+  auto create_result3 = CreateEntry(kKey3);
+  ASSERT_TRUE(create_result3.has_value());
+
+  // Entries should be returned in reverse order of creation (descending
+  // res_id).
+  auto next_result =
+      OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_EQ(next_result->key, kKey3);
+  EXPECT_EQ(next_result->info.token, create_result3->token);
+  const int64_t res_id3 = next_result->res_id;
+
+  next_result = OpenLatestEntryBeforeResId(res_id3);
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_EQ(next_result->key, kKey2);
+  EXPECT_EQ(next_result->info.token, create_result2->token);
+  const int64_t res_id2 = next_result->res_id;
+
+  next_result = OpenLatestEntryBeforeResId(res_id2);
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_EQ(next_result->key, kKey1);
+  EXPECT_EQ(next_result->info.token, create_result1->token);
+  const int64_t res_id1 = next_result->res_id;
+
+  next_result = OpenLatestEntryBeforeResId(res_id1);
+  EXPECT_FALSE(next_result.has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsDoomed) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey1("key1");
+  const CacheEntryKey kKeyToDoom("key-to-doom");
+  const CacheEntryKey kKey3("key3");
+
+  auto create_result1 = CreateEntry(kKey1);
+  ASSERT_TRUE(create_result1.has_value());
+  auto create_result_doomed = CreateEntry(kKeyToDoom);
+  ASSERT_TRUE(create_result_doomed.has_value());
+  auto create_result3 = CreateEntry(kKey3);
+  ASSERT_TRUE(create_result3.has_value());
+
+  // Doom the middle entry.
+  ASSERT_EQ(DoomEntry(kKeyToDoom, create_result_doomed->token),
+            SqlPersistentStore::Error::kOk);
+
+  // OpenLatestEntryBeforeResId should skip the doomed entry.
+  auto next_result =
+      OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_EQ(next_result->key, kKey3);  // Should be kKey3
+  const int64_t res_id3 = next_result->res_id;
+
+  next_result = OpenLatestEntryBeforeResId(res_id3);
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_EQ(next_result->key, kKey1);  // Should skip kKeyToDoom and get kKey1
+  const int64_t res_id1 = next_result->res_id;
+
+  next_result = OpenLatestEntryBeforeResId(res_id1);
+  EXPECT_FALSE(next_result.has_value());
+}
+
+TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsInvalidToken) {
+  CreateAndInitStore();
+  const CacheEntryKey kKeyValidBefore("valid-before");
+  const CacheEntryKey kKeyInvalid("invalid-token-key");
+  const CacheEntryKey kKeyValidAfter("valid-after");
+
+  ASSERT_TRUE(CreateEntry(kKeyValidBefore).has_value());
+  auto create_invalid_result = CreateEntry(kKeyInvalid);
+  ASSERT_TRUE(create_invalid_result.has_value());
+  auto create_valid_after_result = CreateEntry(kKeyValidAfter);
+  ASSERT_TRUE(create_valid_after_result.has_value());
+
+  ClearStore();  // Close the store to modify DB directly.
+
+  // Manually corrupt the token for kKeyInvalid.
+  {
+    auto db = ManuallyOpenDatabase();
+    sql::Statement statement(db->GetUniqueStatement(
+        "UPDATE resources SET token_high=0, token_low=0 WHERE cache_key=?"));
+    statement.BindString(0, kKeyInvalid.string());
+    ASSERT_TRUE(statement.Run());
+  }
+
+  CreateAndInitStore();  // Re-open the store.
+
+  // kKeyValidAfter should be returned first.
+  auto next_result =
+      OpenLatestEntryBeforeResId(std::numeric_limits<int64_t>::max());
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_EQ(next_result->key, kKeyValidAfter);
+
+  base::HistogramTester histogram_tester;
+  // kKeyInvalid should be skipped, kKeyValidBefore should be next.
+  next_result = OpenLatestEntryBeforeResId(next_result->res_id);
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_EQ(next_result->key, kKeyValidBefore);
+  // Verify that kInvalidData was recorded in the histogram when skipping.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.Backend.OpenLatestEntryBeforeResId.Result",
+      SqlPersistentStore::Error::kInvalidData, 1);
+
+  // No more valid entries.
+  next_result = OpenLatestEntryBeforeResId(next_result->res_id);
+  EXPECT_FALSE(next_result.has_value());
+}
+
 TEST_F(SqlPersistentStoreTest, InitializeCallbackNotRunOnStoreDestruction) {
   CreateStore();
   bool callback_run = false;
@@ -1388,6 +1469,23 @@ TEST_F(SqlPersistentStoreTest,
 
   store_->DeleteAllEntries(base::BindLambdaForTesting(
       [&](SqlPersistentStore::Error) { callback_run = true; }));
+  store_.reset();
+  FlushPendingTask();
+
+  EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest,
+       OpenLatestEntryBeforeResIdCallbackNotRunOnStoreDestruction) {
+  CreateAndInitStore();
+  bool callback_run = false;
+
+  store_->OpenLatestEntryBeforeResId(
+      std::numeric_limits<int64_t>::max(),
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::OptionalEntryInfoWithIdAndKey) {
+            callback_run = true;
+          }));
   store_.reset();
   FlushPendingTask();
 

@@ -444,6 +444,7 @@ class EndToEndTest : public QuicTestWithParam<TestParams> {
     return client_session->connection();
   }
 
+  // Must be called while `server_thread_` is paused.
   QuicConnection* GetServerConnection() {
     QuicSpdySession* server_session = GetServerSession();
     if (server_session == nullptr) {
@@ -453,6 +454,7 @@ class EndToEndTest : public QuicTestWithParam<TestParams> {
     return server_session->connection();
   }
 
+  // Must be called while `server_thread_` is paused.
   QuicSpdySession* GetServerSession() {
     QuicDispatcher* dispatcher = GetDispatcher();
     if (dispatcher == nullptr) {
@@ -468,7 +470,7 @@ class EndToEndTest : public QuicTestWithParam<TestParams> {
         QuicDispatcherPeer::GetFirstSessionIfAny(dispatcher));
   }
 
-  // Must be called while server_thread_ is paused.
+  // Must be called while `server_thread_` is paused.
   QuicDispatcher* GetDispatcher() {
     if (!server_thread_) {
       ADD_FAILURE() << "Missing server thread";
@@ -482,7 +484,7 @@ class EndToEndTest : public QuicTestWithParam<TestParams> {
     return QuicServerPeer::GetDispatcher(quic_server);
   }
 
-  // Must be called while server_thread_ is paused.
+  // Must be called while `server_thread_` is paused.
   const QuicDispatcherStats& GetDispatcherStats() {
     return GetDispatcher()->stats();
   }
@@ -3888,6 +3890,30 @@ TEST_P(EndToEndTest, NegotiatedInitialCongestionWindow) {
   server_thread_->Resume();
 }
 
+TEST_P(EndToEndTest, NegotiatedDoubledInitialCongestionWindow) {
+  SetQuicReloadableFlag(quic_allow_client_enabled_2x_initial_cwnd, true);
+  client_extra_copts_.push_back(kIW2X);
+
+  ASSERT_TRUE(Initialize());
+
+  // Values are exchanged during crypto handshake, so wait for that to finish.
+  EXPECT_TRUE(client_->client()->WaitForOneRttKeysAvailable());
+  server_thread_->WaitForCryptoHandshakeConfirmed();
+  server_thread_->Pause();
+  QuicConnection* server_connection = GetServerConnection();
+  ASSERT_NE(server_connection, nullptr);
+  EXPECT_EQ(
+      server_connection->sent_packet_manager().initial_congestion_window(),
+      kInitialCongestionWindow * 2);
+  server_thread_->Resume();
+
+  QuicConnection* client_connection = GetClientConnection();
+  ASSERT_NE(client_connection, nullptr);
+  EXPECT_EQ(
+      client_connection->sent_packet_manager().initial_congestion_window(),
+      kInitialCongestionWindow);
+}
+
 TEST_P(EndToEndTest, DifferentFlowControlWindows) {
   // Client and server can set different initial flow control receive windows.
   // These are sent in CHLO/SHLO. Tests that these values are exchanged properly
@@ -5869,7 +5895,7 @@ TEST_P(EndToEndTest, ClientMultiPortProbeOnRto) {
   // Verify new path is validated after establishing a new multiport connection.
   // Sometimes the path validation is trigerred more than 3 times.
   EXPECT_TRUE(client_->WaitUntil(2000, [&]() {
-    return 3u >= client_connection->GetStats().num_path_response_received;
+    return 3u <= client_connection->GetStats().num_path_response_received;
   }));
 
   stream->Reset(QuicRstStreamErrorCode::QUIC_STREAM_NO_ERROR);
@@ -7287,7 +7313,9 @@ TEST_P(EndToEndTest, BlockServerUntilSettingsReceived) {
 
   SendSynchronousFooRequestAndCheckResponse();
 
+  server_thread_->Pause();
   QuicSpdySession* server_session = GetServerSession();
+  server_thread_->Resume();
   EXPECT_FALSE(GetClientSession()->ShouldBufferRequestsUntilSettings());
   server_thread_->ScheduleAndWaitForCompletion([server_session] {
     EXPECT_TRUE(server_session->ShouldBufferRequestsUntilSettings());
@@ -7323,7 +7351,7 @@ TEST_P(EndToEndTest, WebTransportSessionProtocolNegotiation) {
 
   WebTransportHttp3* session = CreateWebTransportSession(
       "/selected-subprotocol", /*wait_for_server_response=*/true,
-      {{webtransport::kSubprotocolRequestHeader, "a, b, c, d"},
+      {{webtransport::kSubprotocolRequestHeader, R"("a", "b", "c", "d")"},
        {"subprotocol-index", "1"}});
   ASSERT_NE(session, nullptr);
   NiceMock<MockWebTransportSessionVisitor>& visitor =
@@ -8191,25 +8219,27 @@ TEST_P(EndToEndTest, ClientReportsEct1) {
   // Wait for handshake to complete, so that we can manipulate the server
   // connection without race conditions.
   server_thread_->WaitForCryptoHandshakeConfirmed();
+  server_thread_->Pause();
   QuicConnection* server_connection = GetServerConnection();
   QuicConnectionPeer::DisableEcnCodepointValidation(server_connection);
   QuicEcnCounts* ecn = QuicSentPacketManagerPeer::GetPeerEcnCounts(
       QuicConnectionPeer::GetSentPacketManager(server_connection),
       APPLICATION_DATA);
   EXPECT_TRUE(server_connection->set_ecn_codepoint(ECN_ECT1));
+  server_thread_->Resume();
   client_->SendSynchronousRequest("/foo");
   // A second request provides a packet for the client ACKs to go with.
   client_->SendSynchronousRequest("/foo");
-  server_thread_->Pause();
-  EXPECT_EQ(ecn->ect0, 0);
-  EXPECT_EQ(ecn->ce, 0);
-  if (!VersionHasIetfQuicFrames(version_.transport_version)) {
-    EXPECT_EQ(ecn->ect1, 0);
-  } else {
-    EXPECT_GT(ecn->ect1, 0);
-  }
-  server_connection->set_per_packet_options(nullptr);
-  server_thread_->Resume();
+
+  server_thread_->ScheduleAndWaitForCompletion([&] {
+    EXPECT_EQ(ecn->ce, 0);
+    if (!VersionHasIetfQuicFrames(version_.transport_version)) {
+      EXPECT_EQ(ecn->ect1, 0);
+    } else {
+      EXPECT_GT(ecn->ect1, 0);
+    }
+  });
+
   client_->Disconnect();
 }
 

@@ -38,11 +38,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -56,11 +57,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -74,11 +76,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -92,16 +95,18 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
+                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -110,11 +115,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -129,11 +135,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -168,11 +175,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -186,11 +194,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -204,11 +213,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -222,11 +232,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -240,11 +251,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -259,11 +271,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -297,11 +310,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -316,11 +330,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -335,11 +350,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -354,11 +370,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -373,11 +390,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -417,11 +435,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -435,11 +454,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -453,11 +473,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -471,11 +492,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -489,11 +511,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -508,11 +531,12 @@ rust_ffi_static {
             edition: "2021",
             cfgs: [
                 "cpp",
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -546,11 +570,12 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -563,11 +588,12 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -580,11 +606,12 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -597,11 +624,12 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -614,11 +642,12 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -655,11 +684,12 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -672,11 +702,12 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -689,11 +720,12 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -706,11 +738,12 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -723,11 +756,12 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
+                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -17816,7 +17850,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1750745765",
+         "1750832569",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -17838,7 +17872,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1750745765",
+         "1750832569",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -28186,7 +28220,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGTEST_API_=",
@@ -30513,7 +30547,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCXX_RS_EXPORT=",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -30594,7 +30628,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCXX_RS_EXPORT=",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -31440,7 +31474,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXXABI_SILENT_TERMINATE",
@@ -31596,7 +31630,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DLIBCXXABI_SILENT_TERMINATE",
@@ -40019,7 +40053,7 @@ cc_library_shared {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -105318,7 +105352,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGTEST_API_=",
@@ -109003,7 +109037,7 @@ cc_library_static {
     ],
     cflags: [
         "-DBORINGSSL_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -109236,7 +109270,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",

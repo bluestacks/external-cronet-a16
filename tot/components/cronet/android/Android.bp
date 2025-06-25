@@ -116,7 +116,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -206,7 +206,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -546,7 +546,7 @@ cc_library_shared {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -594,7 +594,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.140.0.7259.0",
+    stem: "libmainlinecronet.140.0.7260.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -905,7 +905,7 @@ cc_library_shared {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -950,7 +950,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.140.0.7259.0",
+    stem: "libmainlinecronet.140.0.7260.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -1418,7 +1418,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1520,7 +1520,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1620,7 +1620,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2889,7 +2889,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -3002,7 +3002,7 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -3618,7 +3618,7 @@ cc_library_shared {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
         "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -3684,7 +3684,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.140.0.7259.0_for_testing",
+    stem: "libmainlinecronet.140.0.7260.0_for_testing",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

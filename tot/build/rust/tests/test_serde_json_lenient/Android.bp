@@ -53,7 +53,7 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-3-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -71,7 +71,7 @@ rust_ffi_static {
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-3-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -89,7 +89,7 @@ rust_ffi_static {
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-3-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -107,7 +107,7 @@ rust_ffi_static {
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-3-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -125,7 +125,7 @@ rust_ffi_static {
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
+                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-3-21-16348-gbd809ffb\"",
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
@@ -413,7 +413,7 @@ cc_library_shared {
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBENCHMARK_STATIC_DEFINE",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
+        "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGTEST_API_=",
         "-DGTEST_HAS_ABSL",
@@ -514,7 +514,7 @@ cc_library_static {
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
+        "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",

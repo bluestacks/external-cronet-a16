@@ -5,6 +5,7 @@
 #include "net/device_bound_sessions/session_service_impl.h"
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
@@ -339,6 +340,8 @@ TEST_F(SessionServiceImplTest, GetAllSessions) {
 }
 
 TEST_F(SessionServiceImplTest, DeleteSession) {
+  base::HistogramTester histograms;
+
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   auto site = SchemefulSite(kTestUrl);
   auto session_id = Session::Id(kSessionId);
@@ -347,16 +350,21 @@ TEST_F(SessionServiceImplTest, DeleteSession) {
 
   base::test::TestFuture<SessionAccess> future;
   service().DeleteSessionAndNotify(
-      {site, session_id}, future.GetRepeatingCallback<const SessionAccess&>());
+      DeletionReason::kClearBrowsingData, {site, session_id},
+      future.GetRepeatingCallback<const SessionAccess&>());
 
   SessionAccess access = future.Take();
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kTermination);
   EXPECT_EQ(access.session_key.site, site);
   EXPECT_EQ(access.session_key.id, session_id);
   EXPECT_EQ(access.cookies, std::vector<std::string>{"test_cookie"});
+
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
+                                DeletionReason::kClearBrowsingData, 1);
 }
 
 TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
+  base::HistogramTester histograms;
   net::SchemefulSite site(kTestUrl);
 
   AddSessionsForTesting({{"SessionA", kRefreshUrlString, kOrigin},
@@ -374,7 +382,8 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
       ->set_creation_date(base::Time::Now() - base::Days(2));
 
   base::RunLoop run_loop;
-  service().DeleteAllSessions(base::Time::Now() - base::Days(5),
+  service().DeleteAllSessions(DeletionReason::kStoragePartitionCleared,
+                              base::Time::Now() - base::Days(5),
                               base::Time::Now() - base::Days(3),
                               /*origin_and_site_matcher=*/
                               base::NullCallback(), run_loop.QuitClosure());
@@ -383,6 +392,9 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
   EXPECT_TRUE(service().GetSession({site, Session::Id("SessionA")}));
   EXPECT_FALSE(service().GetSession({site, Session::Id("SessionB")}));
   EXPECT_TRUE(service().GetSession({site, Session::Id("SessionC")}));
+
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
+                                DeletionReason::kStoragePartitionCleared, 1);
 }
 
 TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
@@ -403,10 +415,10 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
           site_a);
 
   base::RunLoop run_loop;
-  service().DeleteAllSessions(
-      /*created_after_time=*/std::nullopt,
-      /*created_before_time=*/std::nullopt, origin_and_site_matcher,
-      run_loop.QuitClosure());
+  service().DeleteAllSessions(DeletionReason::kStoragePartitionCleared,
+                              /*created_after_time=*/std::nullopt,
+                              /*created_before_time=*/std::nullopt,
+                              origin_and_site_matcher, run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_FALSE(service().GetSession({site_a, Session::Id(kSessionId)}));
@@ -432,10 +444,10 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsByOrigin) {
           url::Origin::Create(url_a));
 
   base::RunLoop run_loop;
-  service().DeleteAllSessions(
-      /*created_after_time=*/std::nullopt,
-      /*created_before_time=*/std::nullopt, origin_and_site_matcher,
-      run_loop.QuitClosure());
+  service().DeleteAllSessions(DeletionReason::kStoragePartitionCleared,
+                              /*created_after_time=*/std::nullopt,
+                              /*created_before_time=*/std::nullopt,
+                              origin_and_site_matcher, run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_FALSE(service().GetSession({site, Session::Id(kSessionId)}));
@@ -656,10 +668,10 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
 
   base::test::TestFuture<SessionService::RefreshResult> future;
 
-  // Set up the fetcher for a successful refresh with a new session ID
+  // Set up the fetcher for a failed refresh due to a new session ID
   // which doesn't equal to the refreshing one.
-  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId2, kRefreshUrlString, kOrigin);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::ErrorType::kInvalidSessionId, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
       future.GetCallback());
@@ -671,14 +683,12 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
                                 SessionKey(site, Session::Id(kSessionId))},
                   SessionAccess{SessionAccess::AccessType::kTermination,
                                 SessionKey(site, Session::Id(kSessionId)),
-                                std::vector<std::string>{"test_cookie"}},
-                  SessionAccess{SessionAccess::AccessType::kCreation,
-                                SessionKey(site, Session::Id(kSessionId2))}));
+                                std::vector<std::string>{"test_cookie"}}));
 
-  // Check session is refreshed.
-  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
+  // Check session hits fatal error
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kFatalError);
 
-  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId2)}));
+  ASSERT_FALSE(service().GetSession({site, Session::Id(kSessionId2)}));
   ASSERT_FALSE(service().GetSession({site, Session::Id(kSessionId)}));
 }
 
@@ -1178,7 +1188,6 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   // Now actually defer the request
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kUrlString, kOrigin);
-  EXPECT_CALL(store(), DeleteSession(_)).Times(1);
   EXPECT_CALL(store(), SaveSession(_, _)).Times(1);
   EXPECT_CALL(
       store(),

@@ -5,7 +5,9 @@
 #ifndef NET_DISK_CACHE_SQL_SQL_BACKEND_IMPL_H_
 #define NET_DISK_CACHE_SQL_SQL_BACKEND_IMPL_H_
 
+#include <list>
 #include <map>
+#include <queue>
 #include <set>
 #include <vector>
 
@@ -94,6 +96,20 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       SqlEntryImpl& entry,
       CompletionOnceCallback callback = CompletionOnceCallback());
 
+  // Updates the `last_used` timestamp for an entry.
+  void UpdateEntryLastUsed(const CacheEntryKey& key,
+                           const base::UnguessableToken& token,
+                           base::Time last_used,
+                           SqlPersistentStore::ErrorCallback callback);
+
+  // Updates the header data and `last_used` timestamp for an entry.
+  void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
+                                    const base::UnguessableToken& token,
+                                    base::Time last_used,
+                                    scoped_refptr<net::GrowableIOBuffer> buffer,
+                                    int64_t header_size_delta,
+                                    SqlPersistentStore::ErrorCallback callback);
+
   // Sends a dummy operation through the operation queue, for unit tests.
   int FlushQueueForTest(CompletionOnceCallback callback);
 
@@ -106,6 +122,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   SqlPersistentStore& GetStore();
 
  private:
+  class IteratorImpl;
+  class ExclusiveOperationHandle;
+
   // Represents a pending doom operation. This is used when an entry is doomed
   // while another operation (like `Open()` or `Create()`) for the same key is
   // in progress. The doom operation is queued and executed after the initial
@@ -126,6 +145,23 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
     base::Time end_time = base::Time::Max();
     // Callback to be invoked when the doom operation completes.
     CompletionOnceCallback callback;
+  };
+
+  // Represents an in-flight modification to an entry's metadata (e.g.,
+  // last_used, header). These modifications are queued and applied when the
+  // entry is re-activated by `Iterator::OpenNextEntry()`.
+  struct InFlightEntryModification {
+    InFlightEntryModification(const base::UnguessableToken& token,
+                              base::Time last_used);
+    InFlightEntryModification(const base::UnguessableToken& token,
+                              base::Time last_used,
+                              scoped_refptr<net::GrowableIOBuffer> head);
+    ~InFlightEntryModification();
+    InFlightEntryModification(InFlightEntryModification&&);
+
+    base::UnguessableToken token;
+    std::optional<base::Time> last_used;
+    std::optional<scoped_refptr<net::GrowableIOBuffer>> head;
   };
 
   // Holds information related to a pending `OpenOrCreateEntry()`,
@@ -161,10 +197,43 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // Callback for store operations related to dooming an entry.
   void OnDoomEntryFinished(const CacheEntryKey& key,
                            CompletionOnceCallback callback,
+                           std::unique_ptr<ExclusiveOperationHandle> handle,
                            SqlPersistentStore::Error result);
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
   EntryResultCallbackInfo* GetEntryResultCallbackInfo(const CacheEntryKey& key);
+
+  // Runs the next pending exclusive operation if one is not already in flight.
+  void PostOrRunExclusiveOperation(
+      base::OnceCallback<void(std::unique_ptr<ExclusiveOperationHandle>)>
+          operation);
+  void RunNextExclusiveOperation();
+
+  // Internal implementation of `DoomEntry()`. This is scheduled as an exclusive
+  // operation.
+  void DoomEntryInternal(const std::string& key,
+                         net::RequestPriority priority,
+                         CompletionOnceCallback callback,
+                         std::unique_ptr<ExclusiveOperationHandle> handle);
+
+  // Internal implementation of `DoomEntriesBetween()`. This is scheduled as an
+  // exclusive operation.
+  void DoomEntriesBetweenInternal(
+      base::Time initial_time,
+      base::Time end_time,
+      CompletionOnceCallback callback,
+      std::unique_ptr<ExclusiveOperationHandle> handle);
+
+  // Applies in-flight modifications to an entry's info.
+  void ApplyInFlightEntryModifications(
+      SqlPersistentStore::EntryInfo& entry_info);
+
+  // Wraps an `ErrorCallback` to pop the oldest in-flight entry modification
+  // from `in_flight_entry_modifications_` once the callback is invoked. This
+  // ensures that the queue of in-flight modifications is managed correctly.
+  SqlPersistentStore::ErrorCallback
+  WrapErrorCallbackToPopInFlightEntryModification(
+      SqlPersistentStore::ErrorCallback callback);
 
   // Task runner for all background SQLite operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
@@ -187,6 +256,27 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // Set of entries that have been marked as doomed but are still active
   // (i.e., have outstanding references).
   std::set<raw_ref<const SqlEntryImpl>> doomed_entries_;
+
+  // Stores tokens of entries that have been marked for dooming and are
+  // currently being processed by the `SqlPersistentStore`. This prevents
+  // these entries from being re-added to `active_entries_` if reopened.
+  std::set<base::UnguessableToken> pending_doomed_entry_tokens_;
+
+  // A flag to serialize exclusive operations like mass-delete and iteration to
+  // prevent data inconsistencies between in-memory entry states and the
+  // persistent storage.
+  bool exclusive_operation_inflight_ = false;
+
+  // Queue of operations to be run when `exclusive_operation_inflight_` is
+  // false.
+  std::queue<
+      base::OnceCallback<void(std::unique_ptr<ExclusiveOperationHandle>)>>
+      pending_exclusive_operations_;
+
+  // Queue of in-flight entry modifications that need to be applied.
+  // These are typically updates to `last_used` or header data that occur
+  // while an entry is not actively open.
+  std::list<InFlightEntryModification> in_flight_entry_modifications_;
 
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};

@@ -42,8 +42,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -61,8 +61,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -80,8 +80,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -99,14 +99,13 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
-                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -119,8 +118,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -139,8 +138,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -179,8 +178,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -198,8 +197,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -217,8 +216,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -236,8 +235,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -255,8 +254,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -275,8 +274,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -314,8 +313,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -334,8 +333,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -354,8 +353,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -374,8 +373,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -394,8 +393,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -439,8 +438,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -458,8 +457,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -477,8 +476,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -496,8 +495,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -515,8 +514,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -535,8 +534,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -574,8 +573,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -592,8 +591,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -610,8 +609,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -628,8 +627,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -646,8 +645,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -688,8 +687,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -706,8 +705,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -724,8 +723,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -742,8 +741,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -760,8 +759,8 @@ rust_ffi_static {
             ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
                 "-Amismatched_lifetime_syntaxes",
+                "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -17850,7 +17849,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1750998074",
+         "1751252893",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -17872,7 +17871,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1750998074",
+         "1751252893",
     host_supported: true,
     host_cross_supported: false,
     out: [

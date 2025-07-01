@@ -7,8 +7,10 @@
 #include <array>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -29,13 +31,41 @@ TEST(NetUtilTest, SetExplicitlyAllowedPortsTest) {
 }
 
 TEST(NetUtilTest, RestrictedAbusePortsTest) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kRestrictAbusePorts,
-      {{features::kPortsToRestrictForAbuse.name, "12345,23456,34567"}});
+      {{"restrict_ports", "12345,23456,34567"}, {"monitor_ports", "45678"}});
   EXPECT_TRUE(IsPortAllowedForScheme(443, "https"));
   for (int port : {12345, 23456, 34567}) {
     EXPECT_FALSE(IsPortAllowedForScheme(port, "https"));
+  }
+  EXPECT_TRUE(IsPortAllowedForScheme(45678, "https"));
+  histogram_tester.ExpectTotalCount("Net.RestrictedPorts", 4);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 12345, 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 23456, 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 34567, 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 45678, 1);
+}
+
+TEST(NetUtilTest, RestrictedAbusePortsLocalhostTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRestrictAbusePortsOnLocalhost,
+      {{"localhost_restrict_ports", "12345,23456,34567"}});
+  ReloadLocalhostRestrictedPortsForTesting();
+  IPAddress public_address(8, 8, 8, 8);
+  EXPECT_TRUE(IsPortAllowedForIpEndpoint(IPEndPoint(public_address, 12345)));
+  EXPECT_TRUE(IsPortAllowedForIpEndpoint(IPEndPoint(public_address, 443)));
+  EXPECT_TRUE(
+      IsPortAllowedForIpEndpoint(IPEndPoint(IPAddress::IPv4Localhost(), 443)));
+  EXPECT_TRUE(
+      IsPortAllowedForIpEndpoint(IPEndPoint(IPAddress::IPv6Localhost(), 443)));
+  for (int port : {12345, 23456, 34567}) {
+    EXPECT_FALSE(IsPortAllowedForIpEndpoint(
+        IPEndPoint(IPAddress::IPv4Localhost(), port)));
+    EXPECT_FALSE(IsPortAllowedForIpEndpoint(
+        IPEndPoint(IPAddress::IPv6Localhost(), port)));
   }
 }
 

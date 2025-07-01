@@ -106,7 +106,11 @@ void HttpStreamPool::AttemptManager::QuicAttempt::Start() {
 
   int rv = session_attempt_->Start(base::BindOnce(
       &QuicAttempt::OnSessionAttemptComplete, weak_ptr_factory_.GetWeakPtr()));
-  if (rv != ERR_IO_PENDING) {
+  if (rv == ERR_IO_PENDING) {
+    slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
+                      base::BindOnce(&QuicAttempt::OnSessionAttemptSlow,
+                                     base::Unretained(this)));
+  } else {
     OnSessionAttemptComplete(rv);
   }
 }
@@ -145,14 +149,18 @@ const HttpStreamKey& HttpStreamPool::AttemptManager::QuicAttempt::stream_key()
   return manager_->group()->stream_key();
 }
 
+void HttpStreamPool::AttemptManager::QuicAttempt::OnSessionAttemptSlow() {
+  CHECK(!is_slow_);
+  is_slow_ = true;
+  manager_->OnQuicAttemptSlow();
+}
+
 void HttpStreamPool::AttemptManager::QuicAttempt::OnSessionAttemptComplete(
     int rv) {
+  slow_timer_.Stop();
   if (rv == OK) {
-    QuicChromiumClientSession* session =
-        GetQuicSessionPool()->FindExistingSession(GetKey().session_key(),
-                                                  GetKey().destination());
-    if (!session) {
-      // QUIC session is closed before stream can be created.
+    if (!manager_->CanUseExistingQuicSession()) {
+      // QUIC session is closed or marked broken before stream can be created.
       rv = ERR_CONNECTION_CLOSED;
     }
   }
@@ -163,12 +171,13 @@ void HttpStreamPool::AttemptManager::QuicAttempt::OnSessionAttemptComplete(
   }
 
   result_ = rv;
-  NetErrorDetails details;
+  QuicAttemptOutcome outcome(rv);
   if (session_attempt_) {
-    session_attempt_->PopulateNetErrorDetails(&details);
+    outcome.session = session_attempt_->session();
+    session_attempt_->PopulateNetErrorDetails(&outcome.error_details);
   }
   session_attempt_.reset();
-  manager_->OnQuicAttemptComplete(rv, std::move(details));
+  manager_->OnQuicAttemptComplete(std::move(outcome));
   // `this` is deleted.
 }
 

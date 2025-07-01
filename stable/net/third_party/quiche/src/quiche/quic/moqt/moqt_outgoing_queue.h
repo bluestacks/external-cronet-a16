@@ -22,8 +22,8 @@
 #include "quiche/quic/moqt/moqt_messages.h"
 #include "quiche/quic/moqt/moqt_priority.h"
 #include "quiche/quic/moqt/moqt_publisher.h"
-#include "quiche/common/platform/api/quiche_mem_slice.h"
 #include "quiche/common/quiche_circular_deque.h"
+#include "quiche/common/quiche_mem_slice.h"
 
 namespace moqt {
 
@@ -66,7 +66,7 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
     listeners_.erase(listener);
   }
   absl::StatusOr<MoqtTrackStatusCode> GetTrackStatus() const override;
-  Location GetLargestSequence() const override;
+  Location GetLargestLocation() const override;
   MoqtForwardingPreference GetForwardingPreference() const override {
     return forwarding_preference_;
   }
@@ -110,12 +110,36 @@ class MoqtOutgoingQueue : public MoqtTrackPublisher {
 
     GetNextObjectResult GetNextObject(PublishedObject&) override;
     absl::Status GetStatus() override { return status_; }
-    Location GetLargestId() const override { return objects_.back(); }
 
     void SetObjectAvailableCallback(
-        ObjectsAvailableCallback /*callback*/) override {
+        ObjectsAvailableCallback callback) override {
       // Not needed since all objects in a fetch against an in-memory queue are
       // guaranteed to resolve immediately.
+      callback();
+    }
+    void SetFetchResponseCallback(FetchResponseCallback callback) override {
+      if (!status_.ok()) {
+        MoqtFetchError error(0, StatusToRequestErrorCode(status_),
+                             std::string(status_.message()));
+        error.error_code = StatusToRequestErrorCode(status_);
+        error.reason_phrase = status_.message();
+        std::move(callback)(error);
+        return;
+      }
+      if (objects_.empty()) {
+        MoqtFetchError error(0, StatusToRequestErrorCode(status_),
+                             "No objects in range");
+        std::move(callback)(error);
+        return;
+      }
+      MoqtFetchOk ok;
+      ok.group_order = MoqtDeliveryOrder::kAscending;
+      ok.largest_id = *(objects_.crbegin());
+      if (objects_.size() > 1 && *(objects_.cbegin()) > ok.largest_id) {
+        ok.group_order = MoqtDeliveryOrder::kDescending;
+        ok.largest_id = *(objects_.cbegin());
+      }
+      std::move(callback)(ok);
     }
 
    private:

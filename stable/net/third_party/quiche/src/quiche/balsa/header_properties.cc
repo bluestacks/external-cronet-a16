@@ -65,45 +65,65 @@ MultivaluedHeadersSet* buildMultivaluedHeaders() {
   return multivalued_headers;
 }
 
-std::array<bool, 256> buildInvalidHeaderKeyCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(false);
+constexpr std::array<bool, 256> buildInvalidHeaderKeyCharLookupTable() {
+  std::array<bool, 256> invalidCharTable{};
   for (uint8_t c : kInvalidHeaderKeyCharList) {
     invalidCharTable[c] = true;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidHeaderKeyCharLookupTableAllowDoubleQuote() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(false);
+constexpr std::array<bool, 256>
+buildInvalidHeaderKeyCharLookupTableAllowDoubleQuote() {
+  std::array<bool, 256> invalidCharTable{};
   for (uint8_t c : kInvalidHeaderKeyCharListAllowDoubleQuote) {
     invalidCharTable[c] = true;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(false);
+constexpr std::array<bool, 256> buildInvalidCharLookupTable() {
+  std::array<bool, 256> invalidCharTable{};
   for (uint8_t c : kInvalidHeaderCharList) {
     invalidCharTable[c] = true;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidPathCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(true);
+constexpr std::array<bool, 256> kAllTrueArray = {
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true, true, true, true, true, true, true, true, true,
+    true, true, true, true};
+
+constexpr std::array<bool, 256> buildInvalidPathCharLookupTable() {
+  std::array<bool, 256> invalidCharTable = kAllTrueArray;
   for (uint8_t c : kValidPathCharList) {
     invalidCharTable[c] = false;
   }
   return invalidCharTable;
 }
 
-std::array<bool, 256> buildInvalidQueryCharLookupTable() {
-  std::array<bool, 256> invalidCharTable;
-  invalidCharTable.fill(true);
+constexpr std::array<bool, 256> buildInvalidQueryCharLookupTable() {
+  std::array<bool, 256> invalidCharTable = kAllTrueArray;
   for (uint8_t c : kValidQueryCharList) {
     invalidCharTable[c] = false;
   }

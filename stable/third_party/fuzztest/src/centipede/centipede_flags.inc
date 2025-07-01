@@ -291,6 +291,14 @@ CENTIPEDE_FLAG(
     "Save the remote corpus from working to the given directory, one "
     "file per corpus.")
 CENTIPEDE_FLAG(
+    std::string, crashes_to_files, "",
+    "When set to a directory path, save the crashing reproducers and "
+    "metadata from the workdir to the given path. Each crash with `ID`"
+    "will be saved with file `ID.data` for the reproducer and "
+    "`ID.metadata` the metadata, which currently contains the failure "
+    "description. If multiple crashes with the same ID exist, only one "
+    "crash will be saved.")
+CENTIPEDE_FLAG(
     std::string, corpus_from_files, "",
     "Export a corpus from a local directory with one file per input into "
     "the sharded remote corpus in workdir. Not recursive.")
@@ -431,9 +439,9 @@ CENTIPEDE_FLAG(
     "use from end-users.")
 CENTIPEDE_FLAG(
     std::string, fuzztest_configuration, "",
-    "If set, deserializes the configuration from the value instead of querying "
-    "the configuration via runner callbacks. For FuzzTest framework only, do "
-    "not use from end-users.")
+    "If set, deserializes the FuzzTest configuration from the value as a "
+    "base64url string instead of querying the configuration via runner "
+    "callbacks. For FuzzTest framework only, do not use from end-users.")
 CENTIPEDE_FLAG(
     bool, list_crash_ids, false,
     "If set, lists the crash IDs of a single test of the binary to the "

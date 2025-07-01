@@ -44,6 +44,10 @@ namespace test {
 class MoqtSessionPeer;
 }
 
+inline constexpr MoqtPriority kDefaultSubscriberPriority = 0x80;
+inline constexpr quic::QuicTimeDelta kDefaultGoAwayTimeout =
+    quic::QuicTime::Delta::FromSeconds(10);
+
 struct SubscriptionWithQueuedStream {
   webtransport::SendOrder send_order;
   uint64_t subscription_id;
@@ -91,40 +95,48 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
   quic::Perspective perspective() const { return parameters_.perspective; }
 
   // Returns true if message was sent.
-  bool SubscribeAnnounces(
-      FullTrackName track_namespace,
-      MoqtOutgoingSubscribeAnnouncesCallback callback,
-      MoqtSubscribeParameters parameters = MoqtSubscribeParameters());
+  bool SubscribeAnnounces(FullTrackName track_namespace,
+                          MoqtOutgoingSubscribeAnnouncesCallback callback,
+                          VersionSpecificParameters parameters);
   bool UnsubscribeAnnounces(FullTrackName track_namespace);
 
   // Send an ANNOUNCE message for |track_namespace|, and call
   // |announce_callback| when the response arrives. Will fail immediately if
   // there is already an unresolved ANNOUNCE for that namespace.
   void Announce(FullTrackName track_namespace,
-                MoqtOutgoingAnnounceCallback announce_callback);
+                MoqtOutgoingAnnounceCallback announce_callback,
+                VersionSpecificParameters parameters);
   // Returns true if message was sent, false if there is no ANNOUNCE to cancel.
   bool Unannounce(FullTrackName track_namespace);
   // Allows the subscriber to declare it will not subscribe to |track_namespace|
   // anymore.
-  void CancelAnnounce(FullTrackName track_namespace, SubscribeErrorCode code,
+  void CancelAnnounce(FullTrackName track_namespace, RequestErrorCode code,
                       absl::string_view reason_phrase);
 
   // Returns true if SUBSCRIBE was sent. If there is already a subscription to
   // the track, the message will still be sent. However, the visitor will be
-  // ignored.
+  // ignored. If |visitor| is nullptr, forward will be set to false.
   // Subscribe from (start_group, start_object) to the end of the track.
   bool SubscribeAbsolute(const FullTrackName& name, uint64_t start_group,
                          uint64_t start_object,
                          SubscribeRemoteTrack::Visitor* visitor,
-                         MoqtSubscribeParameters parameters) override;
+                         VersionSpecificParameters parameters) override;
   // Subscribe from (start_group, start_object) to the end of end_group.
   bool SubscribeAbsolute(const FullTrackName& name, uint64_t start_group,
                          uint64_t start_object, uint64_t end_group,
                          SubscribeRemoteTrack::Visitor* visitor,
-                         MoqtSubscribeParameters parameters) override;
+                         VersionSpecificParameters parameters) override;
   bool SubscribeCurrentObject(const FullTrackName& name,
                               SubscribeRemoteTrack::Visitor* visitor,
-                              MoqtSubscribeParameters parameters) override;
+                              VersionSpecificParameters parameters) override;
+  bool SubscribeNextGroup(const FullTrackName& name,
+                          SubscribeRemoteTrack::Visitor* visitor,
+                          VersionSpecificParameters parameters) override;
+  bool SubscribeUpdate(const FullTrackName& name, std::optional<Location> start,
+                       std::optional<uint64_t> end_group,
+                       std::optional<MoqtPriority> subscriber_priority,
+                       std::optional<bool> forward,
+                       VersionSpecificParameters parameters) override;
   // Returns false if the subscription is not found. The session immediately
   // destroys all subscription state.
   void Unsubscribe(const FullTrackName& name);
@@ -136,7 +148,7 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
              Location start, uint64_t end_group,
              std::optional<uint64_t> end_object, MoqtPriority priority,
              std::optional<MoqtDeliveryOrder> delivery_order,
-             MoqtSubscribeParameters parameters) override;
+             VersionSpecificParameters parameters) override;
   // Sends both a SUBSCRIBE and a joining FETCH, beginning |num_previous_groups|
   // groups before the current group. The Fetch will not be flow controlled,
   // instead using |visitor| to deliver fetched objects when they arrive. Gaps
@@ -146,7 +158,7 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
   bool JoiningFetch(const FullTrackName& name,
                     SubscribeRemoteTrack::Visitor* visitor,
                     uint64_t num_previous_groups,
-                    MoqtSubscribeParameters parameters) override;
+                    VersionSpecificParameters parameters) override;
   // Sends both a SUBSCRIBE and a joining FETCH, beginning |num_previous_groups|
   // groups before the current group. The application provides |callback| to
   // fully control acceptance of Fetched objects.
@@ -155,7 +167,7 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
                     FetchResponseCallback callback,
                     uint64_t num_previous_groups, MoqtPriority priority,
                     std::optional<MoqtDeliveryOrder> delivery_order,
-                    MoqtSubscribeParameters parameters) override;
+                    VersionSpecificParameters parameters) override;
 
   // Send a GOAWAY message to the peer. |new_session_uri| must be empty if
   // called by the client.
@@ -192,7 +204,7 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
       std::optional<webtransport::SendOrder> old_send_order,
       std::optional<webtransport::SendOrder> new_send_order);
 
-  void GrantMoreSubscribes(uint64_t num_subscribes);
+  void GrantMoreRequests(uint64_t num_requests);
 
   void UseAlternateDeliveryTimeout() { alternate_delivery_timeout_ = true; }
 
@@ -240,13 +252,12 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
         const MoqtSubscribeAnnouncesError& message) override;
     void OnUnsubscribeAnnouncesMessage(
         const MoqtUnsubscribeAnnounces& message) override;
-    void OnMaxSubscribeIdMessage(const MoqtMaxSubscribeId& message) override;
+    void OnMaxRequestIdMessage(const MoqtMaxRequestId& message) override;
     void OnFetchMessage(const MoqtFetch& message) override;
     void OnFetchCancelMessage(const MoqtFetchCancel& message) override {}
     void OnFetchOkMessage(const MoqtFetchOk& message) override;
     void OnFetchErrorMessage(const MoqtFetchError& message) override;
-    void OnSubscribesBlockedMessage(
-        const MoqtSubscribesBlocked& message) override;
+    void OnRequestsBlockedMessage(const MoqtRequestsBlocked& message) override;
     void OnObjectAckMessage(const MoqtObjectAck& message) override {
       auto subscription_it =
           session_->published_subscriptions_.find(message.subscribe_id);
@@ -268,14 +279,13 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
     // control credit.
     void SendOrBufferMessage(quiche::QuicheBuffer message, bool fin = false);
 
-    void SendSubscribeError(uint64_t subscribe_id,
-                            SubscribeErrorCode error_code,
+    void SendSubscribeError(uint64_t request_id, RequestErrorCode error_code,
                             absl::string_view reason_phrase,
                             uint64_t track_alias);
 
    private:
     friend class test::MoqtSessionPeer;
-    void SendFetchError(uint64_t subscribe_id, SubscribeErrorCode error_code,
+    void SendFetchError(uint64_t subscribe_id, RequestErrorCode error_code,
                         absl::string_view reason_phrase);
 
     MoqtSession* session_;
@@ -338,7 +348,7 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
     PublishedSubscription& operator=(const PublishedSubscription&) = delete;
     PublishedSubscription& operator=(PublishedSubscription&&) = delete;
 
-    uint64_t subscription_id() const { return subscription_id_; }
+    uint64_t request_id() const { return request_id_; }
     MoqtTrackPublisher& publisher() { return *track_publisher_; }
     uint64_t track_alias() const { return track_alias_; }
     std::optional<Location> largest_sent() const { return largest_sent_; }
@@ -373,8 +383,13 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
                 MoqtPriority subscriber_priority);
     // Checks if the specified sequence is within the window of this
     // subscription.
-    bool InWindow(Location sequence) { return window_.InWindow(sequence); }
-    Location GetWindowStart() const { return window_.start(); }
+    bool InWindow(Location sequence) {
+      return forward_ && window_.has_value() && window_->InWindow(sequence);
+    }
+    Location GetWindowStart() const {
+      QUICHE_CHECK(window_.has_value());
+      return window_->start();
+    }
     MoqtFilterType filter_type() const { return filter_type_; };
 
     void OnDataStreamCreated(webtransport::StreamId id,
@@ -428,12 +443,16 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
                                                   subscriber_priority_);
     }
 
-    MoqtFilterType filter_type_;
-    uint64_t subscription_id_;
     MoqtSession* session_;
     std::shared_ptr<MoqtTrackPublisher> track_publisher_;
+    uint64_t request_id_;
     uint64_t track_alias_;
-    SubscribeWindow window_;
+    MoqtFilterType filter_type_;
+    bool forward_;
+    // If window_ is nullopt, any arriving objects are ignored. This could be
+    // because forward=0, or because the subscription is waiting for a
+    // SUBSCRIBE_OK and doesn't know what the window should be yet.
+    std::optional<SubscribeWindow> window_;
     MoqtPriority subscriber_priority_;
     uint64_t streams_opened_ = 0;
 
@@ -629,7 +648,7 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
 
   // Checks that a subscribe ID from a SUBSCRIBE or FETCH is valid, and throws
   // a session error if is not.
-  bool ValidateSubscribeId(uint64_t subscribe_id);
+  bool ValidateRequestId(uint64_t request_id);
 
   // Actually sends an object on |stream| with track alias or fetch ID |id|
   // and metadata in |object|. Not for use with datagrams. Returns |true| if
@@ -684,10 +703,10 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
   // The next track alias to guess on a SUBSCRIBE.
   uint64_t next_remote_track_alias_ = 0;
   // The next subscribe ID that the local endpoint can send.
-  uint64_t next_subscribe_id_ = 0;
+  uint64_t next_request_id_ = 0;
   // The local endpoint can send subscribe IDs less than this value.
-  uint64_t peer_max_subscribe_id_ = 0;
-  std::optional<uint64_t> last_subscribes_blocked_sent_;
+  uint64_t peer_max_request_id_ = 0;
+  std::optional<uint64_t> last_requests_blocked_sent_;
 
   // All open incoming subscriptions, indexed by track name, used to check for
   // duplicates.
@@ -727,11 +746,11 @@ class QUICHE_EXPORT MoqtSession : public MoqtSessionInterface,
   absl::flat_hash_map<FullTrackName, MoqtOutgoingSubscribeAnnouncesCallback>
       outgoing_subscribe_announces_;
 
-  // The minimum subscribe ID the peer can use that is monotonically increasing.
-  uint64_t next_incoming_subscribe_id_ = 0;
-  // The maximum subscribe ID sent to the peer. Peer-generated IDs must be less
+  // The minimum request ID the peer can use that is monotonically increasing.
+  uint64_t next_incoming_request_id_ = 0;
+  // The maximum request ID sent to the peer. Peer-generated IDs must be less
   // than this value.
-  uint64_t local_max_subscribe_id_ = 0;
+  uint64_t local_max_request_id_ = 0;
 
   std::unique_ptr<quic::QuicAlarmFactory> alarm_factory_;
   // Kill the session if the peer doesn't promptly close out the session after

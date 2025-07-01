@@ -141,6 +141,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE AttemptManager;
+  class NET_EXPORT_PRIVATE IPEndPointStateTracker;
 
   // The time to wait between connection attempts.
   static base::TimeDelta GetConnectionAttemptDelay();
@@ -160,15 +161,15 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // the process of being destroyed.
   void OnShuttingDown();
 
-  // Requests an HttpStream.
-  std::unique_ptr<HttpStreamRequest> RequestStream(
+  // Takes over the responsibility of processing an already created `request`.
+  void HandleStreamRequest(
+      HttpStreamRequest* request,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamPoolRequestInfo request_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
-      bool enable_alternative_services,
-      const NetLogWithSource& net_log);
+      bool enable_alternative_services);
 
   // Requests that enough connections/sessions for `num_streams` be opened.
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.

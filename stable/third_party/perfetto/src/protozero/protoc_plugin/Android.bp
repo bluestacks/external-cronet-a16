@@ -124,14 +124,14 @@ cc_binary {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_src_protozero_protoc_plugin_cppgen_plugin__concatenated_headers_common",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -142,6 +142,7 @@ cc_binary {
         "-DOFFICIAL_BUILD",
         "-DPERFETTO_IMPLEMENTATION",
         "-DUSE_AURA=1",
+        "-DUSE_LIBCXX_MODULES",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
         "-D_FILE_OFFSET_BITS=64",
@@ -298,14 +299,14 @@ cc_binary {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_src_protozero_protoc_plugin_cppgen_plugin__testing__concatenated_headers_common",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -316,6 +317,7 @@ cc_binary {
         "-DOFFICIAL_BUILD",
         "-DPERFETTO_IMPLEMENTATION",
         "-DUSE_AURA=1",
+        "-DUSE_LIBCXX_MODULES",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
         "-D_FILE_OFFSET_BITS=64",
@@ -472,14 +474,14 @@ cc_binary {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_src_protozero_protoc_plugin_protozero_plugin__concatenated_headers_common",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -490,6 +492,7 @@ cc_binary {
         "-DOFFICIAL_BUILD",
         "-DPERFETTO_IMPLEMENTATION",
         "-DUSE_AURA=1",
+        "-DUSE_LIBCXX_MODULES",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
         "-D_FILE_OFFSET_BITS=64",
@@ -534,13 +537,6 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }
 
 // GN: //third_party/perfetto/src/protozero/protoc_plugin:protozero_plugin__testing
@@ -646,14 +642,14 @@ cc_binary {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_src_protozero_protoc_plugin_protozero_plugin__testing__concatenated_headers_common",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -664,6 +660,7 @@ cc_binary {
         "-DOFFICIAL_BUILD",
         "-DPERFETTO_IMPLEMENTATION",
         "-DUSE_AURA=1",
+        "-DUSE_LIBCXX_MODULES",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
         "-D_FILE_OFFSET_BITS=64",
@@ -708,11 +705,4 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }

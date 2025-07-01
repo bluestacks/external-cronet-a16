@@ -47,10 +47,10 @@
 #include "quiche/quic/test_tools/simulator/switch.h"
 #include "quiche/common/platform/api/quiche_command_line_flags.h"
 #include "quiche/common/platform/api/quiche_logging.h"
-#include "quiche/common/platform/api/quiche_mem_slice.h"
 #include "quiche/common/quiche_buffer_allocator.h"
 #include "quiche/common/quiche_data_reader.h"
 #include "quiche/common/quiche_data_writer.h"
+#include "quiche/common/quiche_mem_slice.h"
 #include "quiche/common/simple_buffer_allocator.h"
 
 namespace moqt::test {
@@ -442,7 +442,7 @@ class MoqtSimulator {
     //       server does not yet have an active subscription, so the client has
     //       some catching up to do.
     generator_.Start();
-    MoqtSubscribeParameters subscription_parameters;
+    VersionSpecificParameters subscription_parameters;
     if (!parameters_.delivery_timeout.IsInfinite()) {
       subscription_parameters.delivery_timeout = parameters_.delivery_timeout;
     }

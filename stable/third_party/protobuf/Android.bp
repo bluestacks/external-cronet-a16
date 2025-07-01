@@ -107,6 +107,7 @@ java_library {
         "java/core/src/main/java/com/google/protobuf/FieldSet.java",
         "java/core/src/main/java/com/google/protobuf/FieldType.java",
         "java/core/src/main/java/com/google/protobuf/FloatArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/Generated.java",
         "java/core/src/main/java/com/google/protobuf/GeneratedMessageInfoFactory.java",
         "java/core/src/main/java/com/google/protobuf/GeneratedMessageLite.java",
         "java/core/src/main/java/com/google/protobuf/InlineMe.java",
@@ -214,6 +215,7 @@ java_library {
         "java/core/src/main/java/com/google/protobuf/FieldSet.java",
         "java/core/src/main/java/com/google/protobuf/FieldType.java",
         "java/core/src/main/java/com/google/protobuf/FloatArrayList.java",
+        "java/core/src/main/java/com/google/protobuf/Generated.java",
         "java/core/src/main/java/com/google/protobuf/GeneratedMessageInfoFactory.java",
         "java/core/src/main/java/com/google/protobuf/GeneratedMessageLite.java",
         "java/core/src/main/java/com/google/protobuf/InlineMe.java",
@@ -320,14 +322,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protobuf_full__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -412,14 +417,17 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protobuf_full__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
@@ -552,6 +560,7 @@ cc_library_static {
         "src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
         "src/google/protobuf/map.cc",
         "src/google/protobuf/message_lite.cc",
+        "src/google/protobuf/micro_string.cc",
         "src/google/protobuf/parse_context.cc",
         "src/google/protobuf/port.cc",
         "src/google/protobuf/raw_ptr.cc",
@@ -563,20 +572,24 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protobuf_lite__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
+        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -701,6 +714,7 @@ cc_library_static {
         "src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
         "src/google/protobuf/map.cc",
         "src/google/protobuf/message_lite.cc",
+        "src/google/protobuf/micro_string.cc",
         "src/google/protobuf/parse_context.cc",
         "src/google/protobuf/port.cc",
         "src/google/protobuf/raw_ptr.cc",
@@ -712,20 +726,24 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protobuf_lite__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
+        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -925,15 +943,12 @@ cc_binary {
     host_supported: true,
     host_cross_supported: false,
     device_supported: false,
-    generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc__concatenated_headers_common",
-    ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1084,15 +1099,12 @@ cc_binary {
     host_supported: true,
     host_cross_supported: false,
     device_supported: false,
-    generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc__testing__concatenated_headers_common",
-    ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1150,6 +1162,7 @@ cc_library_static {
         "src/google/protobuf/compiler/cpp/enum.cc",
         "src/google/protobuf/compiler/cpp/extension.cc",
         "src/google/protobuf/compiler/cpp/field.cc",
+        "src/google/protobuf/compiler/cpp/field_chunk.cc",
         "src/google/protobuf/compiler/cpp/field_generators/cord_field.cc",
         "src/google/protobuf/compiler/cpp/field_generators/enum_field.cc",
         "src/google/protobuf/compiler/cpp/field_generators/map_field.cc",
@@ -1162,8 +1175,8 @@ cc_library_static {
         "src/google/protobuf/compiler/cpp/helpers.cc",
         "src/google/protobuf/compiler/cpp/ifndef_guard.cc",
         "src/google/protobuf/compiler/cpp/message.cc",
+        "src/google/protobuf/compiler/cpp/message_layout_helper.cc",
         "src/google/protobuf/compiler/cpp/namespace_printer.cc",
-        "src/google/protobuf/compiler/cpp/padding_optimizer.cc",
         "src/google/protobuf/compiler/cpp/parse_function_generator.cc",
         "src/google/protobuf/compiler/cpp/service.cc",
         "src/google/protobuf/compiler/cpp/tracker.cc",
@@ -1172,14 +1185,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_cpp__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1237,6 +1253,7 @@ cc_library_static {
         "src/google/protobuf/compiler/cpp/enum.cc",
         "src/google/protobuf/compiler/cpp/extension.cc",
         "src/google/protobuf/compiler/cpp/field.cc",
+        "src/google/protobuf/compiler/cpp/field_chunk.cc",
         "src/google/protobuf/compiler/cpp/field_generators/cord_field.cc",
         "src/google/protobuf/compiler/cpp/field_generators/enum_field.cc",
         "src/google/protobuf/compiler/cpp/field_generators/map_field.cc",
@@ -1249,8 +1266,8 @@ cc_library_static {
         "src/google/protobuf/compiler/cpp/helpers.cc",
         "src/google/protobuf/compiler/cpp/ifndef_guard.cc",
         "src/google/protobuf/compiler/cpp/message.cc",
+        "src/google/protobuf/compiler/cpp/message_layout_helper.cc",
         "src/google/protobuf/compiler/cpp/namespace_printer.cc",
-        "src/google/protobuf/compiler/cpp/padding_optimizer.cc",
         "src/google/protobuf/compiler/cpp/parse_function_generator.cc",
         "src/google/protobuf/compiler/cpp/service.cc",
         "src/google/protobuf/compiler/cpp/tracker.cc",
@@ -1259,14 +1276,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_cpp__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1338,14 +1358,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1417,14 +1440,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1482,14 +1508,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java_all_headers__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1547,14 +1576,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java_all_headers__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1626,14 +1658,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java_full__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1705,14 +1740,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java_full__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1783,14 +1821,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java_lite__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1861,14 +1902,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_java_lite__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1937,14 +1981,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_lib__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2013,14 +2060,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_lib__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2083,14 +2133,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_python__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2153,14 +2206,17 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_protoc_python__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2216,19 +2272,21 @@ cc_library_static {
     name: "stable_cronet_third_party_protobuf_utf8_range",
     srcs: [
         "third_party/utf8_range/utf8_range.c",
-        "third_party/utf8_range/utf8_validity.cc",
     ],
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_utf8_range__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -2338,19 +2396,21 @@ cc_library_static {
     name: "stable_cronet_third_party_protobuf_utf8_range__testing",
     srcs: [
         "third_party/utf8_range/utf8_range.c",
-        "third_party/utf8_range/utf8_validity.cc",
     ],
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_protobuf_utf8_range__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",

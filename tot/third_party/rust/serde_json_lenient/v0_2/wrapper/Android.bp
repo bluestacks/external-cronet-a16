@@ -161,6 +161,9 @@ rust_ffi_static {
                 "-Cdebuginfo=1",
             ],
             rustlibs: [
+                "libequivalent__1f91dc7100be641c",
+                "libhashbrown__43017ced9378f53d",
+                "libindexmap__56b3e83eb01f9790",
                 "libproc_macro2__d957ddb2eb267eaf",
                 "libquote__62704bfea487e463",
                 "libsyn__11104b519a39d1d2",

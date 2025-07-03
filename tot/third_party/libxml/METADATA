@@ -5,4 +5,7 @@ third_party {
   license_type: NOTICE
   version: "2.14.2"
   homepage: "http://xmlsoft.org"
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:xmlsoft:libxml2:2.14.2"
+  }
 }

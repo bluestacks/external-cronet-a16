@@ -328,7 +328,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -420,7 +420,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -582,7 +582,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -742,7 +742,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -965,7 +965,7 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1123,7 +1123,7 @@ cc_binary {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1211,7 +1211,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1299,7 +1299,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1378,7 +1378,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1457,7 +1457,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1522,7 +1522,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1587,7 +1587,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1666,7 +1666,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1745,7 +1745,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1823,7 +1823,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1901,7 +1901,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -1977,7 +1977,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -2053,7 +2053,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -2123,7 +2123,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -2193,7 +2193,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
@@ -2260,7 +2260,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -2391,7 +2391,7 @@ cc_library_static {
         "tot_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",

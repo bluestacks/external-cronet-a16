@@ -34,7 +34,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -147,7 +147,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -263,7 +263,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -379,7 +379,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -492,7 +492,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -605,7 +605,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -719,7 +719,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
@@ -833,7 +833,7 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-7\"",
         "-DCR_LIBCXX_REVISION=b5d83e70a1537fbce965e6319877c76794daaa80",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",

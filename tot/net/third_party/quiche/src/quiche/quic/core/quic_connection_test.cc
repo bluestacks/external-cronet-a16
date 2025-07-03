@@ -8587,6 +8587,40 @@ TEST_P(QuicConnectionTest, RetransmittableOnWirePingLimit) {
             connection_.GetPingAlarm()->deadline() - clock_.ApproximateNow());
 }
 
+// Make sure when enabled, the retransmittable on wire timeout is based on the
+// PTO.
+TEST_P(QuicConnectionTest, PtoBasedRetransmittableOnWireTimeout) {
+  if (!VersionHasIetfQuicFrames(connection_.version().transport_version)) {
+    return;
+  }
+
+  EXPECT_CALL(*send_algorithm_, EnableECT1()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*send_algorithm_, EnableECT0()).WillRepeatedly(Return(false));
+
+  // Enable the retransmittable on wire timeout for 3 different PTOs.
+  struct TestCase {
+    QuicTag timeout_tag;
+    uint8_t expected_pto_count;
+  };
+  static constexpr TestCase kTestCases[] = {
+      {kROW1, 1},
+      {kROW2, 2},
+      {kROW3, 3},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    QuicConfig config;
+    QuicTagVector connection_options;
+    EXPECT_CALL(*send_algorithm_, SetFromConfig(_, _));
+    connection_options.push_back(test_case.timeout_tag);
+    config.SetClientConnectionOptions(connection_options);
+    connection_.SetFromConfig(config);
+    EXPECT_EQ(QuicConnectionPeer::GetNumPtosForRetransmittableOnWireTimeout(
+                  &connection_),
+              test_case.expected_pto_count);
+  }
+}
+
 TEST_P(QuicConnectionTest, ValidStatelessResetToken) {
   const StatelessResetToken kTestToken{0, 1, 0, 1, 0, 1, 0, 1,
                                        0, 1, 0, 1, 0, 1, 0, 1};
@@ -13233,11 +13267,13 @@ TEST_P(QuicConnectionTest, CloseConnectionOnIntegrityLimitAcrossKeyPhases) {
   TestConnectionCloseQuicErrorCode(QUIC_AEAD_LIMIT_REACHED);
 }
 
+// TODO(b/389762349): Re-enable these tests when sending AckFrequency is
+// restored.
+#if 0
 TEST_P(QuicConnectionTest, SendAckFrequencyFrame) {
   if (!version().HasIetfQuicFrames()) {
     return;
   }
-  SetQuicReloadableFlag(quic_can_send_ack_frequency, true);
   set_perspective(Perspective::IS_SERVER);
   EXPECT_CALL(*send_algorithm_, OnCongestionEvent(_, _, _, _, _, _, _))
       .Times(AnyNumber());
@@ -13280,7 +13316,6 @@ TEST_P(QuicConnectionTest, SendAckFrequencyFrameUponHandshakeCompletion) {
   if (!version().HasIetfQuicFrames()) {
     return;
   }
-  SetQuicReloadableFlag(quic_can_send_ack_frequency, true);
   set_perspective(Perspective::IS_SERVER);
   EXPECT_CALL(*send_algorithm_, OnCongestionEvent(_, _, _, _, _, _, _))
       .Times(AnyNumber());
@@ -13312,6 +13347,7 @@ TEST_P(QuicConnectionTest, SendAckFrequencyFrameUponHandshakeCompletion) {
   EXPECT_EQ(captured_frame.requested_max_ack_delay,
             QuicTime::Delta::FromMilliseconds(GetDefaultDelayedAckTimeMs()));
 }
+#endif
 
 TEST_P(QuicConnectionTest, FastRecoveryOfLostServerHello) {
   if (!connection_.SupportsMultiplePacketNumberSpaces()) {
@@ -14288,12 +14324,14 @@ TEST_P(QuicConnectionTest, PeerMigrateBeforeHandshakeConfirm) {
   EXPECT_FALSE(connection_.connected());
 }
 
-// Regresstion test for b/175685916
+// TODO(b/389762349): Re-enable these tests when sending AckFrequency is
+// restored.
+#if 0
+// Regression test for b/175685916
 TEST_P(QuicConnectionTest, TryToFlushAckWithAckQueued) {
   if (!version().HasIetfQuicFrames()) {
     return;
   }
-  SetQuicReloadableFlag(quic_can_send_ack_frequency, true);
   set_perspective(Perspective::IS_SERVER);
 
   QuicConfig config;
@@ -14315,6 +14353,7 @@ TEST_P(QuicConnectionTest, TryToFlushAckWithAckQueued) {
                        &SimpleSessionNotifier::WriteOrBufferAckFrequency));
   QuicConnectionPeer::SendPing(&connection_);
 }
+#endif
 
 TEST_P(QuicConnectionTest, PathChallengeBeforePeerIpAddressChangeAtServer) {
   set_perspective(Perspective::IS_SERVER);

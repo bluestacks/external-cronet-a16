@@ -9,4 +9,7 @@ third_party {
     type: "Git"
     version: "f9938c217da17ec3e9dcd2a2d99c5cf39536aeb94"
   }
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:facebook:zstandard:1.5.5"
+  }
 }

@@ -9,4 +9,7 @@ third_party {
     type: "Git"
     version: "890b53c3485bf7e31ac8b6b637f9850e4d596ced"
   }
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:google:centipede:1.0.0"
+  }
 }

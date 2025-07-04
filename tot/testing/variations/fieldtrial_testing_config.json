@@ -15186,6 +15186,21 @@
             ]
         }
     ],
+    "MitigateLegacySearchEnginePromoOverlap": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MitigateLegacySearchEnginePromoOverlap"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoChannelAssociatedSendUsesRunOrPostTask": [
         {
             "platforms": [
@@ -15528,6 +15543,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "url_loader": "true"
+                    },
                     "enable_features": [
                         "NetworkServiceTaskScheduler"
                     ]
@@ -16775,21 +16793,6 @@
                     },
                     "enable_features": [
                         "PageActionsMigration"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PageAllocatorRetryOnCommitFailure": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PageAllocatorRetryOnCommitFailure"
                     ]
                 }
             ]
@@ -24510,6 +24513,28 @@
                     },
                     "enable_features": [
                         "TcpPortRandomizationWin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TerminateRendererOnBrowserCommitExhaustion": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RetryOnly",
+                    "enable_features": [
+                        "PageAllocatorRetryOnCommitFailure"
+                    ]
+                },
+                {
+                    "name": "RetryAndTerminate",
+                    "enable_features": [
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
                     ]
                 }
             ]

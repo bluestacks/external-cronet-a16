@@ -428,21 +428,6 @@
             ]
         }
     ],
-    "AddAddressManually": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AddAddressManually"
-                    ]
-                }
-            ]
-        }
-    ],
     "AddSuggestStrongPasswordFromAddPassword": [
         {
             "platforms": [
@@ -804,9 +789,28 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledBoth_20250704",
+                    "enable_features": [
+                        "InputScenarioPriorityBoost",
+                        "RaiseDisplayCriticalThreadPriority"
+                    ]
+                },
+                {
+                    "name": "EnabledRaiseDisplayCriticalThreadPriority_20250704",
+                    "enable_features": [
+                        "RaiseDisplayCriticalThreadPriority"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "RaiseDisplayCriticalThreadPriority"
+                    ]
+                },
+                {
+                    "name": "EnabledInputScenarioPriorityBoost_20250704",
+                    "enable_features": [
+                        "InputScenarioPriorityBoost"
                     ]
                 }
             ]
@@ -2316,27 +2320,6 @@
             ]
         }
     ],
-    "AutofillHomeWorkProfileSuggestion": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "HomeAndWork_IPH_Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:home_and_work_address_suggestion_iph_trigger;comparator:<10;window:90;storage:360",
-                        "event_used": "name:home_and_work_suggestion_accepted;comparator:<2;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_AutofillHomeWorkProfileSuggestion"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillI18nINAddressModel": [
         {
             "platforms": [
@@ -2707,6 +2690,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillSaveCardBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillServerUploadMoreData": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillServerUploadMoreData"
                     ]
                 }
             ]
@@ -12164,21 +12167,6 @@
             ]
         }
     ],
-    "IOSChooseFromDriveSimulatedClick": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSChooseFromDriveSimulatedClick"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSChromnientEscapeHatch": [
         {
             "platforms": [
@@ -17999,6 +17987,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "IPH_PlusAddressCreateSuggestion",
                         "PlusAddressAndroidOpenGmsCoreManagementPage",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressPreallocation",
@@ -20224,6 +20213,7 @@
                     "enable_features": [
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
+                        "AvoidUnnecessaryShouldRenderRichAnimation",
                         "ReducePPMs",
                         "ScreenWinDisplayLookupByHMONITOR"
                     ]
@@ -24528,6 +24518,9 @@
                     "name": "RetryOnly",
                     "enable_features": [
                         "PageAllocatorRetryOnCommitFailure"
+                    ],
+                    "disable_features": [
+                        "TerminationTargetPolicy"
                     ]
                 },
                 {

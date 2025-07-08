@@ -124,11 +124,10 @@ rust_ffi_static {
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
-                "-Cforce-unwind-tables=no",
+                "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
-                "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
             ],
@@ -437,7 +436,6 @@ cc_library_static {
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
-        "-DOFFICIAL_BUILD",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -472,6 +470,7 @@ cc_library_static {
             cflags: [
                 "-DANDROID",
                 "-DHAVE_SYS_UIO_H",
+                "-DOFFICIAL_BUILD",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -480,6 +479,7 @@ cc_library_static {
             cflags: [
                 "-DANDROID",
                 "-DHAVE_SYS_UIO_H",
+                "-DOFFICIAL_BUILD",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-D__ARM_NEON__=1",
@@ -491,6 +491,7 @@ cc_library_static {
             cflags: [
                 "-DANDROID",
                 "-DHAVE_SYS_UIO_H",
+                "-DOFFICIAL_BUILD",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
         },
@@ -498,6 +499,7 @@ cc_library_static {
             cflags: [
                 "-DANDROID",
                 "-DHAVE_SYS_UIO_H",
+                "-DOFFICIAL_BUILD",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-msse3",
@@ -507,6 +509,7 @@ cc_library_static {
             cflags: [
                 "-DANDROID",
                 "-DHAVE_SYS_UIO_H",
+                "-DOFFICIAL_BUILD",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
                 "-O2",
@@ -516,7 +519,6 @@ cc_library_static {
         host: {
             cflags: [
                 "-DCR_SYSROOT_KEY=20250129T203412Z-1",
-                "-DNO_UNWIND_TABLES",
                 "-DUSE_AURA=1",
                 "-DUSE_OZONE=1",
                 "-DUSE_UDEV",
@@ -525,8 +527,6 @@ cc_library_static {
                 "-D_LARGEFILE64_SOURCE",
                 "-D_LARGEFILE_SOURCE",
                 "-O2",
-                "-fno-asynchronous-unwind-tables",
-                "-fno-unwind-tables",
                 "-msse3",
             ],
         },

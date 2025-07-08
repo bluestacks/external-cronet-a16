@@ -646,6 +646,23 @@
             ]
         }
     ],
+    "AndroidDeviceContentFilters": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowNonFamilyLinkUrlFilterMode",
+                        "PropagateDeviceContentFiltersToSupervisedUser",
+                        "SupervisedUserInterstitialWithoutApprovals"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDumpOnScrollWithoutResource": [
         {
             "platforms": [
@@ -1058,6 +1075,21 @@
                         "AndroidThemeModule",
                         "GridTabSwitcherSurfaceColorUpdate",
                         "GridTabSwitcherUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidUseAdminsForEnterpriseInfo": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidUseAdminsForEnterpriseInfo"
                     ]
                 }
             ]
@@ -12037,6 +12069,21 @@
             ]
         }
     ],
+    "IOSAutofillFormSubmissionEventsInCaptureMode": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillFormSubmissionEventsInCaptureMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillInIsolatedWorld": [
         {
             "platforms": [
@@ -12162,6 +12209,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSBrowserEditMenuMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSChromeAsyncExperience": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeStartupParametersAsync"
                     ]
                 }
             ]
@@ -12511,6 +12573,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FullscreenImprovement"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSFullscreenScrollThreshold": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled10",
+                    "params": {
+                        "fullscreen_scroll_threshold_amount": "10"
+                    },
+                    "enable_features": [
+                        "FullscreenScrollThreshold"
                     ]
                 }
             ]
@@ -13158,7 +13238,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ChromeStartupParametersAsync",
                         "YoutubeIncognito"
                     ]
                 }
@@ -13312,28 +13391,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IncognitoScreenshot"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IncreaseCookieAccessCacheSize": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IncreaseCookieAccessCacheSize"
                     ]
                 }
             ]
@@ -18740,26 +18797,6 @@
             ]
         }
     ],
-    "PrivacySandboxAdsApiUxEnhancements": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxAdsApiUxEnhancements"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxAllowPromptForBlocked3PCookies": [
         {
             "platforms": [
@@ -20251,6 +20288,21 @@
             ]
         }
     ],
+    "RegenerateKeyForCatastrophicFailures": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RegenerateKeyForCatastrophicFailures"
+                    ]
+                }
+            ]
+        }
+    ],
     "RegisterOsUpdateHandlerWin": [
         {
             "platforms": [
@@ -20936,7 +20988,7 @@
             ]
         }
     ],
-    "SafetyCheckNotifications": [
+    "SafetyCheckNotificationsWithInterstitial": [
         {
             "platforms": [
                 "ios"
@@ -20949,7 +21001,7 @@
                         "SafetyCheckAllowSafeBrowsingNotifications": "true",
                         "SafetyCheckAllowUpdateChromeNotifications": "true",
                         "SafetyCheckNotificationsExperimentType": "1",
-                        "SafetyCheckNotificationsImpressionLimit": "3",
+                        "SafetyCheckNotificationsImpressionLimit": "0",
                         "SafetyCheckNotificationsImpressionTrigger": "1",
                         "SafetyCheckNotificationsProvisionalEnabled": "true"
                     },
@@ -22530,28 +22582,53 @@
             ]
         }
     ],
-    "SegmentedDefaultBrowserPromo": [
+    "SegmentationCompactionFix": [
         {
             "platforms": [
-                "ios"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithStaticPromo",
-                    "params": {
-                        "SegmentedDefaultBrowserExperimentType": "0"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "SegmentedDefaultBrowserPromo"
+                        "SegmentationCompactionFix"
                     ]
-                },
+                }
+            ]
+        }
+    ],
+    "SegmentationPlatformURLVisitResumptionRanker": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
                 {
-                    "name": "EnabledWithAnimatedPromo",
+                    "name": "Enabled",
                     "params": {
-                        "SegmentedDefaultBrowserExperimentType": "1"
+                        "use_random_score": "true"
                     },
                     "enable_features": [
-                        "SegmentedDefaultBrowserPromo"
+                        "SegmentationPlatformURLVisitResumptionRanker"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SegmentationPlatformUmaFromSqlDb": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SegmentationPlatformUmaFromSqlDb"
                     ]
                 }
             ]
@@ -24261,25 +24338,6 @@
                     },
                     "enable_features": [
                         "GroupSuggestionService"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabGroupSyncServiceDesktopMigrationRelaunch": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGroupSyncServiceDesktopMigration"
                     ]
                 }
             ]
@@ -26595,6 +26653,26 @@
             ]
         }
     ],
+    "WebRTC-DataChannelMessageInterleaving": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRTC-DataChannelMessageInterleaving"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-ForceDtls13": [
         {
             "platforms": [
@@ -26887,26 +26965,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebRtcAudioSinkUseTimestampAligner"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebRtcEncodedTransformDirectCallback": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRtcEncodedTransformDirectCallback"
                     ]
                 }
             ]

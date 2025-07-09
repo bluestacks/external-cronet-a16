@@ -102,6 +102,7 @@ rust_ffi_static {
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
+                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -5907,6 +5908,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.proto",
         "third_party/metrics_proto/perf_stat.proto",
         "third_party/metrics_proto/printer_event.proto",
+        "third_party/metrics_proto/private_metrics/private_metrics.proto",
         "third_party/metrics_proto/reporting_info.proto",
         "third_party/metrics_proto/sampled_profile.proto",
         "third_party/metrics_proto/structured_data.proto",
@@ -5945,6 +5947,7 @@ cc_genrule {
          "external/cronet/tot/third_party/metrics_proto/perf_data.proto " +
          "external/cronet/tot/third_party/metrics_proto/perf_stat.proto " +
          "external/cronet/tot/third_party/metrics_proto/printer_event.proto " +
+         "external/cronet/tot/third_party/metrics_proto/private_metrics/private_metrics.proto " +
          "external/cronet/tot/third_party/metrics_proto/reporting_info.proto " +
          "external/cronet/tot/third_party/metrics_proto/sampled_profile.proto " +
          "external/cronet/tot/third_party/metrics_proto/structured_data.proto " +
@@ -5977,6 +5980,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.cc",
         "third_party/metrics_proto/perf_stat.pb.cc",
         "third_party/metrics_proto/printer_event.pb.cc",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.cc",
         "third_party/metrics_proto/reporting_info.pb.cc",
         "third_party/metrics_proto/sampled_profile.pb.cc",
         "third_party/metrics_proto/structured_data.pb.cc",
@@ -6020,6 +6024,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.proto",
         "third_party/metrics_proto/perf_stat.proto",
         "third_party/metrics_proto/printer_event.proto",
+        "third_party/metrics_proto/private_metrics/private_metrics.proto",
         "third_party/metrics_proto/reporting_info.proto",
         "third_party/metrics_proto/sampled_profile.proto",
         "third_party/metrics_proto/structured_data.proto",
@@ -6058,6 +6063,7 @@ cc_genrule {
          "external/cronet/tot/third_party/metrics_proto/perf_data.proto " +
          "external/cronet/tot/third_party/metrics_proto/perf_stat.proto " +
          "external/cronet/tot/third_party/metrics_proto/printer_event.proto " +
+         "external/cronet/tot/third_party/metrics_proto/private_metrics/private_metrics.proto " +
          "external/cronet/tot/third_party/metrics_proto/reporting_info.proto " +
          "external/cronet/tot/third_party/metrics_proto/sampled_profile.proto " +
          "external/cronet/tot/third_party/metrics_proto/structured_data.proto " +
@@ -6090,6 +6096,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.cc",
         "third_party/metrics_proto/perf_stat.pb.cc",
         "third_party/metrics_proto/printer_event.pb.cc",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.cc",
         "third_party/metrics_proto/reporting_info.pb.cc",
         "third_party/metrics_proto/sampled_profile.pb.cc",
         "third_party/metrics_proto/structured_data.pb.cc",
@@ -6133,6 +6140,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.proto",
         "third_party/metrics_proto/perf_stat.proto",
         "third_party/metrics_proto/printer_event.proto",
+        "third_party/metrics_proto/private_metrics/private_metrics.proto",
         "third_party/metrics_proto/reporting_info.proto",
         "third_party/metrics_proto/sampled_profile.proto",
         "third_party/metrics_proto/structured_data.proto",
@@ -6171,6 +6179,7 @@ cc_genrule {
          "external/cronet/tot/third_party/metrics_proto/perf_data.proto " +
          "external/cronet/tot/third_party/metrics_proto/perf_stat.proto " +
          "external/cronet/tot/third_party/metrics_proto/printer_event.proto " +
+         "external/cronet/tot/third_party/metrics_proto/private_metrics/private_metrics.proto " +
          "external/cronet/tot/third_party/metrics_proto/reporting_info.proto " +
          "external/cronet/tot/third_party/metrics_proto/sampled_profile.proto " +
          "external/cronet/tot/third_party/metrics_proto/structured_data.proto " +
@@ -6203,6 +6212,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -6251,6 +6261,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.proto",
         "third_party/metrics_proto/perf_stat.proto",
         "third_party/metrics_proto/printer_event.proto",
+        "third_party/metrics_proto/private_metrics/private_metrics.proto",
         "third_party/metrics_proto/reporting_info.proto",
         "third_party/metrics_proto/sampled_profile.proto",
         "third_party/metrics_proto/structured_data.proto",
@@ -6289,6 +6300,7 @@ cc_genrule {
          "external/cronet/tot/third_party/metrics_proto/perf_data.proto " +
          "external/cronet/tot/third_party/metrics_proto/perf_stat.proto " +
          "external/cronet/tot/third_party/metrics_proto/printer_event.proto " +
+         "external/cronet/tot/third_party/metrics_proto/private_metrics/private_metrics.proto " +
          "external/cronet/tot/third_party/metrics_proto/reporting_info.proto " +
          "external/cronet/tot/third_party/metrics_proto/sampled_profile.proto " +
          "external/cronet/tot/third_party/metrics_proto/structured_data.proto " +
@@ -6321,6 +6333,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -17796,7 +17809,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1751957664",
+         "1752014360",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -17818,7 +17831,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1751957664",
+         "1752014360",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -32258,6 +32271,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -32981,6 +32995,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -37114,6 +37129,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -37837,6 +37853,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -38837,6 +38854,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -40302,6 +40320,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -41962,6 +41981,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -42671,6 +42691,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -43373,6 +43394,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -46375,6 +46397,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -46996,6 +47019,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -112791,6 +112815,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",
@@ -112845,6 +112870,7 @@ cc_genrule {
         "third_party/metrics_proto/perf_data.pb.h",
         "third_party/metrics_proto/perf_stat.pb.h",
         "third_party/metrics_proto/printer_event.pb.h",
+        "third_party/metrics_proto/private_metrics/private_metrics.pb.h",
         "third_party/metrics_proto/reporting_info.pb.h",
         "third_party/metrics_proto/sampled_profile.pb.h",
         "third_party/metrics_proto/structured_data.pb.h",

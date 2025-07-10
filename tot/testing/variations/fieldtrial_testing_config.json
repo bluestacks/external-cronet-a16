@@ -3676,21 +3676,6 @@
             ]
         }
     ],
-    "BocaOnTaskMuteArcAudio": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BocaOnTaskMuteArcAudio"
-                    ]
-                }
-            ]
-        }
-    ],
     "BookmarksUseBinaryTreeInTitledUrlIndex": [
         {
             "platforms": [
@@ -8999,6 +8984,21 @@
             ]
         }
     ],
+    "EdgeToEdgeTablet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250709",
+                    "enable_features": [
+                        "EdgeToEdgeTablet"
+                    ]
+                }
+            ]
+        }
+    ],
     "EducationalTipModule": [
         {
             "platforms": [
@@ -10063,29 +10063,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FastPathNoRaster"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FasterSetCookie": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AsyncGetCookiesOnSet",
-                    "enable_features": [
-                        "AsyncSetCookie",
-                        "GetCookiesOnSet"
                     ]
                 }
             ]
@@ -12483,21 +12460,6 @@
             ]
         }
     ],
-    "IOSEnterpriseRealtimeEventReporting": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterpriseRealtimeEventReportingOnIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSEnterpriseRealtimeUrlFiltering": [
         {
             "platforms": [
@@ -14022,21 +13984,6 @@
             ]
         }
     ],
-    "LargeCapacityInSnapshotLRUCache": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LargeCapacityInSnapshotLRUCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "LayoutNGShapeCacheWebview": [
         {
             "platforms": [
@@ -14322,21 +14269,6 @@
             ]
         }
     ],
-    "Lobster": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "Lobster"
-                    ]
-                }
-            ]
-        }
-    ],
     "LobsterDogfood": [
         {
             "platforms": [
@@ -14347,33 +14279,6 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "LobsterDogfood"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LobsterI18n": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LobsterI18n"
-                    ],
-                    "disable_features": [
-                        "LobsterDisabledByInvalidIME"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "LobsterI18n"
-                    ],
-                    "disable_features": [
-                        "LobsterDisabledByInvalidIME"
                     ]
                 }
             ]
@@ -15452,6 +15357,25 @@
             ]
         }
     ],
+    "NavigationThrottleRegistryAttributeCache": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NavigationThrottleRegistryAttributeCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbyBleV2": [
         {
             "platforms": [
@@ -15614,9 +15538,18 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "url_loader": "true"
+                        "http_proxy_connect_job": "true",
+                        "http_stream_factory_job": "true",
+                        "http_stream_factory_job_controller": "true",
+                        "resource_scheduler": "true",
+                        "url_loader": "true",
+                        "url_request_error_job": "true",
+                        "url_request_http_job": "true",
+                        "url_request_job": "true",
+                        "url_request_redirect_job": "true"
                     },
                     "enable_features": [
+                        "NetTaskScheduler",
                         "NetworkServiceTaskScheduler"
                     ]
                 }
@@ -16022,21 +15955,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OfferPinToTaskbarWhenSettingDefault"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OfflineItemsInNotifications": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OfflineItemsInNotifications"
                     ]
                 }
             ]
@@ -17487,15 +17405,6 @@
                 "windows"
             ],
             "experiments": [
-                {
-                    "name": "EnabledPdfLoad",
-                    "params": {
-                        "trigger": "pdf-load"
-                    },
-                    "enable_features": [
-                        "PdfInfoBar"
-                    ]
-                },
                 {
                     "name": "EnabledStartup",
                     "params": {
@@ -22899,6 +22808,21 @@
             ]
         }
     ],
+    "SettingsSingleActivity": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SettingsSingleActivity"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShareCustomActionsInCCT": [
         {
             "platforms": [
@@ -26447,6 +26371,23 @@
             ]
         }
     ],
+    "WebGPUUseSpirv14": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseSpirv14"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebGPUUseVulkanMemoryModel": [
         {
             "platforms": [
@@ -26971,6 +26912,24 @@
                         "max_post_decode_queue_size": "10",
                         "reduce_steady_state_queue_size_threshold": "20"
                     }
+                }
+            ]
+        }
+    ],
+    "WebRTCColorAccuracy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRTCColorAccuracy"
+                    ]
                 }
             ]
         }
@@ -27673,21 +27632,6 @@
                     "name": "Disabled_M140",
                     "disable_features": [
                         "WidevinePersistentLicenseSupport"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WidgetsForMultiprofileExperiment": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WidgetsForMultiprofile"
                     ]
                 }
             ]

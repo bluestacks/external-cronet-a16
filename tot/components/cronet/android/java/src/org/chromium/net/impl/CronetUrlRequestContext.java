@@ -614,8 +614,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 if (!haveRequestContextAdapter()) {
                     return;
                 }
-                CronetUrlRequestContextJni.get()
-                        .destroy(mUrlRequestContextAdapter, CronetUrlRequestContext.this);
+                CronetUrlRequestContextJni.get().destroy(mUrlRequestContextAdapter);
                 mUrlRequestContextAdapter = 0;
             }
         }
@@ -629,11 +628,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 return;
             }
             if (!CronetUrlRequestContextJni.get()
-                    .startNetLogToFile(
-                            mUrlRequestContextAdapter,
-                            CronetUrlRequestContext.this,
-                            fileName,
-                            logAll)) {
+                    .startNetLogToFile(mUrlRequestContextAdapter, fileName, logAll)) {
+
                 throw new RuntimeException("Unable to start NetLog");
             }
             mIsLogging = true;
@@ -648,12 +644,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 return;
             }
             CronetUrlRequestContextJni.get()
-                    .startNetLogToDisk(
-                            mUrlRequestContextAdapter,
-                            CronetUrlRequestContext.this,
-                            dirPath,
-                            logAll,
-                            maxSize);
+                    .startNetLogToDisk(mUrlRequestContextAdapter, dirPath, logAll, maxSize);
+
             mIsLogging = true;
         }
     }
@@ -665,8 +657,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             if (!mIsLogging || mIsStoppingNetLog) {
                 return;
             }
-            CronetUrlRequestContextJni.get()
-                    .stopNetLog(mUrlRequestContextAdapter, CronetUrlRequestContext.this);
+            CronetUrlRequestContextJni.get().stopNetLog(mUrlRequestContextAdapter);
             mIsStoppingNetLog = true;
         }
         mStopNetLogCompleted.block();
@@ -680,8 +671,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     public void flushWritePropertiesForTesting() {
         synchronized (mLock) {
             CronetUrlRequestContextJni.get()
-                    .flushWritePropertiesForTesting( // IN-TEST
-                            mUrlRequestContextAdapter, CronetUrlRequestContext.this);
+                    .flushWritePropertiesForTesting(mUrlRequestContextAdapter); // IN-TEST
         }
     }
 
@@ -820,7 +810,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             CronetUrlRequestContextJni.get()
                     .configureNetworkQualityEstimatorForTesting(
                             mUrlRequestContextAdapter,
-                            CronetUrlRequestContext.this,
                             useLocalHostRequests,
                             useSmallerResponses,
                             disableOfflineCheck);
@@ -837,8 +826,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 synchronized (mLock) {
                     checkHaveAdapter();
                     CronetUrlRequestContextJni.get()
-                            .provideRTTObservations(
-                                    mUrlRequestContextAdapter, CronetUrlRequestContext.this, true);
+                            .provideRTTObservations(mUrlRequestContextAdapter, true);
                 }
             }
             mRttListenerList.addObserver(
@@ -858,10 +846,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     synchronized (mLock) {
                         checkHaveAdapter();
                         CronetUrlRequestContextJni.get()
-                                .provideRTTObservations(
-                                        mUrlRequestContextAdapter,
-                                        CronetUrlRequestContext.this,
-                                        false);
+                                .provideRTTObservations(mUrlRequestContextAdapter, false);
                     }
                 }
             }
@@ -878,8 +863,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 synchronized (mLock) {
                     checkHaveAdapter();
                     CronetUrlRequestContextJni.get()
-                            .provideThroughputObservations(
-                                    mUrlRequestContextAdapter, CronetUrlRequestContext.this, true);
+                            .provideThroughputObservations(mUrlRequestContextAdapter, true);
                 }
             }
             mThroughputListenerList.addObserver(
@@ -899,10 +883,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     synchronized (mLock) {
                         checkHaveAdapter();
                         CronetUrlRequestContextJni.get()
-                                .provideThroughputObservations(
-                                        mUrlRequestContextAdapter,
-                                        CronetUrlRequestContext.this,
-                                        false);
+                                .provideThroughputObservations(mUrlRequestContextAdapter, false);
                     }
                 }
             }
@@ -1163,44 +1144,36 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         long createRequestContextAdapter(long urlRequestContextConfig);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        void destroy(long nativePtr, CronetUrlRequestContext caller);
+        void destroy(long nativePtr);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        boolean startNetLogToFile(
-                long nativePtr, CronetUrlRequestContext caller, String fileName, boolean logAll);
+        boolean startNetLogToFile(long nativePtr, String fileName, boolean logAll);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        void startNetLogToDisk(
-                long nativePtr,
-                CronetUrlRequestContext caller,
-                String dirPath,
-                boolean logAll,
-                int maxSize);
+        void startNetLogToDisk(long nativePtr, String dirPath, boolean logAll, int maxSize);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        void stopNetLog(long nativePtr, CronetUrlRequestContext caller);
+        void stopNetLog(long nativePtr);
 
         @NativeClassQualifiedName("CronetContextAdapter")
         void flushWritePropertiesForTesting( // IN-TEST
-                long nativePtr, CronetUrlRequestContext caller);
+                long nativePtr);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        void initRequestContextOnInitThread(long nativePtr, CronetUrlRequestContext caller);
+        void initRequestContextOnInitThread(long nativePtr, CronetUrlRequestContext self);
 
         @NativeClassQualifiedName("CronetContextAdapter")
         void configureNetworkQualityEstimatorForTesting(
                 long nativePtr,
-                CronetUrlRequestContext caller,
                 boolean useLocalHostRequests,
                 boolean useSmallerResponses,
                 boolean disableOfflineCheck);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        void provideRTTObservations(long nativePtr, CronetUrlRequestContext caller, boolean should);
+        void provideRTTObservations(long nativePtr, boolean should);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        void provideThroughputObservations(
-                long nativePtr, CronetUrlRequestContext caller, boolean should);
+        void provideThroughputObservations(long nativePtr, boolean should);
 
         @JniType("bool")
         boolean isValidHeaderName(@JniType("std::string") String headerName);

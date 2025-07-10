@@ -824,7 +824,6 @@ cc_library_static {
         "allocator/dispatcher/reentry_guard.cc",
         "allocator/dispatcher/tls.cc",
         "android/android_hardware_buffer_compat.cc",
-        "android/android_image_reader_compat.cc",
         "android/android_info.cc",
         "android/android_input_receiver_compat.cc",
         "android/apk_assets.cc",
@@ -1000,6 +999,8 @@ cc_library_static {
         "memory/unsafe_shared_memory_region.cc",
         "memory/weak_ptr.cc",
         "memory/writable_shared_memory_region.cc",
+        "memory_coordinator/memory_consumer.cc",
+        "memory_coordinator/memory_consumer_registry.cc",
         "message_loop/io_watcher.cc",
         "message_loop/message_pump.cc",
         "message_loop/message_pump_android.cc",
@@ -1527,6 +1528,8 @@ cc_library_static {
         "memory/unsafe_shared_memory_region.cc",
         "memory/weak_ptr.cc",
         "memory/writable_shared_memory_region.cc",
+        "memory_coordinator/memory_consumer.cc",
+        "memory_coordinator/memory_consumer_registry.cc",
         "message_loop/io_watcher.cc",
         "message_loop/message_pump.cc",
         "message_loop/message_pump_default.cc",
@@ -1881,7 +1884,6 @@ cc_library_static {
         android_arm: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -1996,7 +1998,6 @@ cc_library_static {
         android_arm64: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -2113,7 +2114,6 @@ cc_library_static {
         android_riscv64: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -2225,7 +2225,6 @@ cc_library_static {
         android_x86: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -2339,7 +2338,6 @@ cc_library_static {
         android_x86_64: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",

@@ -264,13 +264,37 @@ bool MoqtSession::SubscribeAnnounces(
                     << "Tried to send SUBSCRIBE_ANNOUNCES after GOAWAY";
     return false;
   }
+  if (next_request_id_ >= peer_max_request_id_) {
+    if (!last_requests_blocked_sent_.has_value() ||
+        peer_max_request_id_ > *last_requests_blocked_sent_) {
+      MoqtRequestsBlocked requests_blocked;
+      requests_blocked.max_request_id = peer_max_request_id_;
+      SendControlMessage(framer_.SerializeRequestsBlocked(requests_blocked));
+      last_requests_blocked_sent_ = peer_max_request_id_;
+    }
+    QUIC_DLOG(INFO) << ENDPOINT << "Tried to send SUBSCRIBE_ANNOUNCES with ID "
+                    << next_request_id_
+                    << " which is greater than the maximum ID "
+                    << peer_max_request_id_;
+    return false;
+  }
+  if (outgoing_subscribe_announces_.contains(track_namespace)) {
+    std::move(callback)(
+        track_namespace, RequestErrorCode::kInternalError,
+        "SUBSCRIBE_ANNOUNCES already outstanding for namespace");
+    return false;
+  }
   MoqtSubscribeAnnounces message;
+  message.request_id = next_request_id_;
+  next_request_id_ += 2;
   message.track_namespace = track_namespace;
   message.parameters = parameters;
   SendControlMessage(framer_.SerializeSubscribeAnnounces(message));
   QUIC_DLOG(INFO) << ENDPOINT << "Sent SUBSCRIBE_ANNOUNCES message for "
                   << message.track_namespace;
-  outgoing_subscribe_announces_[track_namespace] = std::move(callback);
+  pending_outgoing_subscribe_announces_[message.request_id] =
+      PendingSubscribeAnnouncesData{track_namespace, std::move(callback)};
+  outgoing_subscribe_announces_.emplace(track_namespace);
   return true;
 }
 
@@ -295,9 +319,22 @@ void MoqtSession::Announce(TrackNamespace track_namespace,
   if (outgoing_announces_.contains(track_namespace)) {
     std::move(announce_callback)(
         track_namespace,
-        MoqtAnnounceErrorReason{
-            RequestErrorCode::kInternalError,
-            "ANNOUNCE message already outstanding for namespace"});
+        MoqtAnnounceErrorReason{RequestErrorCode::kInternalError,
+                                "ANNOUNCE already outstanding for namespace"});
+    return;
+  }
+  if (next_request_id_ >= peer_max_request_id_) {
+    if (!last_requests_blocked_sent_.has_value() ||
+        peer_max_request_id_ > *last_requests_blocked_sent_) {
+      MoqtRequestsBlocked requests_blocked;
+      requests_blocked.max_request_id = peer_max_request_id_;
+      SendControlMessage(framer_.SerializeRequestsBlocked(requests_blocked));
+      last_requests_blocked_sent_ = peer_max_request_id_;
+    }
+    QUIC_DLOG(INFO) << ENDPOINT << "Tried to send ANNOUNCE with ID "
+                    << next_request_id_
+                    << " which is greater than the maximum ID "
+                    << peer_max_request_id_;
     return;
   }
   if (received_goaway_ || sent_goaway_) {
@@ -305,11 +342,14 @@ void MoqtSession::Announce(TrackNamespace track_namespace,
     return;
   }
   MoqtAnnounce message;
+  message.request_id = next_request_id_;
+  next_request_id_ += 2;
   message.track_namespace = track_namespace;
   message.parameters = parameters;
   SendControlMessage(framer_.SerializeAnnounce(message));
   QUIC_DLOG(INFO) << ENDPOINT << "Sent ANNOUNCE message for "
                   << message.track_namespace;
+  pending_outgoing_announces_[message.request_id] = track_namespace;
   outgoing_announces_[track_namespace] = std::move(announce_callback);
 }
 
@@ -1165,12 +1205,15 @@ void MoqtSession::ControlStream::OnSubscribeUpdateMessage(
 
 void MoqtSession::ControlStream::OnAnnounceMessage(
     const MoqtAnnounce& message) {
+  if (!session_->ValidateRequestId(message.request_id)) {
+    return;
+  }
   if (session_->sent_goaway_) {
     QUIC_DLOG(INFO) << ENDPOINT << "Received an ANNOUNCE after GOAWAY";
     MoqtAnnounceError error;
-    error.track_namespace = message.track_namespace;
+    error.request_id = message.request_id;
     error.error_code = RequestErrorCode::kUnauthorized;
-    error.reason_phrase = "ANNOUNCE after GOAWAY";
+    error.error_reason = "ANNOUNCE after GOAWAY";
     SendOrBufferMessage(session_->framer_.SerializeAnnounceError(error));
     return;
   }
@@ -1179,14 +1222,14 @@ void MoqtSession::ControlStream::OnAnnounceMessage(
                                                       message.parameters);
   if (error.has_value()) {
     MoqtAnnounceError reply;
-    reply.track_namespace = message.track_namespace;
+    reply.request_id = message.request_id;
     reply.error_code = error->error_code;
-    reply.reason_phrase = error->reason_phrase;
+    reply.error_reason = error->reason_phrase;
     SendOrBufferMessage(session_->framer_.SerializeAnnounceError(reply));
     return;
   }
   MoqtAnnounceOk ok;
-  ok.track_namespace = message.track_namespace;
+  ok.request_id = message.request_id;
   SendOrBufferMessage(session_->framer_.SerializeAnnounceOk(ok));
 }
 
@@ -1194,24 +1237,41 @@ void MoqtSession::ControlStream::OnAnnounceMessage(
 // ERROR, we immediately destroy the state.
 void MoqtSession::ControlStream::OnAnnounceOkMessage(
     const MoqtAnnounceOk& message) {
-  auto it = session_->outgoing_announces_.find(message.track_namespace);
-  if (it == session_->outgoing_announces_.end()) {
-    return;  // State might have been destroyed due to UNANNOUNCE.
+  auto it = session_->pending_outgoing_announces_.find(message.request_id);
+  if (it == session_->pending_outgoing_announces_.end()) {
+    session_->Error(MoqtError::kProtocolViolation,
+                    "Received ANNOUNCE_OK for unknown request_id");
+    return;
   }
-  std::move(it->second)(message.track_namespace, std::nullopt);
+  TrackNamespace track_namespace = it->second;
+  session_->pending_outgoing_announces_.erase(it);
+  auto callback_it = session_->outgoing_announces_.find(track_namespace);
+  if (callback_it == session_->outgoing_announces_.end()) {
+    // It might have already been destroyed due to UNANNOUNCE.
+    return;
+  }
+  std::move(callback_it->second)(track_namespace, std::nullopt);
 }
 
 void MoqtSession::ControlStream::OnAnnounceErrorMessage(
     const MoqtAnnounceError& message) {
-  auto it = session_->outgoing_announces_.find(message.track_namespace);
-  if (it == session_->outgoing_announces_.end()) {
+  auto it = session_->pending_outgoing_announces_.find(message.request_id);
+  if (it == session_->pending_outgoing_announces_.end()) {
+    session_->Error(MoqtError::kProtocolViolation,
+                    "Received ANNOUNCE_ERROR for unknown request_id");
+    return;
+  }
+  TrackNamespace track_namespace = it->second;
+  session_->pending_outgoing_announces_.erase(it);
+  auto it2 = session_->outgoing_announces_.find(track_namespace);
+  if (it2 == session_->outgoing_announces_.end()) {
     return;  // State might have been destroyed due to UNANNOUNCE.
   }
-  std::move(it->second)(
-      message.track_namespace,
+  std::move(it2->second)(
+      track_namespace,
       MoqtAnnounceErrorReason{message.error_code,
-                              std::string(message.reason_phrase)});
-  session_->outgoing_announces_.erase(it);
+                              std::string(message.error_reason)});
+  session_->outgoing_announces_.erase(it2);
 }
 
 void MoqtSession::ControlStream::OnAnnounceCancelMessage(
@@ -1227,8 +1287,36 @@ void MoqtSession::ControlStream::OnAnnounceCancelMessage(
   std::move(it->second)(
       message.track_namespace,
       MoqtAnnounceErrorReason{message.error_code,
-                              std::string(message.reason_phrase)});
+                              std::string(message.error_reason)});
   session_->outgoing_announces_.erase(it);
+}
+
+void MoqtSession::ControlStream::OnTrackStatusRequestMessage(
+    const MoqtTrackStatusRequest& message) {
+  if (!session_->ValidateRequestId(message.request_id)) {
+    return;
+  }
+  if (session_->sent_goaway_) {
+    QUIC_DLOG(INFO) << ENDPOINT
+                    << "Received a TRACK_STATUS_REQUEST after GOAWAY";
+    SendOrBufferMessage(session_->framer_.SerializeTrackStatus(
+        MoqtTrackStatus(message.request_id, MoqtTrackStatusCode::kDoesNotExist,
+                        Location(0, 0))));
+    return;
+  }
+  // TODO(martinduke): Handle authentication.
+  absl::StatusOr<std::shared_ptr<MoqtTrackPublisher>> track =
+      session_->publisher_->GetTrack(message.full_track_name);
+  if (!track.ok()) {
+    SendOrBufferMessage(session_->framer_.SerializeTrackStatus(
+        MoqtTrackStatus(message.request_id, MoqtTrackStatusCode::kDoesNotExist,
+                        Location(0, 0))));
+    return;
+  }
+  session_->incoming_track_status_.emplace(
+      std::pair<uint64_t, DownstreamTrackStatus>(
+          message.request_id,
+          DownstreamTrackStatus(message.request_id, session_, track->get())));
 }
 
 void MoqtSession::ControlStream::OnUnannounceMessage(
@@ -1258,14 +1346,17 @@ void MoqtSession::ControlStream::OnGoAwayMessage(const MoqtGoAway& message) {
 
 void MoqtSession::ControlStream::OnSubscribeAnnouncesMessage(
     const MoqtSubscribeAnnounces& message) {
+  if (!session_->ValidateRequestId(message.request_id)) {
+    return;
+  }
   // TODO(martinduke): Handle authentication.
   if (session_->sent_goaway_) {
     QUIC_DLOG(INFO) << ENDPOINT
                     << "Received a SUBSCRIBE_ANNOUNCES after GOAWAY";
     MoqtSubscribeAnnouncesError error;
-    error.track_namespace = message.track_namespace;
+    error.request_id = message.request_id;
     error.error_code = RequestErrorCode::kUnauthorized;
-    error.reason_phrase = "SUBSCRIBE_ANNOUNCES after GOAWAY";
+    error.error_reason = "SUBSCRIBE_ANNOUNCES after GOAWAY";
     SendOrBufferMessage(
         session_->framer_.SerializeSubscribeAnnouncesError(error));
     return;
@@ -1275,49 +1366,45 @@ void MoqtSession::ControlStream::OnSubscribeAnnouncesMessage(
           message.track_namespace, message.parameters);
   if (result.has_value()) {
     MoqtSubscribeAnnouncesError error;
-    error.track_namespace = message.track_namespace;
+    error.request_id = message.request_id;
     error.error_code = result->error_code;
-    error.reason_phrase = result->reason_phrase;
+    error.error_reason = result->reason_phrase;
     SendOrBufferMessage(
         session_->framer_.SerializeSubscribeAnnouncesError(error));
     return;
   }
   MoqtSubscribeAnnouncesOk ok;
-  ok.track_namespace = message.track_namespace;
+  ok.request_id = message.request_id;
   SendOrBufferMessage(session_->framer_.SerializeSubscribeAnnouncesOk(ok));
 }
 
 void MoqtSession::ControlStream::OnSubscribeAnnouncesOkMessage(
     const MoqtSubscribeAnnouncesOk& message) {
   auto it =
-      session_->outgoing_subscribe_announces_.find(message.track_namespace);
-  if (it == session_->outgoing_subscribe_announces_.end()) {
+      session_->pending_outgoing_subscribe_announces_.find(message.request_id);
+  if (it == session_->pending_outgoing_subscribe_announces_.end()) {
+    session_->Error(MoqtError::kProtocolViolation,
+                    "Received SUBSCRIBE_ANNOUNCES_OK for unknown request_id");
     return;  // UNSUBSCRIBE_ANNOUNCES may already have deleted the entry.
   }
-  if (it->second == nullptr) {
-    session_->Error(MoqtError::kProtocolViolation,
-                    "Two responses to SUBSCRIBE_ANNOUNCES");
-    return;
-  }
-  std::move(it->second)(message.track_namespace, std::nullopt, "");
-  it->second = nullptr;
+  std::move(it->second.callback)(it->second.track_namespace, std::nullopt, "");
+  session_->pending_outgoing_subscribe_announces_.erase(it);
 }
 
 void MoqtSession::ControlStream::OnSubscribeAnnouncesErrorMessage(
     const MoqtSubscribeAnnouncesError& message) {
   auto it =
-      session_->outgoing_subscribe_announces_.find(message.track_namespace);
-  if (it == session_->outgoing_subscribe_announces_.end()) {
+      session_->pending_outgoing_subscribe_announces_.find(message.request_id);
+  if (it == session_->pending_outgoing_subscribe_announces_.end()) {
+    session_->Error(
+        MoqtError::kProtocolViolation,
+        "Received SUBSCRIBE_ANNOUNCES_ERROR for unknown request_id");
     return;  // UNSUBSCRIBE_ANNOUNCES may already have deleted the entry.
   }
-  if (it->second == nullptr) {
-    session_->Error(MoqtError::kProtocolViolation,
-                    "Two responses to SUBSCRIBE_ANNOUNCES");
-    return;
-  }
-  std::move(it->second)(message.track_namespace, message.error_code,
-                        absl::string_view(message.reason_phrase));
-  session_->outgoing_subscribe_announces_.erase(it);
+  std::move(it->second.callback)(it->second.track_namespace, message.error_code,
+                                 absl::string_view(message.error_reason));
+  session_->outgoing_subscribe_announces_.erase(it->second.track_namespace);
+  session_->pending_outgoing_subscribe_announces_.erase(it);
 }
 
 void MoqtSession::ControlStream::OnUnsubscribeAnnouncesMessage(

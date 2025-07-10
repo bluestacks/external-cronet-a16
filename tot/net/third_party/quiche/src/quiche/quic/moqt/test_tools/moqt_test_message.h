@@ -813,32 +813,37 @@ class QUICHE_NO_EXPORT AnnounceMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtAnnounce>(values);
+    if (cast.request_id != announce_.request_id) {
+      QUIC_LOG(INFO) << "ANNOUNCE request ID mismatch";
+      return false;
+    }
     if (cast.track_namespace != announce_.track_namespace) {
-      QUIC_LOG(INFO) << "ANNOUNCE MESSAGE track namespace mismatch";
+      QUIC_LOG(INFO) << "ANNOUNCE track namespace mismatch";
       return false;
     }
     if (cast.parameters != announce_.parameters) {
-      QUIC_LOG(INFO) << "ANNOUNCE MESSAGE parameter mismatch";
+      QUIC_LOG(INFO) << "ANNOUNCE parameter mismatch";
       return false;
     }
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---vvv-----"); }
+  void ExpandVarints() override { ExpandVarintsImpl("vvv---vvv-----"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(announce_);
   }
 
  private:
-  uint8_t raw_packet_[16] = {
-      0x06, 0x00, 0x0d, 0x01, 0x03, 0x66, 0x6f,
-      0x6f,                                      // track_namespace = "foo"
+  uint8_t raw_packet_[17] = {
+      0x06, 0x00, 0x0e, 0x02,                    // request_id = 2
+      0x01, 0x03, 0x66, 0x6f, 0x6f,              // track_namespace = "foo"
       0x01,                                      // 1 parameter
       0x01, 0x05, 0x03, 0x00, 0x62, 0x61, 0x72,  // authorization_tag = "bar"
   };
 
   MoqtAnnounce announce_ = {
+      /*request_id=*/2,
       TrackNamespace{"foo"},
       VersionSpecificParameters(AuthTokenType::kOutOfBand, "bar"),
   };
@@ -852,27 +857,26 @@ class QUICHE_NO_EXPORT AnnounceOkMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtAnnounceOk>(values);
-    if (cast.track_namespace != announce_ok_.track_namespace) {
-      QUIC_LOG(INFO) << "ANNOUNCE OK MESSAGE track namespace mismatch";
+    if (cast.request_id != announce_ok_.request_id) {
+      QUIC_LOG(INFO) << "ANNOUNCE OK MESSAGE request ID mismatch";
       return false;
     }
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---"); }
+  void ExpandVarints() override { ExpandVarintsImpl("v"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(announce_ok_);
   }
 
  private:
-  uint8_t raw_packet_[8] = {
-      0x07, 0x00, 0x05, 0x01,
-      0x03, 0x66, 0x6f, 0x6f,  // track_namespace = "foo"
+  uint8_t raw_packet_[4] = {
+      0x07, 0x00, 0x01, 0x01,  // request_id = 1
   };
 
   MoqtAnnounceOk announce_ok_ = {
-      TrackNamespace("foo"),
+      /*request_id=*/1,
   };
 };
 
@@ -884,37 +888,36 @@ class QUICHE_NO_EXPORT AnnounceErrorMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtAnnounceError>(values);
-    if (cast.track_namespace != announce_error_.track_namespace) {
-      QUIC_LOG(INFO) << "ANNOUNCE ERROR track namespace mismatch";
+    if (cast.request_id != announce_error_.request_id) {
+      QUIC_LOG(INFO) << "ANNOUNCE_ERROR request ID mismatch";
       return false;
     }
     if (cast.error_code != announce_error_.error_code) {
-      QUIC_LOG(INFO) << "ANNOUNCE ERROR error code mismatch";
+      QUIC_LOG(INFO) << "ANNOUNCE_ERROR error code mismatch";
       return false;
     }
-    if (cast.reason_phrase != announce_error_.reason_phrase) {
-      QUIC_LOG(INFO) << "ANNOUNCE ERROR reason phrase mismatch";
+    if (cast.error_reason != announce_error_.error_reason) {
+      QUIC_LOG(INFO) << "ANNOUNCE_ERROR error reason mismatch";
       return false;
     }
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---vv---"); }
+  void ExpandVarints() override { ExpandVarintsImpl("vvv---"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(announce_error_);
   }
 
  private:
-  uint8_t raw_packet_[13] = {
-      0x08, 0x00, 0x0a, 0x01,
-      0x03, 0x66, 0x6f, 0x6f,  // track_namespace = "foo"
+  uint8_t raw_packet_[9] = {
+      0x08, 0x00, 0x06, 0x01,  // request_id = 1
       0x03,                    // error_code = 3
       0x03, 0x62, 0x61, 0x72,  // reason_phrase = "bar"
   };
 
   MoqtAnnounceError announce_error_ = {
-      TrackNamespace("foo"),
+      /*request_id=*/1,
       RequestErrorCode::kNotSupported,
       /*reason_phrase=*/"bar",
   };
@@ -936,7 +939,7 @@ class QUICHE_NO_EXPORT AnnounceCancelMessage : public TestMessageBase {
       QUIC_LOG(INFO) << "ANNOUNCE CANCEL error code mismatch";
       return false;
     }
-    if (cast.reason_phrase != announce_cancel_.reason_phrase) {
+    if (cast.error_reason != announce_cancel_.error_reason) {
       QUIC_LOG(INFO) << "ANNOUNCE CANCEL reason phrase mismatch";
       return false;
     }
@@ -954,13 +957,13 @@ class QUICHE_NO_EXPORT AnnounceCancelMessage : public TestMessageBase {
       0x0c, 0x00, 0x0a, 0x01,
       0x03, 0x66, 0x6f, 0x6f,  // track_namespace = "foo"
       0x03,                    // error_code = 3
-      0x03, 0x62, 0x61, 0x72,  // reason_phrase = "bar"
+      0x03, 0x62, 0x61, 0x72,  // error_reason = "bar"
   };
 
   MoqtAnnounceCancel announce_cancel_ = {
       TrackNamespace("foo"),
       RequestErrorCode::kNotSupported,
-      /*reason_phrase=*/"bar",
+      /*error_reason=*/"bar",
   };
 };
 
@@ -972,6 +975,10 @@ class QUICHE_NO_EXPORT TrackStatusRequestMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtTrackStatusRequest>(values);
+    if (cast.request_id != track_status_request_.request_id) {
+      QUIC_LOG(INFO) << "TRACK STATUS REQUEST request ID mismatch";
+      return false;
+    }
     if (cast.full_track_name != track_status_request_.full_track_name) {
       QUIC_LOG(INFO) << "TRACK STATUS REQUEST track name mismatch";
       return false;
@@ -983,22 +990,23 @@ class QUICHE_NO_EXPORT TrackStatusRequestMessage : public TestMessageBase {
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---v----vvv-----"); }
+  void ExpandVarints() override { ExpandVarintsImpl("vvv---v----vvv-----"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(track_status_request_);
   }
 
  private:
-  uint8_t raw_packet_[21] = {
-      0x0d, 0x00, 0x12, 0x01, 0x03, 0x66, 0x6f,
-      0x6f,                                      // track_namespace = "foo"
+  uint8_t raw_packet_[22] = {
+      0x0d, 0x00, 0x13, 0x02,                    // request_id = 2
+      0x01, 0x03, 0x66, 0x6f, 0x6f,              // track_namespace = "foo"
       0x04, 0x61, 0x62, 0x63, 0x64,              // track_name = "abcd"
       0x01,                                      // 1 parameter
       0x01, 0x05, 0x03, 0x00, 0x62, 0x61, 0x72,  // authorization_tag = "bar"
   };
 
   MoqtTrackStatusRequest track_status_request_ = {
+      /*request_id=*/2,
       FullTrackName("foo", "abcd"),
       VersionSpecificParameters(AuthTokenType::kOutOfBand, "bar"),
   };
@@ -1043,20 +1051,16 @@ class QUICHE_NO_EXPORT TrackStatusMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtTrackStatus>(values);
-    if (cast.full_track_name != track_status_.full_track_name) {
-      QUIC_LOG(INFO) << "TRACK STATUS track name mismatch";
+    if (cast.request_id != track_status_.request_id) {
+      QUIC_LOG(INFO) << "TRACK STATUS request ID mismatch";
       return false;
     }
     if (cast.status_code != track_status_.status_code) {
       QUIC_LOG(INFO) << "TRACK STATUS code mismatch";
       return false;
     }
-    if (cast.last_group != track_status_.last_group) {
-      QUIC_LOG(INFO) << "TRACK STATUS last group mismatch";
-      return false;
-    }
-    if (cast.last_object != track_status_.last_object) {
-      QUIC_LOG(INFO) << "TRACK STATUS last object mismatch";
+    if (cast.largest_location != track_status_.largest_location) {
+      QUIC_LOG(INFO) << "TRACK STATUS largest location mismatch";
       return false;
     }
     if (cast.parameters != track_status_.parameters) {
@@ -1066,28 +1070,25 @@ class QUICHE_NO_EXPORT TrackStatusMessage : public TestMessageBase {
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---v----vvvvv--v--"); }
+  void ExpandVarints() override { ExpandVarintsImpl("v-vvvv--v--"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(track_status_);
   }
 
  private:
-  uint8_t raw_packet_[23] = {
-      0x0e, 0x00, 0x14, 0x01, 0x03,
-      0x66, 0x6f, 0x6f,              // track_namespace = "foo"
-      0x04, 0x61, 0x62, 0x63, 0x64,  // track_name = "abcd"
-      0x00, 0x0c, 0x14,              // status, last_group, last_object
-      0x02,                          // 2 parameters
-      0x02, 0x67, 0x10,              // Delivery Timeout = 10000
-      0x04, 0x67, 0x10,              // Max Cache Duration = 10000
+  uint8_t raw_packet_[14] = {
+      0x0e, 0x00, 0x0b, 0x02,  // request_id = 2
+      0x00, 0x0c, 0x14,        // status, last_group, last_object
+      0x02,                    // 2 parameters
+      0x02, 0x67, 0x10,        // Delivery Timeout = 10000
+      0x04, 0x67, 0x10,        // Max Cache Duration = 10000
   };
 
   MoqtTrackStatus track_status_ = {
-      FullTrackName("foo", "abcd"),
+      /*request_id=*/2,
       /*status_code=*/MoqtTrackStatusCode::kInProgress,
-      /*last_group=*/12,
-      /*last_object=*/20,
+      /*largest_location=*/Location(12, 20),
       VersionSpecificParameters(quic::QuicTimeDelta::FromMilliseconds(10000),
                                 quic::QuicTimeDelta::FromMilliseconds(10000)),
   };
@@ -1132,6 +1133,10 @@ class QUICHE_NO_EXPORT SubscribeAnnouncesMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtSubscribeAnnounces>(values);
+    if (cast.request_id != subscribe_namespace_.request_id) {
+      QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE request_id mismatch";
+      return false;
+    }
     if (cast.track_namespace != subscribe_namespace_.track_namespace) {
       QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE track namespace mismatch";
       return false;
@@ -1143,20 +1148,22 @@ class QUICHE_NO_EXPORT SubscribeAnnouncesMessage : public TestMessageBase {
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---vvv-----"); }
+  void ExpandVarints() override { ExpandVarintsImpl("vvv---vvv-----"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(subscribe_namespace_);
   }
 
  private:
-  uint8_t raw_packet_[16] = {
-      0x11, 0x00, 0x0d, 0x01, 0x03, 0x66, 0x6f, 0x6f,  // namespace = "foo"
-      0x01,                                            // 1 parameter
+  uint8_t raw_packet_[17] = {
+      0x11, 0x00, 0x0e, 0x01,                    // request_id = 1
+      0x01, 0x03, 0x66, 0x6f, 0x6f,              // namespace = "foo"
+      0x01,                                      // 1 parameter
       0x01, 0x05, 0x03, 0x00, 0x62, 0x61, 0x72,  // authorization_tag = "bar"
   };
 
   MoqtSubscribeAnnounces subscribe_namespace_ = {
+      /*request_id=*/1,
       TrackNamespace("foo"),
       VersionSpecificParameters(AuthTokenType::kOutOfBand, "bar"),
   };
@@ -1170,26 +1177,26 @@ class QUICHE_NO_EXPORT SubscribeAnnouncesOkMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtSubscribeAnnouncesOk>(values);
-    if (cast.track_namespace != subscribe_namespace_ok_.track_namespace) {
-      QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE_OK track namespace mismatch";
+    if (cast.request_id != subscribe_namespace_ok_.request_id) {
+      QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE_OK request_id mismatch";
       return false;
     }
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---"); }
+  void ExpandVarints() override { ExpandVarintsImpl("v"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(subscribe_namespace_ok_);
   }
 
  private:
-  uint8_t raw_packet_[8] = {
-      0x12, 0x00, 0x05, 0x01, 0x03, 0x66, 0x6f, 0x6f,  // namespace = "foo"
+  uint8_t raw_packet_[4] = {
+      0x12, 0x00, 0x01, 0x01,  // request_id = 1
   };
 
   MoqtSubscribeAnnouncesOk subscribe_namespace_ok_ = {
-      TrackNamespace("foo"),
+      /*request_id=*/1,
   };
 };
 
@@ -1201,39 +1208,38 @@ class QUICHE_NO_EXPORT SubscribeAnnouncesErrorMessage : public TestMessageBase {
 
   bool EqualFieldValues(MessageStructuredData& values) const override {
     auto cast = std::get<MoqtSubscribeAnnouncesError>(values);
-    if (cast.track_namespace != subscribe_namespace_error_.track_namespace) {
-      QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE_ERROR track namespace mismatch";
+    if (cast.request_id != subscribe_namespace_error_.request_id) {
+      QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE_ERROR request_id mismatch";
       return false;
     }
     if (cast.error_code != subscribe_namespace_error_.error_code) {
       QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE_ERROR error code mismatch";
       return false;
     }
-    if (cast.reason_phrase != subscribe_namespace_error_.reason_phrase) {
-      QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE_ERROR reason phrase mismatch";
+    if (cast.error_reason != subscribe_namespace_error_.error_reason) {
+      QUIC_LOG(INFO) << "SUBSCRIBE_NAMESPACE_ERROR error reason mismatch";
       return false;
     }
     return true;
   }
 
-  void ExpandVarints() override { ExpandVarintsImpl("vv---vv---"); }
+  void ExpandVarints() override { ExpandVarintsImpl("vvv---"); }
 
   MessageStructuredData structured_data() const override {
     return TestMessageBase::MessageStructuredData(subscribe_namespace_error_);
   }
 
  private:
-  uint8_t raw_packet_[13] = {
-      0x13, 0x00, 0x0a, 0x01,
-      0x03, 0x66, 0x6f, 0x6f,  // track_namespace = "foo"
+  uint8_t raw_packet_[9] = {
+      0x13, 0x00, 0x06, 0x01,  // request_id = 1
       0x01,                    // error_code = 1
-      0x03, 0x62, 0x61, 0x72,  // reason_phrase = "bar"
+      0x03, 0x62, 0x61, 0x72,  // error_reason = "bar"
   };
 
   MoqtSubscribeAnnouncesError subscribe_namespace_error_ = {
-      TrackNamespace("foo"),
+      /*request_id=*/1,
       /*error_code=*/RequestErrorCode::kUnauthorized,
-      /*reason_phrase=*/"bar",
+      /*error_reason=*/"bar",
   };
 };
 

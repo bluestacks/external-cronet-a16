@@ -622,22 +622,29 @@ struct QUICHE_EXPORT MoqtSubscribeUpdate {
 };
 
 struct QUICHE_EXPORT MoqtAnnounce {
+  uint64_t request_id;
   TrackNamespace track_namespace;
   VersionSpecificParameters parameters;
 };
 
 struct QUICHE_EXPORT MoqtAnnounceOk {
-  TrackNamespace track_namespace;
+  uint64_t request_id;
 };
 
 struct QUICHE_EXPORT MoqtAnnounceError {
-  TrackNamespace track_namespace;
+  uint64_t request_id;
   RequestErrorCode error_code;
-  std::string reason_phrase;
+  std::string error_reason;
 };
 
 struct QUICHE_EXPORT MoqtUnannounce {
   TrackNamespace track_namespace;
+};
+
+struct QUICHE_EXPORT MoqtAnnounceCancel {
+  TrackNamespace track_namespace;
+  RequestErrorCode error_code;
+  std::string error_reason;
 };
 
 enum class QUICHE_EXPORT MoqtTrackStatusCode : uint64_t {
@@ -661,22 +668,16 @@ inline bool DoesTrackStatusImplyHavingData(MoqtTrackStatusCode code) {
   return false;
 }
 
-struct QUICHE_EXPORT MoqtTrackStatus {
+struct QUICHE_EXPORT MoqtTrackStatusRequest {
+  uint64_t request_id;
   FullTrackName full_track_name;
-  MoqtTrackStatusCode status_code;
-  uint64_t last_group;
-  uint64_t last_object;
   VersionSpecificParameters parameters;
 };
 
-struct QUICHE_EXPORT MoqtAnnounceCancel {
-  TrackNamespace track_namespace;
-  RequestErrorCode error_code;
-  std::string reason_phrase;
-};
-
-struct QUICHE_EXPORT MoqtTrackStatusRequest {
-  FullTrackName full_track_name;
+struct QUICHE_EXPORT MoqtTrackStatus {
+  uint64_t request_id;
+  MoqtTrackStatusCode status_code;
+  Location largest_location;
   VersionSpecificParameters parameters;
 };
 
@@ -685,18 +686,19 @@ struct QUICHE_EXPORT MoqtGoAway {
 };
 
 struct QUICHE_EXPORT MoqtSubscribeAnnounces {
+  uint64_t request_id;
   TrackNamespace track_namespace;
   VersionSpecificParameters parameters;
 };
 
 struct QUICHE_EXPORT MoqtSubscribeAnnouncesOk {
-  TrackNamespace track_namespace;
+  uint64_t request_id;
 };
 
 struct QUICHE_EXPORT MoqtSubscribeAnnouncesError {
-  TrackNamespace track_namespace;
+  uint64_t request_id;
   RequestErrorCode error_code;
-  std::string reason_phrase;
+  std::string error_reason;
 };
 
 struct QUICHE_EXPORT MoqtUnsubscribeAnnounces {

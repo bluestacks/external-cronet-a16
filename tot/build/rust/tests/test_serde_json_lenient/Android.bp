@@ -314,6 +314,8 @@ cc_library_shared {
         "tot_cronet_third_party_perfetto_protos_perfetto_config_interceptors_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_config_power_cpp__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_config_power_zero__testing",
+        "tot_cronet_third_party_perfetto_protos_perfetto_config_priority_boost_cpp__testing",
+        "tot_cronet_third_party_perfetto_protos_perfetto_config_priority_boost_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_config_process_stats_cpp__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_config_process_stats_zero__testing",
         "tot_cronet_third_party_perfetto_protos_perfetto_config_profiling_cpp__testing",

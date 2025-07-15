@@ -89,20 +89,6 @@ using testing::Field;
   NonEmptyCorruptSimpleCacheDoesNotRecover
 #endif
 
-// Some tests use methods that are not implemented in SQLBackend. Therefore,
-// this macro is used to skip such tests.
-// TODO(crbug.com/422065015): Remove this macro once such methods are
-// implemented.
-#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()                                 \
-  if (GetParam() == BackendToTest::kSql) {                                    \
-    LOG(INFO) << "Skipping test for SQL backend as it's not implemented yet"; \
-    return;                                                                   \
-  }
-#else
-#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()
-#endif
-
 using base::Time;
 
 namespace {
@@ -3351,7 +3337,6 @@ void DiskCacheBackendTest::BackendEviction() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, BackendEviction) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendEviction();
 }
 
@@ -4308,7 +4293,13 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
             simple_cache_impl_->index()->init_method());
 }
 
-TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
+// TODO(crbug.com/430656242): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SimpleCacheNegMaxSize DISABLED_SimpleCacheNegMaxSize
+#else
+#define MAYBE_SimpleCacheNegMaxSize SimpleCacheNegMaxSize
+#endif
+TEST_F(DiskCacheBackendTest, MAYBE_SimpleCacheNegMaxSize) {
   SetCacheType(net::GENERATED_BYTE_CODE_CACHE);
 
   SetMaxSize(-1);

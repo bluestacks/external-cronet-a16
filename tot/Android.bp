@@ -102,7 +102,6 @@ rust_ffi_static {
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
-                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -14550,6 +14549,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -14659,6 +14659,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -15104,6 +15105,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -15169,6 +15171,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_jni__action__testing) " +
          "$(locations :tot_cronet_base_tasks_minimal_jni__action__testing) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action__testing) " +
          "$(locations :tot_cronet_build_robolectric_buildflags__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_generate_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_system_jni__action__testing)",
@@ -15229,6 +15232,7 @@ cc_genrule {
         "base/tasks_jni/ThreadUtils_jni.h",
         "base/tasks_minimal_jni/TraceEvent_jni.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/robolectric_buildflags.h",
         "third_party/jni_zero/generate_jni/JniInit_jni.h",
         "third_party/jni_zero/generate_jni/JniUtil_jni.h",
@@ -15264,6 +15268,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_jni__action__testing",
         ":tot_cronet_base_tasks_minimal_jni__action__testing",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing",
+        ":tot_cronet_base_virtual_document_path_jni__action__testing",
         ":tot_cronet_build_robolectric_buildflags__testing",
         ":tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         ":tot_cronet_third_party_jni_zero_system_jni__action__testing",
@@ -15301,6 +15306,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_jni__action__testing) " +
          "$(locations :tot_cronet_base_tasks_minimal_jni__action__testing) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action__testing) " +
          "$(locations :tot_cronet_build_robolectric_buildflags__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_generate_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_system_jni__action__testing)",
@@ -15361,6 +15367,7 @@ cc_genrule {
         "base/tasks_jni/ThreadUtils_jni.h",
         "base/tasks_minimal_jni/TraceEvent_jni.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/robolectric_buildflags.h",
         "third_party/jni_zero/generate_jni/JniInit_jni.h",
         "third_party/jni_zero/generate_jni/JniUtil_jni.h",
@@ -15396,6 +15403,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_jni__action__testing",
         ":tot_cronet_base_tasks_minimal_jni__action__testing",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing",
+        ":tot_cronet_base_virtual_document_path_jni__action__testing",
         ":tot_cronet_build_robolectric_buildflags__testing",
         ":tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         ":tot_cronet_third_party_jni_zero_system_jni__action__testing",
@@ -15433,6 +15441,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_jni__action__testing) " +
          "$(locations :tot_cronet_base_tasks_minimal_jni__action__testing) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action__testing) " +
          "$(locations :tot_cronet_build_robolectric_buildflags__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_generate_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_system_jni__action__testing)",
@@ -15493,6 +15502,7 @@ cc_genrule {
         "base/tasks_jni/ThreadUtils_jni.h",
         "base/tasks_minimal_jni/TraceEvent_jni.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/robolectric_buildflags.h",
         "third_party/jni_zero/generate_jni/JniInit_jni.h",
         "third_party/jni_zero/generate_jni/JniUtil_jni.h",
@@ -15528,6 +15538,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_jni__action__testing",
         ":tot_cronet_base_tasks_minimal_jni__action__testing",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing",
+        ":tot_cronet_base_virtual_document_path_jni__action__testing",
         ":tot_cronet_build_robolectric_buildflags__testing",
         ":tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         ":tot_cronet_third_party_jni_zero_system_jni__action__testing",
@@ -15565,6 +15576,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_jni__action__testing) " +
          "$(locations :tot_cronet_base_tasks_minimal_jni__action__testing) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action__testing) " +
          "$(locations :tot_cronet_build_robolectric_buildflags__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_generate_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_system_jni__action__testing)",
@@ -15625,6 +15637,7 @@ cc_genrule {
         "base/tasks_jni/ThreadUtils_jni.h",
         "base/tasks_minimal_jni/TraceEvent_jni.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/robolectric_buildflags.h",
         "third_party/jni_zero/generate_jni/JniInit_jni.h",
         "third_party/jni_zero/generate_jni/JniUtil_jni.h",
@@ -15660,6 +15673,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_jni__action__testing",
         ":tot_cronet_base_tasks_minimal_jni__action__testing",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing",
+        ":tot_cronet_base_virtual_document_path_jni__action__testing",
         ":tot_cronet_build_robolectric_buildflags__testing",
         ":tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         ":tot_cronet_third_party_jni_zero_system_jni__action__testing",
@@ -15697,6 +15711,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_jni__action__testing) " +
          "$(locations :tot_cronet_base_tasks_minimal_jni__action__testing) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action__testing) " +
          "$(locations :tot_cronet_build_robolectric_buildflags__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_generate_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_system_jni__action__testing)",
@@ -15757,6 +15772,7 @@ cc_genrule {
         "base/tasks_jni/ThreadUtils_jni.h",
         "base/tasks_minimal_jni/TraceEvent_jni.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/robolectric_buildflags.h",
         "third_party/jni_zero/generate_jni/JniInit_jni.h",
         "third_party/jni_zero/generate_jni/JniUtil_jni.h",
@@ -15792,6 +15808,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_jni__action__testing",
         ":tot_cronet_base_tasks_minimal_jni__action__testing",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action__testing",
+        ":tot_cronet_base_virtual_document_path_jni__action__testing",
         ":tot_cronet_build_robolectric_buildflags__testing",
         ":tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         ":tot_cronet_third_party_jni_zero_system_jni__action__testing",
@@ -18168,7 +18185,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1752486903",
+         "1752566059",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18190,7 +18207,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1752486903",
+         "1752566059",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -28488,6 +28505,7 @@ cc_library_static {
         "base/test/launcher/test_result.cc",
         "base/test/launcher/test_results_tracker.cc",
         "base/test/launcher/unit_test_launcher.cc",
+        "base/test/manual_hang_watcher.cc",
         "base/test/metrics/action_suffix_reader.cc",
         "base/test/metrics/histogram_enum_reader.cc",
         "base/test/metrics/histogram_tester.cc",
@@ -30151,6 +30169,120 @@ java_genrule {
         "build/android/gyp/util/build_utils.py",
         "build/gn_helpers.py",
         "build/zip_helpers.py",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:virtual_document_path_jni__action
+cc_genrule {
+    name: "tot_cronet_base_virtual_document_path_jni__action",
+    srcs: [
+        "base/android/java/src/org/chromium/base/VirtualDocumentPath.java",
+    ],
+    cmd: "mkdir -p $(genDir)/base &&  " +
+         "mkdir -p $(genDir)/jni_headers/base/virtual_document_path_jni &&  " +
+         "$(location third_party/jni_zero/jni_zero.py) " +
+         "from-source " +
+         "--output-dir " +
+         "'$(genDir)/base/virtual_document_path_jni' " +
+         "--extra-include " +
+         "third_party/jni_zero/jni_zero_internal.h " +
+         "--srcjar-path " +
+         "'$(genDir)/base/virtual_document_path_jni.srcjar' " +
+         "--placeholder-srcjar-path " +
+         "'$(genDir)/base/virtual_document_path_jni_placeholder.srcjar' " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "VirtualDocumentPath_jni.h " +
+         "--input-file " +
+         "'$(location base/android/java/src/org/chromium/base/VirtualDocumentPath.java)' " +
+         "--package-prefix " +
+         "android.net.connectivity",
+    host_cross_supported: false,
+    out: [
+        "base/virtual_document_path_jni.srcjar",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
+        "base/virtual_document_path_jni_placeholder.srcjar",
+    ],
+    tool_files: [
+        "third_party/jni_zero/codegen/called_by_native_header.py",
+        "third_party/jni_zero/codegen/convert_type.py",
+        "third_party/jni_zero/codegen/gen_jni_java.py",
+        "third_party/jni_zero/codegen/header_common.py",
+        "third_party/jni_zero/codegen/natives_header.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/codegen/register_natives.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base:virtual_document_path_jni__action__testing
+cc_genrule {
+    name: "tot_cronet_base_virtual_document_path_jni__action__testing",
+    srcs: [
+        "base/android/java/src/org/chromium/base/VirtualDocumentPath.java",
+    ],
+    cmd: "mkdir -p $(genDir)/base &&  " +
+         "mkdir -p $(genDir)/jni_headers/base/virtual_document_path_jni &&  " +
+         "$(location third_party/jni_zero/jni_zero.py) " +
+         "from-source " +
+         "--output-dir " +
+         "'$(genDir)/base/virtual_document_path_jni' " +
+         "--extra-include " +
+         "third_party/jni_zero/jni_zero_internal.h " +
+         "--srcjar-path " +
+         "'$(genDir)/base/virtual_document_path_jni.srcjar' " +
+         "--placeholder-srcjar-path " +
+         "'$(genDir)/base/virtual_document_path_jni_placeholder.srcjar' " +
+         "--use-proxy-hash " +
+         "--output-name " +
+         "VirtualDocumentPath_jni.h " +
+         "--input-file " +
+         "'$(location base/android/java/src/org/chromium/base/VirtualDocumentPath.java)'",
+    host_cross_supported: false,
+    out: [
+        "base/virtual_document_path_jni.srcjar",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
+        "base/virtual_document_path_jni_placeholder.srcjar",
+    ],
+    tool_files: [
+        "third_party/jni_zero/codegen/called_by_native_header.py",
+        "third_party/jni_zero/codegen/convert_type.py",
+        "third_party/jni_zero/codegen/gen_jni_java.py",
+        "third_party/jni_zero/codegen/header_common.py",
+        "third_party/jni_zero/codegen/natives_header.py",
+        "third_party/jni_zero/codegen/placeholder_gen_jni_java.py",
+        "third_party/jni_zero/codegen/placeholder_java_type.py",
+        "third_party/jni_zero/codegen/proxy_impl_java.py",
+        "third_party/jni_zero/codegen/register_natives.py",
+        "third_party/jni_zero/common.py",
+        "third_party/jni_zero/java_lang_classes.py",
+        "third_party/jni_zero/java_types.py",
+        "third_party/jni_zero/jni_generator.py",
+        "third_party/jni_zero/jni_registration_generator.py",
+        "third_party/jni_zero/jni_zero.py",
+        "third_party/jni_zero/parse.py",
+        "third_party/jni_zero/proxy.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -32463,6 +32595,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -32595,6 +32728,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -33125,6 +33259,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -34162,6 +34297,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -34272,6 +34408,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -34719,6 +34856,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -37099,6 +37237,7 @@ java_genrule {
         "base/android/java/src/org/chromium/base/TokenBase.java",
         "base/android/java/src/org/chromium/base/TraceEvent.java",
         "base/android/java/src/org/chromium/base/UnguessableToken.java",
+        "base/android/java/src/org/chromium/base/VirtualDocumentPath.java",
         "base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
         "base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
         "base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",
@@ -37351,6 +37490,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -37483,6 +37623,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -38013,6 +38154,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -39985,6 +40127,7 @@ java_genrule {
         "base/android/java/src/org/chromium/base/TokenBase.java",
         "base/android/java/src/org/chromium/base/TraceEvent.java",
         "base/android/java/src/org/chromium/base/UnguessableToken.java",
+        "base/android/java/src/org/chromium/base/VirtualDocumentPath.java",
         "base/android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
         "base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
         "base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",
@@ -42239,6 +42382,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -42368,6 +42512,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -42890,6 +43035,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -44538,6 +44684,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -44647,6 +44794,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -45092,6 +45240,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -46746,6 +46895,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -46855,6 +47005,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -47333,6 +47484,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -48058,6 +48210,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -48167,6 +48320,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -48612,6 +48766,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -49303,6 +49458,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -49412,6 +49568,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -49857,6 +50014,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -50674,6 +50832,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -50784,6 +50943,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -51231,6 +51391,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -52576,6 +52737,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -52686,6 +52848,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -53132,6 +53295,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -67019,6 +67183,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -67128,6 +67293,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -67573,6 +67739,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -68382,6 +68549,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -68506,6 +68674,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -68988,6 +69157,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -69768,6 +69938,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -69892,6 +70063,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -70374,6 +70546,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -71154,6 +71327,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -71278,6 +71452,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -71760,6 +71935,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -72540,6 +72716,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -72664,6 +72841,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -73146,6 +73324,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -73926,6 +74105,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -74050,6 +74230,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -74532,6 +74713,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -75312,6 +75494,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -75436,6 +75619,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -75918,6 +76102,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -79333,6 +79518,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -79457,6 +79643,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -79939,6 +80126,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -81131,6 +81319,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -81256,6 +81445,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -81739,6 +81929,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -82521,6 +82712,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -82641,6 +82833,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -83110,6 +83303,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -84556,6 +84750,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -84670,6 +84865,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -85129,6 +85325,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -87094,6 +87291,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -87203,6 +87401,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -87648,6 +87847,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -93484,6 +93684,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -93593,6 +93794,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -94043,6 +94245,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -94793,6 +94996,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -94904,6 +95108,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -95356,6 +95561,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -98064,6 +98270,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -98173,6 +98380,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -98618,6 +98826,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -102865,6 +103074,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -102974,6 +103184,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -103419,6 +103630,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",
@@ -142800,6 +143012,7 @@ cc_genrule {
          "$(locations :tot_cronet_base_tasks_minimal_jni__action) " +
          "$(locations :tot_cronet_base_tracing_buildflags) " +
          "$(locations :tot_cronet_base_version_info_android_version_constants_bridge_jni__action) " +
+         "$(locations :tot_cronet_base_virtual_document_path_jni__action) " +
          "$(locations :tot_cronet_build_blink_buildflags) " +
          "$(locations :tot_cronet_build_branding_buildflags) " +
          "$(locations :tot_cronet_build_chromecast_buildflags) " +
@@ -142911,6 +143124,7 @@ cc_genrule {
         "base/tracing/protos/chrome_track_event.pbzero.h",
         "base/tracing_buildflags.h",
         "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h",
+        "base/virtual_document_path_jni/VirtualDocumentPath_jni.h",
         "build/blink_buildflags.h",
         "build/branding_buildflags.h",
         "build/chromecast_buildflags.h",
@@ -143358,6 +143572,7 @@ cc_genrule {
         ":tot_cronet_base_tasks_minimal_jni__action",
         ":tot_cronet_base_tracing_buildflags",
         ":tot_cronet_base_version_info_android_version_constants_bridge_jni__action",
+        ":tot_cronet_base_virtual_document_path_jni__action",
         ":tot_cronet_build_blink_buildflags",
         ":tot_cronet_build_branding_buildflags",
         ":tot_cronet_build_chromecast_buildflags",

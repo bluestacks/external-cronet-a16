@@ -13,6 +13,11 @@
      ]
     },
     {
+     // These tests are often broken by Cronet imports. See http://b/407596762
+     // and http://b/427875918.
+     "name": "CtsHiddenApiKillswitchWildcardTestCases"
+    },
+    {
      "name": "StableNetHttpCoverageTests",
      "options": [
        {
@@ -61,6 +66,11 @@
          "exclude-annotation": "androidx.test.filters.LargeTest"
        }
      ]
+    },
+    {
+     // These tests are often broken by Cronet imports. See http://b/407596762
+     // and http://b/427875918.
+     "name": "CtsHiddenApiKillswitchWildcardTestCases"
     },
     {
      "name": "StableNetHttpCoverageTests",

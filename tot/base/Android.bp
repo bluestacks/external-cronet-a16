@@ -52,7 +52,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -67,7 +66,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -82,7 +80,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -97,7 +94,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -112,7 +108,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -128,7 +123,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
@@ -181,7 +175,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -197,7 +190,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -213,7 +205,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -229,7 +220,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -245,7 +235,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -832,8 +821,6 @@ cc_library_static {
         "android/background_thread_pool_field_trial.cc",
         "android/base_feature_map.cc",
         "android/base_jni_init.cc",
-        "android/binder.cc",
-        "android/binder_box.cc",
         "android/build_info.cc",
         "android/bundle_utils.cc",
         "android/callback_android.cc",
@@ -1895,8 +1882,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2010,8 +1995,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2127,8 +2110,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2239,8 +2220,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2353,8 +2332,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",

@@ -62,8 +62,6 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2015",
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=equivalent-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -71,6 +69,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },
@@ -104,8 +103,6 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2015",
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=equivalent-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -113,6 +110,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },

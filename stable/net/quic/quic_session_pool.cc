@@ -22,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -760,15 +759,18 @@ std::optional<QuicSessionKey> QuicSessionPool::GetActiveJobToServerId(
                                       : std::nullopt;
 }
 
-bool QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
+QuicChromiumClientSession*
+QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
     const QuicSessionAliasKey& session_alias_key,
     const ServiceEndpoint& service_endpoint,
     const std::set<std::string>& dns_aliases,
     bool use_dns_aliases) {
+  if (QuicChromiumClientSession* session = HasMatchingIpSession(
+          session_alias_key, service_endpoint.ipv6_endpoints, dns_aliases,
+          use_dns_aliases)) {
+    return session;
+  }
   return HasMatchingIpSession(session_alias_key,
-                              service_endpoint.ipv6_endpoints, dns_aliases,
-                              use_dns_aliases) ||
-         HasMatchingIpSession(session_alias_key,
                               service_endpoint.ipv4_endpoints, dns_aliases,
                               use_dns_aliases);
 }
@@ -883,7 +885,7 @@ int QuicSessionPool::RequestSession(
   }
   if (rv == OK) {
     auto it = active_sessions_.find(session_key);
-    CHECK(it != active_sessions_.end(), base::NotFatalUntil::M130);
+    CHECK(it != active_sessions_.end());
     if (it == active_sessions_.end()) {
       return ERR_QUIC_PROTOCOL_ERROR;
     }
@@ -1553,7 +1555,7 @@ void QuicSessionPool::LogConnectionIpPooling(bool pooled) {
   base::UmaHistogramBoolean("Net.QuicSession.ConnectionIpPooled", pooled);
 }
 
-bool QuicSessionPool::HasMatchingIpSession(
+QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
     const QuicSessionAliasKey& key,
     const std::vector<IPEndPoint>& ip_endpoints,
     const std::set<std::string>& aliases,
@@ -1577,7 +1579,7 @@ bool QuicSessionPool::HasMatchingIpSession(
       ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
       LogFindMatchingIpSessionResult(net_log_, MATCHING_IP_SESSION_FOUND,
                                      session, key.destination());
-      return true;
+      return session;
     }
   }
 
@@ -1607,7 +1609,7 @@ bool QuicSessionPool::HasMatchingIpSession(
       ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
       LogFindMatchingIpSessionResult(net_log_, POOLED_WITH_DIFFERENT_IP_SESSION,
                                      session, key.destination());
-      return true;
+      return session;
     }
   }
   if (can_pool) {
@@ -1617,7 +1619,7 @@ bool QuicSessionPool::HasMatchingIpSession(
     LogFindMatchingIpSessionResult(net_log_, CANNOT_POOL_WITH_EXISTING_SESSIONS,
                                    /*session=*/nullptr, key.destination());
   }
-  return false;
+  return nullptr;
 }
 
 void QuicSessionPool::OnJobComplete(
@@ -1633,7 +1635,7 @@ void QuicSessionPool::OnJobComplete(
         base::TimeTicks::Now() - *proxy_connect_start_time);
   }
 
-  CHECK(iter != active_jobs_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != active_jobs_.end());
   if (rv == OK) {
     if (!has_quic_ever_worked_on_current_network_) {
       set_has_quic_ever_worked_on_current_network(true);

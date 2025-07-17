@@ -64,6 +64,7 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/x509v3.h>
+#include <openssl/sha.h>
 
 #define ERR_LEN 256
 

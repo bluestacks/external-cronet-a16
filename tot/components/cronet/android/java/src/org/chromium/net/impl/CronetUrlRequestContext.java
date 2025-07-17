@@ -32,7 +32,6 @@ import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RttThroughputValues;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
-import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 import org.chromium.net.impl.proto.RequestContextConfigOptions;
 import org.chromium.net.urlconnection.CronetHttpURLConnection;
@@ -186,8 +185,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     /** The logger to be used for logging. */
     private final CronetLogger mLogger;
 
-    private final CronetSource mSource;
-
     private List<VersionSafeProxyCallback> mProxyCallbacks;
 
     long getLogId() {
@@ -210,13 +207,10 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 new CronetLogger.CronetInitializedInfo();
 
         public CronetInitializedInfoLogger(
-                CronetLogger cronetLogger,
-                long cronetInitializationRef,
-                long startUptimeMillis,
-                CronetSource source) {
+                CronetLogger cronetLogger, long cronetInitializationRef, long startUptimeMillis) {
             mCronetLogger = cronetLogger;
             mCronetInitializedInfo.cronetInitializationRef = cronetInitializationRef;
-            mCronetInitializedInfo.source = source;
+            mCronetInitializedInfo.source = NativeCronetEngineBuilderImpl.getCronetSource();
             mCronetInitializedInfo.cronetImplVersion = ImplVersion.getCronetVersion();
             mStartUptimeMillis = startUptimeMillis;
         }
@@ -258,7 +252,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     public CronetUrlRequestContext(final CronetEngineBuilderImpl builder, long startUptimeMillis) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#CronetUrlRequestContext")) {
-            mSource = builder.getCronetSource();
             mRttListenerList.disableThreadAsserts();
             mThroughputListenerList.disableThreadAsserts();
             mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
@@ -292,17 +285,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     throw new NullPointerException("Context Adapter creation failed.");
                 }
             }
-            mLogger =
-                    CronetLoggerFactory.createLogger(
-                            builder.getContext(), builder.getCronetSource());
+            var cronetSource = NativeCronetEngineBuilderImpl.getCronetSource();
+            mLogger = CronetLoggerFactory.createLogger(builder.getContext(), cronetSource);
             mLogId = mLogger.generateId();
             var builderLoggerInfo = builder.toLoggerInfo();
             try {
                 mLogger.logCronetEngineCreation(
-                        getLogId(),
-                        builderLoggerInfo,
-                        buildCronetVersion(),
-                        builder.getCronetSource());
+                        getLogId(), builderLoggerInfo, buildCronetVersion(), cronetSource);
             } catch (RuntimeException e) {
                 // Handle any issue gracefully, we should never crash due failures while logging.
                 Log.i(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);
@@ -313,8 +302,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             ? new CronetInitializedInfoLogger(
                                     mLogger,
                                     builderLoggerInfo.getCronetInitializationRef(),
-                                    startUptimeMillis,
-                                    builder.getCronetSource())
+                                    startUptimeMillis)
                             : null;
 
             // Init native Chromium URLRequestContext on init thread.
@@ -411,14 +399,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     private static RequestContextConfigOptions createRequestContextConfigOptions(
             CronetEngineBuilderImpl engineBuilder) {
-        var networkThreadPriorityFlagValue =
-                HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext())
-                        .flags()
-                        .get(OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME);
-        var alwaysEnableBrotliFlagValue =
-                HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext())
-                        .flags()
-                        .get(ALWAYS_ENABLE_BROTLI_FLAG_NAME);
+        var flags =
+                HttpFlagsForImpl.getHttpFlags(
+                                ContextUtils.getApplicationContext(),
+                                NativeCronetEngineBuilderImpl.getCronetSource())
+                        .flags();
+        var networkThreadPriorityFlagValue = flags.get(OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME);
+        var alwaysEnableBrotliFlagValue = flags.get(ALWAYS_ENABLE_BROTLI_FLAG_NAME);
         boolean alwaysEnableBrotli =
                 alwaysEnableBrotliFlagValue != null
                         ? alwaysEnableBrotliFlagValue.getBoolValue()
@@ -462,10 +449,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
 
         return resultBuilder.build();
-    }
-
-    CronetSource getCronetSource() {
-        return mSource;
     }
 
     @Override

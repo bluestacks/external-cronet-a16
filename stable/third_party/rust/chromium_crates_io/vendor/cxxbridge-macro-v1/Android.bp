@@ -89,6 +89,8 @@ rust_proc_macro {
     crate_name: "cxxbridge_macro",
     crate_root: "src/lib.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__3b9f01c4589c8bd7",
+        "libbuild_srust_sallocator_callocator__bdce78c37c84e42d",
         "libproc_macro2__0418cd684967018e",
         "libquote__ca5df961ed34ce75",
         "libsyn__7a4a6cb2cd9c1736",
@@ -102,10 +104,10 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
-                "--cap-lints=allow",
+                "-Awarnings",
                 "-Cmetadata=cxxbridge_macro-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -113,8 +115,7 @@ rust_proc_macro {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
+                "-Funsafe_code",
             ],
         },
     },
@@ -174,6 +175,8 @@ rust_proc_macro {
     crate_name: "cxxbridge_macro",
     crate_root: "src/lib.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__a8f2a8c3556afc73",
+        "libbuild_srust_sallocator_callocator__7cdacf0652be04b1",
         "libproc_macro2__9500a1d33b311508",
         "libquote__a68b574aa1e07ec9",
         "libsyn__dc2376f007a6ca68",
@@ -187,10 +190,10 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
             ],
             flags: [
-                "--cap-lints=allow",
+                "-Awarnings",
                 "-Cmetadata=cxxbridge_macro-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -198,8 +201,7 @@ rust_proc_macro {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
+                "-Funsafe_code",
             ],
         },
     },

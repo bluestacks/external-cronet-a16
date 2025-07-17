@@ -1005,7 +1005,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 failureReason,
                 mMetrics.getSocketReused(),
                 ImplVersion.getCronetVersion(),
-                mRequestContext.getCronetSource());
+                NativeCronetEngineBuilderImpl.getCronetSource());
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {

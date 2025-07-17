@@ -32,10 +32,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/test_waitable_event.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -54,6 +56,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_partition.h"
+#include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/tracing.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -72,6 +75,7 @@
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/http_util.h"
 #include "net/http/mock_http_cache.h"
+#include "net/http/no_vary_search_cache_storage_mock_file_operations.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
@@ -90,17 +94,26 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+using base::test::RunClosure;
 using net::test::IsError;
 using net::test::IsOk;
+using testing::_;
 using testing::AllOf;
 using testing::ByRef;
 using testing::Contains;
+using testing::DoAll;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
 using testing::Gt;
+using testing::InSequence;
+using testing::Invoke;
 using testing::IsEmpty;
+using testing::MockFunction;
 using testing::NotNull;
+using testing::Return;
+using testing::StrictMock;
+using testing::Truly;
 
 using base::Time;
 
@@ -219,12 +232,11 @@ void RunTransactionTestBase(HttpCache* cache,
 
   // write to the cache
 
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = cache->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  std::unique_ptr<HttpTransaction> trans =
+      cache->CreateTransaction(DEFAULT_PRIORITY);
   ASSERT_TRUE(trans.get());
 
-  rv = trans->Start(&request, callback.callback(), net_log);
+  int rv = trans->Start(&request, callback.callback(), net_log);
   if (rv == ERR_IO_PENDING) {
     rv = callback.WaitForResult();
   }
@@ -857,8 +869,7 @@ class HttpSplitCacheKeyTest : public HttpCacheTest {
 TEST_F(HttpCacheTest, CreateThenDestroy) {
   MockHttpCache cache;
 
-  std::unique_ptr<HttpTransaction> trans;
-  EXPECT_THAT(cache.CreateTransaction(&trans), IsOk());
+  std::unique_ptr<HttpTransaction> trans = cache.CreateTransaction();
   ASSERT_TRUE(trans.get());
 }
 
@@ -900,9 +911,8 @@ TEST_F(HttpCacheSimpleGetTest, ConnectedCallback) {
 
   ConnectedHandler connected_handler;
 
-  std::unique_ptr<HttpTransaction> transaction;
-  EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-  ASSERT_THAT(transaction, NotNull());
+  auto transaction = cache.CreateTransaction();
+  ASSERT_TRUE(transaction);
 
   transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -922,9 +932,8 @@ TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackReturnError) {
   MockHttpRequest request(kSimpleGET_Transaction);
   ConnectedHandler connected_handler;
 
-  std::unique_ptr<HttpTransaction> transaction;
-  EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-  ASSERT_THAT(transaction, NotNull());
+  auto transaction = cache.CreateTransaction();
+  ASSERT_TRUE(transaction);
 
   // The exact error code does not matter. We only care that it is passed to
   // the transaction's completion callback unmodified.
@@ -958,9 +967,8 @@ TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackOnCacheHit) {
   ConnectedHandler connected_handler;
   MockHttpRequest request(kSimpleGET_Transaction);
 
-  std::unique_ptr<HttpTransaction> transaction;
-  EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-  ASSERT_THAT(transaction, NotNull());
+  auto transaction = cache.CreateTransaction();
+  ASSERT_TRUE(transaction);
 
   transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -999,9 +1007,8 @@ TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackOnCacheHitReturnError) {
     ConnectedHandler connected_handler;
     connected_handler.set_result(ERR_FAILED);
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -1020,9 +1027,8 @@ TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackOnCacheHitReturnError) {
     // Request the same resource once more, observe that it is read from cache.
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -1058,9 +1064,8 @@ TEST_F(HttpCacheSimpleGetTest,
     ConnectedHandler connected_handler;
     connected_handler.set_result(ERR_INCONSISTENT_IP_ADDRESS_SPACE);
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -1081,9 +1086,8 @@ TEST_F(HttpCacheSimpleGetTest,
     // cache.
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -1122,9 +1126,8 @@ TEST_F(HttpCacheSimpleGetTest,
     connected_handler.set_result(
         ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY);
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -1147,9 +1150,8 @@ TEST_F(HttpCacheSimpleGetTest,
     // cache.
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -1189,9 +1191,8 @@ TEST_F(HttpCacheSimpleGetTest, ConnectedCallbackOnCacheHitFromProxy) {
   ConnectedHandler connected_handler;
   MockHttpRequest request(kSimpleGET_Transaction);
 
-  std::unique_ptr<HttpTransaction> transaction;
-  EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-  ASSERT_THAT(transaction, NotNull());
+  auto transaction = cache.CreateTransaction();
+  ASSERT_TRUE(transaction);
 
   transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -1377,8 +1378,8 @@ TEST_F(HttpCacheTest, ReleaseBuffer) {
   RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
 
   MockHttpRequest request(kSimpleGET_Transaction);
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
   const int kBufferSize = 10;
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
@@ -1419,10 +1420,11 @@ TEST_F(HttpCacheSimpleGetTest, WithDiskFailures2) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = c->callback.WaitForResult();
 
@@ -1466,10 +1468,11 @@ TEST_F(HttpCacheSimpleGetTest, WithDiskFailures3) {
 
   // Now fail to read from the cache.
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(c->callback.GetResult(rv), IsOk());
 
   // Now verify that the entry was removed from the cache.
@@ -1563,8 +1566,8 @@ TEST_F(HttpCacheSimpleGetTest, LoadOnlyFromCacheMiss) {
   MockHttpRequest request(transaction);
   TestCompletionCallback callback;
 
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
@@ -1703,11 +1706,9 @@ TEST_F(HttpCacheSimpleGetTest, CacheSignalFailure) {
 
     MockHttpRequest request(transaction);
     TestCompletionCallback callback;
-    std::unique_ptr<HttpTransaction> trans;
-    int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
-    EXPECT_THAT(rv, IsOk());
-    ASSERT_TRUE(trans.get());
-    rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+    auto trans = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+    ASSERT_TRUE(trans);
+    int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsError(ERR_FAILED));
 
     const HttpResponseInfo* response_info = trans->GetResponseInfo();
@@ -1748,11 +1749,9 @@ TEST_F(HttpCacheTest, RecordHistogramsCantConditionalize) {
     ScopedMockTransaction transaction(kSimpleGET_Transaction);
     MockHttpRequest request(transaction);
     TestCompletionCallback callback;
-    std::unique_ptr<HttpTransaction> trans;
-    int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
-    EXPECT_THAT(rv, IsOk());
-    ASSERT_TRUE(trans.get());
-    rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+    auto trans = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+    ASSERT_TRUE(trans);
+    trans->Start(&request, callback.callback(), NetLogWithSource());
     // Now destroy the transaction so that RecordHistograms gets invoked.
     trans.reset();
   }
@@ -2092,10 +2091,10 @@ TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
     MockHttpRequest request(transaction);
     Context c;
 
-    int rv = cache.CreateTransaction(&c.trans);
-    ASSERT_THAT(rv, IsOk());
+    c.trans = cache.CreateTransaction();
+    ASSERT_TRUE(c.trans);
 
-    rv = c.callback.GetResult(
+    int rv = c.callback.GetResult(
         c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
     ASSERT_THAT(rv, IsOk());
 
@@ -2120,13 +2119,13 @@ TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
     MockHttpRequest request(transaction);
     Context c;
 
-    int rv = cache.CreateTransaction(&c.trans);
-    ASSERT_THAT(rv, IsOk());
+    c.trans = cache.CreateTransaction();
+    ASSERT_TRUE(c.trans);
     c.trans->SetConnectedCallback(base::BindRepeating(
         [](const TransportInfo& info, CompletionOnceCallback callback) -> int {
           return ERR_ABORTED;
         }));
-    rv = c.callback.GetResult(
+    int rv = c.callback.GetResult(
         c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
     EXPECT_EQ(ERR_ABORTED, rv);
 
@@ -2169,10 +2168,10 @@ TEST_F(HttpCacheTest, StaleWhileRevalidateTruncated) {
     MockHttpRequest request(transaction);
     Context c;
 
-    int rv = cache.CreateTransaction(&c.trans);
-    ASSERT_THAT(rv, IsOk());
+    c.trans = cache.CreateTransaction();
+    ASSERT_TRUE(c.trans);
 
-    rv = c.callback.GetResult(
+    int rv = c.callback.GetResult(
         c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
     ASSERT_THAT(rv, IsOk());
 
@@ -2247,10 +2246,10 @@ TEST_F(HttpCacheTest, StaleWhileRevalidateTruncateCancelInConnectedCallback) {
     MockHttpRequest request(transaction);
     Context c;
 
-    int rv = cache.CreateTransaction(&c.trans);
-    ASSERT_THAT(rv, IsOk());
+    c.trans = cache.CreateTransaction();
+    ASSERT_TRUE(c.trans);
 
-    rv = c.callback.GetResult(
+    int rv = c.callback.GetResult(
         c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
     ASSERT_THAT(rv, IsOk());
 
@@ -2274,13 +2273,13 @@ TEST_F(HttpCacheTest, StaleWhileRevalidateTruncateCancelInConnectedCallback) {
     MockHttpRequest request(transaction);
     Context c;
 
-    int rv = cache.CreateTransaction(&c.trans);
-    ASSERT_THAT(rv, IsOk());
+    c.trans = cache.CreateTransaction();
+    ASSERT_TRUE(c.trans);
     c.trans->SetConnectedCallback(base::BindRepeating(
         [](const TransportInfo& info, CompletionOnceCallback callback) -> int {
           return ERR_ABORTED;
         }));
-    rv = c.callback.GetResult(
+    int rv = c.callback.GetResult(
         c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
     EXPECT_EQ(ERR_ABORTED, rv);
 
@@ -2376,8 +2375,8 @@ TEST_F(HttpCacheSimpleGetTest, ManyReaders) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -2607,9 +2606,8 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackCalledForEachRange) {
 
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2676,9 +2674,8 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnInconsistentIpError) {
   {
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2708,9 +2705,8 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnInconsistentIpError) {
   {
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2763,9 +2759,8 @@ TEST_F(HttpCacheRangeGetTest,
   {
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2795,9 +2790,8 @@ TEST_F(HttpCacheRangeGetTest,
   {
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2855,9 +2849,8 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnErrorSecondTime) {
   {
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2890,9 +2883,8 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackReturnErrorSecondTime) {
   {
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2944,9 +2936,8 @@ TEST_F(HttpCacheRangeGetTest, ConnectedCallbackCalledForEachRangeWithPrefix) {
 
     ConnectedHandler connected_handler;
 
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
-    ASSERT_THAT(transaction, NotNull());
+    auto transaction = cache.CreateTransaction();
+    ASSERT_TRUE(transaction);
 
     transaction->SetConnectedCallback(connected_handler.Callback());
 
@@ -2979,8 +2970,8 @@ TEST_F(HttpCacheRangeGetTest, FailedCacheAccess) {
   MockHttpRequest request(transaction);
 
   auto c = std::make_unique<Context>();
-  c->result = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(c->result, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
   EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
   cache.disk_cache()->set_fail_requests(true);
@@ -3019,8 +3010,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatch) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3089,8 +3080,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatchDoomEntry) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     MockHttpRequest* this_request = &request;
@@ -3175,8 +3166,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationNoMatchDoomEntry1) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     MockHttpRequest* this_request = &request;
@@ -3262,8 +3253,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationDifferentRanges) {
   MockHttpRequest request1(transaction);
   {
     auto& c = context_list[0];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3289,8 +3280,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationDifferentRanges) {
   MockHttpRequest request2(transaction);
   {
     auto& c = context_list[1];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3362,8 +3353,8 @@ TEST_F(HttpCacheRangeGetTest, DoNotCreateWritersWhenReaderExists) {
   transaction.load_flags |= LOAD_SKIP_CACHE_VALIDATION;
   MockHttpRequest request(transaction);
   Context context;
-  context.result = cache.CreateTransaction(&context.trans);
-  ASSERT_THAT(context.result, IsOk());
+  context.trans = cache.CreateTransaction();
+  ASSERT_TRUE(context.trans);
   context.result = context.trans->Start(&request, context.callback.callback(),
                                         NetLogWithSource());
   base::RunLoop().RunUntilIdle();
@@ -3375,8 +3366,8 @@ TEST_F(HttpCacheRangeGetTest, DoNotCreateWritersWhenReaderExists) {
   transaction.request_headers = "Range: bytes = 0-9\r\n" EXTRA_HEADER;
   MockHttpRequest range_request(transaction);
   Context range_context;
-  range_context.result = cache.CreateTransaction(&range_context.trans);
-  ASSERT_THAT(range_context.result, IsOk());
+  range_context.trans = cache.CreateTransaction();
+  ASSERT_TRUE(range_context.trans);
   range_context.result = range_context.trans->Start(
       &range_request, range_context.callback.callback(), NetLogWithSource());
   base::RunLoop().RunUntilIdle();
@@ -3405,8 +3396,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationCacheLockTimeout) {
   MockHttpRequest request1(transaction);
   {
     auto& c = context_list[0];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3436,8 +3427,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationCacheLockTimeout) {
   MockHttpRequest request2(transaction);
   {
     auto& c = context_list[1];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3501,8 +3492,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationCouldntConditionalize) {
     ScopedMockTransaction transaction(mock_transaction);
     request1.url = GURL(kRangeGET_TransactionOK.url);
     auto& c = context_list[0];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3527,8 +3518,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationCouldntConditionalize) {
   MockHttpRequest request2(range_transaction);
   {
     auto& c = context_list[1];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3588,8 +3579,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationCouldConditionalize) {
     ScopedMockTransaction transaction(mock_transaction);
     request1.url = GURL(kRangeGET_TransactionOK.url);
     auto& c = context_list[0];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3614,8 +3605,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationCouldConditionalize) {
   MockHttpRequest request2(range_transaction);
   {
     auto& c = context_list[1];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3662,8 +3653,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationOverlappingRanges) {
   MockHttpRequest request1(transaction);
   {
     auto& c = context_list[0];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3689,8 +3680,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationOverlappingRanges) {
   MockHttpRequest request2(transaction);
   {
     auto& c = context_list[1];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3766,8 +3757,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
   MockHttpRequest request1(transaction);
   {
     auto& c = context_list[0];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3793,8 +3784,8 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
   MockHttpRequest request2(transaction);
   {
     auto& c = context_list[1];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -3861,8 +3852,8 @@ TEST_F(HttpCacheRangeGetTest, CachedRedirect) {
 
   // Write to the cache.
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     if (rv == ERR_IO_PENDING) {
@@ -3892,8 +3883,8 @@ TEST_F(HttpCacheRangeGetTest, CachedRedirect) {
 
   // Read from the cache.
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     if (rv == ERR_IO_PENDING) {
@@ -3919,8 +3910,8 @@ TEST_F(HttpCacheRangeGetTest, CachedRedirect) {
   // Now read the full body. This normally would not be done for a 301 by
   // higher layers, but e.g. a 500 could hit a further bug here.
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     if (rv == ERR_IO_PENDING) {
@@ -3957,8 +3948,8 @@ TEST_F(HttpCacheSimpleGetTest, ValidationFailureWithCreateFailure) {
   // Create and run the first, successful, transaction to prime the cache.
   context_list.push_back(std::make_unique<Context>());
   auto& c1 = context_list.back();
-  c1->result = cache.CreateTransaction(&c1->trans);
-  ASSERT_THAT(c1->result, IsOk());
+  c1->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c1->trans);
   EXPECT_EQ(LOAD_STATE_IDLE, c1->trans->GetLoadState());
   c1->result =
       c1->trans->Start(&request, c1->callback.callback(), NetLogWithSource());
@@ -3974,8 +3965,8 @@ TEST_F(HttpCacheSimpleGetTest, ValidationFailureWithCreateFailure) {
   // during the call to RunUntilIdle().
   context_list.push_back(std::make_unique<Context>());
   auto& c2 = context_list.back();
-  c2->result = cache.CreateTransaction(&c2->trans);
-  ASSERT_THAT(c2->result, IsOk());
+  c2->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c2->trans);
   EXPECT_EQ(LOAD_STATE_IDLE, c2->trans->GetLoadState());
   c2->result =
       c2->trans->Start(&request, c2->callback.callback(), NetLogWithSource());
@@ -4019,8 +4010,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationNoMatch) {
   for (int i = 0; i < kNumTransactions; ++i) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -4142,8 +4133,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationNoMatch1) {
   for (int i = 0; i < kNumTransactions; ++i) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     MockHttpRequest* this_request = &request;
@@ -4214,8 +4205,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationDelete) {
       this_request = &delete_request;
     }
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result = c->trans->Start(this_request, c->callback.callback(),
@@ -4275,8 +4266,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelValidated) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* current_request = i == 1 ? &read_only_request : &request;
 
@@ -4326,8 +4317,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingCancelIdleTransaction) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -4385,8 +4376,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationValidatedTimeout) {
       cache.SimulateCacheLockTimeoutAfterHeaders();
     }
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result = c->trans->Start(this_request, c->callback.callback(),
                                 NetLogWithSource());
@@ -4436,8 +4427,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelReader) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 3) {
@@ -4478,8 +4469,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelReader) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -4521,8 +4512,8 @@ TEST_F(HttpCacheSimpleGetTest, HangingCacheWriteCleanup) {
   MockHttpCache mock_cache;
   MockHttpRequest request(kSimpleGET_Transaction);
 
-  std::unique_ptr<HttpTransaction> transaction;
-  mock_cache.CreateTransaction(&transaction);
+  auto transaction = mock_cache.CreateTransaction();
+  ASSERT_TRUE(transaction);
   TestCompletionCallback callback;
   int result =
       transaction->Start(&request, callback.callback(), NetLogWithSource());
@@ -4578,8 +4569,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingCancelWriter) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 2) {
@@ -4671,8 +4662,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingNetworkReadFailed) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 0) {
@@ -4748,8 +4739,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingCacheWriteFailed) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 3) {
@@ -4858,8 +4849,8 @@ TEST_F(HttpCacheSimplePostTest, ParallelWritingDisallowed) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -4909,8 +4900,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingSuccess) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 3) {
@@ -4995,8 +4986,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingHuge) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     c->result = c->trans->Start(this_request, c->callback.callback(),
@@ -5060,8 +5051,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingVerifyNetworkBytes) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -5106,8 +5097,8 @@ TEST_F(HttpCacheSimpleGetTest, ExtraRead) {
   MockHttpRequest request(kSimpleGET_Transaction);
   Context c;
 
-  c.result = cache.CreateTransaction(&c.trans);
-  ASSERT_THAT(c.result, IsOk());
+  c.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c.trans);
 
   c.result =
       c.trans->Start(&request, c.callback.callback(), NetLogWithSource());
@@ -5150,8 +5141,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelWriter) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -5214,8 +5205,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationStopCaching) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 1) {
@@ -5271,8 +5262,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritersStopCachingNoOp) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 2) {
@@ -5333,8 +5324,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelValidationCancelHeaders) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     if (i == 0) {
       c->trans->SetConnectedCallback(base::BindLambdaForTesting(
@@ -5388,8 +5379,8 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritersFailWrite) {
     context_list.push_back(std::make_unique<Context>());
     auto& c = context_list[i];
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
 
     c->result =
@@ -5467,8 +5458,8 @@ TEST_F(HttpCacheSimpleGetTest, RacingReaders) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 1 || i == 2) {
@@ -5551,8 +5542,8 @@ TEST_F(HttpCacheSimpleGetTest, DoomWithPending) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     MockHttpRequest* this_request = &request;
     if (i == 3) {
@@ -5600,8 +5591,8 @@ TEST_F(HttpCacheTest, DoomDoesNotSetHints) {
   MockHttpRequest request1(transaction);
 
   Context c1;
-  c1.result = cache.CreateTransaction(&c1.trans);
-  ASSERT_THAT(c1.result, IsOk());
+  c1.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c1.trans);
   auto connected_future = ExpectConnected(*c1.trans);
   c1.result =
       c1.trans->Start(&request1, c1.callback.callback(), NetLogWithSource());
@@ -5617,8 +5608,8 @@ TEST_F(HttpCacheTest, DoomDoesNotSetHints) {
   request2.load_flags = LOAD_BYPASS_CACHE;
 
   Context c2;
-  c2.result = cache.CreateTransaction(&c2.trans);
-  ASSERT_THAT(c2.result, IsOk());
+  c2.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c2.trans);
   c2.result =
       c2.trans->Start(&request2, c2.callback.callback(), NetLogWithSource());
   ASSERT_THAT(c2.result, IsError(ERR_IO_PENDING));
@@ -5641,8 +5632,8 @@ TEST_F(HttpCacheTest, DoomDoesNotSetHints) {
   // cooperate with them, and is entirely driven by the state of the cache.
   MockHttpRequest request3(kSimpleGET_Transaction);
   Context context3;
-  context3.result = cache.CreateTransaction(&context3.trans);
-  ASSERT_THAT(context3.result, IsOk());
+  context3.trans = cache.CreateTransaction();
+  ASSERT_TRUE(context3.trans);
   context3.result = context3.trans->Start(
       &request3, context3.callback.callback(), NetLogWithSource());
   base::RunLoop().RunUntilIdle();
@@ -5673,8 +5664,8 @@ TEST_F(HttpCacheTest, FastNoStoreGetDoneWithPending) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -5720,8 +5711,8 @@ TEST_F(HttpCacheSimpleGetTest, ManyWritersCancelFirst) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -5777,8 +5768,8 @@ TEST_F(HttpCacheSimpleGetTest, ManyWritersCancelCreate) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -5822,8 +5813,8 @@ TEST_F(HttpCacheSimpleGetTest, CancelCreate) {
 
   auto c = std::make_unique<Context>();
 
-  c->result = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(c->result, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   c->result =
       c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -5852,8 +5843,8 @@ TEST_F(HttpCacheSimpleGetTest, ManyWritersBypassCache) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -5888,10 +5879,12 @@ TEST_F(HttpCacheSimpleGetTest, WriterTimeout) {
 
   MockHttpRequest request(kSimpleGET_Transaction);
   Context c1, c2;
-  ASSERT_THAT(cache.CreateTransaction(&c1.trans), IsOk());
+  c1.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c1.trans);
   ASSERT_EQ(ERR_IO_PENDING, c1.trans->Start(&request, c1.callback.callback(),
                                             NetLogWithSource()));
-  ASSERT_THAT(cache.CreateTransaction(&c2.trans), IsOk());
+  c2.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c2.trans);
   ASSERT_EQ(ERR_IO_PENDING, c2.trans->Start(&request, c2.callback.callback(),
                                             NetLogWithSource()));
 
@@ -5915,12 +5908,14 @@ TEST_F(HttpCacheSimpleGetTest, WriterTimeoutReadOnlyError) {
 
   MockHttpRequest request(kSimpleGET_Transaction);
   Context c1, c2;
-  ASSERT_THAT(cache.CreateTransaction(&c1.trans), IsOk());
+  c1.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c1.trans);
   ASSERT_EQ(ERR_IO_PENDING, c1.trans->Start(&request, c1.callback.callback(),
                                             NetLogWithSource()));
 
   request.load_flags = LOAD_ONLY_FROM_CACHE;
-  ASSERT_THAT(cache.CreateTransaction(&c2.trans), IsOk());
+  c2.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c2.trans);
   ASSERT_EQ(ERR_IO_PENDING, c2.trans->Start(&request, c2.callback.callback(),
                                             NetLogWithSource()));
 
@@ -5942,8 +5937,8 @@ TEST_F(HttpCacheSimpleGetTest, AbandonedCacheRead) {
   MockHttpRequest request(kSimpleGET_Transaction);
   TestCompletionCallback callback;
 
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = callback.WaitForResult();
@@ -5978,8 +5973,8 @@ TEST_F(HttpCacheSimpleGetTest, ManyWritersDeleteCache) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache->CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache->CreateTransaction();
+    ASSERT_TRUE(c->trans);
 
     c->result =
         c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
@@ -6012,8 +6007,8 @@ TEST_F(HttpCacheSimpleGetTest, WaitForBackend) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
   }
 
   context_list[0]->result = context_list[0]->trans->Start(
@@ -6059,8 +6054,8 @@ TEST_F(HttpCacheSimpleGetTest, WaitForBackend_CancelCreate) {
     context_list.push_back(std::make_unique<Context>());
     Context* c = context_list[i].get();
 
-    c->result = cache.CreateTransaction(&c->trans);
-    ASSERT_THAT(c->result, IsOk());
+    c->trans = cache.CreateTransaction();
+    ASSERT_TRUE(c->trans);
   }
 
   context_list[0]->result = context_list[0]->trans->Start(
@@ -6102,8 +6097,8 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   auto c = std::make_unique<Context>();
-  c->result = cache->CreateTransaction(&c->trans);
-  ASSERT_THAT(c->result, IsOk());
+  c->trans = cache->CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
 
@@ -6141,8 +6136,8 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   auto c = std::make_unique<Context>();
-  c->result = cache_ptr->CreateTransaction(&c->trans);
-  ASSERT_THAT(c->result, IsOk());
+  c->trans = cache_ptr->CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
 
@@ -6163,7 +6158,6 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
 
   // The cache should be gone by now.
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(c->callback.GetResult(c->result), IsOk());
   EXPECT_FALSE(cb2.have_result());
 }
 
@@ -7051,6 +7045,54 @@ TEST_F(HttpCacheTest, ConditionalizedRequestUpdatesCache10) {
                                            kNetResponse1, kExtraRequestHeaders);
 }
 
+// Tests that a conditional request with an empty "If-Modified-Since" header
+// value bypasses the cache for that request due to the malformed header,
+// and does not update the existing cache entry. The original cache entry
+// (kNetResponse1) should still be served from cache subsequently.
+TEST_F(HttpCacheTest, ConditionalizedRequestEmptyIfModifiedSince) {
+  static const Response kNetResponse1 = {
+      "HTTP/1.1 200 OK",
+      "Date: Fri, 12 Jun 2009 21:46:42 GMT\n"
+      "Last-Modified: Wed, 06 Feb 2008 22:38:21 GMT\n",
+      "body1"};
+
+  static const Response kNetResponse2 = {
+      "HTTP/1.1 200 OK",
+      "Date: Wed, 22 Jul 2009 03:15:26 GMT\n"
+      "Last-Modified: Fri, 03 Jul 2009 02:14:27 GMT\n",
+      "body2"};
+
+  const char kExtraRequestHeaders[] = "If-Modified-Since:\r\n";
+
+  ConditionalizedRequestUpdatesCacheHelper(kNetResponse1, kNetResponse2,
+                                           kNetResponse1, kExtraRequestHeaders);
+}
+
+// Tests that a conditional request with an empty "If-None-Match" header
+// value bypasses the cache for that request due to the malformed header,
+// and does not update the existing cache entry. The original cache entry
+// (kNetResponse1) should still be served from cache subsequently.
+TEST_F(HttpCacheTest, ConditionalizedRequestEmptyIfNoneMatch) {
+  static const Response kNetResponse1 = {
+      "HTTP/1.1 200 OK",
+      "Date: Fri, 12 Jun 2009 21:46:42 GMT\n"
+      "Etag: \"Foo1\"\n"
+      "Last-Modified: Wed, 06 Feb 2008 22:38:21 GMT\n",
+      "body1"};
+
+  static const Response kNetResponse2 = {
+      "HTTP/1.1 200 OK",
+      "Date: Wed, 22 Jul 2009 03:15:26 GMT\n"
+      "Etag: \"Foo2\"\n"
+      "Last-Modified: Fri, 03 Jul 2009 02:14:27 GMT\n",
+      "body2"};
+
+  const char kExtraRequestHeaders[] = "If-None-Match:\r\n";
+
+  ConditionalizedRequestUpdatesCacheHelper(kNetResponse1, kNetResponse2,
+                                           kNetResponse1, kExtraRequestHeaders);
+}
+
 TEST_F(HttpCacheTest, UrlContainingHash) {
   MockHttpCache cache;
 
@@ -7108,9 +7150,8 @@ TEST_F(HttpCacheSimplePostTest, LoadOnlyFromCacheMiss) {
   MockHttpRequest request(transaction);
   TestCompletionCallback callback;
 
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
-  ASSERT_TRUE(trans.get());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   ASSERT_THAT(callback.GetResult(rv), IsError(ERR_CACHE_MISS));
@@ -7423,9 +7464,8 @@ TEST_F(HttpCacheSimpleHeadTest, LoadOnlyFromCacheMiss) {
   MockHttpRequest request(transaction);
   TestCompletionCallback callback;
 
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
-  ASSERT_TRUE(trans.get());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   ASSERT_THAT(callback.GetResult(rv), IsError(ERR_CACHE_MISS));
@@ -9684,10 +9724,11 @@ TEST_F(HttpCacheRangeGetTest, Cancel) {
   MockHttpRequest request(kRangeGET_TransactionOK);
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = c->callback.WaitForResult();
   }
@@ -9723,11 +9764,11 @@ TEST_F(HttpCacheRangeGetTest, CancelWhileReading) {
   MockHttpRequest request(kRangeGET_TransactionOK);
 
   auto context = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&context->trans);
-  ASSERT_THAT(rv, IsOk());
+  context->trans = cache.CreateTransaction();
+  ASSERT_TRUE(context->trans);
 
-  rv = context->trans->Start(&request, context->callback.callback(),
-                             NetLogWithSource());
+  int rv = context->trans->Start(&request, context->callback.callback(),
+                                 NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = context->callback.WaitForResult();
   }
@@ -9764,10 +9805,11 @@ TEST_F(HttpCacheRangeGetTest, Cancel2) {
   request.load_flags |= LOAD_VALIDATE_CACHE;
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = c->callback.WaitForResult();
   }
@@ -9810,10 +9852,11 @@ TEST_F(HttpCacheRangeGetTest, Cancel3) {
   request.load_flags |= LOAD_VALIDATE_CACHE;
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = c->callback.WaitForResult();
 
@@ -9838,8 +9881,8 @@ TEST_F(HttpCacheRangeGetTest, Cancel3) {
   // active entry (no open or create).
 
   c = std::make_unique<Context>();
-  rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -10091,12 +10134,10 @@ TEST_F(HttpCacheRangeGetTest, OkLoadOnlyFromCache) {
   MockHttpRequest request(transaction);
   TestCompletionCallback callback;
 
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
-  ASSERT_TRUE(trans.get());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
-  rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = callback.WaitForResult();
   }
@@ -10168,10 +10209,11 @@ TEST_F(HttpCacheTest, DoomOnDestruction) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     c->result = c->callback.WaitForResult();
   }
@@ -10199,10 +10241,11 @@ TEST_F(HttpCacheTest, DoomOnDestruction2) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = c->callback.WaitForResult();
   }
@@ -10244,10 +10287,11 @@ TEST_F(HttpCacheTest, DoomOnDestruction3) {
   MockHttpRequest request(transaction);
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = c->callback.WaitForResult();
   }
@@ -10288,10 +10332,11 @@ TEST_F(HttpCacheTest, SetTruncatedFlag) {
 
   auto c = std::make_unique<Context>();
 
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = c->callback.WaitForResult();
   }
@@ -10342,10 +10387,11 @@ TEST_F(HttpCacheTest, DontSetTruncatedFlagForGarbledResponseCode) {
 
   auto c = std::make_unique<Context>();
 
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = c->callback.WaitForResult();
   }
@@ -10400,10 +10446,11 @@ TEST_F(HttpCacheTest, DontSetTruncatedFlag) {
   MockHttpRequest request(transaction);
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(c->callback.GetResult(rv), IsOk());
 
   // Read everything.
@@ -10428,12 +10475,11 @@ TEST_F(HttpCacheRangeGetTest, DontTruncate) {
 
   auto request = std::make_unique<MockHttpRequest>(transaction);
   std::unique_ptr<HttpTransaction> trans;
-
-  int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  trans = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
 
   TestCompletionCallback cb;
-  rv = trans->Start(request.get(), cb.callback(), NetLogWithSource());
+  int rv = trans->Start(request.get(), cb.callback(), NetLogWithSource());
   EXPECT_EQ(0, cb.GetResult(rv));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(10);
@@ -10455,12 +10501,11 @@ TEST_F(HttpCacheRangeGetTest, DontTruncate2) {
 
   auto request = std::make_unique<MockHttpRequest>(transaction);
   std::unique_ptr<HttpTransaction> trans;
-
-  int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  trans = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
 
   TestCompletionCallback cb;
-  rv = trans->Start(request.get(), cb.callback(), NetLogWithSource());
+  int rv = trans->Start(request.get(), cb.callback(), NetLogWithSource());
   EXPECT_EQ(0, cb.GetResult(rv));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(10);
@@ -10580,17 +10625,19 @@ TEST_F(HttpCacheGetTest, IncompleteResourceCancel) {
   MockHttpRequest request(transaction);
   auto c = std::make_unique<Context>();
 
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   // Queue another request to this transaction. We have to start this request
   // before the first one gets the response from the server and dooms the entry,
   // otherwise it will just create a new entry without being queued to the first
   // request.
   auto pending = std::make_unique<Context>();
-  ASSERT_THAT(cache.CreateTransaction(&pending->trans), IsOk());
+  pending->trans = cache.CreateTransaction();
+  ASSERT_TRUE(pending->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_EQ(ERR_IO_PENDING,
             pending->trans->Start(&request, pending->callback.callback(),
                                   NetLogWithSource()));
@@ -10673,11 +10720,12 @@ TEST_F(HttpCacheGetTest, IncompleteResource3) {
   transaction.data = kFullRangeData;
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   MockHttpRequest request(transaction);
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(c->callback.GetResult(rv), IsOk());
 
   // We should have checked with the server before finishing Start().
@@ -10706,11 +10754,12 @@ TEST_F(HttpCacheGetTest, IncompleteResourceWithAuth) {
   RangeTransactionServer handler;
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   MockHttpRequest request(transaction);
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(c->callback.GetResult(rv), IsOk());
 
   const HttpResponseInfo* response = c->trans->GetResponseInfo();
@@ -10755,12 +10804,13 @@ TEST_F(HttpCacheTest, TransactionRetryLimit) {
       "X-Require-Mock-Auth-Alt: dummy\r\n" EXTRA_HEADER;
 
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
   MockHttpRequest request(transaction);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = c->callback.WaitForResult();
   }
@@ -10818,10 +10868,11 @@ TEST_F(HttpCacheGetTest, CancelIncompleteResource) {
 
   MockHttpRequest request(transaction);
   auto c = std::make_unique<Context>();
-  int rv = cache.CreateTransaction(&c->trans);
-  ASSERT_THAT(rv, IsOk());
+  c->trans = cache.CreateTransaction();
+  ASSERT_TRUE(c->trans);
 
-  rv = c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
+  int rv =
+      c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
   EXPECT_THAT(c->callback.GetResult(rv), IsOk());
 
   // Read 20 bytes from the cache, and 10 from the net.
@@ -10932,8 +10983,8 @@ TEST_F(HttpCacheTest, CachedRedirect) {
 
   // Write to the cache.
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     if (rv == ERR_IO_PENDING) {
@@ -10967,8 +11018,8 @@ TEST_F(HttpCacheTest, CachedRedirect) {
 
   // Read from the cache.
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     if (rv == ERR_IO_PENDING) {
@@ -11162,8 +11213,8 @@ TEST_F(HttpCacheSimpleGetTest, SSLError) {
   MockHttpRequest request(transaction);
   TestCompletionCallback callback;
 
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
@@ -11176,8 +11227,8 @@ TEST_F(HttpCacheSimpleGetTest, SSLError) {
 TEST_F(HttpCacheTest, OutlivedTransactions) {
   auto cache = std::make_unique<MockHttpCache>();
 
-  std::unique_ptr<HttpTransaction> trans;
-  EXPECT_THAT(cache->CreateTransaction(&trans), IsOk());
+  std::unique_ptr<HttpTransaction> trans = cache->CreateTransaction();
+  EXPECT_TRUE(trans);
 
   cache.reset();
   trans.reset();
@@ -11820,6 +11871,24 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
   EXPECT_EQ(base::Seconds(10000), response.headers->GetMaxAgeValue().value());
 }
 
+TEST_F(HttpCacheTestSplitCacheFeatureEnabled, SharedResourceUsesSharedCache) {
+  SchemefulSite site(GURL("http://foo.com"));
+  MockHttpRequest request(kSimpleGET_Transaction);
+  NetworkIsolationKey general_partition_nik(site, site);
+  request.network_isolation_key = general_partition_nik;
+  request.network_anonymization_key =
+      NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          general_partition_nik);
+
+  std::string cache_key = *HttpCache::GenerateCacheKeyForRequest(&request);
+  EXPECT_EQ("1/0/_dk_http://foo.com http://foo.com http://www.google.com/",
+            cache_key);
+
+  request.is_shared_resource = true;
+  cache_key = *HttpCache::GenerateCacheKeyForRequest(&request);
+  EXPECT_EQ("1/0/http://www.google.com/", cache_key);
+}
+
 TEST_F(HttpCacheTest, NonSplitCache) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -11951,8 +12020,8 @@ TEST_F(HttpCacheTest, FilterCompletion) {
 
   {
     MockHttpRequest request(kSimpleGET_Transaction);
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -11987,8 +12056,8 @@ TEST_F(HttpCacheTest, DoneReading) {
   transaction.data = "";
   MockHttpRequest request(transaction);
 
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -12014,8 +12083,8 @@ TEST_F(HttpCacheTest, StopCachingDeletesEntry) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -12052,8 +12121,8 @@ TEST_F(HttpCacheTest, StopCachingThenDoneReadingDeletesEntry) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -12094,8 +12163,8 @@ TEST_F(HttpCacheTest, StopCachingWithAuthDeletesEntry) {
   MockHttpRequest request(mock_transaction);
 
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -12121,8 +12190,8 @@ TEST_F(HttpCacheTest, StopCachingSavesEntry) {
   MockHttpRequest request(kSimpleGET_Transaction);
 
   {
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     // Force a response that can be resumed.
     ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
@@ -12172,8 +12241,8 @@ TEST_F(HttpCacheTest, StopCachingTruncatedEntry) {
 
   {
     // Now make a regular request.
-    std::unique_ptr<HttpTransaction> trans;
-    ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
+    auto trans = cache.CreateTransaction();
+    ASSERT_TRUE(trans);
 
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -12405,10 +12474,8 @@ TEST_P(HttpCacheHugeResourceTest,
 
   MockHttpRequest request(transaction);
   TestCompletionCallback callback;
-  std::unique_ptr<HttpTransaction> http_transaction;
-  int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY,
-                                                 &http_transaction);
-  ASSERT_EQ(OK, rv);
+  std::unique_ptr<HttpTransaction> http_transaction =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
   ASSERT_TRUE(http_transaction.get());
 
   bool network_transaction_started = false;
@@ -12420,8 +12487,8 @@ TEST_P(HttpCacheHugeResourceTest,
         }));
   }
 
-  rv = http_transaction->Start(&request, callback.callback(),
-                               NetLogWithSource());
+  int rv = http_transaction->Start(&request, callback.callback(),
+                                   NetLogWithSource());
   rv = callback.GetResult(rv);
   ASSERT_EQ(OK, rv);
 
@@ -12512,8 +12579,9 @@ TEST_F(HttpCacheTest, SetPriority) {
   MockHttpCache cache;
 
   HttpRequestInfo info;
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.http_cache()->CreateTransaction(IDLE, &trans), IsOk());
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(IDLE);
+  ASSERT_TRUE(trans);
 
   // Shouldn't crash, but doesn't do anything either.
   trans->SetPriority(LOW);
@@ -12550,8 +12618,9 @@ TEST_F(HttpCacheTest, SetWebSocketHandshakeStreamCreateHelper) {
   HttpRequestInfo info;
 
   FakeWebSocketHandshakeStreamCreateHelper create_helper;
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.http_cache()->CreateTransaction(IDLE, &trans), IsOk());
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(IDLE);
+  ASSERT_TRUE(trans);
 
   EXPECT_FALSE(cache.network_layer()->last_transaction());
 
@@ -12591,8 +12660,9 @@ TEST_F(HttpCacheTest, SetPriorityNewTransaction) {
   transaction.request_headers = EXTRA_HEADER;
   transaction.data = kFullRangeData;
 
-  std::unique_ptr<HttpTransaction> trans;
-  ASSERT_THAT(cache.http_cache()->CreateTransaction(MEDIUM, &trans), IsOk());
+  std::unique_ptr<HttpTransaction> trans =
+      cache.http_cache()->CreateTransaction(MEDIUM);
+  ASSERT_TRUE(trans);
   EXPECT_EQ(DEFAULT_PRIORITY,
             cache.network_layer()->last_create_transaction_priority());
 
@@ -12903,10 +12973,8 @@ TEST_F(HttpCacheRangeGetTest, MultipleRequests) {
   transaction.data = "rg: 00-09 ";
 
   TestCompletionCallback callback;
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
-  ASSERT_TRUE(trans.get());
+  auto trans = cache.CreateTransaction();
+  ASSERT_TRUE(trans);
 
   // Start our transaction.
   trans->Start(&request, callback.callback(), NetLogWithSource());
@@ -12949,11 +13017,10 @@ TEST_F(HttpCacheRangeGetTest, Previous200LoadOnlyFromCache) {
   TestCompletionCallback callback;
 
   std::unique_ptr<HttpTransaction> trans;
-  int rv = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  trans = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
   ASSERT_TRUE(trans);
 
-  rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING) {
     rv = callback.WaitForResult();
   }
@@ -12975,8 +13042,8 @@ TEST_F(HttpCacheTest, NoStoreResponseShouldNotBlockFollowingRequests) {
   MockHttpRequest request(mock_transaction);
 
   auto first = std::make_unique<Context>();
-  first->result = cache.CreateTransaction(&first->trans);
-  ASSERT_THAT(first->result, IsOk());
+  first->trans = cache.CreateTransaction();
+  ASSERT_TRUE(first->trans);
   EXPECT_EQ(LOAD_STATE_IDLE, first->trans->GetLoadState());
   first->result = first->trans->Start(&request, first->callback.callback(),
                                       NetLogWithSource());
@@ -12991,8 +13058,8 @@ TEST_F(HttpCacheTest, NoStoreResponseShouldNotBlockFollowingRequests) {
 
   // Let us create the second (read) transaction.
   auto second = std::make_unique<Context>();
-  second->result = cache.CreateTransaction(&second->trans);
-  ASSERT_THAT(second->result, IsOk());
+  second->trans = cache.CreateTransaction();
+  ASSERT_TRUE(second->trans);
   EXPECT_EQ(LOAD_STATE_IDLE, second->trans->GetLoadState());
   second->result = second->trans->Start(&request, second->callback.callback(),
                                         NetLogWithSource());
@@ -14094,13 +14161,14 @@ TEST_F(HttpCacheTest, PrioritizeCachingFlagSetForMainFrameNavigationRequest) {
             HINT_HIGH_PRIORITY);
 }
 
-class HttpCacheNoVarySearchTest : public HttpCacheTest,
-                                  public ::testing::WithParamInterface<bool> {
+class HttpCacheNoVarySearchTestBase
+    : public HttpCacheTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
   static constexpr int kMaxAgeOneDay = 24 * 60 * 60;  // seconds
   static constexpr std::string_view kBaseURL = "https://example.com/search?";
 
-  HttpCacheNoVarySearchTest() {
+  HttpCacheNoVarySearchTestBase() {
     using base::test::FeatureRef;
     std::vector<FeatureRef> enabled_features = {
         features::kHttpCacheNoVarySearch};
@@ -14112,10 +14180,29 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
       disabled_features.push_back(split_cache_feature);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    http_cache_.emplace();
+  }
+
+  ~HttpCacheNoVarySearchTestBase() {
+    // Destroy the NoVarySearchCacheStorage object.
+    http_cache_.reset();
+
+    // Make sure the NoVarySearchCacheStorage::Journaller object that lives on
+    // the thread pool has been destroyed along with any mock objects it owns.
+    // Despite what the presubmit claims, this use of RunUntilIdle() is correct.
+    RunUntilIdle();
+  }
+
+  void SetUp() override { ConstructCache(http_cache_); }
+
+  // This can be overloaded by subclasses to construct the cache with different
+  // arguments.
+  virtual void ConstructCache(std::optional<MockHttpCache>& http_cache) {
+    http_cache.emplace();
   }
 
   HttpCache* cache() { return http_cache_->http_cache(); }
+
+  MockDiskCache* mock_disk_cache() { return http_cache_->disk_cache(); }
 
   // Callers can safely modify the return value, except for the `url` field.
   MockTransaction& CreateMockTransaction(std::string_view query,
@@ -14180,6 +14267,8 @@ class HttpCacheNoVarySearchTest : public HttpCacheTest,
   // in the constructor.
   std::optional<MockHttpCache> http_cache_;
 };
+
+using HttpCacheNoVarySearchTest = HttpCacheNoVarySearchTestBase;
 
 TEST_P(HttpCacheNoVarySearchTest, SimpleSuccess) {
   FetchIntoCache("q=fred&a=1", "params=(\"a\")");
@@ -14260,9 +14349,7 @@ TEST_P(HttpCacheNoVarySearchTest, ModeIsReadButRequiresValidation) {
 
   auto create_and_start_transaction = [&](MockHttpRequest& request,
                                           TestCompletionCallback& callback) {
-    std::unique_ptr<HttpTransaction> transaction;
-    EXPECT_THAT(cache()->CreateTransaction(DEFAULT_PRIORITY, &transaction),
-                IsOk());
+    auto transaction = cache()->CreateTransaction(DEFAULT_PRIORITY);
     EXPECT_TRUE(transaction);
     // Avoid crashing even if CreateTransaction() failed for some reason.
     // ASSERT_TRUE() cannot be used here because the lambda doesn't return
@@ -14331,5 +14418,274 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const auto& info) {
                            return info.param ? "NotSplitCache" : "SplitCache";
                          });
+
+// A GoogleMock action to quit a base::RunLoop. This is not defined using the
+// ACTION_P macro because to be thread-safe QuitClosure() needs to be called
+// when the action is created, not when it is executed.
+auto QuitRunLoop(base::RunLoop& run_loop) {
+  return RunClosure(run_loop.QuitClosure());
+}
+
+// Tests for NoVarySearchCacheStorage integration. These necessarily depend on
+// the implementation of NoVarySearchCacheStorage, and would need to be updated
+// if a different storage backend was used.
+class HttpCacheNoVarySearchMockFileOperationsTest
+    : public HttpCacheNoVarySearchTestBase {
+ public:
+  using StrictMockFileOperations = StrictMock<MockFileOperations>;
+  using StrictMockWriter = StrictMock<MockWriter>;
+  using Checkpoint = StrictMock<MockFunction<void()>>;
+
+  void ConstructCache(std::optional<MockHttpCache>& http_cache) override {
+    auto file_operations = std::make_unique<StrictMockFileOperations>();
+    file_operations_ = file_operations.get();
+    auto writer = std::make_unique<StrictMockWriter>();
+    writer_ = writer.get();
+
+    auto maybe_block = [&] {
+      if (delay_load_.load()) {
+        // This thread synchronously goes to sleep until signalled.
+        load_can_proceed_.Wait();
+      }
+    };
+
+    {
+      InSequence s;
+
+      load_expectations_ +=
+          EXPECT_CALL(*file_operations, Load)
+              .WillOnce(DoAll(
+                  Invoke(maybe_block),
+                  Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND))));
+      load_expectations_ += EXPECT_CALL(*file_operations, AtomicSave)
+                                .WillOnce(Return(base::ok()));
+      load_expectations_ += EXPECT_CALL(*file_operations, CreateWriter)
+                                .WillOnce(Return(std::move(writer)));
+      load_expectations_ +=
+          EXPECT_CALL(*writer_, Write)
+              .WillOnce(DoAll(QuitRunLoop(load_run_loop_), Return(true)));
+    }
+    http_cache.emplace(std::make_unique<MockBackendFactory>(),
+                       std::move(file_operations));
+  }
+
+  void InitializeBackend() {
+    initialized_backend_ = true;
+    // It's not safe to set new expectations after this point.
+    file_operations_ = nullptr;
+    writer_ = nullptr;
+
+    TestGetBackendCompletionCallback cb;
+    HttpCache::GetBackendResult result = cache()->GetBackend(cb.callback());
+    EXPECT_THAT(cb.GetResult(result).first, IsOk());
+  }
+
+  void WaitForLoad() { load_run_loop_.Run(); }
+
+  // Returns a GoogleMock matcher which tests if `substring` appears within a
+  // uint8_t span. For example SpanHasSubstring("foo") will match against a span
+  // that contains the bytes 'f' 'o' 'o' contiguously in that order.
+  static auto SpanHasSubstring(const std::string& substring) {
+    return Truly([substring](base::span<const uint8_t> span) {
+      return !std::ranges::search(span, substring).empty();
+    });
+  }
+
+  void ResumeLoad() {
+    CHECK(delay_load_.load());
+    load_can_proceed_.Signal();
+  }
+
+  // Set whether loading the snapshot should block the background thread.
+  void set_delay_load(bool delay_load) { delay_load_.store(delay_load); }
+
+  StrictMockFileOperations& operations() {
+    CHECK(!initialized_backend_)
+        << "Set expectations before initializing backend";
+    return *file_operations_;
+  }
+
+  StrictMockWriter& writer() {
+    CHECK(!initialized_backend_)
+        << "Set expectations before initializing backend";
+    return *writer_;
+  }
+
+  const testing::ExpectationSet& load_expectations() const {
+    CHECK(!initialized_backend_)
+        << "Set expectations before initializing backend";
+    return load_expectations_;
+  }
+
+ private:
+  base::RunLoop load_run_loop_;
+  raw_ptr<StrictMockFileOperations> file_operations_ = nullptr;
+
+  // This pointer will dangle if a new snapshot is created
+  raw_ptr<StrictMockWriter> writer_ = nullptr;
+
+  // ExpectationSet represents a set of expectation. See
+  // https://google.github.io/googletest/reference/mocking.html#ExpectationSet
+  // for documentation.
+  testing::ExpectationSet load_expectations_;
+
+  // This is used for blocking load when `delay_load_` is true.
+  base::TestWaitableEvent load_can_proceed_;
+
+  bool initialized_backend_ = false;
+  std::atomic<bool> delay_load_ = false;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpCacheNoVarySearchMockFileOperationsTest,
+                         ::testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "NotSplitCache" : "SplitCache";
+                         });
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest, CacheStorageIsCreated) {
+  InitializeBackend();
+
+  WaitForLoad();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest, InsertsAreJournalled) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+      .After(load_expectations())
+      .WillOnce(DoAll(QuitRunLoop(run_loop), Return(true)));
+
+  InitializeBackend();
+
+  WaitForLoad();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+  run_loop.Run();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest, EraseIsJournalled) {
+  base::RunLoop insert_run_loop;
+  base::RunLoop erase_run_loop;
+  // The same matcher works for the insert and erase operations, because they
+  // both have to contain the original query. This line verifies that two
+  // matching writes have been performed, but to avoid making the test too
+  // sensitive to the format of the journal, it does not verify that the journal
+  // entry types match.
+  EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+      .After(load_expectations())
+      .WillOnce(DoAll(QuitRunLoop(insert_run_loop), Return(true)))
+      .WillOnce(DoAll(QuitRunLoop(erase_run_loop), Return(true)));
+
+  InitializeBackend();
+
+  WaitForLoad();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  // Ensure the insert is really complete. Without this, the call to
+  // set_fail_requests() sometimes causes the previous transaction to fail.
+  insert_run_loop.Run();
+
+  // Cause the next request to fail. This will then cause the entry to be
+  // erased from the NoVarySearchCache.
+  mock_disk_cache()->set_fail_requests(true);
+
+  MockTransaction& from_cache =
+      CreateMockTransaction("q=fred&a=2", "params=(\"a\")");
+  RunTransactionTest(cache(), from_cache);
+  erase_run_loop.Run();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest,
+       ClearNoVarySearchCacheRewritesSnapshot) {
+  base::RunLoop journal_run_loop;
+  base::RunLoop snapshot_run_loop;
+  {
+    InSequence s;
+
+    // Verifies that the initial FetchIntoCache() transaction is journalled and
+    // permits the main thread to continue.
+    EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+        .After(load_expectations())
+        .WillOnce(DoAll(QuitRunLoop(journal_run_loop), Return(true)));
+
+    // Verifies that the snapshot is written and that it does not contain the
+    // entry that the call to ClearNoVarySearchCache() should have removed.
+    EXPECT_CALL(operations(),
+                AtomicSave(_, Not(Contains(SpanHasSubstring("q=fred&a=1")))))
+        .WillOnce(Return(base::ok()));
+
+    auto writer = std::make_unique<StrictMockWriter>();
+    auto& writer_ref = *writer;
+
+    // Verifies that a new journal file is created.
+    EXPECT_CALL(operations(), CreateWriter).WillOnce(Return(std::move(writer)));
+
+    // Verifies that the magic number (and nothing else) is written to the
+    // journal file, and permits the test to complete.
+    EXPECT_CALL(writer_ref, Write)
+        .WillOnce(DoAll(QuitRunLoop(snapshot_run_loop), Return(true)));
+  }
+
+  InitializeBackend();
+
+  WaitForLoad();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+  journal_run_loop.Run();
+
+  cache()->ClearNoVarySearchCache(UrlFilterType::kFalseIfMatches, {}, {},
+                                  base::Time(), base::Time::Max());
+
+  snapshot_run_loop.Run();
+}
+
+TEST_P(HttpCacheNoVarySearchMockFileOperationsTest,
+       InsertDuringLoadIsJournalled) {
+  // To make the test robust, ensure that background file operations don't
+  // complete until we have finished our first request.
+  set_delay_load(true);
+
+  base::RunLoop run_loop;
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+
+    // Verifies that the journal write does not happen before the call to
+    // ResumeLoad().
+    EXPECT_CALL(checkpoint, Call());
+
+    // Verifies that the transaction that happened before the load completed is
+    // journalled, and permits the test to continue.
+    EXPECT_CALL(writer(), Write(SpanHasSubstring("q=fred&a=1")))
+        .After(load_expectations())
+        .WillOnce(DoAll(QuitRunLoop(run_loop), Return(true)));
+  }
+
+  InitializeBackend();
+
+  FetchIntoCache("q=fred&a=1", "params=(\"a\")");
+
+  checkpoint.Call();
+
+  // Let background file operations resume.
+  ResumeLoad();
+
+  // Wait for the journal to be written.
+  run_loop.Run();
+
+  // The entry should still be there.
+  MockTransaction& from_cache =
+      CreateMockTransaction("q=fred&a=2", "params=(\"a\")");
+  MockHttpRequest cache_request(from_cache);
+
+  HttpResponseInfo info;
+
+  RunTransactionTestWithRequest(cache(), from_cache, cache_request, &info);
+  EXPECT_TRUE(info.was_cached);
+  EXPECT_FALSE(info.network_accessed);
+  EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
+  EXPECT_EQ(info.headers->response_code(), 200);
+}
 
 }  // namespace net

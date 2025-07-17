@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
 import android.app.Activity;
 import android.view.View;
 
@@ -43,13 +45,12 @@ public class Elements extends BaseElements {
     /**
      * Builder for {@link Elements}.
      *
-     * <p>Passed to {@link ConditionalState#declareElements(Elements.Builder)}}, which must declare
-     * the ConditionalState's elements by calling the declare___() methods.
+     * <p>Passed to |delayedDeclarations| to add elements with declareElementFactory().
      */
     public static class Builder {
         private @Nullable Elements mOwner;
         private final ArrayList<Element<?>> mElements = new ArrayList<>();
-        private final Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
+        private final Map<Element<?>, ElementFactory> mElementFactories = new HashMap<>();
         private final ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
         private final ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
 
@@ -76,22 +77,34 @@ public class Elements extends BaseElements {
             return declareElement(element);
         }
 
-        /**
-         * See {@link ConditionalState#declareElementFactory(Condition, Callback)}.
-         *
-         * @deprecated Use {@link #declareElementFactory(Element, Callback)} instead.}
-         */
-        @Deprecated
-        public void declareElementFactory(
-                Condition condition, Callback<Builder> delayedDeclarations) {
-            assertNotBuilt();
-            mElementFactories.put(condition, new ElementFactory(mOwner, delayedDeclarations));
+        /** See {@link ConditionalState#declareView(Matcher)}. */
+        public ViewElement<View> declareView(Matcher<View> viewMatcher) {
+            return declareView(viewSpec(viewMatcher), ViewElement.Options.DEFAULT);
+        }
+
+        /** See {@link ConditionalState#declareView(Matcher, ViewElement.Options)}. */
+        public ViewElement<View> declareView(
+                Matcher<View> viewMatcher, ViewElement.Options options) {
+            return declareView(viewSpec(viewMatcher), options);
+        }
+
+        /** See {@link ConditionalState#declareView(Class, Matcher)}. */
+        public <ViewT extends View> ViewElement<ViewT> declareView(
+                Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+            return declareView(viewSpec(viewClass, viewMatcher), ViewElement.Options.DEFAULT);
+        }
+
+        /** See {@link ConditionalState#declareView(Class, Matcher, ViewElement.Options)}. */
+        public <ViewT extends View> ViewElement<ViewT> declareView(
+                Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+            return declareView(viewSpec(viewClass, viewMatcher), options);
         }
 
         /** See {@link ConditionalState#declareElementFactory(Element, Callback)}. */
         public void declareElementFactory(
                 Element<?> element, Callback<Elements.Builder> delayedDeclarations) {
-            declareElementFactory(element.getEnterCondition(), delayedDeclarations);
+            assertNotBuilt();
+            mElementFactories.put(element, new ElementFactory(mOwner, delayedDeclarations));
         }
 
         /** See {@link ConditionalState#declareNoView(ViewSpec)}. */
@@ -111,14 +124,14 @@ public class Elements extends BaseElements {
             mOtherEnterConditions.add(condition);
         }
 
-        /** See {@link ConditionalState#declareEnterConditionAsElement(Condition)}. */
+        /** See {@link ConditionalState#declareEnterConditionAsElement(ConditionWithResult)}. */
         public <ProductT, T extends ConditionWithResult<ProductT>>
                 Element<ProductT> declareEnterConditionAsElement(T condition) {
             assertNotBuilt();
             Element<ProductT> element =
                     new Element<>("CE/" + condition.getDescription()) {
                         @Override
-                        public ConditionWithResult<ProductT> createEnterCondition() {
+                        public @Nullable ConditionWithResult<ProductT> createEnterCondition() {
                             return condition;
                         }
 

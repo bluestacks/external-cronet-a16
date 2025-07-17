@@ -5,6 +5,7 @@
 #include "net/cert/internal/trust_store_chrome.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
@@ -363,9 +364,6 @@ TEST(TrustStoreChromeTestNoFixture,
 
     // Check that the certificate is present in the trust store as an anchor,
     // with the expected settings for expiry and X.509 constraints.
-    // TODO(crbug.com/414630735): check that the correct Trust Anchor ID is
-    // stored in TrustStoreChrome, once implemented. (Right now TrustStoreChrome
-    // throws out Trust Anchor IDs and doesn't keep them around.)
     bssl::CertificateTrust trust =
         trust_store_chrome->GetTrust(parsed_cert.get());
     EXPECT_TRUE(trust.IsTrustAnchor());
@@ -373,8 +371,11 @@ TEST(TrustStoreChromeTestNoFixture,
               expected_trust.enforce_anchor_expiry);
     EXPECT_EQ(trust.enforce_anchor_constraints,
               expected_trust.enforce_anchor_constraints);
+    EXPECT_TRUE(trust_store_chrome->trust_anchor_ids().contains(
+        base::ToVector(base::as_byte_span(cert.trust_anchor_id))));
   }
   EXPECT_EQ(4u, certs_with_tai);
+  EXPECT_EQ(trust_store_chrome->trust_anchor_ids().size(), 4u);
 }
 
 // Tests that, for a compiled-in root store, certificates in |additional_certs|
@@ -404,6 +405,95 @@ TEST(TrustStoreChromeTestNoFixture,
   EXPECT_TRUE(trust.IsTrustAnchor());
   EXPECT_TRUE(trust.enforce_anchor_expiry);
   EXPECT_TRUE(trust.enforce_anchor_constraints);
+}
+
+// Tests that, for a root loaded from a proto, certificates in
+// |additional_certs| are loaded into TrustStoreChrome as trust anchors when
+// indicated, with |enforce_anchor_expiry| and |enforce_anchor_constraints|
+// flags enforced.
+TEST(TrustStoreChromeTestNoFixture, LoadProtoAdditionalCertsAsTrustAnchors) {
+  for (bool enforce_anchor_expiry : {true, false}) {
+    for (bool enforce_anchor_constraints : {true, false}) {
+      scoped_refptr<X509Certificate> root = MakeTestRoot();
+      chrome_root_store::RootStore root_store;
+      chrome_root_store::TrustAnchor* anchor =
+          root_store.add_additional_certs();
+      anchor->set_der(
+          net::x509_util::CryptoBufferAsStringPiece(root->cert_buffer()));
+      anchor->set_enforce_anchor_expiry(enforce_anchor_expiry);
+      anchor->set_enforce_anchor_constraints(enforce_anchor_constraints);
+      anchor->set_tls_trust_anchor(true);
+      anchor->set_trust_anchor_id("\x01\x02\x03\x04");
+
+      std::optional<ChromeRootStoreData> root_store_data =
+          ChromeRootStoreData::CreateFromRootStoreProto(root_store);
+      ASSERT_TRUE(root_store_data);
+      TrustStoreChrome trust_store_chrome(root_store_data.value());
+
+      std::shared_ptr<const bssl::ParsedCertificate> parsed =
+          ToParsedCertificate(*root);
+      bssl::CertificateTrust trust = trust_store_chrome.GetTrust(parsed.get());
+      EXPECT_TRUE(trust.IsTrustAnchor());
+      EXPECT_EQ(trust.enforce_anchor_expiry, enforce_anchor_expiry);
+      EXPECT_EQ(trust.enforce_anchor_constraints, enforce_anchor_constraints);
+      EXPECT_TRUE(trust_store_chrome.trust_anchor_ids().contains(
+          {0x01, 0x02, 0x03, 0x04}));
+    }
+  }
+}
+
+// Tests that, for a root loaded from a proto, certificates in
+// |additional_certs| are loaded into TrustStoreChrome as trust anchors when
+// indicated, even if there is no Trust Anchor ID set.
+TEST(TrustStoreChromeTestNoFixture,
+     LoadProtoAdditionalCertsAsTrustAnchorsWithNoTrustAnchorID) {
+  scoped_refptr<X509Certificate> root = MakeTestRoot();
+  chrome_root_store::RootStore root_store;
+  chrome_root_store::TrustAnchor* anchor = root_store.add_additional_certs();
+  anchor->set_der(
+      net::x509_util::CryptoBufferAsStringPiece(root->cert_buffer()));
+  anchor->set_enforce_anchor_expiry(true);
+  anchor->set_enforce_anchor_constraints(true);
+  anchor->set_tls_trust_anchor(true);
+  // `trust_anchor_id` is left unset here.
+
+  std::optional<ChromeRootStoreData> root_store_data =
+      ChromeRootStoreData::CreateFromRootStoreProto(root_store);
+  ASSERT_TRUE(root_store_data);
+  TrustStoreChrome trust_store_chrome(root_store_data.value());
+
+  std::shared_ptr<const bssl::ParsedCertificate> parsed =
+      ToParsedCertificate(*root);
+  bssl::CertificateTrust trust = trust_store_chrome.GetTrust(parsed.get());
+  EXPECT_TRUE(trust.IsTrustAnchor());
+  EXPECT_TRUE(trust.enforce_anchor_expiry);
+  EXPECT_TRUE(trust.enforce_anchor_constraints);
+}
+
+// Tests that, for a root loaded from a proto, certificates in
+// |additional_certs| are not loaded into TrustStoreChrome as trust anchors when
+// |tls_trust_anchor| is false.
+TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
+  scoped_refptr<X509Certificate> root = MakeTestRoot();
+  chrome_root_store::RootStore root_store;
+  chrome_root_store::TrustAnchor* anchor = root_store.add_additional_certs();
+  anchor->set_der(
+      net::x509_util::CryptoBufferAsStringPiece(root->cert_buffer()));
+  anchor->set_enforce_anchor_expiry(true);
+  anchor->set_enforce_anchor_constraints(true);
+  // |tls_trust_anchor| is left unset here.
+  anchor->set_trust_anchor_id("\x01\x02\x03\x04");
+
+  std::optional<ChromeRootStoreData> root_store_data =
+      ChromeRootStoreData::CreateFromRootStoreProto(root_store);
+  ASSERT_TRUE(root_store_data);
+  TrustStoreChrome trust_store_chrome(root_store_data.value());
+
+  std::shared_ptr<const bssl::ParsedCertificate> parsed =
+      ToParsedCertificate(*root);
+  EXPECT_FALSE(trust_store_chrome.Contains(parsed.get()));
+  EXPECT_FALSE(
+      trust_store_chrome.trust_anchor_ids().contains({0x01, 0x02, 0x03, 0x04}));
 }
 
 TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {

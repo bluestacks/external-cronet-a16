@@ -74,8 +74,6 @@ rust_ffi_static {
                 "proc-macro",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=quote-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -83,6 +81,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },
@@ -128,8 +127,6 @@ rust_ffi_static {
                 "proc-macro",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=quote-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -137,6 +134,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },

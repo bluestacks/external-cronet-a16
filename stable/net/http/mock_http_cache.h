@@ -26,6 +26,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_transaction_test_util.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 
 namespace net {
 
@@ -289,7 +290,9 @@ class MockHttpCache {
  public:
   MockHttpCache();
   explicit MockHttpCache(
-      std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory);
+      std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory,
+      std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations =
+          nullptr);
 
   HttpCache* http_cache() { return &http_cache_; }
 
@@ -299,8 +302,8 @@ class MockHttpCache {
   disk_cache::Backend* backend();
   MockDiskCache* disk_cache();
 
-  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY...)
-  int CreateTransaction(std::unique_ptr<HttpTransaction>* trans);
+  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY)
+  std::unique_ptr<HttpTransaction> CreateTransaction();
 
   // Wrapper to simulate cache lock timeout for new transactions.
   void SimulateCacheLockTimeout();

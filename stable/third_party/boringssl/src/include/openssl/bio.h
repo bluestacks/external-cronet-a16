@@ -23,7 +23,6 @@
 #include <openssl/err.h>  // for ERR_print_errors_fp
 #include <openssl/ex_data.h>
 #include <openssl/stack.h>
-#include <openssl/thread.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -809,9 +808,9 @@ OPENSSL_EXPORT int BIO_meth_set_puts(BIO_METHOD *method,
 // Using these functions is inherently unsafe and fragile. It is not possible to
 // use them in a future-proof way. See
 // https://github.com/openssl/openssl/issues/26047 for details. BoringSSL
-// implements them solely for compatibility with older versions of PostgreSQL.
-// To work around the future-proofing problems, the return values may diverge
-// from the true implementation of |BIO_s_socket|.
+// implements them solely for compatibility with Folly and older versions of
+// PostgreSQL. To work around the future-proofing problems, the return values
+// may diverge from the true implementation of |BIO_s_socket|.
 //
 // Caller should not use these functions. They are not necessary to define
 // custom |BIO_METHOD|s. Instead, callers should either:
@@ -825,6 +824,11 @@ OPENSSL_EXPORT int BIO_meth_set_puts(BIO_METHOD *method,
 // - Define a custom |BIO_METHOD| without |BIO_s_socket| at all. If not using
 //   the built-in read or write functions, |BIO_s_socket| only provides a no-op
 //   |BIO_CTRL_FLUSH| implementation. This can be implemented by the caller.
+OPENSSL_EXPORT int (*BIO_meth_get_write(const BIO_METHOD *method))(BIO *,
+                                                                   const char *,
+                                                                   int);
+OPENSSL_EXPORT int (*BIO_meth_get_read(const BIO_METHOD *method))(BIO *, char *,
+                                                                  int);
 OPENSSL_EXPORT int (*BIO_meth_get_gets(const BIO_METHOD *method))(BIO *, char *,
                                                                   int);
 OPENSSL_EXPORT int (*BIO_meth_get_puts(const BIO_METHOD *method))(BIO *,
@@ -885,44 +889,6 @@ OPENSSL_EXPORT long (*BIO_meth_get_callback_ctrl(const BIO_METHOD *method))(
 // BIO_TYPE_START is the first user-allocated |BIO| type. No pre-defined type,
 // flag bits aside, may exceed this value.
 #define BIO_TYPE_START 128
-
-struct bio_method_st {
-  int type;
-  const char *name;
-  int (*bwrite)(BIO *, const char *, int);
-  int (*bread)(BIO *, char *, int);
-  // TODO(fork): remove bputs.
-  int (*bputs)(BIO *, const char *);
-  int (*bgets)(BIO *, char *, int);
-  long (*ctrl)(BIO *, int, long, void *);
-  int (*create)(BIO *);
-  int (*destroy)(BIO *);
-  long (*callback_ctrl)(BIO *, int, BIO_info_cb *);
-};
-
-struct bio_st {
-  const BIO_METHOD *method;
-  CRYPTO_EX_DATA ex_data;
-
-  // init is non-zero if this |BIO| has been initialised.
-  int init;
-  // shutdown is often used by specific |BIO_METHOD|s to determine whether
-  // they own some underlying resource. This flag can often by controlled by
-  // |BIO_set_close|. For example, whether an fd BIO closes the underlying fd
-  // when it, itself, is closed.
-  int shutdown;
-  int flags;
-  int retry_reason;
-  // num is a BIO-specific value. For example, in fd BIOs it's used to store a
-  // file descriptor.
-  int num;
-  CRYPTO_refcount_t references;
-  void *ptr;
-  // next_bio points to the next |BIO| in a chain. This |BIO| owns a reference
-  // to |next_bio|.
-  BIO *next_bio;  // used by filter BIOs
-  uint64_t num_read, num_write;
-};
 
 #define BIO_C_SET_CONNECT 100
 #define BIO_C_DO_STATE_MACHINE 101

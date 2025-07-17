@@ -33,7 +33,12 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_net_cert_root_store_proto_lite__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_net_cert_root_store_proto_lite_gen__testing_h",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_net_cert_root_store_proto_lite_gen__testing_h",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
@@ -41,8 +46,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",

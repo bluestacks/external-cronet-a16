@@ -107,8 +107,6 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=cxxbridge_macro-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -116,6 +114,7 @@ rust_proc_macro {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },
@@ -194,8 +193,6 @@ rust_proc_macro {
             compile_multilib: "64",
             edition: "2021",
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=cxxbridge_macro-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -203,6 +200,7 @@ rust_proc_macro {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },

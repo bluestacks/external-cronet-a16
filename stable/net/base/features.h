@@ -319,8 +319,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableGetNetworkConnectivityHintAPI);
 
 // Whether or not to enable TCP port randomization via SO_RANDOMIZE_PORT on
-// Windows 20H1+.
-NET_EXPORT BASE_DECLARE_FEATURE(kEnableTcpPortRandomization);
+// Windows for versions >= kTcpPortRandomizationWinVersionMinimum.
+// See crbug.com/40744069 for more details.
+NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortRandomizationWin);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                      kTcpPortRandomizationWinVersionMinimum);
 
 // Whether to use a TCP socket implementation which uses an IO completion
 // handler to be notified of completed reads and writes, instead of an event.
@@ -331,10 +334,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketIoCompletionPortWin);
 NET_EXPORT BASE_DECLARE_FEATURE(kAvoidEntryCreationForNoStore);
 NET_EXPORT extern const base::FeatureParam<int>
     kAvoidEntryCreationForNoStoreCacheSize;
-
-// Prefetch to follow normal semantics instead of 5-minute rule
-// https://crbug.com/1345207
-NET_EXPORT BASE_DECLARE_FEATURE(kPrefetchFollowsNormalCacheSemantics);
 
 // A flag for new Kerberos feature, that suggests new UI
 // when Kerberos authentication in browser fails on ChromeOS.
@@ -547,6 +546,17 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito;
 // proxied by IP Protection and thus allowing the user to made aware and offer
 // the ability to bypass IP Protection via the User Bypass UX.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableUserBypass;
+
+// If true, IP Protection will be disabled by default for enterprise users.
+// Otherwise, IP Protection will be enabled by default for enterprise users (but
+// can still be opted out of via enterprise policy). This is intended to be used
+// as a kill-switch in case significant enterprise breakage is encountered
+// during the IP Protection rollout. Note that this has no effect unless the
+// `kEnableIpProtectionProxy` feature is enabled.
+// TODO(https://crbug.com/41496985): Remove this feature a few milestones after
+// launch assuming no major enterprise breakage is encountered.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kIpPrivacyDisableForEnterpriseByDefault;
 
 // Maximum report body size (KB) to include in serialized reports. Bodies
 // exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
@@ -777,6 +787,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kIncludeDeprecatedClientCertLookup);
 NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePorts);
 NET_EXPORT extern const base::FeatureParam<std::string>
     kPortsToRestrictForAbuse;
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kPortsToRestrictForAbuseMonitorOnly;
+
+// Finch-controlled list of ports that should be blocked on localhost.
+NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePortsOnLocalhost);
 
 }  // namespace net::features
 

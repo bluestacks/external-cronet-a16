@@ -33,7 +33,12 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_protos_perfetto_trace_etw_cpp__testing__concatenated_headers_common",
+        "stable_cronet_ff61d121_etw_cpp_gen__testing_h",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_ff61d121_etw_cpp_gen__testing_h",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
@@ -41,8 +46,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -125,7 +130,12 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_protos_perfetto_trace_etw_lite__testing__concatenated_headers_common",
+        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_ff61d121_etw_lite_gen__testing_h",
+    ],
+    export_generated_headers: [
+        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_ff61d121_etw_lite_gen__testing_h",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
@@ -133,8 +143,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
@@ -216,7 +226,12 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_protos_perfetto_trace_etw_zero__concatenated_headers_common",
+        "stable_cronet_ff61d121_etw_zero_gen_h",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags",
+    ],
+    export_generated_headers: [
+        "stable_cronet_ff61d121_etw_zero_gen_h",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
@@ -224,8 +239,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -308,14 +323,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_protos_perfetto_trace_etw_zero__testing__concatenated_headers_common",
+        "stable_cronet_ff61d121_etw_zero_gen__testing_h",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
+    ],
+    export_generated_headers: [
+        "stable_cronet_ff61d121_etw_zero_gen__testing_h",
+        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-9266-g09006611-1\"",
-        "-DCR_LIBCXX_REVISION=62724eb55f2ad7389088265952b1bb62cb89c73b",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
+        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -427,7 +447,7 @@ cc_library_static {
                 "-msse3",
             ],
             generated_headers: [
-                "stable_cronet_third_party_perfetto_protos_perfetto_trace_etw_zero__testing__concatenated_headers_host",
+                "stable_cronet_build_chromeos_buildflags__testing",
             ],
         },
     },

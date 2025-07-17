@@ -80,8 +80,6 @@ rust_ffi_static {
                 "span-locations",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=proc_macro2-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -89,6 +87,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
     },
@@ -139,8 +138,6 @@ rust_ffi_static {
                 "span-locations",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=proc_macro2-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -148,6 +145,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
     },

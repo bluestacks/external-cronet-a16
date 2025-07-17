@@ -108,8 +108,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -118,6 +116,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_arm64: {
@@ -132,8 +131,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -142,6 +139,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_riscv64: {
@@ -156,8 +154,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -166,6 +162,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86: {
@@ -180,8 +177,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -190,6 +185,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86_64: {
@@ -204,8 +200,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -214,6 +208,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         host: {
@@ -296,8 +291,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -306,6 +299,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_arm64: {
@@ -320,8 +314,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -330,6 +322,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_riscv64: {
@@ -344,8 +337,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -354,6 +345,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86: {
@@ -368,8 +360,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -378,6 +368,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86_64: {
@@ -392,8 +383,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -402,6 +391,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         host: {
@@ -417,8 +407,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
@@ -427,6 +415,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
             rustlibs: [
                 "libproc_macro2__d957ddb2eb267eaf",

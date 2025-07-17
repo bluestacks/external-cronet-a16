@@ -378,7 +378,8 @@
     "AccessibilityTextFormatting": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -602,6 +603,21 @@
                     "enable_features": [
                         "AndroidAppearanceSettings",
                         "AndroidBookmarkBar"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidBookmarkHistoryPane": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithHistoryPane",
+                    "enable_features": [
+                        "HistoryPaneAndroid"
                     ]
                 }
             ]
@@ -1139,6 +1155,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidWindowOcclusion"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidWindowPopupLargeScreen": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidWindowPopupLargeScreen"
                     ]
                 }
             ]
@@ -3896,6 +3927,15 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledContextualPageActionOnly",
+                    "params": {
+                        "contextual_only": "true"
+                    },
+                    "enable_features": [
+                        "CCTAdaptiveButton"
+                    ]
+                },
+                {
                     "name": "Disabled",
                     "disable_features": [
                         "CCTAdaptiveButton"
@@ -3905,15 +3945,6 @@
                     "name": "EnabledDefault",
                     "params": {
                         "open_in_browser": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledContextualPageActionOnly",
-                    "params": {
-                        "contextual_only": "true"
                     },
                     "enable_features": [
                         "CCTAdaptiveButton"
@@ -3985,7 +4016,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CCTEarlyNav"
+                        "CCTEarlyNav",
+                        "CCTFixWarmup"
                     ]
                 }
             ]
@@ -4001,21 +4033,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CCTEphemeralMediaViewerExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CCTFixWarmup": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTFixWarmup"
                     ]
                 }
             ]
@@ -8294,6 +8311,26 @@
             ]
         }
     ],
+    "DidObserveNewFeatureUsageImprovement": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DidObserveNewFeatureUsageImprovement"
+                    ]
+                }
+            ]
+        }
+    ],
     "DipsForWebView": [
         {
             "platforms": [
@@ -9339,6 +9376,24 @@
             ]
         }
     ],
+    "EnableManagementPromotionBanner": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableManagementPromotionBanner"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnablePDPMetricsUSDesktopIOS": [
         {
             "platforms": [
@@ -9499,10 +9554,6 @@
     "EncryptedPrefHashing": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
@@ -12015,6 +12066,51 @@
             ]
         }
     ],
+    "IOSAIModeNTPEntryPoint": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithOmniboxContainedSingleButton",
+                    "params": {
+                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamOmniboxContainedSingleButton"
+                    },
+                    "enable_features": [
+                        "kNTPMIAEntrypoint"
+                    ]
+                },
+                {
+                    "name": "EnabledWithOmniboxContainedInline",
+                    "params": {
+                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamOmniboxContainedInline"
+                    },
+                    "enable_features": [
+                        "kNTPMIAEntrypoint"
+                    ]
+                },
+                {
+                    "name": "EnabledWithOmniboxContainedEnlargedFakebox",
+                    "params": {
+                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox"
+                    },
+                    "enable_features": [
+                        "kNTPMIAEntrypoint"
+                    ]
+                },
+                {
+                    "name": "EnabledWithEnlargedFakeboxNoIncognito",
+                    "params": {
+                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito"
+                    },
+                    "enable_features": [
+                        "kNTPMIAEntrypoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillAcrossIframes": [
         {
             "platforms": [
@@ -12439,21 +12535,6 @@
             ]
         }
     ],
-    "IOSEnterpriseRealtimeUrlFiltering": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSEnterpriseRealtimeUrlFiltering"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSExplicitUITraitRegistration": [
         {
             "platforms": [
@@ -12872,21 +12953,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSPasskeyShim"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSPasskeysM2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasskeysM2"
                     ]
                 }
             ]
@@ -20300,27 +20366,6 @@
             ]
         }
     ],
-    "RenderArcNotificationsByChrome": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230913_Dogfood",
-                    "enable_features": [
-                        "RenderArcNotificationsByChrome"
-                    ]
-                },
-                {
-                    "name": "Enabled_20230913",
-                    "enable_features": [
-                        "RenderArcNotificationsByChrome"
-                    ]
-                }
-            ]
-        }
-    ],
     "RenderBlockingFullFrameRate": [
         {
             "platforms": [
@@ -25662,31 +25707,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8Flag_late_heap_limit_check"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8LocalCompileHints": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LocalCompileHints"
-                    ],
-                    "disable_features": [
-                        "ConsumeCompileHints"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "ConsumeCompileHints",
-                        "LocalCompileHints"
                     ]
                 }
             ]

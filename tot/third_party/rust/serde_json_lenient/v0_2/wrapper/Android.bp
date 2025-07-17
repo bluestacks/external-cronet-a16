@@ -56,7 +56,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -71,7 +70,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -86,7 +84,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -101,7 +98,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -116,7 +112,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -132,7 +127,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
@@ -189,7 +183,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -204,7 +197,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -219,7 +211,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -234,7 +225,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -249,7 +239,6 @@ rust_ffi_static {
             edition: "2021",
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
-                "-Amismatched_lifetime_syntaxes",
                 "-Dwarnings",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",

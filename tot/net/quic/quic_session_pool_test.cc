@@ -1900,7 +1900,8 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   EXPECT_TRUE(primary_pin.FromString(
       "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
-  verify_details.cert_verify_result.public_key_hashes.push_back(primary_pin);
+  verify_details.cert_verify_result.public_key_hashes.push_back(
+      primary_pin.sha256hashvalue());
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   host_resolver_->set_synchronous_mode(true);
@@ -1959,7 +1960,8 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
   EXPECT_TRUE(primary_pin.FromString(
       "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
   ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
-  verify_details2.cert_verify_result.public_key_hashes.push_back(primary_pin);
+  verify_details2.cert_verify_result.public_key_hashes.push_back(
+      primary_pin.sha256hashvalue());
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
 
   host_resolver_->set_synchronous_mode(true);
@@ -14227,7 +14229,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsAlpnMatch) {
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
       quic::AlpnForVersion(version_)};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/true);
 }
@@ -14236,7 +14238,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsAlpnUnknownAlpn) {
   std::vector<HostResolverEndpointResult> endpoints(2);
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {"unknown"};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/false);
 }
@@ -14246,7 +14248,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsAlpnUnknownAndSupportedAlpn) {
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
       "unknown", quic::AlpnForVersion(version_)};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/true);
 }
@@ -14258,7 +14260,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsNotAlpnName) {
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
       quic::ParsedQuicVersionToString(version_)};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/false);
 }

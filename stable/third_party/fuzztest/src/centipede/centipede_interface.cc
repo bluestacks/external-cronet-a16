@@ -38,6 +38,7 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/ascii.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_join.h"
@@ -527,6 +528,8 @@ int UpdateCorpusDatabaseForFuzzTests(
   // Step 3: Iterate over the fuzz tests and run them.
   const std::string binary = env.binary;
   for (int i = resuming_fuzztest_idx; i < fuzz_tests_to_run.size(); ++i) {
+    // Clean up previous stop requests. stop_time will be set later.
+    ClearEarlyStopRequestAndSetStopTime(/*stop_time=*/absl::InfiniteFuture());
     if (!env.fuzztest_single_test_mode &&
         fuzztest_config.GetTimeLimitPerTest() < absl::InfiniteDuration()) {
       const absl::Duration test_time_limit =
@@ -638,6 +641,12 @@ int UpdateCorpusDatabaseForFuzzTests(
       time_limit = std::max(time_limit - time_spent, absl::ZeroDuration());
     }
     is_resuming = false;
+
+    if (EarlyStopRequested()) {
+      LOG(INFO) << "Skipping test " << fuzz_tests_to_run[i]
+                << " because early stop requested.";
+      continue;
+    }
 
     LOG(INFO) << (fuzztest_config.only_replay ? "Replaying " : "Fuzzing ")
               << fuzz_tests_to_run[i] << " for " << time_limit
@@ -799,6 +808,13 @@ int CentipedeMain(const Environment &env,
     return EXIT_SUCCESS;
   }
 
+  if (!env.crashes_to_files.empty()) {
+    const auto status = Centipede::CrashesToFiles(env, env.crashes_to_files);
+    if (status.ok()) return EXIT_SUCCESS;
+    LOG(ERROR) << "Got error when exporting crashes to files: " << status;
+    return EXIT_FAILURE;
+  }
+
   if (!env.for_each_blob.empty()) return ForEachBlob(env);
 
   if (!env.minimize_crash_file_path.empty()) {
@@ -835,8 +851,13 @@ int CentipedeMain(const Environment &env,
   // `env.has_input_wildcards` is true).
   if (!env.binary.empty() && !env.has_input_wildcards) {
     const auto serialized_target_config = [&]() -> absl::StatusOr<std::string> {
+      // TODO: b/410051414 Use Centipede flags to pass necessary information
+      // instead of passing the entirely serialized Configuration once switched
+      // to the unified execution model.
       if (!env.fuzztest_configuration.empty()) {
-        return env.fuzztest_configuration;
+        std::string result;
+        CHECK(absl::WebSafeBase64Unescape(env.fuzztest_configuration, &result));
+        return result;
       }
       ScopedCentipedeCallbacks scoped_callbacks(callbacks_factory, env);
       return scoped_callbacks.callbacks()->GetSerializedTargetConfig();

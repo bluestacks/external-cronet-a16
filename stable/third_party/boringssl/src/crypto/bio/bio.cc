@@ -22,9 +22,9 @@
 #include <openssl/asn1.h>
 #include <openssl/err.h>
 #include <openssl/mem.h>
-#include <openssl/thread.h>
 
 #include "../internal.h"
+#include "internal.h"
 
 
 static CRYPTO_EX_DATA_CLASS g_ex_data_class =

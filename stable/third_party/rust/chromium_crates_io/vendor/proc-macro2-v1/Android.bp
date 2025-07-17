@@ -62,6 +62,8 @@ rust_ffi_static {
     crate_name: "proc_macro2",
     crate_root: "src/lib.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__3b9f01c4589c8bd7",
+        "libbuild_srust_sallocator_callocator__bdce78c37c84e42d",
         "libunicode_ident__a1153d5327b26e9f",
     ],
     target: {
@@ -69,7 +71,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
                 "span_locations",
                 "wrap_proc_macro",
             ],
@@ -79,7 +81,7 @@ rust_ffi_static {
                 "span-locations",
             ],
             flags: [
-                "--cap-lints=allow",
+                "-Awarnings",
                 "-Cmetadata=proc_macro2-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -87,8 +89,6 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
             ],
         },
     },
@@ -121,6 +121,8 @@ rust_ffi_static {
     crate_name: "proc_macro2",
     crate_root: "src/lib.rs",
     rustlibs: [
+        "liballoc_error_handler_impl_ffi__a8f2a8c3556afc73",
+        "libbuild_srust_sallocator_callocator__7cdacf0652be04b1",
         "libunicode_ident__e80fc83406d421ec",
     ],
     target: {
@@ -128,7 +130,7 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"1880c8f94230282a8e8c1148f3e657f0199aad909228-c8f94230282a8e8c1148f3e657f0199aad909228-1-21-9266-g09006611\"",
+                "cr_rustc_revision=\"18804a0969e06dbeaaa43914d2d00b2e843d49aa3886-4a0969e06dbeaaa43914d2d00b2e843d49aa3886-1-21-11777-gfd3fecfc\"",
                 "span_locations",
                 "wrap_proc_macro",
             ],
@@ -138,7 +140,7 @@ rust_ffi_static {
                 "span-locations",
             ],
             flags: [
-                "--cap-lints=allow",
+                "-Awarnings",
                 "-Cmetadata=proc_macro2-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -146,8 +148,6 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
-                "-Dunsafe_op_in_unsafe_fn",
-                "-Dwarnings",
             ],
         },
     },

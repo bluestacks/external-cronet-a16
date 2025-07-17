@@ -230,25 +230,6 @@ export abstract class BaseSliceTrack<
   // `select id, ts, dur, 0 as depth from foo where bar = 'baz'`
   abstract getSqlSource(): string;
 
-  // This should return a fast sql select statement or table name with slightly
-  // relaxed constraints compared to getSqlSource(). It's the query used to join
-  // the results of the mipmap table in order to fetch the real `ts` and `dur`
-  // from the quantized slices.
-  //
-  // This query only needs to provide `ts`, `dur` and `id` columns (no depth
-  // required), and it doesn't even need to be filtered (because it's just used
-  // in the join), it just needs to be fast! This means that most of the time
-  // this can just be the root table of wherever this track comes from (e.g. the
-  // slice table).
-  //
-  // If in doubt, this can just return the same query as getSqlSource(), which
-  // is perfectly valid, however you may be leaving some performance on the
-  // table.
-  //
-  // TODO(stevegolton): If we merge BST with DST, this abstraction can be
-  // avoided.
-  abstract getJoinSqlSource(): string;
-
   // Override me if you want to define what is rendered on the tooltip. Called
   // every DOM render cycle. The raw slice data is passed to this function
   protected renderTooltipForSlice(_: SliceT): m.Children {
@@ -287,6 +268,7 @@ export abstract class BaseSliceTrack<
     sliceLayout: Partial<SliceLayout> = {},
     protected readonly depthGuess: number = 0,
     protected readonly instantWidthPx: number = CHEVRON_WIDTH_PX,
+    protected readonly forceTimestampRenderOrder: boolean = false,
   ) {
     // Work out the extra columns.
     // This is the union of the embedder-defined columns and the base columns
@@ -329,9 +311,28 @@ export abstract class BaseSliceTrack<
     return `slice_${this.trackUuid}`;
   }
 
-  async onCreate(): Promise<void> {
+  private oldQuery?: string;
+
+  private async initialize(): Promise<void> {
+    // This disposes all already initialized stuff and empties the trash.
+    await this.trash.asyncDispose();
+
     const result = await this.onInit();
     result && this.trash.use(result);
+
+    // Calc the number of rows based on the depth col.
+    const rowCount = assertExists(
+      // `ORDER BY .. LIMIT 1` is faster than `MAX(depth)`
+      (
+        await this.engine.query(`
+          SELECT
+            ifnull(depth, 0) + 1 AS rowCount
+          FROM (${this.getSqlSource()})
+          ORDER BY depth DESC
+          LIMIT 1
+        `)
+      ).maybeFirstRow({rowCount: NUM})?.rowCount,
+    );
 
     // TODO(hjd): Consider case below:
     // raw:
@@ -383,10 +384,11 @@ export abstract class BaseSliceTrack<
     this.onUpdatedSlices(incomplete);
     this.incomplete = incomplete;
 
+    // Multiply the layer parameter by the rowCount
     await this.engine.query(`
       create virtual table ${this.getTableName()}
       using __intrinsic_slice_mipmap((
-        select id, ts, dur, depth
+        select id, ts, dur, ((layer * ${rowCount}) + depth) as depth
         from (${this.getSqlSource()})
         where dur != -1
       ));
@@ -394,10 +396,18 @@ export abstract class BaseSliceTrack<
 
     this.trash.defer(async () => {
       await this.engine.tryQuery(`drop table ${this.getTableName()}`);
+      this.oldQuery = undefined;
+      this.slicesKey = CacheKey.zero();
     });
   }
 
   async onUpdate({visibleWindow, size}: TrackRenderContext): Promise<void> {
+    const query = this.getSqlSource();
+    if (query !== this.oldQuery) {
+      await this.initialize();
+      this.oldQuery = query;
+    }
+
     const windowSizePx = Math.max(1, size.width);
     const timespan = visibleWindow.toTimeSpan();
     const rawSlicesKey = CacheKey.create(
@@ -504,12 +514,8 @@ export abstract class BaseSliceTrack<
     }
 
     // Second pass: fill slices by color.
-    const vizSlicesByColor = vizSlices.slice();
-    vizSlicesByColor.sort((a, b) =>
-      colorCompare(a.colorScheme.base, b.colorScheme.base),
-    );
     let lastColor = undefined;
-    for (const slice of vizSlicesByColor) {
+    for (const slice of vizSlices) {
       const color = slice.isHighlighted
         ? slice.colorScheme.variant.cssString
         : slice.colorScheme.base.cssString;
@@ -517,6 +523,7 @@ export abstract class BaseSliceTrack<
         lastColor = color;
         ctx.fillStyle = color;
       }
+      ctx.fillStyle = color;
       const y = padding + slice.depth * (sliceHeight + rowSpacing);
       if (slice.flags & SLICE_FLAGS_INSTANT) {
         this.drawChevron(ctx, slice.x, y, sliceHeight);
@@ -545,7 +552,7 @@ export abstract class BaseSliceTrack<
 
     // Pass 2.5: Draw fillRatio light section.
     ctx.fillStyle = `#FFFFFF50`;
-    for (const slice of vizSlicesByColor) {
+    for (const slice of vizSlices) {
       // Can't draw fill ratio on incomplete or instant slices.
       if (slice.flags & (SLICE_FLAGS_INCOMPLETE | SLICE_FLAGS_INSTANT)) {
         continue;
@@ -701,14 +708,14 @@ export abstract class BaseSliceTrack<
         s.ts as ts,
         s.dur as dur,
         s.id,
-        z.depth
+        s.depth
         ${extraCols ? ',' + extraCols : ''}
       FROM ${this.getTableName()}(
         ${slicesKey.start},
         ${slicesKey.end},
         ${resolution}
       ) z
-      CROSS JOIN (${this.getJoinSqlSource()}) s using (id)
+      CROSS JOIN (${this.getSqlSource()}) s using (id)
     `);
 
     const it = queryRes.iter(this.rowSpec);
@@ -732,6 +739,17 @@ export abstract class BaseSliceTrack<
 
     this.slicesKey = slicesKey;
     this.onUpdatedSlices(slices);
+
+    // Sort slices by color - this can make rendering more efficient as it
+    // reduces the number of times we need to switch colors. For slice heavy
+    // tracks the result looks identical, however on tracks that have a lot of
+    // instant slices the result can look very different, so we might want to
+    // force timestamp render order for these tracks.
+    if (!this.forceTimestampRenderOrder) {
+      slices.sort((a, b) =>
+        colorCompare(a.colorScheme.base, b.colorScheme.base),
+      );
+    }
     this.slices = slices;
 
     raf.scheduleCanvasRedraw();

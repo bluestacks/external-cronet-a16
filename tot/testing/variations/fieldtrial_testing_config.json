@@ -1039,21 +1039,6 @@
             ]
         }
     ],
-    "AndroidTabStripLayoutOptimization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStripLayoutOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidThemeModule": [
         {
             "platforms": [
@@ -2257,6 +2242,25 @@
             ]
         }
     ],
+    "AutofillEnableNewFopDisplayDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableNewFopDisplayDesktop"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableShowSaveCardSecurelyMessage": [
         {
             "platforms": [
@@ -2587,6 +2591,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -10613,24 +10618,6 @@
             ]
         }
     ],
-    "FreezingOnBatterySaver": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FreezingOnBatterySaver"
-                    ]
-                }
-            ]
-        }
-    ],
     "FullscreenSigninPromoManagerMigration": [
         {
             "platforms": [
@@ -12106,26 +12093,6 @@
                     },
                     "enable_features": [
                         "kNTPMIAEntrypoint"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSAutofillAcrossIframes": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_XhrPatch_20250320",
-                    "enable_features": [
-                        "AutofillAcrossIframesIos",
-                        "AutofillAcrossIframesIosThrottling",
-                        "AutofillFixXhrForXframe"
-                    ],
-                    "disable_features": [
-                        "AutofillAcrossIframesIosTriggerFormExtraction"
                     ]
                 }
             ]
@@ -14982,49 +14949,6 @@
             ]
         }
     ],
-    "MerchantTrust": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250130",
-                    "params": {
-                        "en_site_id": "pnM2xW83W0ugnJ3q1cK0WyyikxbT",
-                        "probability": "1.0"
-                    },
-                    "enable_features": [
-                        "MerchantTrust",
-                        "MerchantTrustEvaluationExperimentSurvey",
-                        "MerchantTrustLearnSurvey"
-                    ],
-                    "disable_features": [
-                        "MerchantTrustEvaluationControlSurvey"
-                    ]
-                },
-                {
-                    "name": "EnabledWithControlSurvey_20250130",
-                    "params": {
-                        "en_site_id": "YdFFpSNzs0ugnJ3q1cK0TuMcibft",
-                        "probability": "1.0"
-                    },
-                    "enable_features": [
-                        "MerchantTrustEvaluationControlSurvey"
-                    ],
-                    "disable_features": [
-                        "MerchantTrust",
-                        "MerchantTrustEvaluationExperimentSurvey",
-                        "MerchantTrustLearnSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "MessagesPreinstall": [
         {
             "platforms": [
@@ -16644,12 +16568,7 @@
                     "enable_features": [
                         "AcceleratedVideoDecodeLinuxGL",
                         "AcceleratedVideoDecodeLinuxZeroCopyGL",
-                        "AllowWindowDragUsingSystemDragDrop",
-                        "OverrideDefaultOzonePlatformHintToAuto",
-                        "WaylandLinuxDrmSyncobj",
-                        "WaylandPerSurfaceScale",
-                        "WaylandTextInputV3",
-                        "WaylandUiScale"
+                        "OverrideDefaultOzonePlatformHintToAuto"
                     ]
                 },
                 {
@@ -17138,24 +17057,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PartitionAllocPermissiveMte"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocShadowMetadata": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enabled-processes": "renderer-only"
-                    },
-                    "enable_features": [
-                        "PartitionAllocShadowMetadata"
                     ]
                 }
             ]
@@ -23195,25 +23096,6 @@
                     "name": "EnabledWithoutSidePanelPinning",
                     "enable_features": [
                         "ResponsiveToolbar"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SidePanelResizing": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SidePanelResizing"
                     ]
                 }
             ]

@@ -29,6 +29,7 @@ soong_config_module_type {
         "jni_libs",
         "asset_dirs",
         "resource_dirs",
+        "test_config",
         "data",
         "srcs",
     ],
@@ -311,6 +312,7 @@ enable_cronet_tot_java_defaults {
             ],
             data: [":tot_cronet_javatests_resources"],
             manifest: "tot/components/cronet/android/test/javatests/AndroidManifest.xml",
+            test_config: "tot/AndroidTest.xml",
             resource_dirs: ["tot/components/cronet/android/test/res"],
             conditions_default: {
                 static_libs: [
@@ -323,6 +325,7 @@ enable_cronet_tot_java_defaults {
                 ],
                 data: [":stable_cronet_javatests_resources"],
                 manifest: "stable/components/cronet/android/test/javatests/AndroidManifest.xml",
+                test_config: "stable/AndroidTest.xml",
                 resource_dirs: ["stable/components/cronet/android/test/res"],
             },
         },
@@ -453,7 +456,6 @@ android_test {
     jni_libs: [
         "libnativecoverage",
     ],
-    test_config: "android/tests/common/AndroidTest.xml",
 }
 
 // This is required to keep testing Cronet Stable. TH does not support, trivially, presubmit

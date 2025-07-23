@@ -75,22 +75,25 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
   int Start(CompletionOnceCallback callback) override { return error_; }
   int Start() override { return error_; }
 
-  AddressList* GetAddressResults() const override { return nullptr; }
-
-  std::vector<HostResolverEndpointResult>* GetEndpointResults() const override {
-    return nullptr;
+  const AddressList& GetAddressResults() const override {
+    static const base::NoDestructor<AddressList> kEmptyResult;
+    return *kEmptyResult;
   }
 
-  const std::vector<std::string>* GetTextResults() const override {
-    return nullptr;
+  base::span<const HostResolverEndpointResult> GetEndpointResults()
+      const override {
+    return {};
   }
 
-  const std::vector<HostPortPair>* GetHostnameResults() const override {
-    return nullptr;
+  base::span<const std::string> GetTextResults() const override { return {}; }
+
+  base::span<const HostPortPair> GetHostnameResults() const override {
+    return {};
   }
 
-  const std::set<std::string>* GetDnsAliasResults() const override {
-    return nullptr;
+  const std::set<std::string>& GetDnsAliasResults() const override {
+    static const base::NoDestructor<std::set<std::string>> kEmptyResult;
+    return *kEmptyResult;
   }
 
   ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -122,10 +125,7 @@ class FailingServiceEndpointRequestImpl
 
   int Start(Delegate* delegate) override { return error_; }
 
-  const std::vector<ServiceEndpoint>& GetEndpointResults() override {
-    static const base::NoDestructor<std::vector<ServiceEndpoint>> kEmptyResult;
-    return *kEmptyResult.get();
-  }
+  base::span<const ServiceEndpoint> GetEndpointResults() override { return {}; }
 
   const std::set<std::string>& GetDnsAliasResults() override {
     static const base::NoDestructor<std::set<std::string>> kEmptyResult;
@@ -303,11 +303,6 @@ HostResolver::ManagerOptions::ManagerOptions(const ManagerOptions& other) =
 HostResolver::ManagerOptions::ManagerOptions(ManagerOptions&& other) = default;
 
 HostResolver::ManagerOptions::~ManagerOptions() = default;
-
-const std::vector<bool>*
-HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
-  NOTREACHED();
-}
 
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
     HostResolverManager* manager,

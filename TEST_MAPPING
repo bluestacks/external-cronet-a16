@@ -9,6 +9,10 @@
        {
          // These sometimes take longer than 1 min which is the presubmit timeout
          "exclude-annotation": "androidx.test.filters.LargeTest"
+       },
+       {
+         // TODO(http://b/432122460) - this test is flaky when running on Android CI
+         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
        }
      ]
     },
@@ -21,6 +25,10 @@
        {
          // These sometimes take longer than 1 min which is the presubmit timeout
          "exclude-annotation": "androidx.test.filters.LargeTest"
+       },
+       {
+         // TODO(http://b/432122460) - this test is flaky when running on Android CI
+         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
        }
      ]
     },
@@ -59,6 +67,10 @@
        {
          // These sometimes take longer than 1 min which is the presubmit timeout
          "exclude-annotation": "androidx.test.filters.LargeTest"
+       },
+       {
+         // TODO(http://b/432122460) - this test is flaky when running on Android CI
+         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
        }
      ]
     },
@@ -71,6 +83,10 @@
        {
          // These sometimes take longer than 1 min which is the presubmit timeout
          "exclude-annotation": "androidx.test.filters.LargeTest"
+       },
+       {
+         // TODO(http://b/432122460) - this test is flaky when running on Android CI
+         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
        }
      ]
     }

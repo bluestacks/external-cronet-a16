@@ -27,6 +27,10 @@ namespace android_tools {
 crypto::obsolete::Md5 MakeMd5HasherForMd5sumTool();
 }
 
+namespace autofill {
+crypto::obsolete::Md5 MakeMd5HasherForPasswordRequirementsSpec();
+}
+
 namespace bookmarks {
 class BookmarkCodec;
 }  // namespace bookmarks
@@ -65,6 +69,7 @@ crypto::obsolete::Md5 MakeMd5HasherForVisitedLink();
 
 namespace web_app::internals {
 crypto::obsolete::Md5 MakeMd5HasherForWebAppShortcutIcon();
+std::wstring Md5AsHexForUninstall(const std::wstring& data);
 }
 
 namespace crypto::obsolete {
@@ -111,6 +116,9 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 ash::printing::MakeMd5HasherForZeroconf();
   friend std::string ash::printing::ServerPrinterId(const std::string& url);
 
+  // TODO(https://crbug.com/433545115): get rid of this.
+  friend Md5 autofill::MakeMd5HasherForPasswordRequirementsSpec();
+
   // TODO(https://crbug.com/426243026): get rid of this.
   friend class bookmarks::BookmarkCodec;
 
@@ -129,6 +137,8 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(https://crbug.com/416304903): get rid of this.
   friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();
+  friend std::wstring web_app::internals::Md5AsHexForUninstall(
+      const std::wstring& key);
 
   Md5();
   static std::array<uint8_t, kSize> Hash(std::string_view data);

@@ -670,6 +670,9 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kDeviceBoundSessionsRefreshQuota,
              "DeviceBoundSessionsRefreshQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
+             "DeviceBoundSessionsOriginTrialFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartitionProxyChains,
              "PartitionProxyChains",
@@ -764,6 +767,26 @@ BASE_FEATURE_PARAM(size_t,
                    "max_entries",
                    1000);
 
+// TODO(crbug.com/433551601): Change the default to `true` once it has been
+// verified working.
+BASE_FEATURE_PARAM(bool,
+                   kHttpCacheNoVarySearchApplyToExternalHits,
+                   &kHttpCacheNoVarySearch,
+                   "apply_to_external_hits",
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kHttpCacheNoVarySearchPersistenceEnabled,
+                   &kHttpCacheNoVarySearch,
+                   "persistence_enabled",
+                   true);
+
+BASE_FEATURE_PARAM(bool,
+                   kHttpCacheNoVarySearchFakePersistence,
+                   &kHttpCacheNoVarySearch,
+                   "fake_persistence",
+                   false);
+
 BASE_FEATURE(kReportingApiCorsOriginHeader,
              "ReportingApiCorsOriginHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -823,6 +846,11 @@ BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpProxyConnectJob,
                    &kNetTaskScheduler,
                    "http_proxy_connect_job",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kNetTaskSchedulerHttpCacheTransaction,
+                   &kNetTaskScheduler,
+                   "http_cache_transaction",
                    false);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpStreamFactoryJob,

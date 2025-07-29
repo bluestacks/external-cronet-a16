@@ -17,6 +17,12 @@
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/logging.h"
 
+#if !defined(JNI_ZERO_ENABLE_COMPAT_API) && defined(WEBRTC_ANDROID)
+#define JNI_ZERO_ENABLE_COMPAT_API 1
+#else
+#define JNI_ZERO_ENABLE_COMPAT_API 0
+#endif
+
 namespace jni_zero {
 
 namespace internal {
@@ -85,7 +91,9 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
     return JavaRef<jobject>(env, obj);
   }
 
+#if !JNI_ZERO_ENABLE_COMPAT_API
  protected:
+#endif
 // Takes ownership of the |obj| reference passed; requires it to be a local
 // reference type.
 #if JNI_ZERO_DCHECK_IS_ON()
@@ -93,6 +101,10 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   JavaRef(JNIEnv* env, jobject obj);
 #else
   JavaRef(JNIEnv* env, jobject obj) : obj_(obj) {}
+#endif
+
+#if JNI_ZERO_ENABLE_COMPAT_API
+ protected:
 #endif
 
   // Used for move semantics. obj_ must have been released first if non-null.
@@ -119,7 +131,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
 };
 
 // Forward declare the object array reader for the convenience function.
-template <typename T>
+template <typename T = jobject>
 class JavaObjectArrayReader;
 
 // Generic base class for ScopedJavaLocalRef and ScopedJavaGlobalRef. Useful
@@ -143,7 +155,7 @@ class JavaRef : public JavaRef<jobject> {
   // Only defined for JavaRef<jobjectArray>.
   // You must pass the type of the array elements (usually jobject) as the
   // template parameter.
-  template <typename ElementType,
+  template <typename ElementType = jobject,
             typename T_ = T,
             typename = std::enable_if_t<std::is_same_v<T_, jobjectArray>>>
   JavaObjectArrayReader<ElementType> ReadElements() const {
@@ -156,7 +168,9 @@ class JavaRef : public JavaRef<jobject> {
     return JavaRef<T>(env, obj);
   }
 
+#if !JNI_ZERO_ENABLE_COMPAT_API
  protected:
+#endif
   JavaRef(JNIEnv* env, T obj) : JavaRef<jobject>(env, obj) {}
 };
 
@@ -213,12 +227,6 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   explicit ScopedJavaLocalRef(const JavaRef<T>& other) { Reset(other); }
 
   ScopedJavaLocalRef(JNIEnv* env, const JavaRef<T>& other) { Reset(other); }
-
-  // Assumes that |obj| is a local reference to a Java object and takes
-  // ownership of this local reference.
-  // TODO(torne): make legitimate uses call Adopt() instead, and make this
-  // private.
-  ScopedJavaLocalRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj), env_(env) {}
 
   ~ScopedJavaLocalRef() { Reset(); }
 
@@ -283,7 +291,14 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // Alias for Release(). For use in templates when global refs are invalid.
   T ReleaseLocal() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
 
+#if !JNI_ZERO_ENABLE_COMPAT_API
  private:
+#endif
+  ScopedJavaLocalRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj), env_(env) {}
+#if JNI_ZERO_ENABLE_COMPAT_API
+ private:
+#endif
+
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
   JNIEnv* env_ = nullptr;

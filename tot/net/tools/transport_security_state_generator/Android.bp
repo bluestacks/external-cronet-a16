@@ -148,8 +148,6 @@ cc_binary {
         "tot_cronet_third_party_boringssl_boringssl__testing",
         "tot_cronet_third_party_boringssl_boringssl_asm__testing",
         "tot_cronet_third_party_compiler_rt_atomic__testing",
-        "tot_cronet_third_party_icu_icui18n__testing",
-        "tot_cronet_third_party_icu_icuuc_private__testing",
         "tot_cronet_third_party_modp_b64_modp_b64__testing",
         "tot_cronet_third_party_perfetto_include_perfetto_ext_trace_processor_importers_memory_tracker_memory_tracker__testing",
         "tot_cronet_third_party_perfetto_include_perfetto_ext_tracing_core_core__testing",

@@ -27,7 +27,6 @@
 #include "partition_alloc/partition_cookie.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_superpage_extent_entry.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/spinning_mutex.h"
 #include "partition_alloc/tagging.h"
@@ -49,16 +48,13 @@
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 #include <pthread.h>
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-#include <sys/mman.h>
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 #endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
 namespace partition_alloc::internal {
 
 #if PA_BUILDFLAG(RECORD_ALLOC_INFO)
-// Even if this is not hidden behind a PA_BUILDFLAG, it should not use any
-// memory when recording is disabled, since it ends up in the .bss section.
+// Even if this is not hidden behind a BUILDFLAG, it should not use any memory
+// when recording is disabled, since it ends up in the .bss section.
 AllocInfo g_allocs = {};
 
 void RecordAllocOrFree(uintptr_t addr, size_t size) {
@@ -82,7 +78,13 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
   // Zero it just in case, to catch errors.
   orig_address = 0;
 
-  auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(slot_start);
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  std::ptrdiff_t offset = internal::PartitionAddressSpace::MetadataOffset(
+      pool_handle::kBRPPoolHandle);
+#else
+  std::ptrdiff_t offset = 0;
+#endif
+  auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, offset);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Double check that in-slot metadata is indeed present. Currently that's the
   // case only when BRP is used.
@@ -107,10 +109,6 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
 }  // namespace partition_alloc::internal
 
 namespace partition_alloc {
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-internal::SharedMutex PartitionRoot::g_shadow_metadata_init_mutex_;
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
@@ -210,9 +208,7 @@ class PartitionRootEnumerator {
 
 #endif  // PA_USE_PARTITION_ROOT_ENUMERATOR
 
-#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-     PA_CONFIG(HAS_ATFORK_HANDLER)) ||              \
-    PA_CONFIG(ENABLE_SHADOW_METADATA)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(HAS_ATFORK_HANDLER)
 
 namespace {
 
@@ -238,9 +234,8 @@ void UnlockOrReinitRoot(PartitionRoot* root,
 }
 
 }  // namespace
-
-#endif  // (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // PA_CONFIG(HAS_ATFORK_HANDLER)) || PA_CONFIG(ENABLE_SHADOW_METADATA)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_CONFIG(HAS_ATFORK_HANDLER)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -251,8 +246,8 @@ namespace {
 // PA_NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
 // design.
 void BeforeForkInParent() PA_NO_THREAD_SAFETY_ANALYSIS {
-  //  PartitionRoot::GetLock() is private. So use
-  //  g_root_enumerator_lock here.
+  // PartitionRoot::GetLock() is private. So use
+  // g_root_enumerator_lock here.
   g_root_enumerator_lock.Acquire();
   internal::PartitionRootEnumerator::Instance().Enumerate(
       LockRoot, false,
@@ -346,71 +341,6 @@ void PartitionAllocMallocHookOnAfterForkInChild() {
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-namespace {
-
-void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
-                                      internal::PoolHandleMask mask)
-    PA_NO_THREAD_SAFETY_ANALYSIS {
-  PA_DCHECK(root);
-  // Regardless of root->ChoosePool(), no chance if shadow_pool_offset_ is
-  // non-zero.
-  if (root->settings.shadow_pool_offset_) {
-    return;
-  }
-
-  switch (root->ChoosePool()) {
-    case internal::kRegularPoolHandle:
-      if (!ContainsFlags(mask, internal::PoolHandleMask::kRegular)) {
-        return;
-      }
-      root->settings.shadow_pool_offset_ =
-          internal::PartitionAddressSpace::RegularPoolShadowOffset();
-      break;
-    case internal::kBRPPoolHandle:
-      if (!ContainsFlags(mask, internal::PoolHandleMask::kBRP)) {
-        return;
-      }
-      root->settings.shadow_pool_offset_ =
-          internal::PartitionAddressSpace::BRPPoolShadowOffset();
-      break;
-    case internal::kConfigurablePoolHandle:
-      if (!ContainsFlags(mask, internal::PoolHandleMask::kConfigurable)) {
-        return;
-      }
-      root->settings.shadow_pool_offset_ =
-          internal::PartitionAddressSpace::ConfigurablePoolShadowOffset();
-      break;
-    default:
-      return;
-  }
-
-  // For normal-bucketed.
-  for (const internal::PartitionSuperPageExtentEntry* extent =
-           root->first_extent;
-       extent != nullptr; extent = extent->next) {
-    //  The page which contains the extent is in-used and shared mapping.
-    uintptr_t super_page = SuperPagesBeginFromExtent(extent);
-    for (size_t i = 0; i < extent->number_of_consecutive_super_pages; ++i) {
-      internal::PartitionAddressSpace::MapMetadata(super_page,
-                                                   /*copy_metadata=*/true);
-      super_page += kSuperPageSize;
-    }
-    PA_DCHECK(extent->root == root);
-  }
-
-  // For direct-mapped.
-  for (const internal::PartitionDirectMapExtent* extent = root->direct_map_list;
-       extent != nullptr; extent = extent->next_extent) {
-    internal::PartitionAddressSpace::MapMetadata(
-        reinterpret_cast<uintptr_t>(extent) & internal::kSuperPageBaseMask,
-        /*copy_metadata=*/true);
-  }
-}
-
-}  // namespace
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
-
 namespace internal {
 
 namespace {
@@ -460,7 +390,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     discardable_bytes = bucket->slot_size - utilized_slot_size;
     if (discardable_bytes && !accounting_only) {
       uintptr_t slot_span_start =
-          internal::SlotSpanMetadata::ToSlotSpanStart(slot_span);
+          internal::SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
       uintptr_t committed_data_end = slot_span_start + utilized_slot_size;
       ScopedSyscallTimer timer{root};
       DiscardSystemPages(committed_data_end, discardable_bytes);
@@ -498,7 +428,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 #endif
   std::fill_n(slot_usage.begin(), num_provisioned_slots, 1);
   uintptr_t slot_span_start =
-      internal::SlotSpanMetadata::ToSlotSpanStart(slot_span);
+      internal::SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
   for (FreelistEntry* entry = slot_span->get_freelist_head(); entry;
@@ -602,7 +532,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
         if (num_new_freelist_entries) {
           back->SetNext(entry);
         } else {
-          slot_span->SetFreelistHead(entry, root);
+          slot_span->SetFreelistHead(entry);
         }
         back = entry;
         num_new_freelist_entries++;
@@ -627,7 +557,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
           if (num_new_freelist_entries) {
             back->SetNext(entry);
           } else {
-            slot_span->SetFreelistHead(entry, root);
+            slot_span->SetFreelistHead(entry);
           }
           skipped = false;
         }
@@ -650,7 +580,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 #endif
       } else {
         PA_DCHECK(!back);
-        slot_span->SetFreelistHead(nullptr, root);
+        slot_span->SetFreelistHead(nullptr);
       }
       PA_DCHECK(num_new_freelist_entries ==
                 num_provisioned_slots - slot_span->num_allocated_slots);
@@ -803,10 +733,10 @@ static void PartitionDumpBucketStats(PartitionBucketMemoryStats* stats_out,
     PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(root)) {
   PA_DCHECK(!bucket->is_direct_mapped());
   stats_out->is_valid = false;
-  // If the active slot span list is empty (==internal::SlotSpanMetadata::
-  // get_sentinel_slot_span()),
-  // the bucket might still need to be reported if it has a list of empty,
-  // decommitted or full slot spans.
+  // If the active slot span list is empty (==
+  // internal::SlotSpanMetadata::get_sentinel_slot_span()), the bucket might
+  // still need to be reported if it has a list of empty, decommitted or full
+  // slot spans.
   if (bucket->active_slot_spans_head ==
           internal::SlotSpanMetadata::get_sentinel_slot_span() &&
       !bucket->empty_slot_spans_head && !bucket->decommitted_slot_spans_head &&
@@ -855,13 +785,13 @@ static void PartitionDumpBucketStats(PartitionBucketMemoryStats* stats_out,
 void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address) {
   PA_DCHECK(IsManagedByPartitionAllocBRPPool(address));
 }
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 void PartitionAllocThreadIsolationInit(ThreadIsolationOption thread_isolation) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   ThreadIsolationSettings::settings.enabled = true;
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif
   PartitionAddressSpace::InitThreadIsolatedPool(thread_isolation);
   // Call WriteProtectThreadIsolatedGlobals last since we might not have write
   // permissions to to globals afterwards.
@@ -957,39 +887,48 @@ void PartitionRoot::DestructForTesting()
 #else
   PA_DCHECK(pool_handle <= internal::kNumPools);
 #endif
-
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  std::ptrdiff_t metadata_offset = MetadataOffset();
+  bool must_decommit_metadata = MetadataOffset() & internal::kSuperPageBaseMask;
+#endif
   {
     auto* curr = first_extent;
     while (curr != nullptr) {
       auto* next = curr->next;
-      uintptr_t address = SuperPagesBeginFromExtent(curr);
-      size_t size =
-          internal::kSuperPageSize * curr->number_of_consecutive_super_pages;
+      uintptr_t super_page = SuperPagesBeginFromExtent(curr);
+      size_t num_super_pages = curr->number_of_consecutive_super_pages;
+      size_t size = internal::kSuperPageSize * num_super_pages;
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       internal::AddressPoolManager::GetInstance().MarkUnused(pool_handle,
-                                                             address, size);
+                                                             super_page, size);
 #endif
-      internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
-          pool_handle, address, size);
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-      if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(
-              pool_handle)) {
-        internal::PartitionAddressSpace::UnmapShadowMetadata(address,
-                                                             pool_handle);
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+      if (must_decommit_metadata) {
+        uintptr_t metadata_start = internal::PartitionSuperPageToMetadataPage(
+            super_page, metadata_offset);
+        for (size_t index = 0; index < num_super_pages; ++index) {
+          DecommitAndZeroSystemPages(metadata_start, SystemPageSize(),
+                                     PageTag::kPartitionAlloc);
+          metadata_start += internal::kSuperPageSize;
+        }
       }
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+      internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
+          pool_handle, super_page, size);
       curr = next;
     }
     first_extent = current_extent = nullptr;
   }
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   // Decommit direct-mapped allocations too.
-  if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(pool_handle)) {
+  {
     auto* curr = direct_map_list;
     while (curr != nullptr) {
       auto* next = curr->next_extent;
       uintptr_t reservation_start = internal::base::bits::AlignDown(
-          reinterpret_cast<uintptr_t>(curr), kSuperPageSize);
+          internal::PartitionMetadataPageToSuperPage(
+              reinterpret_cast<uintptr_t>(curr), metadata_offset),
+          internal::kSuperPageAlignment);
       size_t reservation_size = curr->reservation_size;
 
       GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
@@ -999,17 +938,21 @@ void PartitionRoot::DestructForTesting()
           pool_handle, reservation_start, reservation_size);
 #endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
+      if (must_decommit_metadata) {
+        uintptr_t metadata_start = internal::PartitionSuperPageToMetadataPage(
+            reservation_start, metadata_offset);
+        DecommitAndZeroSystemPages(metadata_start, SystemPageSize(),
+                                   PageTag::kPartitionAlloc);
+      }
+
       // After resetting the table entries, unreserve and decommit the memory.
       internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
           pool_handle, reservation_start, reservation_size);
-
-      internal::PartitionAddressSpace::UnmapShadowMetadata(reservation_start,
-                                                           pool_handle);
       curr = next;
     }
     direct_map_list = nullptr;
   }
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
@@ -1205,27 +1148,10 @@ void PartitionRoot::Init(PartitionOptions opts) {
     internal::PartitionRootEnumerator::Instance().Register(this);
 #endif
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-    if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(
-            settings.pool_handle)) {
-      switch (settings.pool_handle) {
-        case internal::kRegularPoolHandle:
-          settings.shadow_pool_offset_ =
-              internal::PartitionAddressSpace::RegularPoolShadowOffset();
-          break;
-        case internal::kBRPPoolHandle:
-          settings.shadow_pool_offset_ =
-              internal::PartitionAddressSpace::BRPPoolShadowOffset();
-          break;
-        case internal::kConfigurablePoolHandle:
-          settings.shadow_pool_offset_ =
-              internal::PartitionAddressSpace::ConfigurablePoolShadowOffset();
-          break;
-        default:
-          break;
-      }
-    }
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+    settings.metadata_offset_ =
+        internal::PartitionAddressSpace::MetadataOffset(settings.pool_handle);
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
     initialized = true;
   }
@@ -1286,10 +1212,14 @@ void PartitionRoot::EnableThreadCacheIfSupported() {
 bool PartitionRoot::TryReallocInPlaceForDirectMap(
     internal::SlotSpanMetadata* slot_span,
     size_t requested_size) {
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // Slot-span metadata isn't MTE-tagged.
+  // Metadata may not be placed inside GigaCage.
   PA_DCHECK(GetReservationOffsetTable().IsManagedByDirectMap(
-      reinterpret_cast<uintptr_t>(slot_span)));
+      internal::PartitionMetadataPageToSuperPage(
+          reinterpret_cast<uintptr_t>(slot_span), MetadataOffset())));
+#endif
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   auto* extent = DirectMapExtent::FromSlotSpanMetadata(slot_span);
@@ -1329,7 +1259,8 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
   // bucket->slot_size is the currently committed size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
   size_t current_usable_size = GetSlotUsableSize(slot_span);
-  uintptr_t slot_start = internal::SlotSpanMetadata::ToSlotSpanStart(slot_span);
+  uintptr_t slot_start =
+      internal::SlotSpanMetadata::ToSlotSpanStart(slot_span, this);
   // This is the available part of the reservation up to which the new
   // allocation can grow.
   size_t available_reservation_size =
@@ -1380,14 +1311,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
   DecreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
                                     slot_span->bucket->slot_size);
   slot_span->SetRawSize(raw_size);
-#if !PA_CONFIG(ENABLE_SHADOW_METADATA)
   slot_span->bucket->slot_size = new_slot_size;
-#else
-  internal::PartitionBucket* writable_bucket =
-      reinterpret_cast<internal::PartitionBucket*>(
-          reinterpret_cast<intptr_t>(slot_span->bucket) + ShadowPoolOffset());
-  writable_bucket->slot_size = new_slot_size;
-#endif  // !PA_CONFIG(ENABLE_SHADOW_METADATA)
   IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
                                     slot_span->bucket->slot_size, raw_size);
 
@@ -1527,10 +1451,10 @@ void PartitionRoot::PurgeMemory(int flags) {
 
       // Do it at the end, as the actions above change the status of slot
       // spans (e.g. empty -> decommitted).
-      bucket.MaintainActiveList(this);
+      bucket.MaintainActiveList();
 
       if (sort_active_slot_spans_) {
-        bucket.SortActiveSlotSpans(this);
+        bucket.SortActiveSlotSpans();
       }
       // Checking at the end to make sure we make progress by processing at
       // least one bucket.
@@ -1889,7 +1813,7 @@ void PartitionRoot::SetSortActiveSlotSpansEnabled(bool new_value) {
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 PA_NOINLINE void PartitionRoot::QuarantineForBrp(
-    internal::SlotSpanMetadata* slot_span,
+    const internal::SlotSpanMetadata* slot_span,
     void* object) {
   auto usable_size = GetSlotUsableSize(slot_span);
   auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
@@ -1904,38 +1828,6 @@ PA_NOINLINE void PartitionRoot::QuarantineForBrp(
   }
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-
-// static
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-void PartitionRoot::EnableShadowMetadata(internal::PoolHandleMask mask) {
-#if PA_BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/40238514): implement ModuleCache() or something to
-  // load required shared libraries in advance.
-  // Since memfd_create() causes dlsym(), it is not possible to invoke
-  // memfd_create() while PartitionRoot-s are locked.
-  // So invoke memfd_create() here and invoke dysym() in advance.
-  // This is required to enable ShadowMetadata on utility processes.
-  { close(memfd_create("module_cache", MFD_CLOEXEC)); }
-#endif
-  internal::UniqueLock unique_lock(g_shadow_metadata_init_mutex_);
-
-  internal::ScopedGuard guard(g_root_enumerator_lock);
-  // Must lock all PartitionRoot-s and ThreadCache.
-  internal::PartitionRootEnumerator::Instance().Enumerate(
-      LockRoot, false,
-      internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
-  {
-    internal::ScopedGuard thread_cache_guard(ThreadCacheRegistry::GetLock());
-    internal::PartitionAddressSpace::InitShadowMetadata(mask);
-    internal::PartitionRootEnumerator::Instance().Enumerate(
-        MakeSuperPageExtentEntriesShared, mask,
-        internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
-  }
-  internal::PartitionRootEnumerator::Instance().Enumerate(
-      UnlockOrReinitRoot, false,
-      internal::PartitionRootEnumerator::EnumerateOrder::kReverse);
-}
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 // static
 void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
@@ -1956,12 +1848,13 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
   }
 
   PA_CHECK(reservation_offset.IsManagedByNormalBuckets(address));
-  SlotSpanMetadata* slot_span = SlotSpanMetadata::FromAddr(address);
+  SlotSpanMetadata* slot_span = SlotSpanMetadata::FromAddr(address, root);
   PA_CHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == root);
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     PA_BUILDFLAG(USE_PARTITION_COOKIE)
-  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
+  uintptr_t slot_span_start =
+      SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
   size_t offset_in_slot_span = address - slot_span_start;
 
   auto* bucket = slot_span->bucket;

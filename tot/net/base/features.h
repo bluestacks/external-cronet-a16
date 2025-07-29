@@ -688,6 +688,12 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // This behavior is expected by default; disabling it should only be for
 // testing purposes.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsRefreshQuota);
+// This feature will enable breaking changes to Device Bound Session
+// Credentials from after the Origin Trial started. This is disabled by
+// default to facilitate implementation of feedback from the Origin
+// Trial while still being able to get consistent metrics across Chrome
+// releases.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback);
 
 // When enabled, all proxies in a proxy chain are partitioned by the NAK for the
 // endpoint of the connection. When disabled, proxies carrying tunnels to other
@@ -773,6 +779,24 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
                                       kHttpCacheNoVarySearchCacheMaxEntries);
 
+// Whether the NoVarySearchCache should be consulted in
+// HttpCache::OnExternalCacheHit().
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHttpCacheNoVarySearchApplyToExternalHits);
+
+// Whether persistence is enabled in on-the-record profiles. True by default.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kHttpCacheNoVarySearchPersistenceEnabled);
+
+// If true, the persisted files will be created with valid but empty contents at
+// startup and after that closed and never used. Has no effect if
+// "persistence_enabled" is false. Causes "HttpCache.NoVarySearch.LoadResult" to
+// log "SnapshotLoadFailed" as there is no point in adding a new enum value for
+// this temporary feature.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kHttpCacheNoVarySearchFakePersistence);
+
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
@@ -839,6 +863,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // These parameters control whether the Network Service Task Scheduler is used
 // for specific classes.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerHttpCacheTransaction);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kNetTaskSchedulerHttpProxyConnectJob);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,

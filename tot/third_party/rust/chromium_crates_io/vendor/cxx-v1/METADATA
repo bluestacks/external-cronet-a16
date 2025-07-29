@@ -3,6 +3,6 @@
 name: "cxx"
 third_party {
   license_type: NOTICE
-  version: "1.0.160"
+  version: "1.0.161"
   homepage: "https://crates.io/crates/cxx"
 }

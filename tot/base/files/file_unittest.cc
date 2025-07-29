@@ -18,12 +18,18 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/android/content_uri_test_utils.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -31,7 +37,7 @@
 #include "base/environment.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 
@@ -122,6 +128,85 @@ TEST(FileTest, Create) {
   EXPECT_FALSE(PathExists(file_path));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Same as Create, but exercising FilePaths that are virtual document paths.
+TEST(FileTest, CreateAndroid) {
+  ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  FilePath temp_dir =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+          scoped_temp_dir.GetPath());
+
+  FilePath file_path = temp_dir.AppendASCII("create_file_1");
+
+  {
+    // Default-constructed file should be invalid with a default error.
+    File file;
+    EXPECT_FALSE(file.IsValid());
+    EXPECT_EQ(File::FILE_ERROR_FAILED, file.error_details());
+  }
+
+  {
+    // Open a file that doesn't exist.
+    File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
+    EXPECT_FALSE(file.IsValid());
+    EXPECT_EQ(File::FILE_ERROR_NOT_FOUND, file.error_details());
+  }
+
+  {
+    // Open or create a file.
+    File file(file_path, File::FLAG_OPEN_ALWAYS | File::FLAG_READ);
+    EXPECT_TRUE(file.IsValid());
+    EXPECT_TRUE(file.created());
+    EXPECT_EQ(File::FILE_OK, file.error_details());
+  }
+
+  {
+    // Open an existing file.
+    File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
+    EXPECT_TRUE(file.IsValid());
+    EXPECT_FALSE(file.created());
+    EXPECT_EQ(File::FILE_OK, file.error_details());
+
+    // This time verify closing the file.
+    file.Close();
+    EXPECT_FALSE(file.IsValid());
+  }
+
+  {
+    // Open an existing file through Initialize
+    File file;
+    file.Initialize(file_path, File::FLAG_OPEN | File::FLAG_READ);
+    EXPECT_TRUE(file.IsValid());
+    EXPECT_FALSE(file.created());
+    EXPECT_EQ(File::FILE_OK, file.error_details());
+
+    // This time verify closing the file.
+    file.Close();
+    EXPECT_FALSE(file.IsValid());
+  }
+
+  {
+    // Create a file that exists.
+    File file(file_path, File::FLAG_CREATE | File::FLAG_READ);
+    EXPECT_FALSE(file.IsValid());
+    EXPECT_FALSE(file.created());
+    EXPECT_EQ(File::FILE_ERROR_EXISTS, file.error_details());
+  }
+
+  {
+    // Create or overwrite a file.
+    File file(file_path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
+    EXPECT_TRUE(file.IsValid());
+    EXPECT_TRUE(file.created());
+    EXPECT_EQ(File::FILE_OK, file.error_details());
+  }
+
+  EXPECT_TRUE(PathExists(file_path));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST(FileTest, SelfSwap) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -197,24 +282,24 @@ TEST(FileTest, ReadWrite) {
   EXPECT_EQ(kTestDataSize, bytes_written);
 
   // Read from EOF.
-  char data_read_1[32];
-  int bytes_read = file.Read(kTestDataSize, data_read_1, kTestDataSize);
+  std::array<char, 32> data_read_1;
+  int bytes_read = file.Read(kTestDataSize, data_read_1.data(), kTestDataSize);
   EXPECT_EQ(0, bytes_read);
 
   // Read from somewhere in the middle of the file.
   const int kPartialReadOffset = 1;
-  bytes_read = file.Read(kPartialReadOffset, data_read_1, kTestDataSize);
+  bytes_read = file.Read(kPartialReadOffset, data_read_1.data(), kTestDataSize);
   EXPECT_EQ(kTestDataSize - kPartialReadOffset, bytes_read);
   for (int i = 0; i < bytes_read; i++) {
     EXPECT_EQ(data_to_write[i + kPartialReadOffset], data_read_1[i]);
   }
 
   // Read 0 bytes.
-  bytes_read = file.Read(0, data_read_1, 0);
+  bytes_read = file.Read(0, data_read_1.data(), 0);
   EXPECT_EQ(0, bytes_read);
 
   // Read the entire file.
-  bytes_read = file.Read(0, data_read_1, kTestDataSize);
+  bytes_read = file.Read(0, data_read_1.data(), kTestDataSize);
   EXPECT_EQ(kTestDataSize, bytes_read);
   for (int i = 0; i < bytes_read; i++) {
     EXPECT_EQ(data_to_write[i], data_read_1[i]);
@@ -243,8 +328,9 @@ TEST(FileTest, ReadWrite) {
   EXPECT_EQ(kOffsetBeyondEndOfFile + kPartialWriteLength, file_size.value());
 
   // Make sure the file was zero-padded.
-  char data_read_2[32];
-  bytes_read = file.Read(0, data_read_2, static_cast<int>(file_size.value()));
+  std::array<char, 32> data_read_2;
+  bytes_read =
+      file.Read(0, data_read_2.data(), static_cast<int>(file_size.value()));
   EXPECT_EQ(file_size, bytes_read);
   for (int i = 0; i < kTestDataSize; i++) {
     EXPECT_EQ(data_to_write[i], data_read_2[i]);
@@ -393,8 +479,9 @@ TEST(FileTest, Append) {
   EXPECT_EQ(kAppendDataSize, bytes_written);
 
   // Read the entire file.
-  char data_read_1[32];
-  int bytes_read = file.Read(0, data_read_1, kTestDataSize + kAppendDataSize);
+  std::array<char, 32> data_read_1;
+  int bytes_read =
+      file.Read(0, data_read_1.data(), kTestDataSize + kAppendDataSize);
   EXPECT_EQ(kTestDataSize + kAppendDataSize, bytes_read);
   for (int i = 0; i < kTestDataSize; i++) {
     EXPECT_EQ(data_to_write[i], data_read_1[i]);
@@ -427,8 +514,9 @@ TEST(FileTest, Length) {
   EXPECT_EQ(kExtendedFileLength, file_size.value());
 
   // Make sure the file was zero-padded.
-  char data_read[32];
-  int bytes_read = file.Read(0, data_read, static_cast<int>(file_size.value()));
+  std::array<char, 32> data_read;
+  int bytes_read =
+      file.Read(0, data_read.data(), static_cast<int>(file_size.value()));
   EXPECT_EQ(file_size, bytes_read);
   for (int i = 0; i < kTestDataSize; i++) {
     EXPECT_EQ(data_to_write[i], data_read[i]);
@@ -447,7 +535,7 @@ TEST(FileTest, Length) {
   EXPECT_EQ(kTruncatedFileLength, file_size.value());
 
   // Make sure the file was truncated.
-  bytes_read = file.Read(0, data_read, kTestDataSize);
+  bytes_read = file.Read(0, data_read.data(), kTestDataSize);
   EXPECT_EQ(file_size.value(), bytes_read);
   for (int i = 0; i < file_size.value(); i++) {
     EXPECT_EQ(data_to_write[i], data_read[i]);
@@ -566,18 +654,20 @@ TEST(FileTest, ReadAtCurrentPosition) {
   EXPECT_TRUE(file.IsValid());
 
   const char kData[] = "test";
-  const int kDataSize = sizeof(kData) - 1;
+  const size_t kDataSize = sizeof(kData) - 1;
   EXPECT_EQ(kDataSize, file.Write(0, kData, kDataSize));
 
   EXPECT_EQ(0, file.Seek(File::FROM_BEGIN, 0));
 
-  char buffer[kDataSize];
-  int first_chunk_size = kDataSize / 2;
-  EXPECT_EQ(first_chunk_size, file.ReadAtCurrentPos(buffer, first_chunk_size));
-  EXPECT_EQ(kDataSize - first_chunk_size,
-            file.ReadAtCurrentPos(buffer + first_chunk_size,
-                                  kDataSize - first_chunk_size));
-  EXPECT_EQ(std::string(buffer, buffer + kDataSize), std::string(kData));
+  std::array<char, kDataSize> buffer;
+  size_t first_chunk_size = kDataSize / 2;
+  EXPECT_EQ(first_chunk_size,
+            file.ReadAtCurrentPos(buffer.data(), first_chunk_size));
+  EXPECT_EQ(
+      kDataSize - first_chunk_size,
+      file.ReadAtCurrentPos(base::span(buffer).subspan(first_chunk_size).data(),
+                            kDataSize - first_chunk_size));
+  EXPECT_EQ(std::string(base::as_string_view(buffer)), std::string(kData));
 }
 
 TEST(FileTest, ReadAtCurrentPositionSpans) {
@@ -622,9 +712,9 @@ TEST(FileTest, WriteAtCurrentPosition) {
             file.WriteAtCurrentPos(kData + first_chunk_size,
                                    kDataSize - first_chunk_size));
 
-  char buffer[kDataSize];
-  EXPECT_EQ(kDataSize, file.Read(0, buffer, kDataSize));
-  EXPECT_EQ(std::string(buffer, buffer + kDataSize), std::string(kData));
+  std::array<char, kDataSize> buffer;
+  EXPECT_EQ(kDataSize, file.Read(0, buffer.data(), kDataSize));
+  EXPECT_EQ(std::string(base::as_string_view(buffer)), std::string(kData));
 }
 
 TEST(FileTest, WriteAtCurrentPositionSpans) {
@@ -647,9 +737,10 @@ TEST(FileTest, WriteAtCurrentPositionSpans) {
   EXPECT_EQ(first_chunk_size, result.value());
 
   const int kDataSize = 4;
-  char buffer[kDataSize];
-  EXPECT_EQ(kDataSize, file.Read(0, buffer, kDataSize));
-  EXPECT_EQ(std::string(buffer, buffer + kDataSize), data);
+  std::array<char, kDataSize> buffer;
+  EXPECT_EQ(kDataSize, file.Read(0, buffer.data(), kDataSize));
+
+  EXPECT_EQ(std::string(base::as_string_view(buffer)), data);
 }
 
 TEST(FileTest, Seek) {

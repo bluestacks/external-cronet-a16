@@ -5,4 +5,7 @@ third_party {
   license_type: NOTICE
   version: "DEPS"
   homepage: "https://compiler-rt.llvm.org/"
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:llvm:compiler-rt"
+  }
 }

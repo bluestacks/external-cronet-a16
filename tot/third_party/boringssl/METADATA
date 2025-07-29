@@ -7,4 +7,7 @@ third_party {
     value: "https://boringssl.googlesource.com/boringssl"
     type: "Git"
   }
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:google:boringssl"
+  }
 }

@@ -321,18 +321,7 @@ export abstract class BaseSliceTrack<
     result && this.trash.use(result);
 
     // Calc the number of rows based on the depth col.
-    const rowCount = assertExists(
-      // `ORDER BY .. LIMIT 1` is faster than `MAX(depth)`
-      (
-        await this.engine.query(`
-          SELECT
-            ifnull(depth, 0) + 1 AS rowCount
-          FROM (${this.getSqlSource()})
-          ORDER BY depth DESC
-          LIMIT 1
-        `)
-      ).maybeFirstRow({rowCount: NUM})?.rowCount,
-    );
+    const rowCount = await this.getRowCount();
 
     // TODO(hjd): Consider case below:
     // raw:
@@ -388,7 +377,7 @@ export abstract class BaseSliceTrack<
     await this.engine.query(`
       create virtual table ${this.getTableName()}
       using __intrinsic_slice_mipmap((
-        select id, ts, dur, ((layer * ${rowCount}) + depth) as depth
+        select id, ts, dur, ((layer * ${rowCount ?? 1}) + depth) as depth
         from (${this.getSqlSource()})
         where dur != -1
       ));
@@ -399,6 +388,23 @@ export abstract class BaseSliceTrack<
       this.oldQuery = undefined;
       this.slicesKey = CacheKey.zero();
     });
+  }
+
+  /**
+   * Calculate the number of rows in the track from the max depth value.
+   *
+   * @returns The number of rows in the track, or undefined if track is empty.
+   */
+  private async getRowCount(): Promise<number | undefined> {
+    const result = await this.engine.query(`
+      SELECT
+        IFNULL(depth, 0) + 1 AS rowCount
+      FROM (${this.getSqlSource()})
+      ORDER BY depth DESC
+      LIMIT 1
+    `);
+
+    return result.maybeFirstRow({rowCount: NUM})?.rowCount;
   }
 
   async onUpdate({visibleWindow, size}: TrackRenderContext): Promise<void> {
@@ -514,16 +520,22 @@ export abstract class BaseSliceTrack<
     }
 
     // Second pass: fill slices by color.
+    const vizSlicesByColor = vizSlices.slice();
+    if (!this.forceTimestampRenderOrder) {
+      vizSlicesByColor.sort((a, b) =>
+        colorCompare(a.colorScheme.base, b.colorScheme.base),
+      );
+    }
     let lastColor = undefined;
     for (const slice of vizSlices) {
       const color = slice.isHighlighted
-        ? slice.colorScheme.variant.cssString
-        : slice.colorScheme.base.cssString;
-      if (color !== lastColor) {
-        lastColor = color;
-        ctx.fillStyle = color;
+        ? slice.colorScheme.variant
+        : slice.colorScheme.base;
+      const colorString = color.cssString;
+      if (colorString !== lastColor) {
+        lastColor = colorString;
+        ctx.fillStyle = colorString;
       }
-      ctx.fillStyle = color;
       const y = padding + slice.depth * (sliceHeight + rowSpacing);
       if (slice.flags & SLICE_FLAGS_INSTANT) {
         this.drawChevron(ctx, slice.x, y, sliceHeight);
@@ -537,6 +549,7 @@ export abstract class BaseSliceTrack<
           y,
           w,
           sliceHeight,
+          color,
           !CROP_INCOMPLETE_SLICE_FLAG.get(),
         );
       } else {
@@ -552,7 +565,7 @@ export abstract class BaseSliceTrack<
 
     // Pass 2.5: Draw fillRatio light section.
     ctx.fillStyle = `#FFFFFF50`;
-    for (const slice of vizSlices) {
+    for (const slice of vizSlicesByColor) {
       // Can't draw fill ratio on incomplete or instant slices.
       if (slice.flags & (SLICE_FLAGS_INCOMPLETE | SLICE_FLAGS_INSTANT)) {
         continue;
@@ -739,17 +752,6 @@ export abstract class BaseSliceTrack<
 
     this.slicesKey = slicesKey;
     this.onUpdatedSlices(slices);
-
-    // Sort slices by color - this can make rendering more efficient as it
-    // reduces the number of times we need to switch colors. For slice heavy
-    // tracks the result looks identical, however on tracks that have a lot of
-    // instant slices the result can look very different, so we might want to
-    // force timestamp render order for these tracks.
-    if (!this.forceTimestampRenderOrder) {
-      slices.sort((a, b) =>
-        colorCompare(a.colorScheme.base, b.colorScheme.base),
-      );
-    }
     this.slices = slices;
 
     raf.scheduleCanvasRedraw();

@@ -97,11 +97,90 @@ java_library {
     ],
 }
 
+// GN: //base/version_info/android:version_constants_bridge_jni_java
+java_library {
+    name: "stable_cronet_base_version_info_android_version_constants_bridge_jni_java",
+    static_libs: [
+        "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__filtered",
+        "stable_cronet_build_android_build_java",
+        "stable_cronet_third_party_jni_zero_gendeps_java",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base/version_info/android:version_constants_bridge_jni_java__testing
+java_library {
+    name: "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__testing",
+    static_libs: [
+        "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__testing__filtered",
+        "stable_cronet_build_android_build_java__testing",
+        "stable_cronet_third_party_jni_zero_gendeps_java__testing",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// GN: //base/version_info/android:version_constants_bridge_jni_java__testing
+java_library {
+    name: "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__testing__unfiltered",
+    srcs: [
+        ":stable_cronet_base_version_info_android_version_constants_bridge_jni__action__testing__java",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "stable_cronet_build_android_build_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
+    ],
+}
+
+// GN: //base/version_info/android:version_constants_bridge_jni_java
+java_library {
+    name: "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__unfiltered",
+    srcs: [
+        ":stable_cronet_base_version_info_android_version_constants_bridge_jni__action__java",
+    ],
+    defaults: [
+        "stable_cronet_java_framework_defaults",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    libs: [
+        "stable_cronet_build_android_build_java__unfiltered",
+        "stable_cronet_third_party_jni_zero_gendeps_java__unfiltered",
+    ],
+}
+
 // GN: //base/version_info/android:version_constants_java
 java_library {
     name: "stable_cronet_base_version_info_android_version_constants_java",
     static_libs: [
         "stable_cronet_base_version_info_android_channel_enum_java",
+        "stable_cronet_base_version_info_android_version_constants_bridge_jni_java",
         "stable_cronet_base_version_info_android_version_constants_java__filtered",
         "stable_cronet_build_android_build_java",
         "stable_cronet_third_party_jni_zero_jni_zero_java",
@@ -123,6 +202,7 @@ java_library {
     name: "stable_cronet_base_version_info_android_version_constants_java__testing",
     static_libs: [
         "stable_cronet_base_version_info_android_channel_enum_java__testing",
+        "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__testing",
         "stable_cronet_base_version_info_android_version_constants_java__testing__filtered",
         "stable_cronet_build_android_build_java__testing",
         "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
@@ -157,6 +237,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
         "stable_cronet_base_version_info_android_channel_enum_java__testing__unfiltered",
+        "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__testing__unfiltered",
         "stable_cronet_build_android_build_java__testing__unfiltered",
         "stable_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
         "stable_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
@@ -182,6 +263,7 @@ java_library {
     libs: [
         "androidx.annotation_annotation",
         "stable_cronet_base_version_info_android_channel_enum_java__unfiltered",
+        "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__unfiltered",
         "stable_cronet_build_android_build_java__unfiltered",
         "stable_cronet_third_party_jni_zero_gendeps_java__unfiltered",
         "stable_cronet_third_party_jni_zero_generate_jni_java__unfiltered",

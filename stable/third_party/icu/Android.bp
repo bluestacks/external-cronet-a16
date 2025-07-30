@@ -290,8 +290,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_DLOPEN=0",
         "-DHAVE_SYS_UIO_H",
@@ -617,8 +617,8 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_DLOPEN=0",
         "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",
@@ -946,8 +946,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_DLOPEN=0",
         "-DHAVE_SYS_UIO_H",
@@ -1233,8 +1233,8 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_DLOPEN=0",
         "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",

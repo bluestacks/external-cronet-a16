@@ -26,10 +26,7 @@ cc_library_static {
     name: "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_build_config",
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
+        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_build_config__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
@@ -37,8 +34,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -111,17 +108,14 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
+        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_build_config__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -236,10 +230,7 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags",
+        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_raw_ptr__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
@@ -247,15 +238,14 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DIS_RAW_PTR_IMPL",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -326,23 +316,19 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing",
+        "stable_cronet_base_allocator_partition_allocator_src_partition_alloc_raw_ptr__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DIS_RAW_PTR_IMPL",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",

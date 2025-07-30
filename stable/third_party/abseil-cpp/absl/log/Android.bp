@@ -34,13 +34,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -70,12 +69,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -84,6 +81,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -95,6 +95,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -103,6 +106,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -112,6 +118,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -153,13 +162,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -189,12 +197,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -203,6 +209,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -214,6 +223,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -222,6 +234,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -231,6 +246,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -272,13 +290,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -386,13 +403,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -500,13 +516,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -614,13 +629,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -728,13 +742,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -842,13 +855,12 @@ cc_library_static {
     ],
     cflags: [
         "-DABSL_ALLOCATOR_NOTHROW=1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",

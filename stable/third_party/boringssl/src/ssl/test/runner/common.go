@@ -329,6 +329,7 @@ type ConnectionState struct {
 	NegotiatedProtocolIsMutual bool                  // negotiated protocol was advertised by server
 	NegotiatedProtocolFromALPN bool                  // protocol negotiated with ALPN
 	ServerName                 string                // server name requested by client, if any (server side only)
+	ServerNameAck              bool                  // whether the server acknowledged the server name (client side only)
 	PeerCertificates           []*x509.Certificate   // certificate chain presented by remote peer
 	PeerDelegatedCredential    []byte                // delegated credential presented by remote peer
 	VerifiedChains             [][]*x509.Certificate // verified chains built from PeerCertificates
@@ -2366,11 +2367,6 @@ type Credential struct {
 	// SignatureAlgorithms, if not nil, overrides the default set of
 	// supported signature algorithms to sign with.
 	SignatureAlgorithms []signatureAlgorithm
-	// Leaf is the parsed form of the leaf certificate, which may be
-	// initialized using x509.ParseCertificate to reduce per-handshake
-	// processing for TLS clients doing client authentication. If nil, the
-	// leaf certificate will be parsed as needed.
-	Leaf *x509.Certificate
 	// DelegatedCredential is the delegated credential to use
 	// with the certificate.
 	DelegatedCredential []byte
@@ -2663,7 +2659,6 @@ func generateSingleCertChain(template *x509.Certificate, key crypto.Signer) Cred
 		Certificate:     [][]byte{cert.Raw},
 		RootCertificate: cert.Raw,
 		PrivateKey:      key,
-		Leaf:            cert,
 		ChainPath:       tmpCertPath,
 		KeyPath:         tmpKeyPath,
 		RootPath:        tmpCertPath,

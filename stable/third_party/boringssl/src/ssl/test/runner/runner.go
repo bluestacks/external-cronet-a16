@@ -261,7 +261,6 @@ func initCertificates() {
 		Certificate:     [][]byte{leafCert.Raw, intermediateCert.Raw},
 		RootCertificate: rootCert.Raw,
 		PrivateKey:      &rsa2048Key,
-		Leaf:            leafCert,
 		ChainPath:       chainPath,
 		KeyPath:         keyPath,
 		RootPath:        rootCertPath,
@@ -429,6 +428,9 @@ type connectionExpectations struct {
 	peerApplicationSettingsOld []byte
 	// echAccepted is whether ECH should have been accepted on this connection.
 	echAccepted bool
+	// serverNameAck, if not nil, is whether the server should have acknowledged
+	// the server name. This field is only checked in full handshakes.
+	serverNameAck *bool
 }
 
 type testCase struct {
@@ -900,6 +902,15 @@ func doExchange(test *testCase, config *Config, conn net.Conn, isResume bool, tr
 		if !bytes.Equal(expectations.quicTransportParamsLegacy, connState.QUICTransportParamsLegacy) {
 			return errors.New("Peer did not send expected legacy QUIC transport params")
 		}
+	}
+
+	// On resumption, the server's server_name extension is forbidden. Runner checks this in the
+	// TLS stack itself.
+	if !connState.DidResume && expectations.serverNameAck != nil && *expectations.serverNameAck != connState.ServerNameAck {
+		if connState.ServerNameAck {
+			return fmt.Errorf("tls: server unexpectedly acknowledged server_name extension")
+		}
+		return fmt.Errorf("tls: server did not acknowledge server_name extension")
 	}
 
 	if expectations.echAccepted {

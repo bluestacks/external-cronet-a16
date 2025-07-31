@@ -57,7 +57,6 @@ cc_binary {
         "stable_cronet_third_party_abseil_cpp_absl_debugging_utf8_for_code_point",
         "stable_cronet_third_party_abseil_cpp_absl_hash_city",
         "stable_cronet_third_party_abseil_cpp_absl_hash_hash",
-        "stable_cronet_third_party_abseil_cpp_absl_hash_low_level_hash",
         "stable_cronet_third_party_abseil_cpp_absl_log_die_if_null",
         "stable_cronet_third_party_abseil_cpp_absl_log_globals",
         "stable_cronet_third_party_abseil_cpp_absl_log_initialize",
@@ -124,14 +123,14 @@ cc_binary {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_gn_gen_buildflags",
+        "stable_cronet_third_party_perfetto_src_ipc_protoc_plugin_ipc_plugin__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -142,7 +141,6 @@ cc_binary {
         "-DOFFICIAL_BUILD",
         "-DPERFETTO_IMPLEMENTATION",
         "-DUSE_AURA=1",
-        "-DUSE_LIBCXX_MODULES",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
         "-D_FILE_OFFSET_BITS=64",
@@ -187,13 +185,6 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }
 
 // GN: //third_party/perfetto/src/ipc/protoc_plugin:ipc_plugin__testing
@@ -232,7 +223,6 @@ cc_binary {
         "stable_cronet_third_party_abseil_cpp_absl_debugging_utf8_for_code_point__testing",
         "stable_cronet_third_party_abseil_cpp_absl_hash_city__testing",
         "stable_cronet_third_party_abseil_cpp_absl_hash_hash__testing",
-        "stable_cronet_third_party_abseil_cpp_absl_hash_low_level_hash__testing",
         "stable_cronet_third_party_abseil_cpp_absl_log_die_if_null__testing",
         "stable_cronet_third_party_abseil_cpp_absl_log_globals__testing",
         "stable_cronet_third_party_abseil_cpp_absl_log_initialize__testing",
@@ -299,14 +289,14 @@ cc_binary {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
+        "stable_cronet_third_party_perfetto_src_ipc_protoc_plugin_ipc_plugin__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -317,7 +307,6 @@ cc_binary {
         "-DOFFICIAL_BUILD",
         "-DPERFETTO_IMPLEMENTATION",
         "-DUSE_AURA=1",
-        "-DUSE_LIBCXX_MODULES",
         "-DUSE_OZONE=1",
         "-DUSE_UDEV",
         "-D_FILE_OFFSET_BITS=64",
@@ -362,11 +351,4 @@ cc_binary {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "liblog",
-            ],
-        },
-    },
 }

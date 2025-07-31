@@ -3,6 +3,6 @@
 name: "anstyle"
 third_party {
   license_type: NOTICE
-  version: "1.0.10"
+  version: "1.0.11"
   homepage: "https://crates.io/crates/anstyle"
 }

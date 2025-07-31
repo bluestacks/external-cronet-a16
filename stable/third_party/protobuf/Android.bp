@@ -322,17 +322,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protobuf_full__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -417,17 +414,14 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protobuf_full__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
@@ -465,12 +459,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -479,6 +471,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -490,6 +485,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -498,6 +496,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -507,6 +508,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -572,24 +576,20 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protobuf_lite__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -622,12 +622,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -636,6 +634,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -646,6 +647,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -654,6 +658,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -663,6 +670,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -726,24 +736,20 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protobuf_lite__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
         "-DHAVE_PTHREAD",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_LIBCXX_MODULES",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -776,12 +782,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -790,6 +794,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -800,6 +807,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -808,6 +818,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -817,6 +830,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -879,7 +895,6 @@ cc_binary {
         "stable_cronet_third_party_abseil_cpp_absl_debugging_utf8_for_code_point",
         "stable_cronet_third_party_abseil_cpp_absl_hash_city",
         "stable_cronet_third_party_abseil_cpp_absl_hash_hash",
-        "stable_cronet_third_party_abseil_cpp_absl_hash_low_level_hash",
         "stable_cronet_third_party_abseil_cpp_absl_log_die_if_null",
         "stable_cronet_third_party_abseil_cpp_absl_log_globals",
         "stable_cronet_third_party_abseil_cpp_absl_log_initialize",
@@ -943,12 +958,15 @@ cc_binary {
     host_supported: true,
     host_cross_supported: false,
     device_supported: false,
+    generated_headers: [
+        "stable_cronet_third_party_protobuf_protoc__concatenated_headers_common",
+    ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1035,7 +1053,6 @@ cc_binary {
         "stable_cronet_third_party_abseil_cpp_absl_debugging_utf8_for_code_point__testing",
         "stable_cronet_third_party_abseil_cpp_absl_hash_city__testing",
         "stable_cronet_third_party_abseil_cpp_absl_hash_hash__testing",
-        "stable_cronet_third_party_abseil_cpp_absl_hash_low_level_hash__testing",
         "stable_cronet_third_party_abseil_cpp_absl_log_die_if_null__testing",
         "stable_cronet_third_party_abseil_cpp_absl_log_globals__testing",
         "stable_cronet_third_party_abseil_cpp_absl_log_initialize__testing",
@@ -1099,12 +1116,15 @@ cc_binary {
     host_supported: true,
     host_cross_supported: false,
     device_supported: false,
+    generated_headers: [
+        "stable_cronet_third_party_protobuf_protoc__testing__concatenated_headers_common",
+    ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1185,17 +1205,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_cpp__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1276,17 +1293,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_cpp__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1358,17 +1372,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1440,17 +1451,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1508,17 +1516,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java_all_headers__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1576,17 +1581,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java_all_headers__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1658,17 +1660,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java_full__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1740,17 +1739,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java_full__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1821,17 +1817,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_java_lite__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1902,17 +1895,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_java_lite__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -1981,17 +1971,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_lib__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2060,17 +2047,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_lib__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2133,17 +2117,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_protoc_python__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2206,17 +2187,14 @@ cc_library_static {
     host_cross_supported: false,
     device_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_protoc_python__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DCR_SYSROOT_KEY=20250129T203412Z-1",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DGOOGLE_PROTOBUF_NO_RTTI",
@@ -2276,17 +2254,14 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags",
+        "stable_cronet_third_party_protobuf_utf8_range__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -2321,12 +2296,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2335,6 +2308,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2346,6 +2322,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2354,6 +2333,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2363,6 +2345,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2400,17 +2385,14 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_build_chromeos_buildflags__testing",
+        "stable_cronet_third_party_protobuf_utf8_range__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -2445,12 +2427,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2459,6 +2439,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2470,6 +2453,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2478,6 +2464,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -2487,6 +2476,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",

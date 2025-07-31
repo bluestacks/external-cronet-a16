@@ -301,6 +301,7 @@ java_library {
         "stable_cronet_base_time_utils_java__testing__unfiltered",
         "stable_cronet_base_unowned_user_data_java__testing__unfiltered",
         "stable_cronet_base_version_info_android_channel_enum_java__testing__unfiltered",
+        "stable_cronet_base_version_info_android_version_constants_bridge_jni_java__testing__unfiltered",
         "stable_cronet_base_version_info_android_version_constants_java__testing__unfiltered",
         "stable_cronet_base_wrapped_class_loader_java__testing__unfiltered",
         "stable_cronet_build_android_build_java__testing__unfiltered",

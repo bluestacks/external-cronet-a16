@@ -954,6 +954,10 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
     EXPECT_EQ(*next_ssl_data->expected_ech_config_list,
               ssl_config.ech_config_list);
   }
+  if (next_ssl_data->expected_trust_anchor_ids) {
+    EXPECT_EQ(*next_ssl_data->expected_trust_anchor_ids,
+              ssl_config.trust_anchor_ids);
+  }
   return std::make_unique<MockSSLClientSocket>(
       std::move(stream_socket), host_and_port, ssl_config, next_ssl_data);
 }
@@ -1576,6 +1580,11 @@ int MockSSLClientSocket::ExportKeyingMaterial(
 
 std::vector<uint8_t> MockSSLClientSocket::GetECHRetryConfigs() {
   return data_->ech_retry_configs;
+}
+
+std::vector<std::vector<uint8_t>>
+MockSSLClientSocket::GetServerTrustAnchorIDsForRetry() {
+  return data_->server_trust_anchor_ids_for_retry;
 }
 
 void MockSSLClientSocket::RunCallbackAsync(CompletionOnceCallback callback,

@@ -25,6 +25,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -597,6 +598,9 @@ struct SSLSocketDataProvider {
   // Result for GetECHRetryConfigs().
   std::vector<uint8_t> ech_retry_configs;
 
+  // Result for GetServerTrustAnchorIDsForRetry().
+  std::vector<std::vector<uint8_t>> server_trust_anchor_ids_for_retry;
+
   std::optional<NextProtoVector> next_protos_expected_in_ssl_config;
   std::optional<SSLConfig::ApplicationSettings> expected_application_settings;
 
@@ -609,6 +613,7 @@ struct SSLSocketDataProvider {
   std::optional<bool> expected_ignore_certificate_errors;
   std::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
   std::optional<std::vector<uint8_t>> expected_ech_config_list;
+  std::optional<std::vector<uint8_t>> expected_trust_anchor_ids;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;
@@ -1022,6 +1027,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
 
   // SSLClientSocket implementation.
   std::vector<uint8_t> GetECHRetryConfigs() override;
+  std::vector<std::vector<uint8_t>> GetServerTrustAnchorIDsForRetry() override;
 
   // This MockSocket does not implement the manual async IO feature.
   void OnReadComplete(const MockRead& data) override;

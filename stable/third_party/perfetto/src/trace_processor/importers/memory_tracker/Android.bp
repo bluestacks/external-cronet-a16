@@ -36,10 +36,7 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_gn_gen_buildflags",
-    ],
-    export_generated_headers: [
-        "stable_cronet_third_party_perfetto_gn_gen_buildflags",
+        "stable_cronet_third_party_perfetto_src_trace_processor_importers_memory_tracker_graph_processor__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
@@ -47,8 +44,8 @@ cc_library_static {
     cflags: [
         "-DANDROID",
         "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -131,17 +128,14 @@ cc_library_static {
     host_supported: true,
     host_cross_supported: false,
     generated_headers: [
-        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
-    ],
-    export_generated_headers: [
-        "stable_cronet_third_party_perfetto_gn_gen_buildflags__testing",
+        "stable_cronet_third_party_perfetto_src_trace_processor_importers_memory_tracker_graph_processor__testing__concatenated_headers_common",
     ],
     defaults: [
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-11777-gfd3fecfc-1\"",
-        "-DCR_LIBCXX_REVISION=a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96",
+        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
+        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -180,12 +174,10 @@ cc_library_static {
         "//external/cronet:__subpackages__",
     ],
     target: {
-        android: {
+        android_arm: {
             shared_libs: [
                 "liblog",
             ],
-        },
-        android_arm: {
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -195,6 +187,9 @@ cc_library_static {
             ],
         },
         android_arm64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -207,6 +202,9 @@ cc_library_static {
             ],
         },
         android_riscv64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -215,6 +213,9 @@ cc_library_static {
             ],
         },
         android_x86: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",
@@ -225,6 +226,9 @@ cc_library_static {
             ],
         },
         android_x86_64: {
+            shared_libs: [
+                "liblog",
+            ],
             cflags: [
                 "-DANDROID",
                 "-DANDROID_NDK_VERSION_ROLL=r28_1",

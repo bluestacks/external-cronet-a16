@@ -3,6 +3,6 @@
 name: "memchr"
 third_party {
   license_type: NOTICE
-  version: "2.7.4"
+  version: "2.7.5"
   homepage: "https://crates.io/crates/memchr"
 }

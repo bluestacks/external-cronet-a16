@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/net_buildflags.h"
 
 namespace net::features {
@@ -742,8 +743,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableStaticCTAPIEnforcement);
 
 // Finch experiment to select a disk cache backend.
 enum class DiskCacheBackend {
+  kDefault,
   kSimple,
   kBlockfile,
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  kSql,
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 };
 NET_EXPORT BASE_DECLARE_FEATURE(kDiskCacheBackendExperiment);
 NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
@@ -772,6 +777,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
 
 // When enabled HSTS upgrades will only apply to top-level navigations.
 NET_EXPORT BASE_DECLARE_FEATURE(kHstsTopLevelNavigationsOnly);
+
+#if BUILDFLAG(IS_WIN)
+// Whether or not to flush on MappedFile::Flush().
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheMappedFileFlushWin);
+#endif
 
 // Whether or not to apply No-Vary-Search processing in the HTTP disk cache.
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
@@ -863,6 +873,7 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // These parameters control whether the Network Service Task Scheduler is used
 // for specific classes.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerHttpCache);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kNetTaskSchedulerHttpCacheTransaction);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,

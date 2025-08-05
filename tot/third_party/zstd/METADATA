@@ -3,11 +3,11 @@
 name: "Zstandard"
 third_party {
   license_type: NOTICE
-  version: "f9938c217da17ec3e9dcd2a2d99c5cf39536aeb94"
+  version: "e128976193546dceb24249206a02ff8f444f7120"
   identifier {
     value: "https://github.com/facebook/zstd"
     type: "Git"
-    version: "f9938c217da17ec3e9dcd2a2d99c5cf39536aeb94"
+    version: "e128976193546dceb24249206a02ff8f444f7120"
   }
   security {
     tag: "NVD-CPE2.3:cpe:/a:facebook:zstandard:1.5.5"

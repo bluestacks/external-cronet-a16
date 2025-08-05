@@ -1955,6 +1955,194 @@ cc_library_static {
     },
 }
 
+// GN: //net:net_features
+cc_library_static {
+    name: "tot_cronet_net_net_features",
+    shared_libs: [
+        "libandroid",
+        "libbinder_ndk",
+        "liblog",
+        "libz",
+        "tot_cronet_libcrypto",
+        "tot_cronet_libpki",
+        "tot_cronet_libssl",
+    ],
+    host_cross_supported: false,
+    generated_headers: [
+        "tot_cronet_base_android_info_aidl-ndk-source",
+        "tot_cronet_base_build_info_aidl-ndk-source",
+        "tot_cronet_net_net_features__concatenated_headers_common",
+    ],
+    defaults: [
+        "tot_cronet_cc_defaults",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
+        "-DHAVE_SYS_UIO_H",
+        "-DNDEBUG",
+        "-DNVALGRIND",
+        "-DOFFICIAL_BUILD",
+        "-D_GNU_SOURCE",
+        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
+        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
+        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+        "-D__STDC_CONSTANT_MACROS",
+        "-D__STDC_FORMAT_MACROS",
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fstack-protector",
+        "-fvisibility-inlines-hidden",
+        "-fvisibility=hidden",
+        "-g1",
+    ],
+    include_dirs: [
+        "external/cronet/tot/",
+        "external/cronet/tot/base/allocator/partition_allocator/src/",
+        "external/cronet/tot/buildtools/third_party/libc++/",
+        "external/cronet/tot/third_party/abseil-cpp/",
+        "external/cronet/tot/third_party/boringssl/src/include/",
+        "external/cronet/tot/third_party/libc++/src/include",
+        "external/cronet/tot/third_party/libc++abi/src/include",
+        "external/cronet/tot/third_party/perfetto/include/",
+        "external/cronet/tot/third_party/protobuf/src/",
+    ],
+    header_libs: [
+        "libgtest_prod_headers",
+    ],
+    cpp_std: "c++20",
+    ldflags: [
+        "-Wl,--as-needed",
+        "-Wl,--gc-sections",
+        "-Wl,--icf=all",
+        "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+    target: {
+        android_arm: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+            ],
+        },
+        android_arm64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ARM_NEON__=1",
+                "-O2",
+                "-mno-outline",
+            ],
+        },
+        android_x86: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-msse3",
+            ],
+        },
+        android_x86_64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-O2",
+                "-msse3",
+            ],
+        },
+    },
+}
+
+// GN: //net:net_features__testing
+cc_library_static {
+    name: "tot_cronet_net_net_features__testing",
+    shared_libs: [
+        "libandroid",
+        "libbinder_ndk",
+        "liblog",
+        "libz",
+    ],
+    host_cross_supported: false,
+    generated_headers: [
+        "tot_cronet_base_android_info_aidl__testing-ndk-source",
+        "tot_cronet_base_build_info_aidl__testing-ndk-source",
+        "tot_cronet_net_net_features__testing__concatenated_headers_common",
+    ],
+    defaults: [
+        "tot_cronet_cc_defaults",
+    ],
+    cflags: [
+        "-DANDROID",
+        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
+        "-DHAVE_SYS_UIO_H",
+        "-DNDEBUG",
+        "-DNVALGRIND",
+        "-DOFFICIAL_BUILD",
+        "-D_GNU_SOURCE",
+        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
+        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
+        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
+        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
+        "-D__STDC_CONSTANT_MACROS",
+        "-D__STDC_FORMAT_MACROS",
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fstack-protector",
+        "-fvisibility-inlines-hidden",
+        "-fvisibility=hidden",
+        "-g1",
+    ],
+    include_dirs: [
+        "external/cronet/tot/",
+        "external/cronet/tot/base/allocator/partition_allocator/src/",
+        "external/cronet/tot/buildtools/third_party/libc++/",
+        "external/cronet/tot/third_party/abseil-cpp/",
+        "external/cronet/tot/third_party/boringssl/src/include/",
+        "external/cronet/tot/third_party/libc++/src/include",
+        "external/cronet/tot/third_party/libc++abi/src/include",
+        "external/cronet/tot/third_party/perfetto/include/",
+        "external/cronet/tot/third_party/protobuf/src/",
+    ],
+    cpp_std: "c++20",
+    ldflags: [
+        "-Wl,--as-needed",
+        "-Wl,--gc-sections",
+        "-Wl,--icf=all",
+        "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+    target: {
+        android_arm: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+            ],
+        },
+        android_arm64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-D__ARM_NEON__=1",
+                "-O2",
+                "-mno-outline",
+            ],
+        },
+        android_x86: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-msse3",
+            ],
+        },
+        android_x86_64: {
+            cflags: [
+                "-D_FORTIFY_SOURCE=2",
+                "-O2",
+                "-msse3",
+            ],
+        },
+    },
+}
+
 // GN: //net:net_nqe_proto
 cc_library_static {
     name: "tot_cronet_net_net_nqe_proto",
@@ -2751,6 +2939,7 @@ cc_library_shared {
         "tot_cronet_net_isolation_info_proto__testing",
         "tot_cronet_net_net__testing",
         "tot_cronet_net_net_deps__testing",
+        "tot_cronet_net_net_features__testing",
         "tot_cronet_net_net_nqe_proto__testing",
         "tot_cronet_net_net_public_deps__testing",
         "tot_cronet_net_preload_decoder__testing",

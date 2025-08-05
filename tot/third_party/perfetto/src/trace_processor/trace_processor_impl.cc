@@ -68,7 +68,6 @@
 #include "src/trace_processor/importers/json/json_utils.h"
 #include "src/trace_processor/importers/ninja/ninja_log_parser.h"
 #include "src/trace_processor/importers/perf/perf_data_tokenizer.h"
-#include "src/trace_processor/importers/perf/perf_event.h"
 #include "src/trace_processor/importers/perf/perf_tracker.h"
 #include "src/trace_processor/importers/perf/record_parser.h"
 #include "src/trace_processor/importers/perf/spe_record_parser.h"
@@ -165,6 +164,10 @@
 #if PERFETTO_BUILDFLAG(PERFETTO_ENABLE_WINSCOPE)
 #include "src/trace_processor/perfetto_sql/intrinsics/table_functions/winscope_proto_to_args_with_defaults.h"
 #include "src/trace_processor/perfetto_sql/intrinsics/table_functions/winscope_surfaceflinger_hierarchy_paths.h"
+#endif
+
+#if PERFETTO_BUILDFLAG(PERFETTO_LLVM_SYMBOLIZER)
+#include "src/trace_processor/perfetto_sql/intrinsics/functions/symbolize.h"
 #endif
 
 namespace perfetto::trace_processor {
@@ -453,6 +456,12 @@ std::pair<int64_t, int64_t> GetTraceTimestampBoundsNs(
 
 TraceProcessorImpl::TraceProcessorImpl(const Config& cfg)
     : TraceProcessorStorageImpl(cfg), config_(cfg) {
+  context_.register_additional_proto_modules = &RegisterAdditionalModules;
+  if (context_.register_additional_proto_modules) {
+    context_.register_additional_proto_modules(
+        context_.proto_importer_module_context.get(), &context_);
+  }
+
   context_.reader_registry->RegisterTraceReader<AndroidDumpstateReader>(
       kAndroidDumpstateTraceType);
   context_.android_dumpstate_event_parser =
@@ -555,7 +564,6 @@ TraceProcessorImpl::TraceProcessorImpl(const Config& cfg)
         kTraceSummaryDescriptor.data(), kTraceSummaryDescriptor.size());
     PERFETTO_CHECK(status.ok());
   }
-  RegisterAdditionalModules(&context_);
 
   // Register stdlib packages.
   auto packages = GetStdlibPackages();
@@ -1322,6 +1330,14 @@ std::unique_ptr<PerfettoSqlEngine> TraceProcessorImpl::InitPerfettoSqlEngine(
     base::Status status = perfetto_sql::RegisterCounterIntervalsFunctions(
         *engine, storage->mutable_string_pool());
   }
+#if PERFETTO_BUILDFLAG(PERFETTO_LLVM_SYMBOLIZER)
+  {
+    base::Status status = perfetto_sql::RegisterSymbolizeFunction(
+        *engine, storage->mutable_string_pool());
+    if (!status.ok())
+      PERFETTO_FATAL("%s", status.c_message());
+  }
+#endif
 
   // Operator tables.
   engine->RegisterVirtualTableModule<SpanJoinOperatorModule>(

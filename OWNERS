@@ -2,7 +2,7 @@ aymanm@google.com
 sporeba@google.com
 stefanoduo@google.com
 colibie@google.com
-danstahr@google.com
 edechamps@google.com
+cronet-gn2bp-ci-builder@chops-service-accounts.iam.gserviceaccount.com #{LAST_RESORT_SUGGESTION}
 file:platform/packages/modules/Connectivity:main:/OWNERS_core_networking
 include platform/system/core:/janitors/OWNERS #{LAST_RESORT_SUGGESTION}

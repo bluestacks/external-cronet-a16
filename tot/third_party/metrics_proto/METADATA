@@ -3,6 +3,6 @@
 name: "Metrics Protos"
 third_party {
   license_type: NOTICE
-  version: "788932306"
+  version: "791249536"
   homepage: "Piper"
 }

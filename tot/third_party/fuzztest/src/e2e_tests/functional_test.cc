@@ -134,10 +134,12 @@ TEST_F(UnitTestModeTest, InvalidSeedsAreSkippedAndReported) {
   EXPECT_THAT(std_err,
               HasSubstr("Could not turn value into corpus type:\n{17}"));
   EXPECT_THAT(std_err, HasSubstr("The value 17 is not InRange(0, 10):\n{17}"));
+  EXPECT_THAT(std_err,
+              HasSubstr("The value 8 is not InRange(10, 20):\n{7, 8}"));
   // Valid seeds are not reported.
   EXPECT_THAT(std_err, Not(HasSubstr("{6}")));
   // Tests should still run.
-  EXPECT_THAT(std_out, HasSubstr("[  PASSED  ] 3 tests."));
+  EXPECT_THAT(std_out, HasSubstr("[  PASSED  ] 4 tests."));
   EXPECT_THAT(status, ExitCode(0));
 }
 
@@ -227,7 +229,7 @@ TEST_F(UnitTestModeTest,
 }
 
 TEST_F(UnitTestModeTest, GlobalEnvironmentGoesThroughCompleteLifecycle) {
-  auto [status, std_out, std_err] = Run("MySuite.GoogleTestExpect");
+  auto [status, std_out, std_err] = Run("MySuite.GoogleTestNeverFails");
   EXPECT_GT(CountSubstrs(std_err, "<<GlobalEnvironment::GlobalEnvironment()>>"),
             0);
   EXPECT_EQ(
@@ -413,6 +415,19 @@ TEST_F(UnitTestModeTest, FlatMapCorrectlyPrintsValues) {
   EXPECT_THAT(std_err, HasSubstr("argument 0: {\"AAA\", \"BBB\"}"));
   // This is the argument to the input domain.
   EXPECT_THAT(std_err, Not(HasSubstr("argument 0: 3")));
+}
+
+TEST_F(UnitTestModeTest, CustomSourceCodePrinterCorrectlyPrintsValue) {
+  auto [status, std_out, std_err] =
+      Run("MySuite.CustomSourceCodePrinterCorrectlyPrintsValue");
+  ExpectTargetAbort(status, std_err);
+  // This is the argument to the output domain.
+  EXPECT_THAT(std_err,
+              HasSubstr("MyCustomPrintableTestType::BuildWithValue(\"abcd\")"));
+  // This is the argument to the input domain.
+  EXPECT_THAT(std_err, Not(HasSubstr("argument 0: \"abcd\"")));
+  EXPECT_THAT(std_err,
+              HasSubstr("argument 0: MyCustomPrintableTestType - input=abcd"));
 }
 
 TEST_F(UnitTestModeTest, PrintsVeryLongInputsTrimmed) {
@@ -1435,17 +1450,16 @@ class FuzzingModeCrashFindingTest
       run_options.timeout = timeout + absl::Seconds(10);
       return RunBinary(CentipedePath(), run_options);
     }
-      RunOptions run_options;
-      run_options.fuzztest_flags = {{"fuzz", std::string(test_name)},
-                                    {"fuzz_for", absl::StrCat(timeout)}};
-      run_options.env = std::move(env);
-      run_options.timeout = timeout + absl::Seconds(10);
-      if (GetParam() ==
-          ExecutionModelParam::kTestBinaryInvokingCentipedeBinary) {
-        run_options.fuzztest_flags["internal_centipede_command"] =
-            ShellEscape(CentipedePath());
-      }
-      return RunBinary(BinaryPath(target_binary), run_options);
+    RunOptions run_options;
+    run_options.fuzztest_flags = {{"fuzz", std::string(test_name)},
+                                  {"fuzz_for", absl::StrCat(timeout)}};
+    run_options.env = std::move(env);
+    run_options.timeout = timeout + absl::Seconds(10);
+    if (GetParam() == ExecutionModelParam::kTestBinaryInvokingCentipedeBinary) {
+      run_options.fuzztest_flags["internal_centipede_command"] =
+          ShellEscape(CentipedePath());
+    }
+    return RunBinary(BinaryPath(target_binary), run_options);
   }
 };
 

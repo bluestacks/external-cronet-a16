@@ -385,11 +385,16 @@ std::optional<int> Command::Wait(absl::Time deadline) {
       // The fork server errored out or timed out, or some other error occurred,
       // e.g. the syscall was interrupted.
       if (poll_ret == 0) {
-        LogProblemInfo(absl::StrCat(
-            "Timeout while waiting for fork server: deadline is ", deadline));
+        VlogProblemInfo(
+            absl::StrCat("Timeout while waiting for fork server: deadline is ",
+                         deadline),
+            /*vlog_level=*/1);
       } else {
-        LogProblemInfo(absl::StrCat(
-            "Error while waiting for fork server: poll() returned ", poll_ret));
+        VlogProblemInfo(
+            absl::StrCat(
+                "Error while waiting for fork server: poll() returned ",
+                poll_ret),
+            /*vlog_level=*/1);
       }
       return std::nullopt;
     }
@@ -411,9 +416,11 @@ std::optional<int> Command::Wait(absl::Time deadline) {
         usleep(duration);  // NOLINT: early return on SIGCHLD is desired.
         continue;
       } else {
-        LogProblemInfo(absl::StrCat(
-            "Timeout while waiting for the command process: deadline is ",
-            deadline));
+        VlogProblemInfo(
+            absl::StrCat(
+                "Timeout while waiting for the command process: deadline is ",
+                deadline),
+            /*vlog_level=*/1);
         return std::nullopt;
       }
     }
@@ -509,13 +516,7 @@ std::string Command::ReadRedirectedStderr() const {
 }
 
 void Command::LogProblemInfo(std::string_view message) const {
-  // Prevent confusing interlaced logs when multiple threads experience failures
-  // at the same time.
-  // TODO(ussuri): Non-failure related logs from other threads may still
-  //  interlace with these. Improve further, if possible. Note the printiing
-  //  line-by-line is unavoidable to overcome the single log line length limit.
-  static absl::Mutex mu{absl::kConstInit};
-  absl::MutexLock lock(&mu);
+  absl::MutexLock lock(&GetExecutionLoggingMutex());
 
   LOG(ERROR) << message;
   LOG(ERROR).NoPrefix() << "=== COMMAND ===";
@@ -532,6 +533,11 @@ void Command::LogProblemInfo(std::string_view message) const {
 
 void Command::VlogProblemInfo(std::string_view message, int vlog_level) const {
   if (ABSL_VLOG_IS_ON(vlog_level)) LogProblemInfo(message);
+}
+
+absl::Mutex &GetExecutionLoggingMutex() {
+  static absl::Mutex mu{absl::kConstInit};
+  return mu;
 }
 
 }  // namespace fuzztest::internal

@@ -17,13 +17,8 @@
     <!-- Cronet runs on S+ -->
     <object type="module_controller"
             class="com.android.tradefed.testtype.suite.module.Sdk31ModuleController" />
-    <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer"/>
     <!-- Allow the testing APK to read/write to any file. This is needed for /data/local/tmp read/write access -->
-    <target_preparer class="com.android.tradefed.targetprep.RunCommandTargetPreparer">
-        <option name="run-command" value="setenforce 0" />
-        <option name="teardown-command" value="setenforce 1" />
-        <option name="throw-if-cmd-fail" value="true" />
-    </target_preparer>
+    <target_preparer class="com.android.tradefed.targetprep.DisableSELinuxTargetPreparer" />
     <!-- Uploading the APK to device and installing it -->
     <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
         <option name="cleanup-apks" value="true"/>

@@ -5,13 +5,16 @@
 module first [system] [extern_c] {
   header "first.h"
   module submod {
-    textual header "../first_textual.h"
+    textual header "first_textual.h"
+  }
+
+  umbrella "first"
+}
+
+explicit module second.submodule [system] [extern_c] {
+  header "second.h"
+  module submod {
+    textual header "second_textual.h"
   }
 }
 
-module second [system] [extern_c] {
-  header "second.h"
-  module submod {
-    textual header "../second_textual.h"
-  }
-}

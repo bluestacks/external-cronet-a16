@@ -190,6 +190,12 @@ BASE_FEATURE_PARAM(std::string,
                    "QuicConnectionOptions",
                    "");
 
+BASE_FEATURE_PARAM(bool,
+                   kFallbackInLowPowerMode,
+                   &kSearchEnginePreconnect2,
+                   "FallbackInLowPowerMode",
+                   false);
+
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -252,7 +258,7 @@ BASE_FEATURE(kRequestStorageAccessNoCorsRequired,
 
 BASE_FEATURE(kStorageAccessApiFollowsSameOriginPolicy,
              "StorageAccessApiFollowsSameOriginPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStaticKeyPinningEnforcement,
              "StaticKeyPinningEnforcement",
@@ -545,7 +551,7 @@ const base::FeatureParam<bool> kIpPrivacyDisableForEnterpriseByDefault{
 const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyEnableIppInDevTools",
-    /*default_value=*/false};
+    /*default_value=*/true};
 
 const base::FeatureParam<bool> kIpPrivacyEnableIppPanelInDevTools{
     &kEnableIpProtectionProxy,

@@ -98,7 +98,6 @@ rust_ffi_static {
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
-                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -14830,7 +14829,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -15423,7 +15421,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -15558,7 +15555,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -15693,7 +15689,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -15828,7 +15823,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -15963,7 +15957,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -18409,7 +18402,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1754614302",
+         "1754892775",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18431,7 +18424,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1754614302",
+         "1754892775",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -18515,7 +18508,6 @@ cc_genrule {
     name: "tot_cronet_base_build_info_jni__action",
     srcs: [
         "base/android/java/src/org/chromium/base/ApkInfo.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/DeviceInfo.java",
     ],
     cmd: "mkdir -p $(genDir)/base &&  " +
@@ -18534,13 +18526,9 @@ cc_genrule {
          "--output-name " +
          "ApkInfo_jni.h " +
          "--output-name " +
-         "BuildInfo_jni.h " +
-         "--output-name " +
          "DeviceInfo_jni.h " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/ApkInfo.java)' " +
-         "--input-file " +
-         "'$(location base/android/java/src/org/chromium/base/BuildInfo.java)' " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/DeviceInfo.java)' " +
          "--package-prefix " +
@@ -18549,7 +18537,6 @@ cc_genrule {
     out: [
         "base/build_info_jni.srcjar",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/build_info_jni_placeholder.srcjar",
     ],
@@ -18585,7 +18572,6 @@ java_genrule {
     name: "tot_cronet_base_build_info_jni__action__java",
     srcs: [
         "base/android/java/src/org/chromium/base/ApkInfo.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/DeviceInfo.java",
     ],
     cmd: "mkdir -p $(genDir)/base &&  " +
@@ -18604,13 +18590,9 @@ java_genrule {
          "--output-name " +
          "ApkInfo_jni.h " +
          "--output-name " +
-         "BuildInfo_jni.h " +
-         "--output-name " +
          "DeviceInfo_jni.h " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/ApkInfo.java)' " +
-         "--input-file " +
-         "'$(location base/android/java/src/org/chromium/base/BuildInfo.java)' " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/DeviceInfo.java)' " +
          "--package-prefix " +
@@ -18618,7 +18600,6 @@ java_genrule {
     out: [
         "base/build_info_jni.srcjar",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/build_info_jni_placeholder.srcjar",
     ],
@@ -18663,7 +18644,6 @@ cc_genrule {
     name: "tot_cronet_base_build_info_jni__action__testing",
     srcs: [
         "base/android/java/src/org/chromium/base/ApkInfo.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/DeviceInfo.java",
     ],
     cmd: "mkdir -p $(genDir)/base &&  " +
@@ -18682,20 +18662,15 @@ cc_genrule {
          "--output-name " +
          "ApkInfo_jni.h " +
          "--output-name " +
-         "BuildInfo_jni.h " +
-         "--output-name " +
          "DeviceInfo_jni.h " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/ApkInfo.java)' " +
-         "--input-file " +
-         "'$(location base/android/java/src/org/chromium/base/BuildInfo.java)' " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/DeviceInfo.java)'",
     host_cross_supported: false,
     out: [
         "base/build_info_jni.srcjar",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/build_info_jni_placeholder.srcjar",
     ],
@@ -18731,7 +18706,6 @@ java_genrule {
     name: "tot_cronet_base_build_info_jni__action__testing__java",
     srcs: [
         "base/android/java/src/org/chromium/base/ApkInfo.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/DeviceInfo.java",
     ],
     cmd: "mkdir -p $(genDir)/base &&  " +
@@ -18750,19 +18724,14 @@ java_genrule {
          "--output-name " +
          "ApkInfo_jni.h " +
          "--output-name " +
-         "BuildInfo_jni.h " +
-         "--output-name " +
          "DeviceInfo_jni.h " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/ApkInfo.java)' " +
-         "--input-file " +
-         "'$(location base/android/java/src/org/chromium/base/BuildInfo.java)' " +
          "--input-file " +
          "'$(location base/android/java/src/org/chromium/base/DeviceInfo.java)'",
     out: [
         "base/build_info_jni.srcjar",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/build_info_jni_placeholder.srcjar",
     ],
@@ -32926,7 +32895,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -34612,7 +34580,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -37085,7 +37052,6 @@ cc_genrule {
         "base/android/java/src/org/chromium/base/ApkInfo.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
         "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/BundleUtils.java",
         "base/android/java/src/org/chromium/base/Callback.java",
         "base/android/java/src/org/chromium/base/CommandLine.java",
@@ -37213,7 +37179,6 @@ java_genrule {
         "base/android/java/src/org/chromium/base/ApkInfo.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
         "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/BundleUtils.java",
         "base/android/java/src/org/chromium/base/Callback.java",
         "base/android/java/src/org/chromium/base/CommandLine.java",
@@ -37336,7 +37301,6 @@ cc_genrule {
         "base/android/java/src/org/chromium/base/ApkInfo.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
         "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/BundleUtils.java",
         "base/android/java/src/org/chromium/base/Callback.java",
         "base/android/java/src/org/chromium/base/CommandLine.java",
@@ -37462,7 +37426,6 @@ java_genrule {
         "base/android/java/src/org/chromium/base/ApkInfo.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
         "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/BundleUtils.java",
         "base/android/java/src/org/chromium/base/Callback.java",
         "base/android/java/src/org/chromium/base/CommandLine.java",
@@ -37836,7 +37799,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -40361,7 +40323,6 @@ java_genrule {
         "base/android/java/src/org/chromium/base/ApkInfo.java",
         "base/android/java/src/org/chromium/base/ApplicationStatus.java",
         "base/android/java/src/org/chromium/base/BaseFeatureMap.java",
-        "base/android/java/src/org/chromium/base/BuildInfo.java",
         "base/android/java/src/org/chromium/base/BundleUtils.java",
         "base/android/java/src/org/chromium/base/Callback.java",
         "base/android/java/src/org/chromium/base/CommandLine.java",
@@ -42738,7 +42699,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -45029,7 +44989,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -46582,7 +46541,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -47903,7 +47861,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -49157,7 +49114,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -50538,7 +50494,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -52452,7 +52407,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -67090,7 +67044,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -68478,7 +68431,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -69879,7 +69831,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -71280,7 +71231,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -72681,7 +72631,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -74082,7 +74031,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -75483,7 +75431,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -79531,7 +79478,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -81348,7 +81294,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -82745,7 +82690,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -84098,7 +84042,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -86074,7 +86017,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -88624,7 +88566,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -95050,7 +94991,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -96370,7 +96310,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -99658,7 +99597,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -104486,7 +104424,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",
@@ -144555,7 +144492,6 @@ cc_genrule {
         "base/base_minimal_jni/UnguessableToken_jni.h",
         "base/base_shared_preferences_jni/SharedPreferencesManager_jni.h",
         "base/build_info_jni/ApkInfo_jni.h",
-        "base/build_info_jni/BuildInfo_jni.h",
         "base/build_info_jni/DeviceInfo_jni.h",
         "base/bundle_utils_jni/BundleUtils_jni.h",
         "base/callback_jni/Callback_jni.h",

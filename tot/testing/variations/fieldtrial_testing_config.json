@@ -2128,6 +2128,21 @@
             ]
         }
     ],
+    "AutofillAndroidDesktopKeyboardAccessoryRevamp": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAndroidDesktopKeyboardAccessoryRevamp"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAndroidDesktopSuppressAccessoryOnEmpty": [
         {
             "platforms": [
@@ -6054,21 +6069,6 @@
                     "name": "Disabled_RepeatableQueries",
                     "disable_features": [
                         "OrganicRepeatableQueries"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ClassManagementEnabledMetricsProvider": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClassManagementEnabledMetricsProvider"
                     ]
                 }
             ]
@@ -10903,32 +10903,6 @@
                     },
                     "enable_features": [
                         "EnableFingerprintingProtectionFilter"
-                    ],
-                    "disable_features": [
-                        "FingerprintingProtectionUx"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FingerprintingProtectionFilterIncognito": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250416",
-                    "params": {
-                        "enable_console_logging": "true",
-                        "performance_measurement_rate": "1.0"
-                    },
-                    "enable_features": [
-                        "EnableFingerprintingProtectionFilterInIncognito"
                     ]
                 }
             ]
@@ -11513,6 +11487,21 @@
                     },
                     "enable_features": [
                         "GlicZeroStateSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlobalCacheListForGatingNotificationProtections": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlobalCacheListForGatingNotificationProtections"
                     ]
                 }
             ]
@@ -12846,6 +12835,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DefaultBrowserTriggerCriteriaExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSDefaultBrowserOffCyclePromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDefaultBrowserOffCyclePromo"
                     ]
                 }
             ]
@@ -16642,6 +16646,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OmniboxMobileParityUpdateV2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxMultimodalInput": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "disable_features": [
+                        "OmniboxMultimodalInput"
                     ]
                 }
             ]
@@ -22630,6 +22649,29 @@
             ]
         }
     ],
+    "ScriptBlockingIncognito": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250812",
+                    "params": {
+                        "performance_measurement_rate": "1.0"
+                    },
+                    "enable_features": [
+                        "EnableFingerprintingProtectionFilterInIncognito",
+                        "FingerprintingProtectionUx"
+                    ]
+                }
+            ]
+        }
+    ],
     "SeaPenQueryRewrite": [
         {
             "platforms": [
@@ -26097,6 +26139,25 @@
             ]
         }
     ],
+    "V8MemoryPoolReleaseOnMallocFailures": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8MemoryPoolReleaseOnMallocFailures"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ParserAblation": [
         {
             "platforms": [
@@ -28239,42 +28300,6 @@
                     "name": "Enabled_20230222",
                     "enable_features": [
                         "ZeroCopyTabCapture"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ZramHugePageRecompression": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "DisableHugePageRecompression",
-                    "params": {
-                        "recompression_huge": "false"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootSwapZramRecompression"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ZramHugePageWriteback": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "DisableHugePageWriteback",
-                    "params": {
-                        "writeback_huge": "false"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootSwapZramWriteback"
                     ]
                 }
             ]

@@ -3,6 +3,6 @@
 name: "rustversion"
 third_party {
   license_type: NOTICE
-  version: "1.0.21"
+  version: "1.0.22"
   homepage: "https://crates.io/crates/rustversion"
 }

@@ -98,7 +98,6 @@ rust_ffi_static {
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
-                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -18110,7 +18109,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1755837317",
+         "1755854520",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18132,7 +18131,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1755837317",
+         "1755854520",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -87261,7 +87260,7 @@ cc_genrule {
          "$(locations :tot_cronet_net_net_nqe_proto_gen__testing_h) " +
          "$(locations :tot_cronet_testing_android_native_test_native_main_runner_jni__action__testing) " +
          "$(locations :tot_cronet_testing_android_native_test_native_test_jni__action__testing) " +
-         "$(locations :tot_cronet_testing_libfuzzer_confirm_fuzztest_init_buildflags__testing) " +
+         "$(locations :tot_cronet_testing_libfuzzer_buildflags__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_generate_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_system_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_perfetto_gn_gen_buildflags__testing) " +
@@ -87365,7 +87364,7 @@ cc_genrule {
         "quic_trace/quic_trace.pb.h",
         "testing/android/native_test/native_main_runner_jni/MainRunner_jni.h",
         "testing/android/native_test/native_test_jni/NativeTest_jni.h",
-        "testing/libfuzzer/confirm_fuzztest_init_buildflags.h",
+        "testing/libfuzzer/buildflags.h",
         "third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.pb.h",
         "third_party/jni_zero/generate_jni/JniInit_jni.h",
         "third_party/jni_zero/generate_jni/JniUtil_jni.h",
@@ -88312,7 +88311,7 @@ cc_genrule {
         ":tot_cronet_net_net_nqe_proto_gen__testing_h",
         ":tot_cronet_testing_android_native_test_native_main_runner_jni__action__testing",
         ":tot_cronet_testing_android_native_test_native_test_jni__action__testing",
-        ":tot_cronet_testing_libfuzzer_confirm_fuzztest_init_buildflags__testing",
+        ":tot_cronet_testing_libfuzzer_buildflags__testing",
         ":tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         ":tot_cronet_third_party_jni_zero_system_jni__action__testing",
         ":tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
@@ -108265,6 +108264,35 @@ cc_genrule {
     ],
 }
 
+// GN: //testing/libfuzzer:buildflags__testing
+cc_genrule {
+    name: "tot_cronet_testing_libfuzzer_buildflags__testing",
+    cmd: "mkdir -p $(genDir)/testing/libfuzzer &&  " +
+         "echo '--flags ARCHIVE_SEED_CORPUS=true REGISTER_FUZZTESTS_IN_TEST_SUITES=false USE_CENTIPEDE=false' | " +
+         "$(location build/write_buildflag_header.py) " +
+         "--output " +
+         "'$(out)' " +
+         "--rulename " +
+         "//testing/libfuzzer:buildflags " +
+         "--gen-dir " +
+         ". " +
+         "--definitions " +
+         "/dev/stdin",
+    host_cross_supported: false,
+    out: [
+        "testing/libfuzzer/buildflags.h",
+    ],
+    tool_files: [
+        "build/write_buildflag_header.py",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
 // GN: //testing/libfuzzer:confirm_fuzztest_init__testing
 cc_genrule {
     name: "tot_cronet_testing_libfuzzer_confirm_fuzztest_init__testing__concatenated_headers_common",
@@ -108351,7 +108379,7 @@ cc_genrule {
          "$(locations :tot_cronet_ff61d121_track_event_cpp_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_track_event_zero_gen__testing_h) " +
          "$(locations :tot_cronet_ff61d121_translation_zero_gen__testing_h) " +
-         "$(locations :tot_cronet_testing_libfuzzer_confirm_fuzztest_init_buildflags__testing) " +
+         "$(locations :tot_cronet_testing_libfuzzer_buildflags__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_generate_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_jni_zero_system_jni__action__testing) " +
          "$(locations :tot_cronet_third_party_perfetto_gn_gen_buildflags__testing) " +
@@ -108385,7 +108413,7 @@ cc_genrule {
         "build/chromeos_buildflags.h",
         "build/config/compiler/compiler_buildflags.h",
         "build/ios_buildflags.h",
-        "testing/libfuzzer/confirm_fuzztest_init_buildflags.h",
+        "testing/libfuzzer/buildflags.h",
         "third_party/jni_zero/generate_jni/JniInit_jni.h",
         "third_party/jni_zero/generate_jni/JniUtil_jni.h",
         "third_party/jni_zero/system_jni/Arrays_jni.h",
@@ -108829,7 +108857,7 @@ cc_genrule {
         ":tot_cronet_ff61d121_track_event_cpp_gen__testing_h",
         ":tot_cronet_ff61d121_track_event_zero_gen__testing_h",
         ":tot_cronet_ff61d121_translation_zero_gen__testing_h",
-        ":tot_cronet_testing_libfuzzer_confirm_fuzztest_init_buildflags__testing",
+        ":tot_cronet_testing_libfuzzer_buildflags__testing",
         ":tot_cronet_third_party_jni_zero_generate_jni__action__testing",
         ":tot_cronet_third_party_jni_zero_system_jni__action__testing",
         ":tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
@@ -108838,35 +108866,6 @@ cc_genrule {
     ],
     apex_available: [
         "com.android.tethering",
-    ],
-}
-
-// GN: //testing/libfuzzer:confirm_fuzztest_init_buildflags__testing
-cc_genrule {
-    name: "tot_cronet_testing_libfuzzer_confirm_fuzztest_init_buildflags__testing",
-    cmd: "mkdir -p $(genDir)/testing/libfuzzer &&  " +
-         "echo '--flags REGISTER_FUZZTESTS_IN_TEST_SUITES=false' | " +
-         "$(location build/write_buildflag_header.py) " +
-         "--output " +
-         "'$(out)' " +
-         "--rulename " +
-         "//testing/libfuzzer:confirm_fuzztest_init_buildflags " +
-         "--gen-dir " +
-         ". " +
-         "--definitions " +
-         "/dev/stdin",
-    host_cross_supported: false,
-    out: [
-        "testing/libfuzzer/confirm_fuzztest_init_buildflags.h",
-    ],
-    tool_files: [
-        "build/write_buildflag_header.py",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
     ],
 }
 

@@ -391,358 +391,6 @@ java_library {
     ],
 }
 
-// GN: //base:android_info_aidl
-aidl_interface {
-    name: "tot_cronet_base_android_info_aidl",
-    srcs: [
-        ":tot_cronet_base_android_info_aidl_filegroup",
-    ],
-    defaults: [
-        "tot_cronet_cc_defaults",
-    ],
-    include_dirs: [
-        "external/cronet/tot/base/android/java/src",
-    ],
-    unstable: true,
-    visibility: [
-        "//external/cronet:__subpackages__",
-        "//system/tools/aidl/build",
-    ],
-}
-
-// GN: //base:android_info_aidl__testing
-aidl_interface {
-    name: "tot_cronet_base_android_info_aidl__testing",
-    srcs: [
-        ":tot_cronet_base_android_info_aidl__testing_filegroup",
-    ],
-    defaults: [
-        "tot_cronet_cc_defaults",
-    ],
-    include_dirs: [
-        "external/cronet/tot/base/android/java/src",
-    ],
-    unstable: true,
-    visibility: [
-        "//external/cronet:__subpackages__",
-        "//system/tools/aidl/build",
-    ],
-}
-
-// GN: //base:android_info_aidl__testing
-filegroup {
-    name: "tot_cronet_base_android_info_aidl__testing_filegroup",
-    srcs: [
-        "android/java/src/org/chromium/base/IAndroidInfo.aidl",
-    ],
-    path: "android/java/src/",
-}
-
-// GN: //base:android_info_aidl
-filegroup {
-    name: "tot_cronet_base_android_info_aidl_filegroup",
-    srcs: [
-        "android/java/src/org/chromium/base/IAndroidInfo.aidl",
-    ],
-    path: "android/java/src/",
-}
-
-// GN: //base:android_info_aidl_native
-cc_library_static {
-    name: "tot_cronet_base_android_info_aidl_native",
-    srcs: [
-        ":tot_cronet_base_android_info_aidl-ndk-source",
-    ],
-    shared_libs: [
-        "libbinder_ndk",
-    ],
-    host_cross_supported: false,
-    generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
-    ],
-    defaults: [
-        "tot_cronet_cc_defaults",
-    ],
-    cflags: [
-        "-DANDROID",
-        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
-        "-DHAVE_SYS_UIO_H",
-        "-DNDEBUG",
-        "-DNVALGRIND",
-        "-DOFFICIAL_BUILD",
-        "-D_GNU_SOURCE",
-        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
-        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
-        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-        "-D__STDC_CONSTANT_MACROS",
-        "-D__STDC_FORMAT_MACROS",
-        "-fdata-sections",
-        "-ffunction-sections",
-        "-fstack-protector",
-        "-fvisibility-inlines-hidden",
-        "-fvisibility=hidden",
-        "-g1",
-    ],
-    include_dirs: [
-        "external/cronet/tot/",
-        "external/cronet/tot/buildtools/third_party/libc++/",
-        "external/cronet/tot/third_party/libc++/src/include",
-        "external/cronet/tot/third_party/libc++abi/src/include",
-    ],
-    cpp_std: "c++20",
-    ldflags: [
-        "-Wl,--as-needed",
-        "-Wl,--gc-sections",
-        "-Wl,--icf=all",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    target: {
-        android_arm: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-            ],
-        },
-        android_arm64: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-D__ARM_NEON__=1",
-                "-O2",
-                "-mno-outline",
-            ],
-        },
-        android_x86: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-msse3",
-            ],
-        },
-        android_x86_64: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-O2",
-                "-msse3",
-            ],
-        },
-    },
-}
-
-// GN: //base:android_info_aidl_native__testing
-cc_library_static {
-    name: "tot_cronet_base_android_info_aidl_native__testing",
-    srcs: [
-        ":tot_cronet_base_android_info_aidl__testing-ndk-source",
-    ],
-    shared_libs: [
-        "libbinder_ndk",
-    ],
-    host_cross_supported: false,
-    generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
-    ],
-    defaults: [
-        "tot_cronet_cc_defaults",
-    ],
-    cflags: [
-        "-DANDROID",
-        "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
-        "-DHAVE_SYS_UIO_H",
-        "-DNDEBUG",
-        "-DNVALGRIND",
-        "-DOFFICIAL_BUILD",
-        "-D_GNU_SOURCE",
-        "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
-        "-D_LIBCPP_INSTRUMENTED_WITH_ASAN=0",
-        "-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS",
-        "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-        "-D__STDC_CONSTANT_MACROS",
-        "-D__STDC_FORMAT_MACROS",
-        "-fdata-sections",
-        "-ffunction-sections",
-        "-fstack-protector",
-        "-fvisibility-inlines-hidden",
-        "-fvisibility=hidden",
-        "-g1",
-    ],
-    include_dirs: [
-        "external/cronet/tot/",
-        "external/cronet/tot/buildtools/third_party/libc++/",
-        "external/cronet/tot/third_party/libc++/src/include",
-        "external/cronet/tot/third_party/libc++abi/src/include",
-    ],
-    cpp_std: "c++20",
-    ldflags: [
-        "-Wl,--as-needed",
-        "-Wl,--gc-sections",
-        "-Wl,--icf=all",
-    ],
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    target: {
-        android_arm: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-            ],
-        },
-        android_arm64: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-D__ARM_NEON__=1",
-                "-O2",
-                "-mno-outline",
-            ],
-        },
-        android_x86: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-msse3",
-            ],
-        },
-        android_x86_64: {
-            cflags: [
-                "-D_FORTIFY_SOURCE=2",
-                "-O2",
-                "-msse3",
-            ],
-        },
-    },
-}
-
-// GN: //base:android_info_java
-java_library {
-    name: "tot_cronet_base_android_info_java",
-    static_libs: [
-        "tot_cronet_base_android_info_java__filtered",
-        "tot_cronet_base_tasks_java",
-        "tot_cronet_build_android_build_java",
-        "tot_cronet_third_party_jni_zero_jni_zero_java",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base:android_info_java__testing
-java_library {
-    name: "tot_cronet_base_android_info_java__testing",
-    static_libs: [
-        "tot_cronet_base_android_info_java__testing__filtered",
-        "tot_cronet_base_tasks_java__testing",
-        "tot_cronet_build_android_build_java__testing",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-}
-
-// GN: //base:android_info_java__testing
-java_library {
-    name: "tot_cronet_base_android_info_java__testing__unfiltered",
-    srcs: [
-        ":tot_cronet_base_android_info_aidl__testing-java-source",
-        ":tot_cronet_base_android_info_jni__action__testing__java_proxy_only",
-        "android/java/src/org/chromium/base/AndroidInfo.java",
-    ],
-    static_libs: [
-        "jsr305",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental",
-        "error_prone_annotations",
-        "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_base_switches_java__testing__unfiltered",
-        "tot_cronet_base_callback_java__testing__unfiltered",
-        "tot_cronet_base_callback_jni_java__testing__unfiltered",
-        "tot_cronet_base_command_line_java__testing__unfiltered",
-        "tot_cronet_base_command_line_jni_java__testing__unfiltered",
-        "tot_cronet_base_log_java__testing__unfiltered",
-        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__testing__unfiltered",
-        "tot_cronet_base_metrics_java__testing__unfiltered",
-        "tot_cronet_base_metrics_jni_java__testing__unfiltered",
-        "tot_cronet_base_resetters_java__testing__unfiltered",
-        "tot_cronet_base_tasks_java__testing__unfiltered",
-        "tot_cronet_base_tasks_jni_java__testing__unfiltered",
-        "tot_cronet_base_tasks_minimal_jni_java__testing__unfiltered",
-        "tot_cronet_base_time_utils_java__testing__unfiltered",
-        "tot_cronet_build_android_build_java__testing__unfiltered",
-        "tot_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
-        "tot_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__testing__unfiltered",
-    ],
-}
-
-// GN: //base:android_info_java
-java_library {
-    name: "tot_cronet_base_android_info_java__unfiltered",
-    srcs: [
-        ":tot_cronet_base_android_info_aidl-java-source",
-        ":tot_cronet_base_android_info_jni__action__java_proxy_only",
-        "android/java/src/org/chromium/base/AndroidInfo.java",
-    ],
-    static_libs: [
-        "jsr305",
-    ],
-    defaults: [
-        "tot_cronet_java_framework_defaults",
-    ],
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    libs: [
-        "androidx.annotation_annotation",
-        "androidx.annotation_annotation-experimental",
-        "error_prone_annotations",
-        "tot_cronet_base_activity_state_java__unfiltered",
-        "tot_cronet_base_base_switches_java__unfiltered",
-        "tot_cronet_base_callback_java__unfiltered",
-        "tot_cronet_base_callback_jni_java__unfiltered",
-        "tot_cronet_base_command_line_java__unfiltered",
-        "tot_cronet_base_command_line_jni_java__unfiltered",
-        "tot_cronet_base_log_java__unfiltered",
-        "tot_cronet_base_metrics_ScopedSysTraceEvent_java__unfiltered",
-        "tot_cronet_base_metrics_java__unfiltered",
-        "tot_cronet_base_metrics_jni_java__unfiltered",
-        "tot_cronet_base_resetters_java__unfiltered",
-        "tot_cronet_base_tasks_java__unfiltered",
-        "tot_cronet_base_tasks_jni_java__unfiltered",
-        "tot_cronet_base_tasks_minimal_jni_java__unfiltered",
-        "tot_cronet_base_time_utils_java__unfiltered",
-        "tot_cronet_build_android_build_java__unfiltered",
-        "tot_cronet_third_party_jni_zero_gendeps_java__unfiltered",
-        "tot_cronet_third_party_jni_zero_generate_jni_java__unfiltered",
-        "tot_cronet_third_party_jni_zero_jni_zero_java__unfiltered",
-    ],
-}
-
 // GN: //base:android_runtime_jni_headers_java
 java_library {
     name: "tot_cronet_base_android_runtime_jni_headers_java",
@@ -821,7 +469,6 @@ cc_library_static {
         "android/background_thread_pool_field_trial.cc",
         "android/base_feature_map.cc",
         "android/base_jni_init.cc",
-        "android/build_info.cc",
         "android/bundle_utils.cc",
         "android/callback_android.cc",
         "android/child_process_service.cc",
@@ -1304,7 +951,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_base__concatenated_headers_common",
         "tot_cronet_base_build_info_aidl-ndk-source",
     ],
@@ -1869,7 +1515,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
                 "android/child_process_service.cc",
@@ -1964,7 +1609,6 @@ cc_library_static {
                 "external/cronet/tot/third_party/cpu_features/src/ndk_compat/",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_arm",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
             ],
@@ -1983,7 +1627,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
                 "android/child_process_service.cc",
@@ -2080,7 +1723,6 @@ cc_library_static {
                 "external/cronet/tot/third_party/cpu_features/src/ndk_compat/",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_arm64",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
             ],
@@ -2099,7 +1741,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
                 "android/child_process_service.cc",
@@ -2191,7 +1832,6 @@ cc_library_static {
                 "external/cronet/tot/third_party/cpu_features/src/ndk_compat/",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_riscv64",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
             ],
@@ -2210,7 +1850,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
                 "android/child_process_service.cc",
@@ -2304,7 +1943,6 @@ cc_library_static {
                 "external/cronet/tot/third_party/cpu_features/src/ndk_compat/",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_x86",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
             ],
@@ -2323,7 +1961,6 @@ cc_library_static {
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
                 "android/base_jni_init.cc",
-                "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
                 "android/child_process_service.cc",
@@ -2417,7 +2054,6 @@ cc_library_static {
                 "external/cronet/tot/third_party/cpu_features/src/ndk_compat/",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_base__testing__concatenated_headers_android_x86_64",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
             ],
@@ -2502,7 +2138,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_android_runtime_jni_headers_java__testing__unfiltered",
         "tot_cronet_base_base_java__testing__unfiltered",
         "tot_cronet_base_base_jni_java__testing__unfiltered",
@@ -2560,7 +2195,6 @@ java_library {
     name: "tot_cronet_base_base_java",
     static_libs: [
         "tot_cronet_base_activity_state_java",
-        "tot_cronet_base_android_info_java",
         "tot_cronet_base_base_java__filtered",
         "tot_cronet_base_base_jni_java",
         "tot_cronet_base_base_minimal_jni_java",
@@ -2613,7 +2247,6 @@ java_library {
     name: "tot_cronet_base_base_java__testing",
     static_libs: [
         "tot_cronet_base_activity_state_java__testing",
-        "tot_cronet_base_android_info_java__testing",
         "tot_cronet_base_base_java__testing__filtered",
         "tot_cronet_base_base_jni_java__testing",
         "tot_cronet_base_base_minimal_jni_java__testing",
@@ -2721,7 +2354,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_android_runtime_jni_headers_java__testing__unfiltered",
         "tot_cronet_base_base_jni_java__testing__unfiltered",
         "tot_cronet_base_base_minimal_jni_java__testing__unfiltered",
@@ -2831,7 +2463,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__unfiltered",
-        "tot_cronet_base_android_info_java__unfiltered",
         "tot_cronet_base_android_runtime_jni_headers_java__unfiltered",
         "tot_cronet_base_base_jni_java__unfiltered",
         "tot_cronet_base_base_minimal_jni_java__unfiltered",
@@ -2953,7 +2584,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_android_runtime_jni_headers_java__testing__unfiltered",
         "tot_cronet_base_base_java__testing__unfiltered",
         "tot_cronet_base_base_jni_java__testing__unfiltered",
@@ -3220,7 +2850,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_android_runtime_jni_headers_java__testing__unfiltered",
         "tot_cronet_base_base_java__testing__unfiltered",
         "tot_cronet_base_base_jni_java__testing__unfiltered",
@@ -3618,6 +3247,7 @@ aidl_interface {
 filegroup {
     name: "tot_cronet_base_build_info_aidl__testing_filegroup",
     srcs: [
+        "android/java/src/org/chromium/base/IAndroidInfo.aidl",
         "android/java/src/org/chromium/base/IApkInfo.aidl",
         "android/java/src/org/chromium/base/IDeviceInfo.aidl",
     ],
@@ -3628,6 +3258,7 @@ filegroup {
 filegroup {
     name: "tot_cronet_base_build_info_aidl_filegroup",
     srcs: [
+        "android/java/src/org/chromium/base/IAndroidInfo.aidl",
         "android/java/src/org/chromium/base/IApkInfo.aidl",
         "android/java/src/org/chromium/base/IDeviceInfo.aidl",
     ],
@@ -3804,7 +3435,6 @@ cc_library_static {
 java_library {
     name: "tot_cronet_base_build_info_java",
     static_libs: [
-        "tot_cronet_base_android_info_java",
         "tot_cronet_base_base_switches_java",
         "tot_cronet_base_build_info_java__filtered",
         "tot_cronet_base_command_line_java",
@@ -3831,7 +3461,6 @@ java_library {
 java_library {
     name: "tot_cronet_base_build_info_java__testing",
     static_libs: [
-        "tot_cronet_base_android_info_java__testing",
         "tot_cronet_base_base_switches_java__testing",
         "tot_cronet_base_build_info_java__testing__filtered",
         "tot_cronet_base_command_line_java__testing",
@@ -3860,8 +3489,8 @@ java_library {
     srcs: [
         ":tot_cronet_base_build_info_aidl__testing-java-source",
         ":tot_cronet_base_build_info_jni__action__testing__java_proxy_only",
+        "android/java/src/org/chromium/base/AndroidInfo.java",
         "android/java/src/org/chromium/base/ApkInfo.java",
-        "android/java/src/org/chromium/base/BuildInfo.java",
         "android/java/src/org/chromium/base/DeviceInfo.java",
         "android/java/src/org/chromium/base/PackageUtils.java",
     ],
@@ -3880,7 +3509,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_base_switches_java__testing__unfiltered",
         "tot_cronet_base_callback_java__testing__unfiltered",
         "tot_cronet_base_callback_jni_java__testing__unfiltered",
@@ -3911,8 +3539,8 @@ java_library {
     srcs: [
         ":tot_cronet_base_build_info_aidl-java-source",
         ":tot_cronet_base_build_info_jni__action__java_proxy_only",
+        "android/java/src/org/chromium/base/AndroidInfo.java",
         "android/java/src/org/chromium/base/ApkInfo.java",
-        "android/java/src/org/chromium/base/BuildInfo.java",
         "android/java/src/org/chromium/base/DeviceInfo.java",
         "android/java/src/org/chromium/base/PackageUtils.java",
     ],
@@ -3931,7 +3559,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__unfiltered",
-        "tot_cronet_base_android_info_java__unfiltered",
         "tot_cronet_base_base_switches_java__unfiltered",
         "tot_cronet_base_callback_java__unfiltered",
         "tot_cronet_base_callback_jni_java__unfiltered",
@@ -4600,7 +4227,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_base_switches_java__testing__unfiltered",
         "tot_cronet_base_build_info_java__testing__unfiltered",
         "tot_cronet_base_callback_java__testing__unfiltered",
@@ -4648,7 +4274,6 @@ java_library {
         "androidx.annotation_annotation-experimental",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__unfiltered",
-        "tot_cronet_base_android_info_java__unfiltered",
         "tot_cronet_base_base_switches_java__unfiltered",
         "tot_cronet_base_build_info_java__unfiltered",
         "tot_cronet_base_callback_java__unfiltered",
@@ -5242,7 +4867,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_base_i18n__testing__concatenated_headers_common",
     ],

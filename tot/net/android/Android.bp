@@ -255,7 +255,6 @@ java_library {
         "androidx.test.monitor",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_android_runtime_jni_headers_java__testing__unfiltered",
         "tot_cronet_base_base_cached_flags_java__testing__unfiltered",
         "tot_cronet_base_base_java__testing__unfiltered",

@@ -35,7 +35,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_testing_libfuzzer_confirm_fuzztest_init__testing__concatenated_headers_common",
     ],

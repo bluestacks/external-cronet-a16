@@ -33,6 +33,7 @@
 #include "absl/strings/substitute.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
+#include "./common/logging.h"
 #include "./common/temp_dir.h"
 #include "./e2e_tests/test_binary_util.h"
 #include "./fuzztest/internal/escaping.h"
@@ -52,7 +53,7 @@
 #define ASSERT_THAT_LOG(log, matcher)                                  \
   ASSERT_TRUE(testing::Value(log, matcher))                            \
       << "Matcher: " << testing::DescribeMatcher<std::string>(matcher) \
-      << "Contents of " #log ":\n"                                     \
+      << "\nContents of " #log ":\n"                                   \
       << log
 
 namespace fuzztest::internal {
@@ -1319,7 +1320,7 @@ class FuzzingModeFixtureTest
         return RunBinary(CentipedePath(), run_options);
       }
     }
-    FUZZTEST_INTERNAL_CHECK(false, "Unsupported execution model!\n");
+    FUZZTEST_LOG(FATAL) << "Unsupported execution model!\n";
   }
 };
 

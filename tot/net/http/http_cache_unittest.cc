@@ -104,7 +104,6 @@ using testing::Eq;
 using testing::Field;
 using testing::Gt;
 using testing::InSequence;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::MockFunction;
 using testing::NotNull;
@@ -11922,55 +11921,6 @@ TEST_F(HttpCacheTest, NonSplitCache) {
   EXPECT_TRUE(response.was_cached);
 }
 
-TEST_F(HttpCacheTest, SkipVaryCheck) {
-  MockHttpCache cache;
-
-  // Write a simple vary transaction to the cache.
-  HttpResponseInfo response;
-  ScopedMockTransaction transaction(kSimpleGET_Transaction);
-  transaction.request_headers = "accept-encoding: gzip\r\n";
-  transaction.response_headers =
-      "Vary: accept-encoding\n"
-      "Cache-Control: max-age=10000\n";
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // Change the request headers so that the request doesn't match due to vary.
-  // The request should fail.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE;
-  transaction.request_headers = "accept-encoding: foo\r\n";
-  transaction.start_return_code = ERR_CACHE_MISS;
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // Change the load flags to ignore vary checks, the request should now hit.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_VARY_CHECK;
-  transaction.start_return_code = OK;
-  RunTransactionTest(cache.http_cache(), transaction);
-}
-
-TEST_F(HttpCacheTest, SkipVaryCheckStar) {
-  MockHttpCache cache;
-
-  // Write a simple vary:* transaction to the cache.
-  HttpResponseInfo response;
-  ScopedMockTransaction transaction(kSimpleGET_Transaction);
-  transaction.request_headers = "accept-encoding: gzip\r\n";
-  transaction.response_headers =
-      "Vary: *\n"
-      "Cache-Control: max-age=10000\n";
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // The request shouldn't match even with the same request headers due to the
-  // Vary: *. The request should fail.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE;
-  transaction.start_return_code = ERR_CACHE_MISS;
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // Change the load flags to ignore vary checks, the request should now hit.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_VARY_CHECK;
-  transaction.start_return_code = OK;
-  RunTransactionTest(cache.http_cache(), transaction);
-}
-
 // Tests that we only return valid entries with LOAD_ONLY_FROM_CACHE
 // transactions unless LOAD_SKIP_CACHE_VALIDATION is set.
 TEST_F(HttpCacheTest, ValidLoadOnlyFromCache) {
@@ -14516,9 +14466,9 @@ class HttpCacheNoVarySearchMockFileOperationsTest
       if (expect_load_) {
         load_expectations_ +=
             EXPECT_CALL(*file_operations, Load)
-                .WillOnce(DoAll(Invoke(maybe_block),
-                                Return(base::unexpected(
-                                    base::File::FILE_ERROR_NOT_FOUND))));
+                .WillOnce(
+                    DoAll(maybe_block, Return(base::unexpected(
+                                           base::File::FILE_ERROR_NOT_FOUND))));
       }
       load_expectations_ += EXPECT_CALL(*file_operations, AtomicSave)
                                 .WillOnce(Return(base::ok()));

@@ -21,8 +21,6 @@
 
 // OpenSSL included digest and cipher functions in this header so we include
 // them for users that still expect that.
-//
-// TODO(fork): clean up callers so that they include what they use.
 #include <openssl/aead.h>
 #include <openssl/base64.h>
 #include <openssl/cipher.h>
@@ -37,7 +35,7 @@ extern "C" {
 // EVP abstracts over public/private key algorithms.
 
 
-// Public key objects.
+// Public/private key objects.
 //
 // An |EVP_PKEY| object represents a public or private key. A given object may
 // be used concurrently on multiple threads by non-mutating functions, provided
@@ -94,9 +92,9 @@ OPENSSL_EXPORT int EVP_PKEY_bits(const EVP_PKEY *pkey);
 OPENSSL_EXPORT int EVP_PKEY_id(const EVP_PKEY *pkey);
 
 
-// Getting and setting concrete public key types.
+// Getting and setting concrete key types.
 //
-// The following functions get and set the underlying public key in an
+// The following functions get and set the underlying key representation in an
 // |EVP_PKEY| object. The |set1| functions take an additional reference to the
 // underlying key and return one on success or zero if |key| is NULL. The
 // |assign| functions adopt the caller's reference and return one on success or
@@ -138,11 +136,6 @@ OPENSSL_EXPORT DH *EVP_PKEY_get1_DH(const EVP_PKEY *pkey);
 #define EVP_PKEY_X25519 NID_X25519
 #define EVP_PKEY_HKDF NID_hkdf
 #define EVP_PKEY_DH NID_dhKeyAgreement
-
-// EVP_PKEY_set_type sets the type of |pkey| to |type|. It returns one if
-// successful or zero if the |type| argument is not one of the |EVP_PKEY_*|
-// values. If |pkey| is NULL, it simply reports whether the type is known.
-OPENSSL_EXPORT int EVP_PKEY_set_type(EVP_PKEY *pkey, int type);
 
 // EVP_PKEY_cmp_parameters compares the parameters of |a| and |b|. It returns
 // one if they match, zero if not, or a negative number of on error.
@@ -468,10 +461,33 @@ OPENSSL_EXPORT int EVP_PBE_scrypt(const char *password, size_t password_len,
                                   size_t key_len);
 
 
-// Public key contexts.
+// Operations.
 //
-// |EVP_PKEY_CTX| objects hold the context of an operation (e.g. signing or
-// encrypting) that uses a public key.
+// |EVP_PKEY_CTX| objects hold the context for an operation (e.g. signing or
+// encrypting) that uses an |EVP_PKEY|. They are used to configure
+// algorithm-specific parameters for the operation before performing the
+// operation. The general pattern for performing an operation in EVP is:
+//
+// 1. Construct an |EVP_PKEY_CTX|, either with |EVP_PKEY_CTX_new| (operations
+//    using a key, like signing) or |EVP_PKEY_CTX_new_id| (operations not using
+//    an existing key, like key generation).
+//
+// 2. Initialize it for an operation. For example, |EVP_PKEY_sign_init|
+//    initializes an |EVP_PKEY_CTX| for signing.
+//
+// 3. Configure algorithm-specific parameters for the operation by calling
+//    control functions on the |EVP_PKEY_CTX|. Some functions are generic, such
+//    as |EVP_PKEY_CTX_set_signature_md|, and some are specific to an algorithm,
+//    such as |EVP_PKEY_CTX_set_rsa_padding|.
+//
+// 4. Perform the operation. For example, |EVP_PKEY_sign| signs with the
+//    corresponding parameters.
+//
+// 5. Release the |EVP_PKEY_CTX| with |EVP_PKEY_CTX_free|.
+//
+// Each |EVP_PKEY| algorithm interprets operations and parameters differently.
+// Not all algorithms support all operations. Functions will fail if the
+// algorithm does not support the parameter or operation.
 
 // EVP_PKEY_CTX_new allocates a fresh |EVP_PKEY_CTX| for use with |pkey|. It
 // returns the context or NULL on error.
@@ -902,6 +918,25 @@ OPENSSL_EXPORT EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **out,
 // |OPENSSL_EC_NAMED_CURVE| or zero with an error otherwise.
 OPENSSL_EXPORT int EVP_PKEY_CTX_set_ec_param_enc(EVP_PKEY_CTX *ctx,
                                                  int encoding);
+
+// EVP_PKEY_set_type sets the type of |pkey| to |type|. It returns one if
+// successful or zero if the |type| argument is not one of the |EVP_PKEY_*|
+// values supported for use with this function. If |pkey| is NULL, it simply
+// reports whether the type is known.
+//
+// There are very few cases where this function is useful. Changing |pkey|'s
+// type clears any previously stored keys, so there is no benefit to loading a
+// key and then changing its type. Although |pkey| is left with a type
+// configured, it has no key, and functions which set a key, such as
+// |EVP_PKEY_set1_RSA|, will configure a type anyway. If writing unit tests that
+// are only sensitive to the type of a key, it is preferable to construct a real
+// key, so that tests are more representative of production code.
+//
+// The only API pattern which requires this function is
+// |EVP_PKEY_set1_tls_encodedpoint| with X25519, which requires a half-empty
+// |EVP_PKEY| that was first configured with |EVP_PKEY_X25519|. Currently, all
+// other values of |type| will result in an error.
+OPENSSL_EXPORT int EVP_PKEY_set_type(EVP_PKEY *pkey, int type);
 
 // EVP_PKEY_set1_tls_encodedpoint replaces |pkey| with a public key encoded by
 // |in|. It returns one on success and zero on error.

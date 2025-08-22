@@ -2,15 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import collections
 import pathlib
+import typing
 
-from compiler import Compiler
 from graph import all_headers
-from graph import CompileStatus
+from graph import calculate_rdeps
 from graph import Header
 from graph import IncludeDir
-from graph import calculate_rdeps
+from graph import Target
+
+if typing.TYPE_CHECKING:
+  # To fix circular dependency.
+  from compiler import Compiler
 
 IGNORED_MODULES = [
     # This is a builtin module with feature requirements.
@@ -23,6 +26,7 @@ IGNORED_MODULES = [
 SYSROOT_DIRS = {
     'android_toolchain',
     'debian_bullseye_amd64-sysroot',
+    'debian_bullseye_arm64-sysroot',
     'MacOSX.platform',
     'win_toolchain',
 }
@@ -36,17 +40,32 @@ SYSROOT_PRECOMPILED_HEADERS = [
 ]
 
 
-def fix_graph(graph: dict[str, Header], compiler: Compiler):
+def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
   """Applies manual augmentation of the header graph."""
 
-  def add_dep(frm, to):
-    assert to not in frm.deps
-    frm.deps.append(to)
+  def add_dep(frm, to, check=True):
+    if check:
+      assert to not in frm.deps
+    if to not in frm.deps:
+      frm.deps.append(to)
 
   # We made the assumption that the deps of something we couldn't compile is
   # the intersection of the deps of all users of it.
   # This does not hold true for stddef.h because of __need_size_t
-  add_dep(graph['stddef.h'].next, graph['__stddef_size_t.h'])
+  add_dep(graph['stddef.h'].next, graph['__stddef_size_t.h'], check=False)
+
+  if compiler.os in ['android', 'win']:
+    # include_next behaves differently in module builds and non-module builds.
+    # Because of this, module builds include libcxx's wchar.h instead of
+    # the sysroot's wchar.h
+    add_dep(graph['__mbstate_t.h'], graph['wchar.h'])
+    # This makes the libcxx/wchar.h included by mbstate_t.h act more like
+    # sysroot/wchar.h by preventing it from defining functions.
+    graph['__mbstate_t.h'].kwargs['defines'].append(
+        '_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS')
+  elif compiler.is_apple:
+    # This is shadowed by the builtin iso646, so we don't need to build it.
+    graph['iso646.h'].next.textual = True
 
   rdeps = calculate_rdeps(all_headers(graph))
 
@@ -82,15 +101,7 @@ def fix_graph(graph: dict[str, Header], compiler: Compiler):
   # Assert is inherently textual.
   graph['assert.h'].textual = True
 
-  # This is included from the std_wchar_h module, but that module is marked as
-  # textual. Normally that would mean we would mark this as non-textual, but
-  # wchar.h doesn't play nice being non-textual.
-  graph['wchar.h'].next.textual = True
-
   if compiler.os == 'android':
-    graph['wchar.h'].public_configs.append(
-        '//buildtools/third_party/libc++:wchar_android_fix')
-
     graph['android/legacy_threads_inlines.h'].textual = True
     graph['bits/threads_inlines.h'].textual = True
 
@@ -101,3 +112,18 @@ def fix_graph(graph: dict[str, Header], compiler: Compiler):
     # if it's textual, limits.h undefs something it defined itself.
     graph['linux/limits.h'].textual = True
 
+
+def should_compile(target: Target) -> bool:
+  """Decides whether a target should be compiled or not.
+
+  If this returns true, the target should be compiled.
+  If this returns false, the target *may* be compiled (eg. if a target that
+    should be compiled depends on this).
+  """
+  for header in target.headers:
+    # For now, we only precompile the transitive dependencies of libcxx, and
+    # nothing else in the sysroot.
+    if header.include_dir == IncludeDir.LibCxx:
+      return True
+
+  return False

@@ -95,7 +95,6 @@ cc_library_static {
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_arm",
             ],
@@ -119,7 +118,6 @@ cc_library_static {
                 "-mno-outline",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_arm64",
             ],
@@ -139,7 +137,6 @@ cc_library_static {
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_riscv64",
             ],
@@ -161,7 +158,6 @@ cc_library_static {
                 "-msse3",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_x86",
             ],
@@ -184,7 +180,6 @@ cc_library_static {
                 "-msse3",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_net_tools_huffman_trie_huffman_trie_generator_sources__testing__concatenated_headers_android_x86_64",
             ],

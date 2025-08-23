@@ -38,7 +38,9 @@
 #include "./centipede/reverse_pc_table.h"
 #include "./centipede/runner_cmp_trace.h"
 #include "./centipede/runner_dl_info.h"
+#include "./centipede/runner_utils.h"
 #include "./centipede/sancov_object_array.h"
+#include "./centipede/sancov_runtime.h"
 
 extern "C" const char *absl_nullable GetSancovFlags();
 
@@ -95,6 +97,9 @@ struct ThreadLocalSancovState {
   // Whether OnThreadStart() is called on this thread. This is used as a proxy
   // of the readiness of the lower-level runtime.
   bool started;
+
+  // Whether the thread should be traced for execution feedback.
+  bool traced;
 
   // Paths are thread-local, so we maintain the current bounded path here.
   // We allow paths of up to 100, controlled at run-time via the "path_level".
@@ -283,11 +288,18 @@ void PostProcessSancov(bool reject_input = false);
 
 void MaybeAddFeature(feature_t feature);
 
+// Returns a pointer to `g_features` and its length.
+SanCovRuntimeRawFeatureParts SanCovRuntimeGetFeatures();
+
 // Check for stack limit for the stack pointer `sp` in the current thread.
 __attribute__((weak)) void CheckStackLimit(uintptr_t sp);
 
-extern SancovState sancov_state;
+extern ExplicitLifetime<SancovState> sancov_state;
 extern __thread ThreadLocalSancovState tls;
+
+// Initializes the sancov runtime. Must be called before using it. It can be
+// called multiple times while only the first time is effective.
+void SancovRuntimeInitialize();
 
 }  // namespace fuzztest::internal
 

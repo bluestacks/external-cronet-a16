@@ -31,6 +31,7 @@ cc_binary {
         "libz",
     ],
     whole_static_libs: [
+        "lib_tprserde_ujson_ulenient_sv0_u2_swrapper_cwrapper__814aa58e06e5f56f",
         "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
         "libbase_clogging_ulog_useverity_ubindgen__4a607e49e19da3e5",
         "libbase_crust_ulogger__646bebece24fc263",
@@ -50,7 +51,6 @@ cc_binary {
         "libserde__8c9e2972b3b2d922",
         "libserde_json_lenient__c40638ca931e2e43",
         "libsyn__11104b519a39d1d2",
-        "libthird_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper__814aa58e06e5f56f",
         "libunicode_ident__df6840ce9d3a78ba",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_build_config__testing",
         "tot_cronet_base_allocator_partition_allocator_src_partition_alloc_raw_ptr__testing",
@@ -111,6 +111,7 @@ cc_binary {
         "tot_cronet_third_party_abseil_cpp_absl_log_internal_proto__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_internal_structured_proto__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_internal_vlog_config__testing",
+        "tot_cronet_third_party_abseil_cpp_absl_log_log_entry__testing",
         "tot_cronet_third_party_abseil_cpp_absl_log_log_sink__testing",
         "tot_cronet_third_party_abseil_cpp_absl_numeric_int128__testing",
         "tot_cronet_third_party_abseil_cpp_absl_profiling_exponential_biased__testing",

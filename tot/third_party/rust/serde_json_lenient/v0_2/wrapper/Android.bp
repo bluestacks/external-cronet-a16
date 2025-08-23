@@ -23,7 +23,7 @@ package {
 
 // GN: //third_party/rust/serde_json_lenient/v0_2/wrapper:wrapper__testing
 rust_ffi_static {
-    name: "libthird_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper__814aa58e06e5f56f",
+    name: "lib_tprserde_ujson_ulenient_sv0_u2_swrapper_cwrapper__814aa58e06e5f56f",
     srcs: [
         "lib.rs",
         "visitor.rs",
@@ -37,7 +37,7 @@ rust_ffi_static {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    crate_name: "third_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper",
+    crate_name: "_tprserde_ujson_ulenient_sv0_u2_swrapper_cwrapper",
     crate_root: "lib.rs",
     rustlibs: [
         "liballoc_error_handler_impl_ffi__c9b74a82dac7abd8",
@@ -151,7 +151,7 @@ rust_ffi_static {
 
 // GN: //third_party/rust/serde_json_lenient/v0_2/wrapper:wrapper
 rust_ffi_static {
-    name: "libthird_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper__fb1f3776f761e016",
+    name: "lib_tprserde_ujson_ulenient_sv0_u2_swrapper_cwrapper__fb1f3776f761e016",
     srcs: [
         "lib.rs",
         "visitor.rs",
@@ -164,7 +164,7 @@ rust_ffi_static {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
-    crate_name: "third_uparty_srust_sserde_ujson_ulenient_sv0_u2_swrapper_cwrapper",
+    crate_name: "_tprserde_ujson_ulenient_sv0_u2_swrapper_cwrapper",
     crate_root: "lib.rs",
     rustlibs: [
         "liballoc_error_handler_impl_ffi__b3956dbf57d32035",

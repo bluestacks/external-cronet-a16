@@ -566,7 +566,6 @@ set(
   include/openssl/evp.h
   include/openssl/evp_errors.h
   include/openssl/ex_data.h
-  include/openssl/experimental/kyber.h
   include/openssl/hkdf.h
   include/openssl/hmac.h
   include/openssl/hpke.h
@@ -856,8 +855,13 @@ set(
   crypto/cipher/test/xchacha20_poly1305_tests.txt
   crypto/curve25519/ed25519_tests.txt
   crypto/ecdh/ecdh_tests.txt
-  crypto/evp/evp_tests.txt
-  crypto/evp/scrypt_tests.txt
+  crypto/evp/test/dh_tests.txt
+  crypto/evp/test/ec_tests.txt
+  crypto/evp/test/ed25519_tests.txt
+  crypto/evp/test/evp_tests.txt
+  crypto/evp/test/rsa_tests.txt
+  crypto/evp/test/scrypt_tests.txt
+  crypto/evp/test/x25519_tests.txt
   crypto/fipsmodule/aes/aes_tests.txt
   crypto/fipsmodule/bn/test/exp_tests.txt
   crypto/fipsmodule/bn/test/gcd_tests.txt
@@ -879,6 +883,7 @@ set(
   crypto/fipsmodule/ecdsa/ecdsa_sign_tests.txt
   crypto/fipsmodule/ecdsa/ecdsa_verify_tests.txt
   crypto/fipsmodule/keccak/keccak_tests.txt
+  crypto/fipsmodule/rand/ctrdrbg_df_vectors.txt
   crypto/fipsmodule/rand/ctrdrbg_vectors.txt
   crypto/hmac/hmac_tests.txt
   crypto/hpke/hpke_test_vectors.txt

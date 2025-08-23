@@ -25,6 +25,12 @@ import {
 import {AppImpl} from '../../core/app_impl';
 import {addQueryResultsTab} from '../../components/query_table/query_result_tab';
 import {featureFlags} from '../../core/feature_flags';
+import {z} from 'zod';
+import {JsonSettingsEditor} from '../../components/json_settings_editor';
+import {
+  commandInvocationSchema,
+  validateCommandInvocations,
+} from '../../core/command_manager';
 
 const SQL_STATS = `
 with first as (select started as ts from sqlstats limit 1)
@@ -121,6 +127,51 @@ export default class implements PerfettoPlugin {
           ctx.sidebar.toggleVisibility();
         },
         defaultHotkey: '!Mod+B',
+      });
+    }
+
+    // Use shared commandInvocationSchema where 'id' is the command's unique identifier
+    const macroSchema = z.record(z.array(commandInvocationSchema));
+    type MacroConfig = z.infer<typeof macroSchema>;
+    const macroSettingsEditor = new JsonSettingsEditor<MacroConfig>({
+      schema: macroSchema,
+      validator: (data: MacroConfig): string | undefined => {
+        const macroErrors: string[] = [];
+        for (const [macroName, commands] of Object.entries(data)) {
+          const invalidCommands = validateCommandInvocations(
+            commands,
+            ctx.commands,
+          );
+          if (invalidCommands.length > 0) {
+            macroErrors.push(
+              `Macro "${macroName}" has unknown commands:\n${invalidCommands.map((cmd) => `  - ${cmd}`).join('\n')}`,
+            );
+          }
+        }
+        return macroErrors.length > 0 ? macroErrors.join('\n\n') : undefined;
+      },
+    });
+    const setting = ctx.settings.register({
+      id: 'perfetto.CoreCommands#UserDefinedMacros',
+      name: 'Macros',
+      description:
+        'Custom command macros that execute multiple commands in sequence',
+      schema: macroSchema,
+      defaultValue: {},
+      requiresReload: true,
+      render: (setting) => macroSettingsEditor.render(setting),
+    });
+
+    const macros = setting.get() as MacroConfig;
+    for (const [macroName, commands] of Object.entries(macros)) {
+      ctx.commands.registerCommand({
+        id: `perfetto.CoreCommands#UserDefinedMacros#${macroName}`,
+        name: macroName,
+        callback: () => {
+          for (const command of commands) {
+            ctx.commands.runCommand(command.id, ...command.args);
+          }
+        },
       });
     }
 

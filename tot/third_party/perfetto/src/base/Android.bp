@@ -39,6 +39,7 @@ cc_library_static {
         "paged_memory.cc",
         "periodic_task.cc",
         "pipe.cc",
+        "rt_mutex.cc",
         "scoped_mmap.cc",
         "scoped_sched_boost.cc",
         "status.cc",
@@ -207,6 +208,7 @@ cc_library_static {
         "paged_memory.cc",
         "periodic_task.cc",
         "pipe.cc",
+        "rt_mutex.cc",
         "scoped_mmap.cc",
         "scoped_sched_boost.cc",
         "status.cc",
@@ -865,7 +867,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_third_party_perfetto_src_base_test_support__testing__concatenated_headers_common",
     ],

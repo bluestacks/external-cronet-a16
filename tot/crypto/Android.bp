@@ -34,9 +34,11 @@ cc_library_static {
         "hkdf.cc",
         "hmac.cc",
         "kdf.cc",
+        "kex.cc",
         "keypair.cc",
         "obsolete/md5.cc",
         "openssl_util.cc",
+        "pem.cc",
         "process_bound_string.cc",
         "random.cc",
         "secure_hash.cc",
@@ -61,7 +63,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_crypto_crypto__concatenated_headers_common",
     ],
@@ -158,9 +159,11 @@ cc_library_static {
         "hkdf.cc",
         "hmac.cc",
         "kdf.cc",
+        "kex.cc",
         "keypair.cc",
         "obsolete/md5.cc",
         "openssl_util.cc",
+        "pem.cc",
         "process_bound_string.cc",
         "random.cc",
         "secure_hash.cc",
@@ -239,7 +242,6 @@ cc_library_static {
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_crypto_crypto__testing__concatenated_headers_android_arm",
             ],
@@ -263,7 +265,6 @@ cc_library_static {
                 "-mno-outline",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_crypto_crypto__testing__concatenated_headers_android_arm64",
             ],
@@ -283,7 +284,6 @@ cc_library_static {
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_crypto_crypto__testing__concatenated_headers_android_riscv64",
             ],
@@ -305,7 +305,6 @@ cc_library_static {
                 "-msse3",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_crypto_crypto__testing__concatenated_headers_android_x86",
             ],
@@ -328,7 +327,6 @@ cc_library_static {
                 "-msse3",
             ],
             generated_headers: [
-                "tot_cronet_base_android_info_aidl__testing-ndk-source",
                 "tot_cronet_base_build_info_aidl__testing-ndk-source",
                 "tot_cronet_crypto_crypto__testing__concatenated_headers_android_x86_64",
             ],
@@ -375,7 +373,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_crypto_test_support__testing__concatenated_headers_common",
     ],

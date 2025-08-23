@@ -230,16 +230,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
-// Enables a process-wide limit on "open" UDP sockets. See
-// udp_socket_global_limits.h for details on what constitutes an "open" socket.
-NET_EXPORT BASE_DECLARE_FEATURE(kLimitOpenUDPSockets);
-
-// FeatureParams associated with kLimitOpenUDPSockets.
-
-// Sets the maximum allowed open UDP sockets. Provisioning more sockets than
-// this will result in a failure (ERR_INSUFFICIENT_RESOURCES).
-NET_EXPORT extern const base::FeatureParam<int> kLimitOpenUDPSocketsMax;
-
 // Enables a timeout on individual TCP connect attempts, based on
 // the parameter values.
 NET_EXPORT BASE_DECLARE_FEATURE(kTimeoutTcpConnectAttempt);
@@ -341,6 +331,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableGetNetworkConnectivityHintAPI);
 // Whether or not to enable TCP port randomization via SO_RANDOMIZE_PORT on
 // Windows for versions >= kTcpPortRandomizationWinVersionMinimum.
 // See crbug.com/40744069 for more details.
+// This was launched in M141, but the finch flag was kept around in case it
+// ever causes issues (as some may take time to detect due to rarity).
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortRandomizationWin);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kTcpPortRandomizationWinVersionMinimum);
@@ -601,6 +593,9 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools;
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyEnableIppPanelInDevTools;
 
+// Enables more advanced handling of IP Protection proxy request failures.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpPrivacyProxyAdvancedFallbackLogic);
+
 // Maximum report body size (KB) to include in serialized reports. Bodies
 // exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
 // Reporting.ReportBodySize UMA histogram to monitor report body sizes and
@@ -688,11 +683,16 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPersistDeviceBoundSessions);
 // the exact code we need to test.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
-    kDeviceBoundSessionsForceEnableForTesting);
+    kDeviceBoundSessionsRequireOriginTrialTokens);
 // This feature enables the Device Bound Session Credentials refresh quota.
 // This behavior is expected by default; disabling it should only be for
 // testing purposes.
-NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsRefreshQuota);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kDeviceBoundSessionsRefreshQuota);
+// This feature controls whether DBSC checks the .well-known for subdomain
+// registration.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDeviceBoundSessionsCheckSubdomainRegistration);
 // This feature will enable breaking changes to Device Bound Session
 // Credentials from after the Origin Trial started. This is disabled by
 // default to facilitate implementation of feedback from the Origin
@@ -839,15 +839,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSelfSignedLocalNetworkInterstitial);
 // If enabled, server certificates that successfully verify and that identify
 // as QWACs will be verified against the 1-QWAC specification as well.
 NET_EXPORT BASE_DECLARE_FEATURE(kVerifyQWACs);
-#endif
-
-#if BUILDFLAG(IS_MAC)
-// If enabled, includes deprecated APIs for looking up client certificates on
-// macOS. This is disabled by default and is available as an emergency kill
-// switch.
-// TODO(crbug.com/40233280): This will reach stable in M137 (May 2025). Remove
-// this flag sometime after August 2025.
-NET_EXPORT BASE_DECLARE_FEATURE(kIncludeDeprecatedClientCertLookup);
 #endif
 
 // Finch-controlled list of ports that should be blocked due to ongoing abuse.

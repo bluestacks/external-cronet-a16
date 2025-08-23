@@ -51,7 +51,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_blind_sign_auth__testing__concatenated_headers_common",
     ],
@@ -153,7 +152,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_blind_sign_auth_proto__testing__concatenated_headers_common",
     ],
@@ -247,7 +245,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_blind_sign_auth_test_support__testing__concatenated_headers_common",
     ],
@@ -353,7 +350,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_net_third_party_quiche_net_quic_proto__concatenated_headers_common",
     ],
@@ -453,7 +449,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_net_quic_proto__testing__concatenated_headers_common",
     ],
@@ -913,6 +908,7 @@ cc_library_static {
         "src/quiche/quic/core/http/http_decoder.cc",
         "src/quiche/quic/core/http/http_encoder.cc",
         "src/quiche/quic/core/http/metadata_decoder.cc",
+        "src/quiche/quic/core/http/quic_connection_migration_manager.cc",
         "src/quiche/quic/core/http/quic_header_list.cc",
         "src/quiche/quic/core/http/quic_headers_stream.cc",
         "src/quiche/quic/core/http/quic_receive_control_stream.cc",
@@ -921,6 +917,7 @@ cc_library_static {
         "src/quiche/quic/core/http/quic_server_session_base.cc",
         "src/quiche/quic/core/http/quic_spdy_client_session.cc",
         "src/quiche/quic/core/http/quic_spdy_client_session_base.cc",
+        "src/quiche/quic/core/http/quic_spdy_client_session_with_migration.cc",
         "src/quiche/quic/core/http/quic_spdy_client_stream.cc",
         "src/quiche/quic/core/http/quic_spdy_server_stream_base.cc",
         "src/quiche/quic/core/http/quic_spdy_session.cc",
@@ -1039,7 +1036,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_net_third_party_quiche_quiche__concatenated_headers_common",
     ],
@@ -1329,6 +1325,7 @@ cc_library_static {
         "src/quiche/quic/core/http/http_decoder.cc",
         "src/quiche/quic/core/http/http_encoder.cc",
         "src/quiche/quic/core/http/metadata_decoder.cc",
+        "src/quiche/quic/core/http/quic_connection_migration_manager.cc",
         "src/quiche/quic/core/http/quic_header_list.cc",
         "src/quiche/quic/core/http/quic_headers_stream.cc",
         "src/quiche/quic/core/http/quic_receive_control_stream.cc",
@@ -1337,6 +1334,7 @@ cc_library_static {
         "src/quiche/quic/core/http/quic_server_session_base.cc",
         "src/quiche/quic/core/http/quic_spdy_client_session.cc",
         "src/quiche/quic/core/http/quic_spdy_client_session_base.cc",
+        "src/quiche/quic/core/http/quic_spdy_client_session_with_migration.cc",
         "src/quiche/quic/core/http/quic_spdy_client_stream.cc",
         "src/quiche/quic/core/http/quic_spdy_server_stream_base.cc",
         "src/quiche/quic/core/http/quic_spdy_session.cc",
@@ -1452,7 +1450,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_quiche__testing__concatenated_headers_common",
     ],
@@ -1646,7 +1643,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_quiche_test_support__testing__concatenated_headers_common",
     ],
@@ -2031,7 +2027,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_quiche_tests__testing__concatenated_headers_common",
     ],
@@ -2169,7 +2164,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_third_party_quiche_quiche_tool_support__testing__concatenated_headers_common",
     ],

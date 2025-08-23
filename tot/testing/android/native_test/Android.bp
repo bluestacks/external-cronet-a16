@@ -115,7 +115,6 @@ java_library {
         "androidx.test.monitor",
         "error_prone_annotations",
         "tot_cronet_base_activity_state_java__testing__unfiltered",
-        "tot_cronet_base_android_info_java__testing__unfiltered",
         "tot_cronet_base_android_runtime_jni_headers_java__testing__unfiltered",
         "tot_cronet_base_base_cached_flags_java__testing__unfiltered",
         "tot_cronet_base_base_java__testing__unfiltered",
@@ -190,7 +189,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_testing_android_native_test_native_test_native_code__testing__concatenated_headers_common",
     ],
@@ -288,7 +286,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_testing_android_native_test_native_test_support__testing__concatenated_headers_common",
     ],

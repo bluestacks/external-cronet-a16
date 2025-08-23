@@ -102,6 +102,11 @@
   &__scroll {
     overflow-y: auto;
     flex: 1;
+
+    // Override scrollbar colors for the sidebar as it doesn't use the theme
+    // provided styles.
+    scrollbar-color: #b4b7ba6e #19212b;
+
     &::-webkit-scrollbar {
       width: 0.5em;
     }
@@ -313,12 +318,6 @@
       margin-top: 11px;
     }
   }
-}
-
-// Hide the footer when running integration tests, as the version code and the
-// tiny text with pending queries can fail the screenshot diff test.
-body.testing .pf-sidebar__footer {
-  visibility: hidden;
 }
 
 .pf-hiring-banner {

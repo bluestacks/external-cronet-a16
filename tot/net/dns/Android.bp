@@ -84,7 +84,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_net_dns_dns__concatenated_headers_common",
     ],
@@ -235,7 +234,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_dns_dns__testing__concatenated_headers_common",
     ],
@@ -337,7 +335,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_net_dns_dns_client__concatenated_headers_common",
     ],
@@ -439,7 +436,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_dns_dns_client__testing__concatenated_headers_common",
     ],
@@ -541,7 +537,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_net_dns_host_resolver__concatenated_headers_common",
     ],
@@ -643,7 +638,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_dns_host_resolver__testing__concatenated_headers_common",
     ],
@@ -745,7 +739,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_net_dns_host_resolver_manager__concatenated_headers_common",
     ],
@@ -847,7 +840,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_dns_host_resolver_manager__testing__concatenated_headers_common",
     ],
@@ -949,7 +941,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl-ndk-source",
         "tot_cronet_base_build_info_aidl-ndk-source",
         "tot_cronet_net_dns_mdns_client__concatenated_headers_common",
     ],
@@ -1051,7 +1042,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_dns_mdns_client__testing__concatenated_headers_common",
     ],
@@ -1156,7 +1146,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_dns_test_support__testing__concatenated_headers_common",
     ],
@@ -1311,7 +1300,6 @@ cc_library_static {
     ],
     host_cross_supported: false,
     generated_headers: [
-        "tot_cronet_base_android_info_aidl__testing-ndk-source",
         "tot_cronet_base_build_info_aidl__testing-ndk-source",
         "tot_cronet_net_dns_tests__testing__concatenated_headers_common",
     ],

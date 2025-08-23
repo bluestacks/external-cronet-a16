@@ -330,7 +330,7 @@ bool Session::ShouldDeferRequest(
     return false;
   }
 
-  // TODO(crbug.com/353766029): Refactor this.
+  // TODO(crbug.com/438783631): Refactor this.
   // The below is all copied from AddCookieHeaderAndStart. We should refactor
   // it.
   CookieStore* cookie_store = request->context()->cookie_store();
@@ -385,8 +385,6 @@ bool Session::ShouldDeferRequest(
       // request is insecure, then the CookieCraving will be excluded, but the
       // CanonicalCookie will be included. DBSC only applies to secure context
       // but there might be similar cases.
-      //
-      // TODO: think about edge cases here...
       if (cookie_craving.IsSatisfiedBy(request_cookie.cookie)) {
         satisfied = true;
         break;
@@ -514,6 +512,11 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kTransientHttpError:
       backoff_.InformOfRequest(/*succeeded=*/false);
       break;
+    // Registration-only errors
+    case kWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kWellKnownMalformed:
+      NOTREACHED();
   }
 }
 

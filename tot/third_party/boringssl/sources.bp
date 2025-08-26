@@ -552,6 +552,7 @@ cc_defaults {
         "src/crypto/fipsmodule/ec/p256-nistz_test.cc",
         "src/crypto/fipsmodule/ec/p256_test.cc",
         "src/crypto/fipsmodule/ecdsa/ecdsa_test.cc",
+        "src/crypto/fipsmodule/entropy/jitter_test.cc",
         "src/crypto/fipsmodule/hkdf/hkdf_test.cc",
         "src/crypto/fipsmodule/keccak/keccak_test.cc",
         "src/crypto/fipsmodule/rand/ctrdrbg_test.cc",

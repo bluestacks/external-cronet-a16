@@ -585,7 +585,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.141.0.7376.0",
+    stem: "libmainlinecronet.141.0.7380.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -938,7 +938,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.141.0.7376.0",
+    stem: "libmainlinecronet.141.0.7380.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -1922,6 +1922,7 @@ java_library {
         "tot_cronet_components_cronet_request_context_config_java_proto",
         "tot_cronet_net_android_net_thread_stats_uid_java",
         "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java",
+        "tot_cronet_third_party_jni_zero_jni_zero_java",
     ],
     defaults: [
         "tot_cronet_java_framework_defaults",
@@ -1946,6 +1947,7 @@ java_library {
         "tot_cronet_components_cronet_request_context_config_java_proto__testing",
         "tot_cronet_net_android_net_thread_stats_uid_java__testing",
         "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing",
     ],
     defaults: [
         "tot_cronet_java_framework_defaults",
@@ -2009,6 +2011,9 @@ java_library {
         "tot_cronet_components_cronet_request_context_config_java_proto__testing__unfiltered",
         "tot_cronet_net_android_net_thread_stats_uid_java__testing__unfiltered",
         "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing__unfiltered",
+        "tot_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing__unfiltered",
         "tot_cronet_third_party_protobuf_proto_runtime_lite_java__testing__unfiltered",
     ],
 }
@@ -2063,6 +2068,9 @@ java_library {
         "tot_cronet_components_cronet_request_context_config_java_proto__unfiltered",
         "tot_cronet_net_android_net_thread_stats_uid_java__unfiltered",
         "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java__unfiltered",
+        "tot_cronet_third_party_jni_zero_gendeps_java__unfiltered",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__unfiltered",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__unfiltered",
         "tot_cronet_third_party_protobuf_proto_runtime_lite_java__unfiltered",
     ],
 }
@@ -2118,6 +2126,9 @@ java_library {
         "tot_cronet_components_cronet_request_context_config_java_proto__testing__unfiltered",
         "tot_cronet_net_android_net_thread_stats_uid_java__testing__unfiltered",
         "tot_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing__unfiltered",
+        "tot_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
+        "tot_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
+        "tot_cronet_third_party_jni_zero_jni_zero_java__testing__unfiltered",
         "tot_cronet_third_party_protobuf_proto_runtime_lite_java__testing__unfiltered",
     ],
 }
@@ -3648,7 +3659,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.141.0.7376.0_for_testing",
+    stem: "libmainlinecronet.141.0.7380.0_for_testing",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

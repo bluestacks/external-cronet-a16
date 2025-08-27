@@ -27,10 +27,7 @@ import {addQueryResultsTab} from '../../components/query_table/query_result_tab'
 import {featureFlags} from '../../core/feature_flags';
 import {z} from 'zod';
 import {JsonSettingsEditor} from '../../components/json_settings_editor';
-import {
-  commandInvocationSchema,
-  validateCommandInvocations,
-} from '../../core/command_manager';
+import {commandInvocationSchema} from '../../core/command_manager';
 
 const SQL_STATS = `
 with first as (select started as ts from sqlstats limit 1)
@@ -135,21 +132,6 @@ export default class implements PerfettoPlugin {
     type MacroConfig = z.infer<typeof macroSchema>;
     const macroSettingsEditor = new JsonSettingsEditor<MacroConfig>({
       schema: macroSchema,
-      validator: (data: MacroConfig): string | undefined => {
-        const macroErrors: string[] = [];
-        for (const [macroName, commands] of Object.entries(data)) {
-          const invalidCommands = validateCommandInvocations(
-            commands,
-            ctx.commands,
-          );
-          if (invalidCommands.length > 0) {
-            macroErrors.push(
-              `Macro "${macroName}" has unknown commands:\n${invalidCommands.map((cmd) => `  - ${cmd}`).join('\n')}`,
-            );
-          }
-        }
-        return macroErrors.length > 0 ? macroErrors.join('\n\n') : undefined;
-      },
     });
     const setting = ctx.settings.register({
       id: 'perfetto.CoreCommands#UserDefinedMacros',
@@ -349,27 +331,47 @@ export default class implements PerfettoPlugin {
     });
 
     ctx.commands.registerCommand({
-      id: 'createNewEmptyWorkspace',
+      id: 'dev.perfetto.CreateWorkspace',
       name: 'Create new empty workspace',
-      callback: async () => {
+      callback: async (rawName: unknown) => {
         const workspaces = ctx.workspaces;
         if (workspaces === undefined) return; // No trace loaded.
-        const name = await ctx.omnibox.prompt('Give it a name...');
+        const name =
+          typeof rawName === 'string'
+            ? rawName
+            : await ctx.omnibox.prompt('Give it a name...');
+        if (name === undefined || name === '') return;
+        workspaces.createEmptyWorkspace(name);
+      },
+    });
+
+    ctx.commands.registerCommand({
+      id: 'dev.perfetto.CreateWorkspaceAndSwitch',
+      name: 'Create new empty workspace and switch to it',
+      callback: async (rawName: unknown) => {
+        const workspaces = ctx.workspaces;
+        if (workspaces === undefined) return; // No trace loaded.
+        const name =
+          typeof rawName === 'string'
+            ? rawName
+            : await ctx.omnibox.prompt('Give it a name...');
         if (name === undefined || name === '') return;
         workspaces.switchWorkspace(workspaces.createEmptyWorkspace(name));
       },
     });
 
     ctx.commands.registerCommand({
-      id: 'switchWorkspace',
-      name: 'Switch workspace',
-      callback: async () => {
+      id: 'dev.perfetto.SwitchWorkspace',
+      name: 'Switch to workspace',
+      callback: async (rawName: unknown) => {
         const workspaces = ctx.workspaces;
         if (workspaces === undefined) return; // No trace loaded.
-        const workspace = await ctx.omnibox.prompt('Choose a workspace...', {
-          values: workspaces.all,
-          getName: (ws) => ws.title,
-        });
+        const workspace =
+          workspaces.all.find((x) => x.title === rawName) ??
+          (await ctx.omnibox.prompt('Choose a workspace...', {
+            values: workspaces.all,
+            getName: (ws) => ws.title,
+          }));
         if (workspace) {
           workspaces.switchWorkspace(workspace);
         }

@@ -359,7 +359,7 @@ struct HttpCache::PendingOp {
   PendingOp() = default;
   ~PendingOp() = default;
 
-  raw_ptr<disk_cache::Entry, AcrossTasksDanglingUntriaged> entry = nullptr;
+  raw_ptr<disk_cache::Entry> entry = nullptr;
   bool entry_opened = false;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
@@ -447,10 +447,7 @@ HttpCache::HttpCache(
   if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
     size_t max_entries = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
     if (max_entries) {
-      // TODO(https://crbug.com/382394774): Make
-      // kHttpCacheNoVarySearchCacheMaxEntries be a size_t param.
-      no_vary_search_cache_ =
-          std::make_unique<NoVarySearchCache>(static_cast<size_t>(max_entries));
+      no_vary_search_cache_ = std::make_unique<NoVarySearchCache>(max_entries);
     }
   }
   HttpNetworkSession* session = network_layer_->GetSession();
@@ -1568,7 +1565,7 @@ void HttpCache::OnIOComplete(int result, PendingOp* pending_op) {
         pending_op->entry->Doom();
       }
 
-      pending_op->entry->Close();
+      pending_op->entry.ExtractAsDangling()->Close();
       pending_op->entry = nullptr;
       try_restart_requests = true;
     }

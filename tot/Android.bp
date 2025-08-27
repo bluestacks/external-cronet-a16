@@ -12926,8 +12926,8 @@ cc_genrule {
     ],
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/net/third_party/quiche/src " +
-         "--proto_path=external/cronet/tot/third_party/anonymous_tokens/src/ " +
          "--proto_path=external/cronet/tot/third_party/protobuf/src " +
+         "--proto_path=external/cronet/tot/third_party/anonymous_tokens/src/ " +
          "--cpp_out=lite=true:$(genDir)/net/third_party/quiche/src/ " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/blind_sign_auth/proto/any.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/blind_sign_auth/proto/attest_and_sign.proto " +
@@ -12982,8 +12982,8 @@ cc_genrule {
     ],
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/net/third_party/quiche/src " +
-         "--proto_path=external/cronet/tot/third_party/anonymous_tokens/src/ " +
          "--proto_path=external/cronet/tot/third_party/protobuf/src " +
+         "--proto_path=external/cronet/tot/third_party/anonymous_tokens/src/ " +
          "--cpp_out=lite=true:$(genDir)/net/third_party/quiche/src/ " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/blind_sign_auth/proto/any.proto " +
          "external/cronet/tot/net/third_party/quiche/src/quiche/blind_sign_auth/proto/attest_and_sign.proto " +
@@ -13324,8 +13324,8 @@ cc_genrule {
     ],
     cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
          "--proto_path=external/cronet/tot/ " +
-         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
+         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--cpp_out=lite=true:$(genDir)// " +
          "external/cronet/tot/base/tracing/protos/chrome_enums.proto " +
          "external/cronet/tot/base/tracing/protos/chrome_track_event.proto " +
@@ -13385,8 +13385,8 @@ cc_genrule {
     ],
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/ " +
-         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
+         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--cpp_out=lite=true:$(genDir)// " +
          "external/cronet/tot/base/tracing/protos/chrome_enums.proto " +
          "external/cronet/tot/base/tracing/protos/chrome_track_event.proto " +
@@ -13447,8 +13447,8 @@ cc_genrule {
     ],
     cmd: "$(location tot_cronet_third_party_protobuf_protoc__testing) " +
          "--proto_path=external/cronet/tot/ " +
-         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
+         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--cpp_out=lite=true:$(genDir)// " +
          "external/cronet/tot/base/tracing/protos/chrome_enums.proto " +
          "external/cronet/tot/base/tracing/protos/chrome_track_event.proto " +
@@ -13514,8 +13514,8 @@ cc_genrule {
     ],
     cmd: "$(location tot_cronet_third_party_protobuf_protoc) " +
          "--proto_path=external/cronet/tot/ " +
-         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--proto_path=external/cronet/tot/third_party/perfetto/ " +
+         "--proto_path=external/cronet/tot/third_party/protobuf/src " +
          "--cpp_out=lite=true:$(genDir)// " +
          "external/cronet/tot/base/tracing/protos/chrome_enums.proto " +
          "external/cronet/tot/base/tracing/protos/chrome_track_event.proto " +
@@ -18110,7 +18110,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1756172253",
+         "1756283534",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18132,7 +18132,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1756172253",
+         "1756283534",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -32825,6 +32825,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -33559,6 +33560,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36581,6 +36583,7 @@ cc_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36606,6 +36609,8 @@ cc_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36617,6 +36622,8 @@ cc_genrule {
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
@@ -36632,6 +36639,7 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36671,6 +36679,7 @@ java_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36696,6 +36705,8 @@ java_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36707,6 +36718,8 @@ java_genrule {
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
@@ -36721,6 +36734,7 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36769,6 +36783,7 @@ cc_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36794,6 +36809,8 @@ cc_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36805,6 +36822,8 @@ cc_genrule {
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
@@ -36818,6 +36837,7 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36857,6 +36877,7 @@ java_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36882,6 +36903,8 @@ java_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36894,6 +36917,8 @@ java_genrule {
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
          "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
+         "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java)' " +
@@ -36905,6 +36930,7 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -37002,6 +37028,7 @@ cc_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37131,6 +37158,7 @@ java_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37255,6 +37283,7 @@ cc_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37392,6 +37421,7 @@ java_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37767,6 +37797,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -38501,6 +38532,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -39505,6 +39537,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -40300,6 +40333,7 @@ java_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -40996,6 +41030,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -115345,13 +115380,66 @@ java_genrule {
 // GN: //third_party/perfetto/gn:gen_buildflags
 cc_genrule {
     name: "tot_cronet_third_party_perfetto_gn_gen_buildflags",
-    cmd: "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false' | " +
+    cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
          "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
          "--out " +
          "'$(out)' " +
          "--rsp " +
-         "/dev/stdin",
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi;",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -115374,13 +115462,66 @@ cc_genrule {
 // GN: //third_party/perfetto/gn:gen_buildflags__testing
 cc_genrule {
     name: "tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
-    cmd: "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false' | " +
+    cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
          "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
          "--out " +
          "'$(out)' " +
          "--rsp " +
-         "/dev/stdin",
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi; " +
+         "if [[ $$CC_OS != 'android' ]]; " +
+         "then " +
+         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
+         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
+         "--out " +
+         "'$(out)' " +
+         "--rsp " +
+         "/dev/stdin " +
+         ";fi;",
     host_supported: true,
     host_cross_supported: false,
     out: [

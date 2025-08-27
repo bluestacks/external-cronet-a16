@@ -38,7 +38,7 @@
 #define EXPECT_THAT_LOG(log, matcher)                                  \
   EXPECT_TRUE(testing::Value(log, matcher))                            \
       << "Matcher: " << testing::DescribeMatcher<std::string>(matcher) \
-      << "Contents of " #log ":\n"                                     \
+      << "\nContents of " #log ":\n"                                   \
       << log
 
 namespace fuzztest::internal {
@@ -46,7 +46,6 @@ namespace {
 
 using ::testing::Contains;
 using ::testing::ContainsRegex;
-using ::testing::Eq;
 using ::testing::HasSubstr;
 
 std::string GetCorpusDatabaseTestingBinaryPath() {
@@ -170,24 +169,22 @@ absl::NoDestructor<
     UpdateCorpusDatabaseTest::run_map_{};
 
 TEST_P(UpdateCorpusDatabaseTest, RunsFuzzTests) {
-  EXPECT_THAT(GetUpdateCorpusDatabaseStdErr(),
-              AllOf(HasSubstr("Fuzzing FuzzTest.FailsInTwoWays"),
-                    HasSubstr("Fuzzing FuzzTest.FailsWithStackOverflow")));
+  EXPECT_THAT_LOG(GetUpdateCorpusDatabaseStdErr(),
+                  AllOf(HasSubstr("Fuzzing FuzzTest.FailsInTwoWays"),
+                        HasSubstr("Fuzzing FuzzTest.FailsWithStackOverflow")));
 }
 
 TEST_P(UpdateCorpusDatabaseTest, UsesMultipleShardsForFuzzingAndDistillation) {
-  const auto &std_err = GetUpdateCorpusDatabaseStdErr();
   EXPECT_THAT_LOG(
-      std_err,
+      GetUpdateCorpusDatabaseStdErr(),
       AllOf(HasSubstr("[S0.0] begin-fuzz"), HasSubstr("[S1.0] begin-fuzz"),
             HasSubstr("DISTILL[S.0]: Distilling to output shard 0"),
             HasSubstr("DISTILL[S.1]: Distilling to output shard 1")));
 }
 
 TEST_P(UpdateCorpusDatabaseTest, FindsAllCrashes) {
-  const auto &std_err = GetUpdateCorpusDatabaseStdErr();
   EXPECT_THAT_LOG(
-      std_err,
+      GetUpdateCorpusDatabaseStdErr(),
       AllOf(ContainsRegex(R"re(Failure\s*: GoogleTest assertion failure)re"),
             ContainsRegex(R"re(Failure\s*: heap-buffer-overflow)re"),
             ContainsRegex(R"re(Failure\s*: stack-limit-exceeded)re")));
@@ -200,14 +197,14 @@ TEST_P(UpdateCorpusDatabaseTest, DeduplicatesCrashes) {
 }
 
 TEST_P(UpdateCorpusDatabaseTest, ReportsCrashSummary) {
-  EXPECT_THAT(GetUpdateCorpusDatabaseStdErr(),
-              AllOf(ContainsRegex(
-                        R"re((?s)=== Summary of detected crashes ===
+  EXPECT_THAT_LOG(GetUpdateCorpusDatabaseStdErr(),
+                  AllOf(ContainsRegex(
+                            R"re((?s)=== Summary of detected crashes ===
 .*?Fuzz test    : FuzzTest.FailsInTwoWays
 .*?Total crashes: 2
 .*?=== End of summary of detected crashes ===)re"),
-                    ContainsRegex(
-                        R"re((?s)=== Summary of detected crashes ===
+                        ContainsRegex(
+                            R"re((?s)=== Summary of detected crashes ===
 .*?Fuzz test    : FuzzTest.FailsWithStackOverflow
 .*?Total crashes: 1
 .*?=== End of summary of detected crashes ===)re")));
@@ -374,7 +371,8 @@ TEST_P(UpdateCorpusDatabaseTest,
                         HasSubstr("Starting a new run of the fuzz test")));
 }
 
-TEST_P(UpdateCorpusDatabaseTest, ReplaysFuzzTestsInParallel) {
+TEST_P(UpdateCorpusDatabaseTest,
+       ReplaysFuzzTestsInParallelAndPrintsCrashSummary) {
   RunOptions run_options;
   run_options.fuzztest_flags = {
       {"corpus_database", UpdateCorpusDatabaseAndGetPath()},
@@ -389,6 +387,15 @@ TEST_P(UpdateCorpusDatabaseTest, ReplaysFuzzTestsInParallel) {
       AllOf(HasSubstr("Replaying FuzzTest.FailsInTwoWays"),
             HasSubstr("Replaying FuzzTest.FailsWithStackOverflow"),
             HasSubstr("[S0.0] begin-fuzz"), HasSubstr("[S1.0] begin-fuzz")));
+  EXPECT_THAT_LOG(std_err,
+                  AllOf(ContainsRegex(
+                            R"re((?s)=== Summary of detected crashes ===
+.*?Fuzz test    : FuzzTest.FailsInTwoWays
+.*?=== End of summary of detected crashes ===)re"),
+                        ContainsRegex(
+                            R"re((?s)=== Summary of detected crashes ===
+.*?Fuzz test    : FuzzTest.FailsWithStackOverflow
+.*?=== End of summary of detected crashes ===)re")));
 }
 
 TEST_P(UpdateCorpusDatabaseTest, PrintsErrorsWhenBazelTimeoutIsNotEnough) {

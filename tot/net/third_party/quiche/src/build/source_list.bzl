@@ -1110,6 +1110,7 @@ quiche_tests_srcs = [
     "common/lifetime_tracking_test.cc",
     "common/masque/connect_ip_datagram_payload_test.cc",
     "common/masque/connect_udp_datagram_payload_test.cc",
+    "common/platform/api/quiche_client_stats_test.cc",
     "common/platform/api/quiche_file_utils_test.cc",
     "common/platform/api/quiche_hostname_utils_test.cc",
     "common/platform/api/quiche_lower_case_string_test.cc",
@@ -1633,6 +1634,8 @@ binary_http_srcs = [
 oblivious_http_hdrs = [
     "oblivious_http/buffers/oblivious_http_request.h",
     "oblivious_http/buffers/oblivious_http_response.h",
+    "oblivious_http/common/oblivious_http_chunk_handler.h",
+    "oblivious_http/common/oblivious_http_definitions.h",
     "oblivious_http/common/oblivious_http_header_key_config.h",
     "oblivious_http/oblivious_http_client.h",
     "oblivious_http/oblivious_http_gateway.h",

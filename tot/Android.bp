@@ -98,7 +98,6 @@ rust_ffi_static {
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
-                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -18110,7 +18109,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1756301500",
+         "1756308105",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18132,7 +18131,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1756301500",
+         "1756308105",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -115380,66 +115379,13 @@ java_genrule {
 // GN: //third_party/perfetto/gn:gen_buildflags
 cc_genrule {
     name: "tot_cronet_third_party_perfetto_gn_gen_buildflags",
-    cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+    cmd: "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
          "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
          "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
          "--out " +
          "'$(out)' " +
          "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ $$CC_OS != 'android' ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi;",
+         "/dev/stdin",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -115462,66 +115408,13 @@ cc_genrule {
 // GN: //third_party/perfetto/gn:gen_buildflags__testing
 cc_genrule {
     name: "tot_cronet_third_party_perfetto_gn_gen_buildflags__testing",
-    cmd: "if [[ ( $$CC_ARCH == 'arm' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
+    cmd: "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
          "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
          "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
          "--out " +
          "'$(out)' " +
          "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'x86' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ ( $$CC_ARCH == 'x86_64' && $$CC_OS == 'android' ) ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=true' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi; " +
-         "if [[ $$CC_OS != 'android' ]]; " +
-         "then " +
-         "mkdir -p $(genDir)/third_party/perfetto/build_config &&  " +
-         "echo '--flags PERFETTO_ANDROID_BUILD=false PERFETTO_CHROMIUM_BUILD=true PERFETTO_STANDALONE_BUILD=false PERFETTO_START_DAEMONS=true PERFETTO_IPC=true PERFETTO_WATCHDOG=0 PERFETTO_COMPONENT_BUILD=false PERFETTO_ENABLE_ETM_IMPORTER=false PERFETTO_LLVM_SYMBOLIZER=false PERFETTO_FORCE_DLOG_ON=false PERFETTO_FORCE_DLOG_OFF=true PERFETTO_FORCE_DCHECK_ON=false PERFETTO_FORCE_DCHECK_OFF=false PERFETTO_VERBOSE_LOGS=false PERFETTO_VERSION_GEN=false PERFETTO_TP_PERCENTILE=false PERFETTO_TP_LINENOISE=false PERFETTO_TP_HTTPD=true PERFETTO_TP_JSON=true PERFETTO_TP_INSTRUMENTS=false '\"'\"'PERFETTO_LOCAL_SYMBOLIZER=PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_LINUX() || PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_MAC() ||PERFETTO_BUILDFLAG_DEFINE_PERFETTO_OS_WIN()'\"'\"' PERFETTO_ZLIB=true PERFETTO_TRACED_PERF=false PERFETTO_HEAPPROFD=false PERFETTO_STDERR_CRASH_DUMP=false PERFETTO_X64_CPU_OPT=false PERFETTO_LLVM_DEMANGLE=false PERFETTO_SYSTEM_CONSUMER=true PERFETTO_THREAD_SAFETY_ANNOTATIONS=false PERFETTO_ENABLE_WINSCOPE=false PERFETTO_ENABLE_RT_MUTEX=false' | " +
-         "$(location third_party/perfetto/gn/write_buildflag_header.py) " +
-         "--out " +
-         "'$(out)' " +
-         "--rsp " +
-         "/dev/stdin " +
-         ";fi;",
+         "/dev/stdin",
     host_supported: true,
     host_cross_supported: false,
     out: [

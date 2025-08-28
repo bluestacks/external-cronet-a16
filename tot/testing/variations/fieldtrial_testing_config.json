@@ -1074,6 +1074,21 @@
             ]
         }
     ],
+    "AndroidTabHighlighting": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabHighlighting"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidThemeModule": [
         {
             "platforms": [
@@ -1274,6 +1289,21 @@
                     },
                     "enable_features": [
                         "AnnotatedPageContentExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AnnotatedPageContentsVirtualStructure": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AnnotatedPageContentsVirtualStructure"
                     ]
                 }
             ]
@@ -2695,21 +2725,6 @@
                     },
                     "enable_features": [
                         "AutofillImprovedLabels"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillLocalSaveCardBottomSheet": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillLocalSaveCardBottomSheet"
                     ]
                 }
             ]
@@ -4242,22 +4257,6 @@
                     },
                     "enable_features": [
                         "CCTAdaptiveButton"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CCTEarlyNav": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTEarlyNav",
-                        "CCTFixWarmup"
                     ]
                 }
             ]
@@ -12602,6 +12601,21 @@
             ]
         }
     ],
+    "IOSAIHubNewBadge": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AIHubNewBadge"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAIModeNTPEntryPoint": [
         {
             "platforms": [
@@ -13310,6 +13324,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ManualLogUploadsInTheFRE"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSMemoryAblation": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSMemoryAblation"
                     ]
                 }
             ]
@@ -15639,21 +15668,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MojoPredictiveAllocation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MostVisitedTilesVisualDeduplication": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MostVisitedTilesVisualDeduplication"
                     ]
                 }
             ]
@@ -19831,6 +19845,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InterestGroupUpdateIfOlderThan"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProtoBasedEnterpriseReporting": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows",
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UploadRealtimeReportingEventsUsingProto"
                     ]
                 }
             ]

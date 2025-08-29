@@ -6216,6 +6216,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "HCAcceptanceRate": "1.0",
+                        "MaxLength": "100",
+                        "MinLength": "30",
+                        "SampleRate": "1.0"
+                    },
                     "enable_features": [
                         "ClientSideDetectionClipboardCopyApi"
                     ]
@@ -11227,27 +11233,6 @@
             ]
         }
     ],
-    "GlicAssetsUpdate": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "glic-parameterized-shader-colors": "#3186FF#346BF1#4FA0FF#FF4641#FFCC00#0EBC5F",
-                        "glic-parameterized-shader-floats": "5#0.1#0.3#0.7#1.0#0.5#0.5#0.3"
-                    },
-                    "enable_features": [
-                        "GlicAssetsV2",
-                        "GlicParameterizedShader"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicClientResponsivenessCheckExtension": [
         {
             "platforms": [
@@ -13551,8 +13536,10 @@
                         "EnableReadabilityHeuristic",
                         "EnableReaderMode",
                         "EnableReaderModeDefaultBrowserPromo",
-                        "EnableReaderModePageEligibilityForToolsMenu",
                         "ReaderModeUseReadability"
+                    ],
+                    "disable_features": [
+                        "EnableReaderModePageEligibilityForToolsMenu"
                     ]
                 }
             ]
@@ -20928,27 +20915,6 @@
             ]
         }
     ],
-    "ReportingServiceAlwaysFlush": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReportingServiceAlwaysFlush"
-                    ]
-                }
-            ]
-        }
-    ],
     "RequestMainFrameAfterFirstVideoFrame": [
         {
             "platforms": [
@@ -24234,6 +24200,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableStartupImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
+    "StickyActivationTest": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReportingServiceAlwaysFlush"
                     ]
                 }
             ]

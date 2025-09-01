@@ -3175,7 +3175,7 @@
             ]
         }
     ],
-    "AutomatedPasswordChangeStudy": [
+    "AutomatedPasswordChangeStudyV2": [
         {
             "platforms": [
                 "chromeos",
@@ -3187,6 +3187,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ApplyClientsideModelPredictionsForPasswordTypes",
+                        "CheckLoginStateBeforePasswordChange",
                         "ImprovedPasswordChangeService",
                         "PasswordChangeSubmissionMqlsLogging"
                     ]
@@ -8022,6 +8024,7 @@
     "DSEPrewarm": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux"
             ],
@@ -18865,24 +18868,6 @@
             ]
         }
     ],
-    "Prerender2ReuseSearchResultHostAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "reuse_search_host": "true"
-                    },
-                    "enable_features": [
-                        "Prerender2ReuseHost"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreserveDiscardableImageMapQuality": [
         {
             "platforms": [
@@ -19141,6 +19126,25 @@
                     "name": "Disabled",
                     "disable_features": [
                         "DefaultAllowPrivacySandboxAttestations"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivacySandboxGetPromptFromNoticeService": [
+        {
+            "platforms": [
+                "linux",
+                "windows",
+                "android",
+                "mac",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxGetPromptFromNoticeService"
                     ]
                 }
             ]
@@ -23187,6 +23191,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ServiceWorkerSyntheticResponse": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ServiceWorkerSyntheticResponse"
                     ]
                 }
             ]

@@ -61,6 +61,7 @@ cc_library_static {
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
         "-DPERFETTO_IMPLEMENTATION",
+        "-DPROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT",
         "-DUNIT_TEST",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",

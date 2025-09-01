@@ -7223,14 +7223,17 @@ TEST(X509Test, NameAttributeValues) {
       // These types are not actually supported by the library, but we accept
       // them as |V_ASN1_OTHER|.
       {7 /* ObjectDescriptor */, "", V_ASN1_OTHER, std::string("\x07\x00", 2)},
-      {8 /* EXTERNAL */, "", V_ASN1_OTHER, std::string("\x08\x00", 2)},
+      {CBS_ASN1_CONSTRUCTED | 8 /* EXTERNAL */, "", V_ASN1_OTHER,
+       std::string("\x28\x00", 2)},
       {9 /* REAL */, "", V_ASN1_OTHER, std::string("\x09\x00", 2)},
-      {11 /* EMBEDDED PDV */, "", V_ASN1_OTHER, std::string("\x0b\x00", 2)},
-      {13 /* RELATIVE-OID */, "", V_ASN1_OTHER, std::string("\x0d\x00", 2)},
+      {CBS_ASN1_CONSTRUCTED | 11 /* EMBEDDED PDV */, "", V_ASN1_OTHER,
+       std::string("\x2b\x00", 2)},
+      {13 /* RELATIVE-OID */, "\x01", V_ASN1_OTHER, "\x0d\x01\x01"},
       {14 /* TIME */, "", V_ASN1_OTHER, std::string("\x0e\x00", 2)},
       {15 /* not a type; reserved value */, "", V_ASN1_OTHER,
        std::string("\x0f\x00", 2)},
-      {29 /* CHARACTER STRING */, "", V_ASN1_OTHER, std::string("\x1d\x00", 2)},
+      {CBS_ASN1_CONSTRUCTED | 29 /* CHARACTER STRING */, "", V_ASN1_OTHER,
+       std::string("\x3d\x00", 2)},
 
       // Non-universal tags are allowed as |V_ASN1_OTHER| too.
       {CBS_ASN1_APPLICATION | CBS_ASN1_CONSTRUCTED | 42, "", V_ASN1_OTHER,
@@ -8690,6 +8693,68 @@ TEST(X509Test, ParseIPAddress) {
                                     ASN1_STRING_length(oct.get())));
     }
   }
+}
+
+// Test that, after deleting the last extension, the extension list should be
+// null.
+TEST(X509Test, DeleteLastExtension) {
+  bssl::UniquePtr<X509_EXTENSION> ext1(X509_EXTENSION_new());
+  ASSERT_TRUE(ext1);
+  ASSERT_TRUE(X509_EXTENSION_set_object(
+      ext1.get(), OBJ_nid2obj(NID_subject_key_identifier)));
+
+  bssl::UniquePtr<X509_EXTENSION> ext2(X509_EXTENSION_new());
+  ASSERT_TRUE(ext2);
+  ASSERT_TRUE(X509_EXTENSION_set_object(
+      ext2.get(), OBJ_nid2obj(NID_authority_key_identifier)));
+
+  bssl::UniquePtr<X509> cert(X509_new());
+  ASSERT_TRUE(cert);
+  bssl::UniquePtr<X509_CRL> crl(X509_CRL_new());
+  ASSERT_TRUE(crl);
+  bssl::UniquePtr<X509_REVOKED> rev(X509_REVOKED_new());
+  ASSERT_TRUE(rev);
+
+  // Initially, the extension list is null.
+  EXPECT_EQ(X509_get0_extensions(cert.get()), nullptr);
+  EXPECT_EQ(X509_CRL_get0_extensions(crl.get()), nullptr);
+  EXPECT_EQ(X509_REVOKED_get0_extensions(rev.get()), nullptr);
+
+  // Add an extension.
+  ASSERT_TRUE(X509_add_ext(cert.get(), ext1.get(), -1));
+  ASSERT_TRUE(X509_CRL_add_ext(crl.get(), ext1.get(), -1));
+  ASSERT_TRUE(X509_REVOKED_add_ext(rev.get(), ext1.get(), -1));
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_get0_extensions(cert.get())), 1u);
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_CRL_get0_extensions(crl.get())), 1u);
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_REVOKED_get0_extensions(rev.get())), 1u);
+
+  // Add a second extension.
+  ASSERT_TRUE(X509_add_ext(cert.get(), ext1.get(), -1));
+  ASSERT_TRUE(X509_CRL_add_ext(crl.get(), ext1.get(), -1));
+  ASSERT_TRUE(X509_REVOKED_add_ext(rev.get(), ext1.get(), -1));
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_get0_extensions(cert.get())), 2u);
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_CRL_get0_extensions(crl.get())), 2u);
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_REVOKED_get0_extensions(rev.get())), 2u);
+
+  // Delete one extension.
+  X509_EXTENSION_free(X509_delete_ext(cert.get(), 0));
+  X509_EXTENSION_free(X509_CRL_delete_ext(crl.get(), 0));
+  X509_EXTENSION_free(X509_REVOKED_delete_ext(rev.get(), 0));
+
+  // There is still an extension list.
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_get0_extensions(cert.get())), 1u);
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_CRL_get0_extensions(crl.get())), 1u);
+  EXPECT_EQ(sk_X509_EXTENSION_num(X509_REVOKED_get0_extensions(rev.get())), 1u);
+
+  // Delete the other extension.
+  X509_EXTENSION_free(X509_delete_ext(cert.get(), 0));
+  X509_EXTENSION_free(X509_CRL_delete_ext(crl.get(), 0));
+  X509_EXTENSION_free(X509_REVOKED_delete_ext(rev.get(), 0));
+
+  // There should not only be zero extensions, but not list at all.
+  EXPECT_EQ(X509_get0_extensions(cert.get()), nullptr);
+  EXPECT_EQ(X509_CRL_get0_extensions(crl.get()), nullptr);
+  EXPECT_EQ(X509_REVOKED_get0_extensions(rev.get()), nullptr);
 }
 
 }  // namespace

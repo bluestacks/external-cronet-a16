@@ -677,6 +677,12 @@ BASE_FEATURE_PARAM(bool,
                    "fake_persistence",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kHttpCacheNoVarySearchKeepNotSuitable,
+                   &kHttpCacheNoVarySearch,
+                   "keep_not_suitable",
+                   false);
+
 BASE_FEATURE(ReportingApiCorsOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -786,6 +792,11 @@ BASE_FEATURE_PARAM(std::string,
                    kQuicHintHostPortPairs,
                    &kConfigureQuicHints,
                    /*name=*/"quic_hints",
+                   /*default_value=*/"");
+BASE_FEATURE_PARAM(std::string,
+                   kWildcardQuicHintHostPortPairs,
+                   &kConfigureQuicHints,
+                   /*name=*/"wildcard_quic_hints",
                    /*default_value=*/"");
 
 }  // namespace net::features

@@ -630,7 +630,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_DefaultDevicePref_True",
+                    "params": {
+                        "show_bookmark_bar": "true"
+                    },
+                    "enable_features": [
+                        "AndroidAppearanceSettings",
+                        "AndroidBookmarkBar"
+                    ]
+                },
+                {
+                    "name": "Enabled_DefaultDevicePref_False",
+                    "params": {
+                        "show_bookmark_bar": "false"
+                    },
                     "enable_features": [
                         "AndroidAppearanceSettings",
                         "AndroidBookmarkBar"
@@ -1880,26 +1893,6 @@
                     },
                     "enable_features": [
                         "AttributionReportNavigationBasedRetry"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AttributionReportingInBrowserMigration": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AttributionReportingInBrowserMigration"
                     ]
                 }
             ]
@@ -10339,12 +10332,7 @@
     "EsbAsASyncedSetting": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
@@ -11360,6 +11348,23 @@
             ]
         }
     ],
+    "GlicAppendModelQualityClientId": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicAppendModelQualityClientId"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicClientResponsivenessCheckExtension": [
         {
             "platforms": [
@@ -11581,6 +11586,22 @@
                     },
                     "enable_features": [
                         "GlicUserStatusCheck"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicWarming": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicWarming"
                     ]
                 }
             ]
@@ -14341,20 +14362,28 @@
                     "name": "EnabledDSEKeepAlive",
                     "enable_features": [
                         "KeepDefaultSearchEngineRendererAlive",
+                        "ProcessPerSiteSkipDevtoolsUsers",
                         "TrackEmptyRendererProcessesForReuse"
                     ],
                     "disable_features": [
-                        "ProcessPerSiteForDSE"
+                        "ProcessPerSiteForDSE",
+                        "ProcessPerSiteUpToMainFrameThreshold"
                     ]
                 },
                 {
                     "name": "EnabledDSEKeepAliveWithProcessSharing",
+                    "params": {
+                        "ProcessPerSiteMainFrameThreshold": "15"
+                    },
                     "enable_features": [
                         "KeepDefaultSearchEngineRendererAlive",
                         "ProcessPerSiteForDSE",
+                        "ProcessPerSiteUpToMainFrameThreshold",
                         "TrackEmptyRendererProcessesForReuse"
                     ],
-                    "disable_features": []
+                    "disable_features": [
+                        "ProcessPerSiteSkipDevtoolsUsers"
+                    ]
                 }
             ]
         }
@@ -16627,9 +16656,11 @@
                     "enable_features": [
                         "AiModeOmniboxEntryPoint",
                         "AllowAiModeMatches",
+                        "LoadingSuggestionsAnimation",
                         "OmniboxHideAimEntrypointOnUserInput",
                         "OmniboxToolbelt",
-                        "OpenLensActionUITweaks"
+                        "OpenLensActionUITweaks",
+                        "SuggestionsFulfilledByLensSupported"
                     ]
                 }
             ]
@@ -19417,28 +19448,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IsolateFencedFrames"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProcessPerSiteUpToMainFrameThreshold": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ProcessPerSiteMainFrameThreshold": "15"
-                    },
-                    "enable_features": [
-                        "DevToolsSharedProcessInfobar",
-                        "ProcessPerSiteUpToMainFrameThreshold"
                     ]
                 }
             ]

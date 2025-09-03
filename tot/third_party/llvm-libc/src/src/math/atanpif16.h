@@ -1,22 +1,21 @@
-//===-- Implementation header of dladdr -------------------------*- C++ -*-===//
+//===-- Implementation header for atanpif16 ---------------------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_LIBC_SRC_DLFCN_DLADDR_H
-#define LLVM_LIBC_SRC_DLFCN_DLADDR_H
+#ifndef LLVM_LIBC_SRC_MATH_ATANPIF16_H
+#define LLVM_LIBC_SRC_MATH_ATANPIF16_H
 
 #include "src/__support/macros/config.h"
-
-#include "hdr/types/dl_info.h"
+#include "src/__support/macros/properties/types.h"
 
 namespace LIBC_NAMESPACE_DECL {
 
-int dladdr(const void *__restrict, Dl_info *__restrict);
+float16 atanpif16(float16 x);
 
 } // namespace LIBC_NAMESPACE_DECL
 
-#endif // LLVM_LIBC_SRC_DLFCN_DLADDR_H
+#endif // LLVM_LIBC_SRC_MATH_ASINF16_H

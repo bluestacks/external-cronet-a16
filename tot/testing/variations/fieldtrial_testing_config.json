@@ -7842,21 +7842,6 @@
             ]
         }
     ],
-    "CredentialProviderAutomaticPasskeyUpgrade": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CredentialProviderAutomaticPasskeyUpgrade"
-                    ]
-                }
-            ]
-        }
-    ],
     "CreditCardInfobarDisplayLength": [
         {
             "platforms": [
@@ -12803,6 +12788,23 @@
             ]
         }
     ],
+    "IOSAutofillAcrossIframesV2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAcrossIframesIosTriggerFormExtraction",
+                        "AutofillThrottleDocumentFormScanForceFirstScanIos",
+                        "AutofillThrottleDocumentFormScanIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillBadgeRemoval": [
         {
             "platforms": [
@@ -12888,25 +12890,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillReportFormSubmissionErrors"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSAutofillThrottleDocumentFormScan": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_With500msPeriod",
-                    "params": {
-                        "period-ms": "500"
-                    },
-                    "enable_features": [
-                        "AutofillThrottleDocumentFormScanForceFirstScanIos",
-                        "AutofillThrottleDocumentFormScanIos"
                     ]
                 }
             ]

@@ -38,6 +38,7 @@
 #include <openssl/x509.h>
 
 #include "../internal.h"
+#include "../test/der_trailing_data.h"
 #include "../test/file_util.h"
 #include "../test/test_data.h"
 #include "../test/test_util.h"
@@ -2196,7 +2197,7 @@ TEST(X509Test, RSASign) {
   ASSERT_TRUE(SignatureRoundTrips(md_ctx.get(), pkey.get()));
 
   // RSA-PSS with salt length matching hash length should work when passing in
-  // -1 or the value explicitly.
+  // |RSA_PSS_SALTLEN_DIGEST| or the value explicitly.
   md_ctx.Reset();
   EVP_PKEY_CTX *pkey_ctx;
   ASSERT_TRUE(EVP_DigestSignInit(md_ctx.get(), &pkey_ctx, EVP_sha256(), NULL,
@@ -2539,6 +2540,75 @@ TEST(X509Test, SignCSR) {
       ASSERT_TRUE(copy_pubkey);
       EXPECT_EQ(1, EVP_PKEY_cmp(pkey.get(), copy_pubkey.get()));
     }
+  }
+}
+
+// The |*_sign_ctx| APIs implicitly call |EVP_MD_CTX_cleanup| on return, on both
+// success and failure. Some callers rely on this to avoid a memory leak. These
+// tests rely on ASan to detect leaks. Test failure by using unsupported RSA-PSS
+// parameters.
+TEST(X509Test, SignImplicitCleanup) {
+  bssl::UniquePtr<EVP_PKEY> pkey(PrivateKeyFromPEM(kRSAKey));
+  ASSERT_TRUE(pkey);
+
+  bssl::UniquePtr<X509> cert = CertFromPEM(kLeafPEM);
+  ASSERT_TRUE(cert);
+  {
+    EVP_MD_CTX ctx;
+    EVP_MD_CTX_init(&ctx);
+    ASSERT_TRUE(
+        EVP_DigestSignInit(&ctx, nullptr, EVP_sha256(), nullptr, pkey.get()));
+    EXPECT_TRUE(X509_sign_ctx(cert.get(), &ctx));
+  }
+  {
+    EVP_MD_CTX ctx;
+    EVP_MD_CTX_init(&ctx);
+    EVP_PKEY_CTX *pkey_ctx;
+    ASSERT_TRUE(
+        EVP_DigestSignInit(&ctx, &pkey_ctx, EVP_sha256(), nullptr, pkey.get()));
+    ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING));
+    ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, 33));
+    EXPECT_FALSE(X509_sign_ctx(cert.get(), &ctx));
+  }
+
+  bssl::UniquePtr<X509_CRL> crl = CRLFromPEM(kBasicCRL);
+  ASSERT_TRUE(crl);
+  {
+    EVP_MD_CTX ctx;
+    EVP_MD_CTX_init(&ctx);
+    ASSERT_TRUE(
+        EVP_DigestSignInit(&ctx, nullptr, EVP_sha256(), nullptr, pkey.get()));
+    EXPECT_TRUE(X509_CRL_sign_ctx(crl.get(), &ctx));
+  }
+  {
+    EVP_MD_CTX ctx;
+    EVP_MD_CTX_init(&ctx);
+    EVP_PKEY_CTX *pkey_ctx;
+    ASSERT_TRUE(
+        EVP_DigestSignInit(&ctx, &pkey_ctx, EVP_sha256(), nullptr, pkey.get()));
+    ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING));
+    ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, 33));
+    EXPECT_FALSE(X509_CRL_sign_ctx(crl.get(), &ctx));
+  }
+
+  bssl::UniquePtr<X509_REQ> csr = CSRFromPEM(kTestCSR);
+  ASSERT_TRUE(csr);
+  {
+    EVP_MD_CTX ctx;
+    EVP_MD_CTX_init(&ctx);
+    ASSERT_TRUE(
+        EVP_DigestSignInit(&ctx, nullptr, EVP_sha256(), nullptr, pkey.get()));
+    EXPECT_TRUE(X509_REQ_sign_ctx(csr.get(), &ctx));
+  }
+  {
+    EVP_MD_CTX ctx;
+    EVP_MD_CTX_init(&ctx);
+    EVP_PKEY_CTX *pkey_ctx;
+    ASSERT_TRUE(
+        EVP_DigestSignInit(&ctx, &pkey_ctx, EVP_sha256(), nullptr, pkey.get()));
+    ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING));
+    ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, 33));
+    EXPECT_FALSE(X509_REQ_sign_ctx(csr.get(), &ctx));
   }
 }
 
@@ -8782,6 +8852,57 @@ TEST(X509Test, VerifyUnusualTBSCert) {
     ASSERT_TRUE(cert);
     EXPECT_TRUE(X509_verify(cert.get(), key.get()));
   }
+}
+
+TEST(X509Test, TrailingDataX509) {
+  bssl::UniquePtr<X509> cert(CertFromPEM(kLeafPEM));
+  uint8_t *der = nullptr;
+  int len = i2d_X509(cert.get(), &der);
+  ASSERT_GT(len, 0);
+  bssl::UniquePtr<uint8_t> free_der(der);
+
+  bool ok = TestDERTrailingData(
+      bssl::Span(der, len), [](bssl::Span<const uint8_t> in, size_t n) {
+        SCOPED_TRACE(n);
+        const uint8_t *p = in.data();
+        bssl::UniquePtr<X509> parsed(d2i_X509(nullptr, &p, in.size()));
+        EXPECT_FALSE(parsed);
+      });
+  EXPECT_TRUE(ok);
+}
+
+TEST(X509Test, TrailingDataCRL) {
+  bssl::UniquePtr<X509_CRL> crl(CRLFromPEM(kRevokedCRL));
+  uint8_t *der = nullptr;
+  int len = i2d_X509_CRL(crl.get(), &der);
+  ASSERT_GT(len, 0);
+  bssl::UniquePtr<uint8_t> free_der(der);
+
+  bool ok = TestDERTrailingData(
+      bssl::Span(der, len), [](bssl::Span<const uint8_t> in, size_t n) {
+        SCOPED_TRACE(n);
+        const uint8_t *p = in.data();
+        bssl::UniquePtr<X509_CRL> parsed(d2i_X509_CRL(nullptr, &p, in.size()));
+        EXPECT_FALSE(parsed);
+      });
+  EXPECT_TRUE(ok);
+}
+
+TEST(X509Test, TrailingDataCSR) {
+  bssl::UniquePtr<X509_REQ> csr(CSRFromPEM(kTestCSR));
+  uint8_t *der = nullptr;
+  int len = i2d_X509_REQ(csr.get(), &der);
+  ASSERT_GT(len, 0);
+  bssl::UniquePtr<uint8_t> free_der(der);
+
+  bool ok = TestDERTrailingData(
+      bssl::Span(der, len), [](bssl::Span<const uint8_t> in, size_t n) {
+        SCOPED_TRACE(n);
+        const uint8_t *p = in.data();
+        bssl::UniquePtr<X509_REQ> parsed(d2i_X509_REQ(nullptr, &p, in.size()));
+        EXPECT_FALSE(parsed);
+      });
+  EXPECT_TRUE(ok);
 }
 
 }  // namespace

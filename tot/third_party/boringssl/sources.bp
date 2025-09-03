@@ -503,6 +503,7 @@ cc_defaults {
     name: "tot_cronet_boringssl_test_support_sources",
     srcs: [
         "src/crypto/test/abi_test.cc",
+        "src/crypto/test/der_trailing_data.cc",
         "src/crypto/test/file_test.cc",
         "src/crypto/test/file_test_gtest.cc",
         "src/crypto/test/file_util.cc",

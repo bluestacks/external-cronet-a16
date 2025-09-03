@@ -6023,6 +6023,24 @@
             ]
         }
     ],
+    "ChromnientStraightToSrp": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayStraightToSrp"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientSurvey": [
         {
             "platforms": [
@@ -9538,67 +9556,6 @@
                     "name": "Enabled_20250709",
                     "enable_features": [
                         "EdgeToEdgeTablet"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EducationalTipModule": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithEducationalTipPerDay",
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOnlyQuickDeletePromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOnlyHistorySyncPromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "HistorySyncPromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerThreeDays",
-                    "params": {
-                        "days_to_show_ephemeral_card_once": "3"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerThreeDaysExceptHistorySyncPromo",
-                    "params": {
-                        "days_to_show_ephemeral_card_once": "3",
-                        "names_of_ephemeral_cards_to_show": "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerDayExceptHistorySyncPromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
                     ]
                 }
             ]
@@ -14097,9 +14054,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "NoPurge",
+                    "disable_features": [
+                        "InfiniteTabsFreezingOnMemoryPressure",
+                        "MemoryPurgeOnFreeze"
+                    ]
+                },
+                {
+                    "name": "NoPurgeAndFreeze",
                     "enable_features": [
                         "InfiniteTabsFreezingOnMemoryPressure"
+                    ],
+                    "disable_features": [
+                        "MemoryPurgeOnFreeze"
                     ]
                 }
             ]
@@ -15477,6 +15444,7 @@
     "MemoryCacheStrongRefPruningTuneUp": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
@@ -15489,6 +15457,22 @@
                         "memory_cache_strong_ref_resource_size_threshold": "6291456",
                         "memory_cache_strong_ref_total_size_threshold": "31457280",
                         "strong_reference_prune_delay": "10m"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheStrongReference"
+                    ],
+                    "disable_features": [
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "DefaultsX3",
+                    "params": {
+                        "memory_cache_strong_ref_resource_size_threshold": "9437184",
+                        "memory_cache_strong_ref_total_size_threshold": "47185920",
+                        "strong_reference_prune_delay": "15m"
                     },
                     "enable_features": [
                         "MemoryCacheChangeStrongReferencePruneDelay",
@@ -15523,8 +15507,7 @@
             "platforms": [
                 "chromeos",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
@@ -22428,21 +22411,6 @@
             ]
         }
     ],
-    "ScannerDogfood": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "ScannerDogfood"
-                    ]
-                }
-            ]
-        }
-    ],
     "SchedQoS": [
         {
             "platforms": [
@@ -24395,28 +24363,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SubframePriorityContribution"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SunfishFeature": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Launch",
-                    "enable_features": [
-                        "ScannerUpdate",
-                        "SunfishFeature"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "SunfishFeature"
                     ]
                 }
             ]

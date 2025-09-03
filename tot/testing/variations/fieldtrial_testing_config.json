@@ -2893,26 +2893,6 @@
             ]
         }
     ],
-    "AutofillRequireCvcForPossibleCardUpdate": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillRequireCvcForPossibleCardUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillServerExperimentalSignatures": [
         {
             "platforms": [
@@ -3909,6 +3889,24 @@
                     },
                     "enable_features": [
                         "BoardingPassDetector"
+                    ]
+                }
+            ]
+        }
+    ],
+    "BocaConfigureMaxStudents": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "BocaMaxNumStudentsAllowed": "100"
+                    },
+                    "enable_features": [
+                        "BocaConfigureMaxStudents"
                     ]
                 }
             ]
@@ -25723,7 +25721,6 @@
     "UpdateStateBeforeUnbinding": [
         {
             "platforms": [
-                "android",
                 "android_webview"
             ],
             "experiments": [

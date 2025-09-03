@@ -587,9 +587,12 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools;
 
 // Enables the ability for IP protection features to be gated in the Privacy
-// and Security Panel within DevTools. When this flag is disabled, the IP
-// Protection section will not be shown in the DevTools panel, allowing testing
-// and development of the IP Protection features before public release.
+// and Security Panel within DevTools. When this flag is enabled, the IP
+// Protection section will be shown in the Privacy and Security section of the
+// DevTools panel allowing users to view proxied requests and bypass IP
+// Protection locally.
+// Do not remove or enable this flag for all users until crbug.com/442349180
+// is resolved.
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyEnableIppPanelInDevTools;
 
@@ -811,6 +814,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kHttpCacheNoVarySearchFakePersistence);
 
+// If true, don't erase the NoVarySearchCache entry when simple cache in-memory
+// hints indicate that the disk cache entry is not usable.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kHttpCacheNoVarySearchKeepNotSuitable);
+
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
@@ -902,6 +910,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kQuicMaxPacketSize);
 // even when there is no available ALPN information.
 NET_EXPORT BASE_DECLARE_FEATURE(kConfigureQuicHints);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicHintHostPortPairs);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
+                                      kWildcardQuicHintHostPortPairs);
 
 }  // namespace net::features
 

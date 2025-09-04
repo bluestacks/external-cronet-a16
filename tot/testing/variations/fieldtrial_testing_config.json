@@ -211,21 +211,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3BrailleIme": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3BrailleIme"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityManifestV3EnhancedNetworkTts": [
         {
             "platforms": [
@@ -266,36 +251,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AccessibilityManifestV3GoogleTts"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AccessibilityManifestV3SelectToSpeak": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3SelectToSpeak"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AccessibilityManifestV3SwitchAccess": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3SwitchAccess"
                     ]
                 }
             ]
@@ -6023,6 +5978,24 @@
             ]
         }
     ],
+    "ChromnientStraightToSrp": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayStraightToSrp"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientSurvey": [
         {
             "platforms": [
@@ -9140,6 +9113,22 @@
             ]
         }
     ],
+    "DiscardPageWithCrashedSubframePolicy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscardPageWithCrashedSubframePolicy",
+                        "WebContentsDiscard"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscountAutoPopup": [
         {
             "platforms": [
@@ -9543,67 +9532,6 @@
             ]
         }
     ],
-    "EducationalTipModule": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithEducationalTipPerDay",
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOnlyQuickDeletePromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOnlyHistorySyncPromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "HistorySyncPromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerThreeDays",
-                    "params": {
-                        "days_to_show_ephemeral_card_once": "3"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerThreeDaysExceptHistorySyncPromo",
-                    "params": {
-                        "days_to_show_ephemeral_card_once": "3",
-                        "names_of_ephemeral_cards_to_show": "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerDayExceptHistorySyncPromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                }
-            ]
-        }
-    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [
@@ -9646,6 +9574,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableADPFSeparateRendererMainSession"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableADPFWorkloadReset": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableADPFWorkloadReset"
                     ]
                 }
             ]
@@ -11460,27 +11403,6 @@
                     "enable_features": [
                         "GlicMultiTab",
                         "GlicMultitabUnderlines"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GlicResetPanelPositionOnNewThread": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "glic-panel-reset-session-timeout-delay-h": "1"
-                    },
-                    "enable_features": [
-                        "GlicPanelResetOnSessionTimeout",
-                        "GlicPanelResetOnStart",
-                        "GlicPanelSetPositionOnDrag"
                     ]
                 }
             ]
@@ -14097,9 +14019,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "NoPurge",
+                    "disable_features": [
+                        "InfiniteTabsFreezingOnMemoryPressure",
+                        "MemoryPurgeOnFreeze"
+                    ]
+                },
+                {
+                    "name": "NoPurgeAndFreeze",
                     "enable_features": [
                         "InfiniteTabsFreezingOnMemoryPressure"
+                    ],
+                    "disable_features": [
+                        "MemoryPurgeOnFreeze"
                     ]
                 }
             ]
@@ -15477,6 +15409,7 @@
     "MemoryCacheStrongRefPruningTuneUp": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
@@ -15489,6 +15422,22 @@
                         "memory_cache_strong_ref_resource_size_threshold": "6291456",
                         "memory_cache_strong_ref_total_size_threshold": "31457280",
                         "strong_reference_prune_delay": "10m"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheStrongReference"
+                    ],
+                    "disable_features": [
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "DefaultsX3",
+                    "params": {
+                        "memory_cache_strong_ref_resource_size_threshold": "9437184",
+                        "memory_cache_strong_ref_total_size_threshold": "47185920",
+                        "strong_reference_prune_delay": "15m"
                     },
                     "enable_features": [
                         "MemoryCacheChangeStrongReferencePruneDelay",
@@ -15523,8 +15472,7 @@
             "platforms": [
                 "chromeos",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
@@ -16039,7 +15987,7 @@
             ]
         }
     ],
-    "NewContentForCheckerboardedScrolls": [
+    "NewContentForCheckerboardedScrollsPerFrame": [
         {
             "platforms": [
                 "android_webview",
@@ -16052,12 +16000,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "enable_features": [
-                        "NewContentForCheckerboardedScrolls"
-                    ]
-                },
-                {
-                    "name": "per_frame",
                     "params": {
                         "mode": "per_frame"
                     },
@@ -18584,9 +18526,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "PrefetchEnabled_PreconnectEnabled",
                     "enable_features": [
-                        "BookmarkTriggerForPreconnect"
+                        "BookmarkTriggerForPreconnect",
+                        "BookmarkTriggerForPrefetch"
                     ]
                 }
             ]
@@ -22428,21 +22371,6 @@
             ]
         }
     ],
-    "ScannerDogfood": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "ScannerDogfood"
-                    ]
-                }
-            ]
-        }
-    ],
     "SchedQoS": [
         {
             "platforms": [
@@ -24395,28 +24323,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SubframePriorityContribution"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SunfishFeature": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Launch",
-                    "enable_features": [
-                        "ScannerUpdate",
-                        "SunfishFeature"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "SunfishFeature"
                     ]
                 }
             ]

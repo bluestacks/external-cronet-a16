@@ -588,7 +588,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.142.0.7393.0",
+    stem: "libmainlinecronet.142.0.7395.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -942,7 +942,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.142.0.7393.0",
+    stem: "libmainlinecronet.142.0.7395.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -2574,6 +2574,7 @@ java_library {
         "test/javatests/src/org/chromium/net/NetworkChangesTest.java",
         "test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
         "test/javatests/src/org/chromium/net/PkpTest.java",
+        "test/javatests/src/org/chromium/net/ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest.java",
         "test/javatests/src/org/chromium/net/ProxyTest.java",
         "test/javatests/src/org/chromium/net/QuicTest.java",
         "test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",
@@ -3669,7 +3670,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.142.0.7393.0_for_testing",
+    stem: "libmainlinecronet.142.0.7395.0_for_testing",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

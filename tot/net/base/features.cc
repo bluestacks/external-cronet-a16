@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #include "net/base/features.h"
 
 #include <string>
@@ -622,6 +624,19 @@ const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
     &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kDefault,
     &kDiskCacheBackendOptions};
 
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheForceCheckpointThreshold,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheForceCheckpointThreshold",
+                   20000);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheIdleCheckpointThreshold,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheIdleCheckpointThreshold",
+                   1000);
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+
 BASE_FEATURE(IgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(SimpleCachePrioritizedCaching, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -770,6 +785,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kAdditionalDelayMainJob,
                    "AdditionalDelay",
                    base::Milliseconds(0));
+BASE_FEATURE_PARAM(bool,
+                   kDelayMainJobWithAvailableSpdySession,
+                   &kAdditionalDelayMainJob,
+                   "DelayMainJobWithAvailableSpdySession",
+                   false);
 
 BASE_FEATURE(ExtendQuicHandshakeTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,

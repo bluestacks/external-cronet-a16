@@ -1975,24 +1975,6 @@
             ]
         }
     ],
-    "AutoPictureInPictureForVideoPlayback": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutoPictureInPictureForVideoPlayback"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutoSpeculationRules": [
         {
             "platforms": [
@@ -7854,6 +7836,21 @@
             ]
         }
     ],
+    "CrosBatteryChargeLimit": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrosBatteryChargeLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosBatterySaver": [
         {
             "platforms": [
@@ -11299,8 +11296,7 @@
         {
             "platforms": [
                 "mac",
-                "windows",
-                "linux"
+                "windows"
             ],
             "experiments": [
                 {
@@ -13311,6 +13307,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LensGestureTextSelectionDisabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSLensStrokesAPI": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_v1",
+                    "enable_features": [
+                        "LensStrokesAPIEnabled"
                     ]
                 }
             ]

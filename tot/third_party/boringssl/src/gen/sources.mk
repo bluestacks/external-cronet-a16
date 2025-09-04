@@ -497,7 +497,6 @@ boringssl_crypto_sources := \
   crypto/x509/x_req.cc \
   crypto/x509/x_sig.cc \
   crypto/x509/x_spki.cc \
-  crypto/x509/x_val.cc \
   crypto/x509/x_x509.cc \
   crypto/x509/x_x509a.cc \
   crypto/xwing/xwing.cc \
@@ -983,6 +982,7 @@ boringssl_crypto_test_data := \
   crypto/x509/test/pss_sha256_wrong_trailer.pem \
   crypto/x509/test/pss_sha384.pem \
   crypto/x509/test/pss_sha512.pem \
+  crypto/x509/test/rsa_pss_sha256_key.pk8 \
   crypto/x509/test/some_names1.pem \
   crypto/x509/test/some_names2.pem \
   crypto/x509/test/some_names3.pem \

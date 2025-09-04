@@ -257,7 +257,6 @@ tot_cronet_crypto_sources := \
   src/crypto/x509/x_req.cc\
   src/crypto/x509/x_sig.cc\
   src/crypto/x509/x_spki.cc\
-  src/crypto/x509/x_val.cc\
   src/crypto/x509/x_x509.cc\
   src/crypto/x509/x_x509a.cc\
   src/crypto/xwing/xwing.cc\

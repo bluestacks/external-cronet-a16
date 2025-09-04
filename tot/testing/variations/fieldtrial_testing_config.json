@@ -9113,6 +9113,22 @@
             ]
         }
     ],
+    "DiscardPageWithCrashedSubframePolicy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscardPageWithCrashedSubframePolicy",
+                        "WebContentsDiscard"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscountAutoPopup": [
         {
             "platforms": [
@@ -11372,27 +11388,6 @@
                     "enable_features": [
                         "GlicMultiTab",
                         "GlicMultitabUnderlines"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GlicResetPanelPositionOnNewThread": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "glic-panel-reset-session-timeout-delay-h": "1"
-                    },
-                    "enable_features": [
-                        "GlicPanelResetOnSessionTimeout",
-                        "GlicPanelResetOnStart",
-                        "GlicPanelSetPositionOnDrag"
                     ]
                 }
             ]
@@ -18516,9 +18511,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "PrefetchEnabled_PreconnectEnabled",
                     "enable_features": [
-                        "BookmarkTriggerForPreconnect"
+                        "BookmarkTriggerForPreconnect",
+                        "BookmarkTriggerForPrefetch"
                     ]
                 }
             ]

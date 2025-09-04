@@ -2144,6 +2144,23 @@ static bssl::UniquePtr<X509> ReencodeCertificate(X509 *cert) {
   return bssl::UniquePtr<X509>(d2i_X509(nullptr, &inp, len));
 }
 
+static bssl::UniquePtr<X509> ReencodeCertificateWithAlgorithms(
+    X509 *cert, bssl::Span<const EVP_PKEY_ALG *const> algs) {
+  uint8_t *der = nullptr;
+  int len = i2d_X509(cert, &der);
+  bssl::UniquePtr<uint8_t> free_der(der);
+  if (len <= 0) {
+    return nullptr;
+  }
+
+  bssl::UniquePtr<CRYPTO_BUFFER> buf(CRYPTO_BUFFER_new(der, len, nullptr));
+  if (buf == nullptr) {
+    return nullptr;
+  }
+  return bssl::UniquePtr<X509>(
+      X509_parse_with_algorithms(buf.get(), algs.data(), algs.size()));
+}
+
 static bssl::UniquePtr<X509_CRL> ReencodeCRL(X509_CRL *crl) {
   uint8_t *der = nullptr;
   int len = i2d_X509_CRL(crl, &der);
@@ -2663,15 +2680,12 @@ TEST(X509Test, TestFromBuffer) {
   bssl::UniquePtr<X509> root(X509_parse_from_buffer(buf.get()));
   ASSERT_TRUE(root);
 
-  const uint8_t *enc_pointer = root->cert_info->enc.enc;
-  const uint8_t *buf_pointer = CRYPTO_BUFFER_data(buf.get());
-  ASSERT_GE(enc_pointer, buf_pointer);
-  ASSERT_LT(enc_pointer, buf_pointer + CRYPTO_BUFFER_len(buf.get()));
+  EXPECT_EQ(buf.get(), root->buf);
   buf.reset();
 
-  /* This ensures the X509 took a reference to |buf|, otherwise this will be a
-   * reference to free memory and ASAN should notice. */
-  ASSERT_EQ(0x30, enc_pointer[0]);
+  // This ensures the X509 took a reference to |buf|, otherwise this will be a
+  // reference to free memory and ASAN should notice.
+  CRYPTO_BUFFER_len(root->buf);
 }
 
 TEST(X509Test, TestFromBufferWithTrailingData) {
@@ -2730,28 +2744,23 @@ TEST(X509Test, TestFromBufferReused) {
   size_t data2_len;
   bssl::UniquePtr<uint8_t> data2;
   ASSERT_TRUE(PEMToDER(&data2, &data2_len, kLeafPEM));
-  EXPECT_TRUE(buffers_alias(root->cert_info->enc.enc, root->cert_info->enc.len,
-                            CRYPTO_BUFFER_data(buf.get()),
-                            CRYPTO_BUFFER_len(buf.get())));
+  EXPECT_EQ(root->buf, buf.get());
 
   // Historically, this function tested the interaction betweeen
   // |X509_parse_from_buffer| and object reuse. We no longer support object
   // reuse, so |d2i_X509| will replace |raw| with a new object. However, we
   // retain this test to verify that releasing objects from |d2i_X509| works
-  // correctly.
+  // correctly and doesn't keep the old buffer.
   X509 *raw = root.release();
   const uint8_t *inp = data2.get();
   X509 *ret = d2i_X509(&raw, &inp, data2_len);
   root.reset(raw);
 
   ASSERT_EQ(root.get(), ret);
-  ASSERT_EQ(nullptr, root->cert_info->enc.buf);
-  EXPECT_FALSE(buffers_alias(root->cert_info->enc.enc, root->cert_info->enc.len,
-                             CRYPTO_BUFFER_data(buf.get()),
-                             CRYPTO_BUFFER_len(buf.get())));
+  ASSERT_NE(buf.get(), root->buf);
 
-  // Free |data2| and ensure that |root| took its own copy. Otherwise the
-  // following will trigger a use-after-free.
+  // Free |data2| and ensure that |root| took its own copy. Otherwise
+  // serializing |root|, below, will trigger a use-after-free.
   data2.reset();
 
   uint8_t *i2d = nullptr;
@@ -2760,10 +2769,7 @@ TEST(X509Test, TestFromBufferReused) {
   bssl::UniquePtr<uint8_t> i2d_storage(i2d);
 
   ASSERT_TRUE(PEMToDER(&data2, &data2_len, kLeafPEM));
-
-  ASSERT_EQ(static_cast<long>(data2_len), i2d_len);
-  ASSERT_EQ(0, OPENSSL_memcmp(data2.get(), i2d, i2d_len));
-  ASSERT_EQ(nullptr, root->cert_info->enc.buf);
+  EXPECT_EQ(Bytes(i2d, i2d_len), Bytes(data2.get(), data2_len));
 }
 
 TEST(X509Test, TestFailedParseFromBuffer) {
@@ -8903,6 +8909,83 @@ TEST(X509Test, TrailingDataCSR) {
         EXPECT_FALSE(parsed);
       });
   EXPECT_TRUE(ok);
+}
+
+TEST(X509Test, NonDefaultKeyType) {
+  // Parse an RSA-PSS key. This key type is not enabled by default.
+  std::string pkcs8_str =
+      GetTestData("crypto/x509/test/rsa_pss_sha256_key.pk8");
+  auto pkcs8 = bssl::StringAsBytes(pkcs8_str);
+  const EVP_PKEY_ALG *const alg = EVP_pkey_rsa_pss_sha256();
+  bssl::UniquePtr<EVP_PKEY> pkey(
+      EVP_PKEY_from_private_key_info(pkcs8.data(), pkcs8.size(), &alg, 1));
+  ASSERT_TRUE(pkey);
+  EXPECT_EQ(EVP_PKEY_id(pkey.get()), EVP_PKEY_RSA_PSS);
+
+  // It should be possible to use |pkey| to make a certificate.
+  bssl::UniquePtr<X509> cert =
+      MakeTestCert("Test Issuer", "Test Subject", pkey.get(), /*is_ca=*/false);
+  ASSERT_TRUE(cert);
+  ASSERT_TRUE(X509_sign(cert.get(), pkey.get(), EVP_sha256()));
+
+  // Verify the signature with |pkey|.
+  EXPECT_TRUE(X509_verify(cert.get(), pkey.get()));
+
+#if 1
+  // TODO(crbug.com/42290364): This does not currently work, but it should.
+  EXPECT_FALSE(X509_get0_pubkey(cert.get()));
+#else
+  // The public key can be extracted from |cert|.
+  const EVP_PKEY *cert_pkey = X509_get0_pubkey(cert.get());
+  ASSERT_TRUE(cert_pkey);
+  EXPECT_EQ(EVP_PKEY_cmp(pkey.get(), cert_pkey), 1);
+  // |X509_check_private_key| should work.
+  EXPECT_EQ(X509_check_private_key(cert.get(), pkey.get()), 1);
+#endif
+
+  // The resulting certificate can be serialized and re-parsed.
+  bssl::UniquePtr<X509> reparsed = ReencodeCertificate(cert.get());
+  ASSERT_TRUE(reparsed);
+
+  // RSA-PSS is off by default, so parsing certificates anew with |d2i_X509|
+  // will not enable off-by-default algorithms.
+  EXPECT_FALSE(X509_get0_pubkey(reparsed.get()));
+  EXPECT_EQ(X509_check_private_key(reparsed.get(), pkey.get()), 0);
+
+  // Reparsing with RSA-PSS enabled does enable it.
+  bssl::UniquePtr<X509> cert_with_key =
+      ReencodeCertificateWithAlgorithms(cert.get(), bssl::Span(&alg, 1));
+  ASSERT_TRUE(cert_with_key);
+  // The public key can be extracted from |cert|.
+  const EVP_PKEY *cert_pkey = X509_get0_pubkey(cert_with_key.get());
+  ASSERT_TRUE(cert_pkey);
+  EXPECT_EQ(EVP_PKEY_cmp(pkey.get(), cert_pkey), 1);
+  // |X509_check_private_key| should work.
+  EXPECT_EQ(X509_check_private_key(cert_with_key.get(), pkey.get()), 1);
+
+  // Verifying a certificate chain using |EVP_PKEY_RSA_PSS| should work as long
+  // as all CA certificates have the key available. The end-entity key is not
+  // checked.
+  bssl::UniquePtr<X509> root =
+      MakeTestCert("Test Issuer", "Test Issuer", pkey.get(), /*is_ca=*/true);
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(X509_sign(root.get(), pkey.get(), EVP_sha256()));
+  root = ReencodeCertificate(root.get());
+  ASSERT_TRUE(root);
+  bssl::UniquePtr<X509> root_with_key =
+      ReencodeCertificateWithAlgorithms(root.get(), bssl::Span(&alg, 1));
+  ASSERT_TRUE(root_with_key);
+  EXPECT_EQ(X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY,
+            Verify(cert.get(), /*roots=*/{root.get()},
+                   /*intermediates=*/{}, /*crls=*/{}));
+  EXPECT_EQ(X509_V_OK, Verify(cert.get(), /*roots=*/{root_with_key.get()},
+                              /*intermediates=*/{}, /*crls=*/{}));
+  EXPECT_EQ(X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY,
+            Verify(cert_with_key.get(), /*roots=*/{root.get()},
+                   /*intermediates=*/{}, /*crls=*/{}));
+  EXPECT_EQ(X509_V_OK,
+            Verify(cert_with_key.get(), /*roots=*/{root_with_key.get()},
+                   /*intermediates=*/{}, /*crls=*/{}));
 }
 
 }  // namespace

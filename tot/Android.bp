@@ -14149,8 +14149,6 @@ cc_genrule {
          "from-jar " +
          "--output-dir " +
          "'$(genDir)/base/android_runtime_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--jar-file " +
          "'$(location :current_android_jar)' " +
          "--javap " +
@@ -14212,8 +14210,6 @@ cc_genrule {
          "from-jar " +
          "--output-dir " +
          "'$(genDir)/base/android_runtime_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--jar-file " +
          "'$(location :current_android_jar)' " +
          "--javap " +
@@ -16714,8 +16710,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -16853,8 +16847,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -16988,8 +16980,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17125,8 +17115,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17307,8 +17295,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17404,8 +17390,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17497,8 +17481,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17592,8 +17574,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17770,8 +17750,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_shared_preferences_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_shared_preferences_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17830,8 +17808,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_shared_preferences_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_shared_preferences_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -17888,8 +17864,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/base_shared_preferences_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/base_shared_preferences_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18110,7 +18084,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1757077888",
+         "1757090187",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18132,7 +18106,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1757077888",
+         "1757090187",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -18225,8 +18199,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/build_info_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/build_info_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18297,8 +18269,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/build_info_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/build_info_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18377,8 +18347,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/build_info_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/build_info_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18447,8 +18415,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/build_info_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/build_info_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18585,8 +18551,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/bundle_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/bundle_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18645,8 +18609,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/bundle_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/bundle_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18713,8 +18675,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/bundle_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/bundle_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18771,8 +18731,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/bundle_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/bundle_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18899,8 +18857,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/callback_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/callback_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -18959,8 +18915,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/callback_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/callback_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19015,8 +18969,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/callback_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/callback_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19073,8 +19025,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/callback_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/callback_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19598,8 +19548,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/command_line_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/command_line_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19658,8 +19606,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/command_line_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/command_line_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19714,8 +19660,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/command_line_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/command_line_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19772,8 +19716,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/command_line_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/command_line_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19888,8 +19830,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/content_uri_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/content_uri_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -19948,8 +19888,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/content_uri_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/content_uri_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20320,8 +20258,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/features_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/features_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20392,8 +20328,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/features_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/features_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20472,8 +20406,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/features_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/features_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20542,8 +20474,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/features_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/features_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20742,8 +20672,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/file_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/file_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20802,8 +20730,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/file_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/file_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20870,8 +20796,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/file_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/file_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -20928,8 +20852,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/file_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/file_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -21779,8 +21701,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jank_tracker_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jank_tracker_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -21839,8 +21759,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jank_tracker_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jank_tracker_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -21907,8 +21825,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jank_tracker_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jank_tracker_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -21965,8 +21881,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jank_tracker_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jank_tracker_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22223,8 +22137,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jni_android_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jni_android_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22283,8 +22195,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jni_android_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jni_android_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22351,8 +22261,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jni_android_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jni_android_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22409,8 +22317,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/jni_android_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/jni_android_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22652,8 +22558,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/library_loader_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/library_loader_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22718,8 +22622,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/library_loader_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/library_loader_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22780,8 +22682,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/library_loader_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/library_loader_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -22844,8 +22744,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/library_loader_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/library_loader_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23154,8 +23052,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/memory_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/memory_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23232,8 +23128,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/memory_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/memory_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23318,8 +23212,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/memory_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/memory_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23394,8 +23286,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/memory_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/memory_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23704,8 +23594,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/metrics_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/metrics_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23770,8 +23658,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/metrics_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/metrics_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23832,8 +23718,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/metrics_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/metrics_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -23896,8 +23780,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/metrics_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/metrics_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -24138,8 +24020,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/path_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/path_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -24198,8 +24078,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/path_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/path_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -24266,8 +24144,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/path_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/path_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -24324,8 +24200,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/path_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/path_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -24511,8 +24385,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/process_launcher_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/process_launcher_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -24571,8 +24443,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/process_launcher_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/process_launcher_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -25649,8 +25519,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/sys_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/sys_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -25709,8 +25577,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/sys_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/sys_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -25777,8 +25643,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/sys_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/sys_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -25835,8 +25699,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/sys_utils_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/sys_utils_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26023,8 +25885,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26107,8 +25967,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26187,8 +26045,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26269,8 +26125,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26405,8 +26259,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26465,8 +26317,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26521,8 +26371,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26579,8 +26427,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/tasks_minimal_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/tasks_minimal_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -26696,8 +26542,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/test/base_unittests_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/test/base_unittests_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -29345,8 +29189,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/test/test_support_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/test/test_support_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -29917,8 +29759,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -29977,8 +29817,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -30033,8 +29871,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -30091,8 +29927,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/version_info/android/version_constants_bridge_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -30269,8 +30103,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/virtual_document_path_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/virtual_document_path_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -30329,8 +30161,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/base/virtual_document_path_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/base/virtual_document_path_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -32368,7 +32198,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=39 " +
+         "API_LEVEL=40 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/api/src/org/chromium/net/ApiVersion.template)'",
@@ -32398,7 +32228,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=39 " +
+         "API_LEVEL=40 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/api/src/org/chromium/net/ApiVersion.template)'",
@@ -32823,6 +32653,7 @@ cc_genrule {
         "build/config/compiler/compiler_buildflags.h",
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -33558,6 +33389,7 @@ cc_genrule {
         "build/config/compiler/compiler_buildflags.h",
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -36581,6 +36413,7 @@ java_genrule {
 cc_genrule {
     name: "tot_cronet_components_cronet_android_cronet_jni_headers__action",
     srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -36595,8 +36428,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -36604,6 +36435,8 @@ cc_genrule {
          "--enable-legacy-natives " +
          "--use-proxy-hash " +
          "--allow-private-called-by-natives " +
+         "--output-name " +
+         "CompletionOnceCallback_jni.h " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
          "--output-name " +
@@ -36618,6 +36451,8 @@ cc_genrule {
          "CronetUrlRequestContext_jni.h " +
          "--output-name " +
          "ProxyCallbackRequestImpl_jni.h " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
@@ -36637,6 +36472,7 @@ cc_genrule {
     host_cross_supported: false,
     out: [
         "components/cronet/android/cronet_jni_headers.srcjar",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -36677,6 +36513,7 @@ cc_genrule {
 java_genrule {
     name: "tot_cronet_components_cronet_android_cronet_jni_headers__action__java",
     srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -36691,8 +36528,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -36700,6 +36535,8 @@ java_genrule {
          "--enable-legacy-natives " +
          "--use-proxy-hash " +
          "--allow-private-called-by-natives " +
+         "--output-name " +
+         "CompletionOnceCallback_jni.h " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
          "--output-name " +
@@ -36714,6 +36551,8 @@ java_genrule {
          "CronetUrlRequestContext_jni.h " +
          "--output-name " +
          "ProxyCallbackRequestImpl_jni.h " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
@@ -36732,6 +36571,7 @@ java_genrule {
          "android.net.connectivity",
     out: [
         "components/cronet/android/cronet_jni_headers.srcjar",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -36781,6 +36621,7 @@ java_genrule {
 cc_genrule {
     name: "tot_cronet_components_cronet_android_cronet_jni_headers__action__testing",
     srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -36795,8 +36636,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -36804,6 +36643,8 @@ cc_genrule {
          "--enable-legacy-natives " +
          "--use-proxy-hash " +
          "--allow-private-called-by-natives " +
+         "--output-name " +
+         "CompletionOnceCallback_jni.h " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
          "--output-name " +
@@ -36818,6 +36659,8 @@ cc_genrule {
          "CronetUrlRequestContext_jni.h " +
          "--output-name " +
          "ProxyCallbackRequestImpl_jni.h " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
@@ -36835,6 +36678,7 @@ cc_genrule {
     host_cross_supported: false,
     out: [
         "components/cronet/android/cronet_jni_headers.srcjar",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -36875,6 +36719,7 @@ cc_genrule {
 java_genrule {
     name: "tot_cronet_components_cronet_android_cronet_jni_headers__action__testing__java",
     srcs: [
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -36889,8 +36734,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -36898,6 +36741,8 @@ java_genrule {
          "--enable-legacy-natives " +
          "--use-proxy-hash " +
          "--allow-private-called-by-natives " +
+         "--output-name " +
+         "CompletionOnceCallback_jni.h " +
          "--output-name " +
          "CronetBidirectionalStream_jni.h " +
          "--output-name " +
@@ -36912,6 +36757,8 @@ java_genrule {
          "CronetUrlRequestContext_jni.h " +
          "--output-name " +
          "ProxyCallbackRequestImpl_jni.h " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
@@ -36928,6 +36775,7 @@ java_genrule {
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/ProxyCallbackRequestImpl.java)'",
     out: [
         "components/cronet/android/cronet_jni_headers.srcjar",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -37026,6 +36874,7 @@ cc_genrule {
         "base/android/java/src/org/chromium/base/task/PostTask.java",
         "base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -37156,6 +37005,7 @@ java_genrule {
         "base/android/java/src/org/chromium/base/task/PostTask.java",
         "base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -37281,6 +37131,7 @@ cc_genrule {
         "base/android/java/src/org/chromium/base/task/PostTask.java",
         "base/android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -37419,6 +37270,7 @@ java_genrule {
         "base/test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java",
         "base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -37795,6 +37647,7 @@ cc_genrule {
         "build/config/compiler/compiler_buildflags.h",
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -38530,6 +38383,7 @@ cc_genrule {
         "build/config/compiler/compiler_buildflags.h",
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -39205,8 +39059,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_test_apk_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_test_apk_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -39293,8 +39145,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_test_apk_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_test_apk_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -39535,6 +39385,7 @@ cc_genrule {
         "build/config/compiler/compiler_buildflags.h",
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -40134,8 +39985,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_tests_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_tests_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -40204,8 +40053,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/cronet/android/cronet_tests_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/cronet/android/cronet_tests_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -40331,6 +40178,7 @@ java_genrule {
         "base/test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java",
         "base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java",
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -41029,6 +40877,7 @@ cc_genrule {
         "build/config/compiler/compiler_buildflags.h",
         "build/ios_buildflags.h",
         "build/robolectric_buildflags.h",
+        "components/cronet/android/cronet_jni_headers/CompletionOnceCallback_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
@@ -41976,7 +41825,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=39 " +
+         "API_LEVEL=40 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template)'",
@@ -42006,7 +41855,7 @@ java_genrule {
          "-f " +
          "'$(location build/util/LASTCHANGE)' " +
          "-e " +
-         "API_LEVEL=39 " +
+         "API_LEVEL=40 " +
          "-o " +
          "'$(out)' " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/ImplVersion.template)'",
@@ -50183,8 +50032,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/prefs/android/jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/prefs/android/jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -50249,8 +50096,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/components/prefs/android/jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/components/prefs/android/jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -64844,8 +64689,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/android/dummy_spnego_authenticator_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/android/dummy_spnego_authenticator_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -64902,8 +64745,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/android/dummy_spnego_authenticator_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/android/dummy_spnego_authenticator_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -65587,8 +65428,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/android/net_test_support_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/android/net_test_support_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -65645,8 +65484,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/android/net_test_support_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/android/net_test_support_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -65816,8 +65653,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/android/net_test_support_provider_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/android/net_test_support_provider_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -65914,8 +65749,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/android/net_tests_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/android/net_tests_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -65978,8 +65811,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/android/net_tests_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/android/net_tests_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -85124,8 +84955,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/net_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/net_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -85256,8 +85085,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/net_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/net_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -85396,8 +85223,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/net_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/net_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -85526,8 +85351,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/net/net_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/net/net_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -105568,8 +105391,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/testing/android/native_test/native_main_runner_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/testing/android/native_test/native_main_runner_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -105626,8 +105447,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/testing/android/native_test/native_main_runner_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/testing/android/native_test/native_main_runner_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -105723,8 +105542,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/testing/android/native_test/native_test_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/testing/android/native_test/native_test_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -105781,8 +105598,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/testing/android/native_test/native_test_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/testing/android/native_test/native_test_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -114653,8 +114468,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/third_party/jni_zero/generate_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/third_party/jni_zero/generate_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -114719,8 +114532,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/third_party/jni_zero/generate_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/third_party/jni_zero/generate_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -114781,8 +114592,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/third_party/jni_zero/generate_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/third_party/jni_zero/generate_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -114845,8 +114654,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/third_party/jni_zero/generate_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/third_party/jni_zero/generate_jni.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -115081,8 +114888,6 @@ cc_genrule {
          "from-jar " +
          "--output-dir " +
          "'$(genDir)/third_party/jni_zero/system_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--jar-file " +
          "'$(location :current_android_jar)' " +
          "--javap " +
@@ -115164,8 +114969,6 @@ cc_genrule {
          "from-jar " +
          "--output-dir " +
          "'$(genDir)/third_party/jni_zero/system_jni' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--jar-file " +
          "'$(location :current_android_jar)' " +
          "--javap " +
@@ -145630,8 +145433,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/url/url_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/url/url_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -145690,8 +145491,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/url/url_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/url/url_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -145758,8 +145557,6 @@ cc_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/url/url_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/url/url_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +
@@ -145816,8 +145613,6 @@ java_genrule {
          "from-source " +
          "--output-dir " +
          "'$(genDir)/url/url_jni_headers' " +
-         "--extra-include " +
-         "third_party/jni_zero/jni_zero_internal.h " +
          "--srcjar-path " +
          "'$(genDir)/url/url_jni_headers.srcjar' " +
          "--placeholder-srcjar-path " +

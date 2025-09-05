@@ -1832,6 +1832,26 @@
             ]
         }
     ],
+    "AsyncTouchMovesImmediatelyAfterScroll": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AsyncTouchMovesImmediatelyAfterScroll"
+                    ]
+                }
+            ]
+        }
+    ],
     "AttributionReportNavigationBasedRetry": [
         {
             "platforms": [
@@ -14995,6 +15015,25 @@
             ]
         }
     ],
+    "LocalNetworkAccessChecksWebSockets": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalNetworkAccessChecksWebSockets"
+                    ]
+                }
+            ]
+        }
+    ],
     "LofnPermissiveUsbPassthrough": [
         {
             "platforms": [
@@ -21243,31 +21282,6 @@
                     "enable_features": [
                         "SafetyCheckMagicStack",
                         "SegmentationPlatformIosModuleRankerSplitBySurface"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafetyCheckNotificationsWithInterstitial": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SafetyCheckAllowPasswordsNotifications": "true",
-                        "SafetyCheckAllowSafeBrowsingNotifications": "true",
-                        "SafetyCheckAllowUpdateChromeNotifications": "true",
-                        "SafetyCheckNotificationsExperimentType": "1",
-                        "SafetyCheckNotificationsImpressionLimit": "0",
-                        "SafetyCheckNotificationsImpressionTrigger": "1",
-                        "SafetyCheckNotificationsProvisionalEnabled": "true"
-                    },
-                    "enable_features": [
-                        "OmahaServiceRefactor",
-                        "SafetyCheckNotifications"
                     ]
                 }
             ]

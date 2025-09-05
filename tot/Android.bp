@@ -18084,7 +18084,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1757090187",
+         "1757097085",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18106,7 +18106,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1757090187",
+         "1757097085",
     host_supported: true,
     host_cross_supported: false,
     out: [

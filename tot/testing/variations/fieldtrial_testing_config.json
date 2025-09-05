@@ -2558,6 +2558,25 @@
             ]
         }
     ],
+    "AutofillEnableSaveAndFill": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableSaveAndFill"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
@@ -9710,6 +9729,21 @@
             ]
         }
     ],
+    "EnableClientCertificateProvisioningOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableClientCertificateProvisioningOnAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableClipboardDataControlsAndroid": [
         {
             "platforms": [
@@ -13842,21 +13876,6 @@
                     },
                     "enable_features": [
                         "TabResumptionImages"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSTailoredNonModalDBPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TailoredNonModalDBPromo"
                     ]
                 }
             ]

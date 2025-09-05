@@ -39,7 +39,7 @@ cc_binary {
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
         "libequivalent__1f91dc7100be641c",
-        "libfoldhash__3d2886e384b4e895",
+        "libfoldhash__a66b9619b56052e2",
         "libhashbrown__43017ced9378f53d",
         "libindexmap__56b3e83eb01f9790",
         "libitoa__5f66f1469987af64",

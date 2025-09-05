@@ -39,6 +39,7 @@ license {
 rust_proc_macro {
     name: "libcxxbridge_macro__24775604789306ce",
     srcs: [
+        "src/cfg.rs",
         "src/derive.rs",
         "src/expand.rs",
         "src/generics.rs",
@@ -125,6 +126,7 @@ rust_proc_macro {
 rust_proc_macro {
     name: "libcxxbridge_macro__4065570b4b928338",
     srcs: [
+        "src/cfg.rs",
         "src/derive.rs",
         "src/expand.rs",
         "src/generics.rs",

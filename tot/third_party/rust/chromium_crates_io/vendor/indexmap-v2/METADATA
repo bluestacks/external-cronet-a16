@@ -3,6 +3,6 @@
 name: "indexmap"
 third_party {
   license_type: NOTICE
-  version: "2.10.0"
+  version: "2.11.0"
   homepage: "https://crates.io/crates/indexmap"
 }

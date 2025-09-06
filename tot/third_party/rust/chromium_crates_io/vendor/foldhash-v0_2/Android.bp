@@ -17,13 +17,13 @@
 // GN: Package-Artificial
 package {
     default_applicable_licenses: [
-        "tot_cronet_third_party_rust_foldhash_v0_1_license",
+        "tot_cronet_third_party_rust_foldhash_v0_2_license",
     ],
 }
 
 // GN: License-Artificial
 license {
-    name: "tot_cronet_third_party_rust_foldhash_v0_1_license",
+    name: "tot_cronet_third_party_rust_foldhash_v0_2_license",
     visibility: [
         ":__subpackages__",
     ],
@@ -35,9 +35,125 @@ license {
     ],
 }
 
-// GN: //third_party/rust/foldhash/v0_1:lib__testing
+// GN: //third_party/rust/foldhash/v0_2:lib
 rust_ffi_static {
-    name: "libfoldhash__3d2886e384b4e895",
+    name: "libfoldhash__1d30dfff3e66fd06",
+    srcs: [
+        "src/convenience.rs",
+        "src/fast.rs",
+        "src/lib.rs",
+        "src/quality.rs",
+        "src/seed.rs",
+    ],
+    host_cross_supported: false,
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+    crate_name: "foldhash",
+    crate_root: "src/lib.rs",
+    rustlibs: [
+        "liballoc_error_handler_impl_ffi__b3956dbf57d32035",
+        "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
+    ],
+    target: {
+        android_arm: {
+            edition: "2021",
+            features: [
+                "std",
+            ],
+            flags: [
+                "-Cmetadata=foldhash-0.2",
+                "-Cforce-unwind-tables=yes",
+                "-Crelocation-model=pic",
+                "-Cdefault-linker-libraries",
+                "-Clto=no",
+                "-Ccodegen-units=1",
+                "-Copt-level=s",
+                "-Cdebuginfo=1",
+                "-Awarnings",
+            ],
+        },
+        android_arm64: {
+            edition: "2021",
+            features: [
+                "std",
+            ],
+            flags: [
+                "-Cmetadata=foldhash-0.2",
+                "-Cforce-unwind-tables=yes",
+                "-Crelocation-model=pic",
+                "-Cdefault-linker-libraries",
+                "-Clto=no",
+                "-Ccodegen-units=1",
+                "-Copt-level=3",
+                "-Cdebuginfo=1",
+                "-Awarnings",
+            ],
+        },
+        android_riscv64: {
+            edition: "2021",
+            features: [
+                "std",
+            ],
+            flags: [
+                "-Cmetadata=foldhash-0.2",
+                "-Cforce-unwind-tables=yes",
+                "-Crelocation-model=pic",
+                "-Cdefault-linker-libraries",
+                "-Clto=no",
+                "-Ccodegen-units=1",
+                "-Copt-level=s",
+                "-Cdebuginfo=1",
+                "-Awarnings",
+            ],
+        },
+        android_x86: {
+            edition: "2021",
+            features: [
+                "std",
+            ],
+            flags: [
+                "-Cmetadata=foldhash-0.2",
+                "-Cforce-unwind-tables=yes",
+                "-Crelocation-model=pic",
+                "-Cdefault-linker-libraries",
+                "-Clto=no",
+                "-Ccodegen-units=1",
+                "-Copt-level=s",
+                "-Cdebuginfo=1",
+                "-Awarnings",
+            ],
+        },
+        android_x86_64: {
+            edition: "2021",
+            features: [
+                "std",
+            ],
+            flags: [
+                "-Cmetadata=foldhash-0.2",
+                "-Cforce-unwind-tables=yes",
+                "-Crelocation-model=pic",
+                "-Cdefault-linker-libraries",
+                "-Clto=no",
+                "-Ccodegen-units=1",
+                "-Copt-level=3",
+                "-Cdebuginfo=1",
+                "-Awarnings",
+            ],
+        },
+        host: {
+            compile_multilib: "64",
+        },
+    },
+}
+
+// GN: //third_party/rust/foldhash/v0_2:lib__testing
+rust_ffi_static {
+    name: "libfoldhash__a66b9619b56052e2",
     srcs: [
         "src/convenience.rs",
         "src/fast.rs",
@@ -67,7 +183,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Cmetadata=foldhash-0.1",
+                "-Cmetadata=foldhash-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -84,7 +200,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Cmetadata=foldhash-0.1",
+                "-Cmetadata=foldhash-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -101,7 +217,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Cmetadata=foldhash-0.1",
+                "-Cmetadata=foldhash-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -118,7 +234,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Cmetadata=foldhash-0.1",
+                "-Cmetadata=foldhash-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -135,7 +251,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Cmetadata=foldhash-0.1",
+                "-Cmetadata=foldhash-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -153,7 +269,7 @@ rust_ffi_static {
                 "std",
             ],
             flags: [
-                "-Cmetadata=foldhash-0.1",
+                "-Cmetadata=foldhash-0.2",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -163,122 +279,6 @@ rust_ffi_static {
                 "-Cdebuginfo=1",
                 "-Awarnings",
             ],
-        },
-    },
-}
-
-// GN: //third_party/rust/foldhash/v0_1:lib
-rust_ffi_static {
-    name: "libfoldhash__9d82c8b43061ff92",
-    srcs: [
-        "src/convenience.rs",
-        "src/fast.rs",
-        "src/lib.rs",
-        "src/quality.rs",
-        "src/seed.rs",
-    ],
-    host_cross_supported: false,
-    apex_available: [
-        "com.android.tethering",
-    ],
-    min_sdk_version: "30",
-    visibility: [
-        "//external/cronet:__subpackages__",
-    ],
-    crate_name: "foldhash",
-    crate_root: "src/lib.rs",
-    rustlibs: [
-        "liballoc_error_handler_impl_ffi__b3956dbf57d32035",
-        "libbuild_srust_sallocator_callocator__f1643c64cea8f315",
-    ],
-    target: {
-        android_arm: {
-            edition: "2021",
-            features: [
-                "std",
-            ],
-            flags: [
-                "-Cmetadata=foldhash-0.1",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-                "-Awarnings",
-            ],
-        },
-        android_arm64: {
-            edition: "2021",
-            features: [
-                "std",
-            ],
-            flags: [
-                "-Cmetadata=foldhash-0.1",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=3",
-                "-Cdebuginfo=1",
-                "-Awarnings",
-            ],
-        },
-        android_riscv64: {
-            edition: "2021",
-            features: [
-                "std",
-            ],
-            flags: [
-                "-Cmetadata=foldhash-0.1",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-                "-Awarnings",
-            ],
-        },
-        android_x86: {
-            edition: "2021",
-            features: [
-                "std",
-            ],
-            flags: [
-                "-Cmetadata=foldhash-0.1",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=s",
-                "-Cdebuginfo=1",
-                "-Awarnings",
-            ],
-        },
-        android_x86_64: {
-            edition: "2021",
-            features: [
-                "std",
-            ],
-            flags: [
-                "-Cmetadata=foldhash-0.1",
-                "-Cforce-unwind-tables=yes",
-                "-Crelocation-model=pic",
-                "-Cdefault-linker-libraries",
-                "-Clto=no",
-                "-Ccodegen-units=1",
-                "-Copt-level=3",
-                "-Cdebuginfo=1",
-                "-Awarnings",
-            ],
-        },
-        host: {
-            compile_multilib: "64",
         },
     },
 }

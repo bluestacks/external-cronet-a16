@@ -43,7 +43,7 @@ rust_ffi_static {
         "libbuild_srust_sallocator_callocator__005dbc46df2cb5b2",
         "libchromium__c6c34dd5a98579f2",
         "libcxx__2cd805ef869e78fa",
-        "libfoldhash__3d2886e384b4e895",
+        "libfoldhash__a66b9619b56052e2",
     ],
     target: {
         android_arm: {

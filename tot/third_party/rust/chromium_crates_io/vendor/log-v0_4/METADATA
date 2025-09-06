@@ -3,6 +3,6 @@
 name: "log"
 third_party {
   license_type: NOTICE
-  version: "0.4.27"
+  version: "0.4.28"
   homepage: "https://crates.io/crates/log"
 }

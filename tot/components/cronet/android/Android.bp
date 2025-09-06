@@ -588,7 +588,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.142.0.7395.0",
+    stem: "libmainlinecronet.142.0.7397.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -942,7 +942,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.142.0.7395.0",
+    stem: "libmainlinecronet.142.0.7397.0",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",
@@ -2224,6 +2224,7 @@ java_library {
         ":tot_cronet_components_cronet_android_url_request_error_java__testing",
         "java/src/org/chromium/net/impl/AndroidOsBuild.java",
         "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
+        "java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "java/src/org/chromium/net/impl/CronetRequestCommon.java",
@@ -2327,6 +2328,7 @@ java_library {
         ":tot_cronet_components_cronet_android_url_request_error_java",
         "java/src/org/chromium/net/impl/AndroidOsBuild.java",
         "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
+        "java/src/org/chromium/net/impl/CompletionOnceCallback.java",
         "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
         "java/src/org/chromium/net/impl/CronetRequestCommon.java",
@@ -2574,6 +2576,7 @@ java_library {
         "test/javatests/src/org/chromium/net/NetworkChangesTest.java",
         "test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
         "test/javatests/src/org/chromium/net/PkpTest.java",
+        "test/javatests/src/org/chromium/net/ProxyNoExecutorBackwardCompatibilityTest.java",
         "test/javatests/src/org/chromium/net/ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest.java",
         "test/javatests/src/org/chromium/net/ProxyTest.java",
         "test/javatests/src/org/chromium/net/QuicTest.java",
@@ -2850,6 +2853,7 @@ java_library {
 cc_library_static {
     name: "tot_cronet_components_cronet_android_cronet_static",
     srcs: [
+        "completion_once_callback_adapter.cc",
         "cronet_bidirectional_stream_adapter.cc",
         "cronet_context_adapter.cc",
         "cronet_library_loader.cc",
@@ -2964,6 +2968,7 @@ cc_library_static {
 cc_library_static {
     name: "tot_cronet_components_cronet_android_cronet_static__testing",
     srcs: [
+        "completion_once_callback_adapter.cc",
         "cronet_bidirectional_stream_adapter.cc",
         "cronet_context_adapter.cc",
         "cronet_library_loader.cc",
@@ -3670,7 +3675,7 @@ cc_library_shared {
         "-Wl,--icf=all",
         "-Wl,--script,external/cronet/tot/base/android/library_loader/anchor_functions.lds",
     ],
-    stem: "libmainlinecronet.142.0.7395.0_for_testing",
+    stem: "libmainlinecronet.142.0.7397.0_for_testing",
     visibility: [
         "//external/cronet:__subpackages__",
         "//packages/modules/Connectivity:__subpackages__",

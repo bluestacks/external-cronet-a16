@@ -1,4 +1,25 @@
 {
+    "AIMEligibilityService": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AimServerEligibilityChangedNotification",
+                        "AimServerEligibilityEnabledEn"
+                    ]
+                }
+            ]
+        }
+    ],
     "ANGLEPerContextBlobCache": [
         {
             "platforms": [
@@ -1811,6 +1832,26 @@
             ]
         }
     ],
+    "AsyncTouchMovesImmediatelyAfterScroll": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AsyncTouchMovesImmediatelyAfterScroll"
+                    ]
+                }
+            ]
+        }
+    ],
     "AttributionReportNavigationBasedRetry": [
         {
             "platforms": [
@@ -1949,24 +1990,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutoDisableAccessibility"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutoPictureInPictureForVideoPlayback": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutoPictureInPictureForVideoPlayback"
                     ]
                 }
             ]
@@ -2452,6 +2475,7 @@
                     "enable_features": [
                         "AutofillEnableEmailOrLoyaltyCardsFilling",
                         "AutofillEnableLoyaltyCardsFilling",
+                        "IPH_AutofillEnableLoyaltyCards",
                         "SyncAutofillLoyaltyCard"
                     ]
                 }
@@ -5827,6 +5851,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "contextualize-on-focus": "true",
                         "enable-client-side-header": "true"
                     },
                     "enable_features": [
@@ -7828,6 +7853,21 @@
                     },
                     "enable_features": [
                         "CreditCardInfobarDisplayLength"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CrosBatteryChargeLimit": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrosBatteryChargeLimit"
                     ]
                 }
             ]
@@ -11278,8 +11318,7 @@
         {
             "platforms": [
                 "mac",
-                "windows",
-                "linux"
+                "windows"
             ],
             "experiments": [
                 {
@@ -13295,6 +13334,21 @@
             ]
         }
     ],
+    "IOSLensStrokesAPI": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_v1",
+                    "enable_features": [
+                        "LensStrokesAPIEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLensUnification": [
         {
             "platforms": [
@@ -14956,6 +15010,25 @@
                     },
                     "enable_features": [
                         "LocalNetworkAccessChecks"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LocalNetworkAccessChecksWebSockets": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalNetworkAccessChecksWebSockets"
                     ]
                 }
             ]
@@ -17988,45 +18061,6 @@
                     },
                     "enable_features": [
                         "PerformanceControlsPPMSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PerformanceInterventionString": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledString1_20250630",
-                    "params": {
-                        "string_version": "1"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionNotificationStringImprovements"
-                    ]
-                },
-                {
-                    "name": "EnabledString2_20250630",
-                    "params": {
-                        "string_version": "2"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionNotificationStringImprovements"
-                    ]
-                },
-                {
-                    "name": "EnabledString3_20250630",
-                    "params": {
-                        "string_version": "3"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionNotificationStringImprovements"
                     ]
                 }
             ]
@@ -21253,31 +21287,6 @@
             ]
         }
     ],
-    "SafetyCheckNotificationsWithInterstitial": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SafetyCheckAllowPasswordsNotifications": "true",
-                        "SafetyCheckAllowSafeBrowsingNotifications": "true",
-                        "SafetyCheckAllowUpdateChromeNotifications": "true",
-                        "SafetyCheckNotificationsExperimentType": "1",
-                        "SafetyCheckNotificationsImpressionLimit": "0",
-                        "SafetyCheckNotificationsImpressionTrigger": "1",
-                        "SafetyCheckNotificationsProvisionalEnabled": "true"
-                    },
-                    "enable_features": [
-                        "OmahaServiceRefactor",
-                        "SafetyCheckNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafetyCheckUnusedSitePermissions": [
         {
             "platforms": [
@@ -24343,6 +24352,46 @@
             ]
         }
     ],
+    "SuppressMemoryListeners": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_empty",
+                    "params": {
+                        "suppress_memory_listeners_mask": ""
+                    },
+                    "enable_features": [
+                        "SuppressMemoryListeners"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SuppressMemoryMonitor": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_empty",
+                    "params": {
+                        "suppress_memory_monitor_mask": ""
+                    },
+                    "enable_features": [
+                        "SuppressMemoryMonitor"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressesNetworkActivitiesOnSlowNetwork": [
         {
             "platforms": [
@@ -24428,6 +24477,28 @@
                     },
                     "enable_features": [
                         "SyncIncreaseNudgeDelayForSingleClient"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SyncMoveValuablesToProfileDb": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncMoveValuablesToProfileDb"
                     ]
                 }
             ]

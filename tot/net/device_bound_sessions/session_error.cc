@@ -56,6 +56,11 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kSessionProviderWellKnownMalformed:
     case kRelyingPartyWellKnownUnavailable:
     case kRelyingPartyWellKnownMalformed:
+    case kFederatedKeyThumbprintMismatch:
+    case kInvalidFederatedSessionUrl:
+    case kInvalidFederatedSession:
+    case kInvalidFederatedKey:
+    case kTooManyRelyingOriginLabels:
       NOTREACHED();
   }
 }
@@ -98,6 +103,11 @@ bool SessionError::IsServerError() const {
     case kSessionProviderWellKnownMalformed:
     case kRelyingPartyWellKnownUnavailable:
     case kRelyingPartyWellKnownMalformed:
+    case kFederatedKeyThumbprintMismatch:
+    case kInvalidFederatedSessionUrl:
+    case kInvalidFederatedSession:
+    case kInvalidFederatedKey:
+    case kTooManyRelyingOriginLabels:
       NOTREACHED();
   }
 }

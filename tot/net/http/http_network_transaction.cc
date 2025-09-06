@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "net/http/http_network_transaction.h"
 
 #include <deque>
@@ -316,7 +314,7 @@ void LogIfDuplicateRequest(const GURL& url, bool is_main_frame_navigation) {
 // When this feature is enabled, GET requests with identical URLs within 10
 // seconds will result in the Net.NetworkTransaction.DuplicateRequestInterval
 // histogram being recorded.
-BASE_FEATURE(LogDuplicateRequests, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLogDuplicateRequests, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -742,6 +740,11 @@ void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
     load_timing_internal_info->initialize_stream_delay =
         initialize_stream_end_time_ - initialize_stream_start_time_;
   }
+
+  if (stream_request_completion_details_.has_value()) {
+    load_timing_internal_info->session_source =
+        stream_request_completion_details_->session_source;
+  }
 }
 
 bool HttpNetworkTransaction::GetRemoteEndpoint(IPEndPoint* endpoint) const {
@@ -1135,6 +1138,7 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
       stream_request_->completed() ? stream_request_->negotiated_protocol()
                                    : NextProto::kProtoUnknown);
   create_stream_end_time_ = base::TimeTicks::Now();
+  stream_request_completion_details_ = stream_request_->completion_details();
   RecordStreamRequestResult(result);
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {

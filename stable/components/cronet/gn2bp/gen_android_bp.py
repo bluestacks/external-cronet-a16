@@ -508,6 +508,21 @@ _builtin_deps = {
     # dependency completely as we construct the modules differently.
     '//third_party/rust/cxxbridge_cmd/v1:cxxbridge':
     always_disable,
+    # rustc_print_cfg is used to print rustc compiler default assumption
+    # for a specific CPU architecture (e.g. target_feature="ssse3"). Those
+    # features only changes from one CPU architecture to another. It's used
+    # when generating the cxxbindings and build scripts (build scripts is a
+    # rust concept, it's an rust binary that generates flags used to compile
+    # other rust binaries).
+    # For CXXBindings, we use AOSP's binary which already have the configuration
+    # specified depending on which arch it's building for.
+    # For build scripts, we generate those on Chromium side in a JSON file and
+    # inject them in the pipeline.
+    #
+    # From the above reasoning, we can safely assume that we should not need
+    # to build this target at all.
+    '//build/rust/gni_impl:rustc_print_cfg':
+    always_disable,
     '//net/data/ssl/chrome_root_store:gen_root_store_inc':
     always_disable,
     '//third_party/zstd:headers':
@@ -550,9 +565,7 @@ _builtin_deps = {
     add_androidx_test_runner_java_deps,
     '//third_party/android_sdk:android_test_base_java':
     add_android_test_base_java_deps,
-    '//third_party/accessibility_test_framework:accessibility_test_framework_java':
-    add_accessibility_test_framework_java_deps,
-    '//third_party/accessibility_test_framework:accessibility_core_java':
+    '//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java':
     add_accessibility_test_framework_java_deps,
     '//third_party/android_deps:espresso_java':
     add_espresso_java_deps,
@@ -1160,6 +1173,12 @@ def _set_rust_flags(module: Module.Target, rust_flags: List[str],
     module.edition = list(rust_flags_dict["--edition"])[0]
 
   for cfg in rust_flags_dict.get("--cfg", set()):
+    # This cfg is not actually used in code; Chromium only uses it to force
+    # rebuilds on rustc rolls. It doesn't hurt, per se, but it does create
+    # annoying diff noise on Android.bp files, so we drop it for
+    # aesthetic/convenience reasons.
+    if cfg.startswith("cr_rustc_revision="):
+      continue
     feature_regex = re.match(_FEATURE_REGEX, cfg)
     if feature_regex:
       module.features.add(feature_regex.group(1))
@@ -3273,7 +3292,10 @@ def create_cc_defaults_module():
       # Stops warning about unknown options. This usually happens when
       # Chromium uses a newer version of Clang that supports a flag which
       # Android's clang does not know about.
-      '-Wno-unknown-warning-option'
+      '-Wno-unknown-warning-option',
+      # Required to correctly compile quiche tests.
+      # TODO(crbug.com/433273929): Remove once fixed.
+      "-Wno-nonnull",
   ]
   defaults.build_file_path = ""
   defaults.include_build_directory = False

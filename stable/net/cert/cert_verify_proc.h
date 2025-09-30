@@ -268,7 +268,7 @@ class NET_EXPORT CertVerifyProc
       base::span<const uint8_t> tls_cert,
       const NetLogWithSource& net_log);
 
-  // TODO(crbug.com/392931070): remove this (make internal to
+  // TODO(crbug.com/436300895): remove this (make internal to
   // CertVerifyProcBuiltin), since it is only used internally by
   // Verify2QwacBinding.
   // Performs 2-QWAC verification, if implemented by the subclass. The default
@@ -332,7 +332,7 @@ class NET_EXPORT CertVerifyProc
   // (which are hashes of SubjectPublicKeyInfo structures) has name constraints
   // imposed on it and the names in |dns_names| are not permitted.
   static bool HasNameConstraintsViolation(
-      const HashValueVector& public_key_hashes,
+      const std::vector<SHA256HashValue>& public_key_hashes,
       const std::string& common_name,
       const std::vector<std::string>& dns_names,
       const std::vector<std::string>& ip_addrs);

@@ -145,7 +145,8 @@ def _gen_extras_bp(import_channel: str):
   """Generate Android.extras.bp."""
   extras_androidbp_template_path = os.path.join(REPOSITORY_ROOT, 'components',
                                                 'cronet', 'gn2bp', 'templates',
-                                                'Android.extras.bp.template')
+                                                'Android.extras.bp.template'
+                                                if import_channel == 'tot' else 'Android.extras.bp_stable.template')
   extras_androidbp_template_contents = cronet_utils.read_file(
       extras_androidbp_template_path)
   extras_androidbp_path = os.path.join(REPOSITORY_ROOT,
@@ -158,7 +159,7 @@ def _gen_extras_bp(import_channel: str):
 
 def _gen_androidtest_xml(import_channel: str):
   """Generate AndroidTest.xml, required to run test in Android."""
-  test_server_folder = '/storage/emulated/0/chromium_tests_root/components/cronet/testing/test_server'
+  module_prefix = f'{import_channel}_cronet_'
   androidtest_xml_template_path = os.path.join(REPOSITORY_ROOT, 'components',
                                                'cronet', 'gn2bp', 'templates',
                                                'AndroidTest.xml.template')
@@ -168,7 +169,7 @@ def _gen_androidtest_xml(import_channel: str):
   cronet_utils.write_file(
       androidtest_xml_path,
       string.Template(androidtest_xml_template_contents).substitute(
-          TEST_SERVER_FOLDER=test_server_folder))
+          GN2BP_MODULE_PREFIX=module_prefix))
 
 def _gen_boringssl(import_channel: str):
   """Generate boringssl Android build files."""
@@ -277,7 +278,10 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
       && vpython3 components/cronet/gn2bp/run_gn2bp.py --channel={import_channel}
 
       The state of Chromium, for the commit being imported, can be browsed at:
-      https://chromium.googlesource.com/chromium/src/+/{commit_hash}""")
+      https://chromium.googlesource.com/chromium/src/+/{commit_hash}
+
+      NO_IFTTT=Imported from Chromium.
+      """)
   additional_parameters = [
       '--ignore-noop',
       '--force-message',

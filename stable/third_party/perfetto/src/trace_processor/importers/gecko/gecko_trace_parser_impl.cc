@@ -42,14 +42,14 @@ GeckoTraceParserImpl::GeckoTraceParserImpl(TraceProcessorContext* context)
 
 GeckoTraceParserImpl::~GeckoTraceParserImpl() = default;
 
-void GeckoTraceParserImpl::ParseGeckoEvent(int64_t ts, GeckoEvent evt) {
+void GeckoTraceParserImpl::Parse(int64_t ts, GeckoEvent evt) {
   switch (evt.oneof.index()) {
     case GeckoOneOf<GeckoEvent::ThreadMetadata>(): {
       auto thread = std::get<GeckoEvent::ThreadMetadata>(evt.oneof);
       UniqueTid utid =
           context_->process_tracker->UpdateThread(thread.tid, thread.pid);
-      context_->process_tracker->UpdateThreadNameByUtid(
-          utid, thread.name, ThreadNamePriority::kOther);
+      context_->process_tracker->UpdateThreadName(utid, thread.name,
+                                                  ThreadNamePriority::kOther);
       break;
     }
     case GeckoOneOf<GeckoEvent::StackSample>():

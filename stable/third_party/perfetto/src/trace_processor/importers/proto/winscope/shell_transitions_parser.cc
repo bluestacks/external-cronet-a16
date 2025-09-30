@@ -31,7 +31,8 @@
 namespace perfetto {
 namespace trace_processor {
 
-ShellTransitionsParser::ShellTransitionsParser(WinscopeContext* context)
+ShellTransitionsParser::ShellTransitionsParser(
+    winscope::WinscopeContext* context)
     : context_(context),
       args_parser_{*context->trace_processor_context_->descriptor_pool_} {}
 
@@ -51,7 +52,7 @@ void ShellTransitionsParser::ParseTransition(protozero::ConstBytes blob) {
   storage->mutable_window_manager_shell_transition_protos_table()->Insert(row);
 
   // Track transition args as the come in through different packets
-  ShellTransitionsTracker& transition_tracker =
+  winscope::ShellTransitionsTracker& transition_tracker =
       context_->shell_transitions_tracker_;
   auto inserter = transition_tracker.AddArgsTo(transition.id());
   ArgsParser writer(/*timestamp=*/0, inserter, *storage.get());
@@ -82,10 +83,14 @@ void ShellTransitionsParser::ParseTransition(protozero::ConstBytes blob) {
                                            transition.send_time_ns());
   }
 
+  if (transition.has_shell_abort_time_ns()) {
+    transition_tracker.SetShellAbortTime(transition.id(),
+                                         transition.shell_abort_time_ns());
+  }
+
   if (transition.has_finish_time_ns()) {
     auto finish_time = transition.finish_time_ns();
-    transition_tracker.TrySetDurationFromFinishTime(transition.id(),
-                                                    finish_time);
+    transition_tracker.SetFinishTime(transition.id(), finish_time);
 
     if (finish_time > 0) {
       transition_tracker.SetStatus(
@@ -139,6 +144,16 @@ void ShellTransitionsParser::ParseTransition(protozero::ConstBytes blob) {
       }
       participants_table->Insert(participant_row);
     }
+  }
+
+  if (transition.has_start_transaction_id()) {
+    transition_tracker.SetStartTransactionId(transition.id(),
+                                             transition.start_transaction_id());
+  }
+
+  if (transition.has_finish_transaction_id()) {
+    transition_tracker.SetFinishTransactionId(
+        transition.id(), transition.finish_transaction_id());
   }
 }
 

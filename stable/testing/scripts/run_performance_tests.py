@@ -748,7 +748,6 @@ class CrossbenchTest(object):
     self.options = options
     self._parse_arguments()
     self.isolated_out_dir = isolated_out_dir
-    self.network = self._get_network_arg(options.passthrough_args)
     self.is_chrome = (not self.cb_options.official_browser
                       or self.cb_options.official_browser.startswith('chrome'))
     self.env = self._create_env_arg()
@@ -762,6 +761,7 @@ class CrossbenchTest(object):
       browser_arg = _get_browser_arg(options.passthrough_args)
       self.is_android = _is_android(browser_arg)
       self._find_browser(browser_arg)
+    self.network = self._get_network_arg(options.passthrough_args)
 
   def _parse_arguments(self):
     parser = argparse.ArgumentParser()
@@ -779,7 +779,7 @@ class CrossbenchTest(object):
       return self._create_fileserver_network(_arg)
     if _get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
-    if self.options.benchmarks.startswith('motionmark'):
+    if self.options.benchmarks.startswith('motionmark') and not self.is_android:
       # TODO(crbug.com/413452730): Enable local file server in all platforms.
       return []
     if ((self.options.benchmarks in self.BENCHMARK_FILESERVERS)
@@ -940,12 +940,12 @@ class CrossbenchTest(object):
                                                               handle,
                                                               env=env)
 
-      if return_code == 0:
+      if return_code == 0 or self.options.ignore_benchmark_exit_code:
         crossbench_result_converter.convert(
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
             self.STORY_LABEL, self.options.results_label)
-      elif os.path.exists(output_paths.logs):
+      if return_code and os.path.exists(output_paths.logs):
         # To avoid printing too large log file, we print the last 100 lines.
         bottom_of_log = deque(maxlen=100)
         with open(output_paths.logs, 'r') as handle:

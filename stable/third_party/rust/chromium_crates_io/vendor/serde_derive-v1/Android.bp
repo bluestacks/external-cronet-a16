@@ -79,15 +79,10 @@ rust_proc_macro {
         host: {
             compile_multilib: "64",
             edition: "2015",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             features: [
                 "default",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_derive-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -95,6 +90,7 @@ rust_proc_macro {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },
@@ -145,15 +141,10 @@ rust_proc_macro {
         host: {
             compile_multilib: "64",
             edition: "2015",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             features: [
                 "default",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_derive-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -161,6 +152,7 @@ rust_proc_macro {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
                 "-Funsafe_code",
             ],
         },

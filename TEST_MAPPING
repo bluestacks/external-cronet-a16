@@ -25,7 +25,7 @@
      ]
     },
     {
-     "name": "StableNetHttpCoverageTests",
+     "name": "stable_cronet_NetHttpCoverageTests",
      "options": [
        // These options should be used only to declare filters to skip presubmit.
        // Do not use them to disable tests. Instead, rely on the various
@@ -84,7 +84,7 @@
      ]
     },
     {
-     "name": "StableNetHttpCoverageTests",
+     "name": "stable_cronet_NetHttpCoverageTests",
      "options": [
        // These options should be used only to declare filters to skip presubmit.
        // Do not use them to disable tests. Instead, rely on the various
@@ -138,7 +138,7 @@
       ]
     },
     {
-     "name": "StableNetHttpCoverageTests",
+     "name": "stable_cronet_NetHttpCoverageTests",
      "options": [
        // These options should be used only to declare filters to skip presubmit.
        // Do not use them to disable tests. Instead, rely on the various

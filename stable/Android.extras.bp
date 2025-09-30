@@ -116,7 +116,7 @@ filegroup {
     name: "stable_cronet_javatests_resources",
     srcs: [
         "net/data/ssl/certificates/**/*",
-        "components/cronet/testing/test_server/data/**/*",
+        "components/cronet/android/test/test_server/data/**/*",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
@@ -191,4 +191,91 @@ cc_library_headers {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
+}
+
+java_defaults {
+    name: "stable_cronet_api_defaults",
+    static_libs: [
+        "stable_cronet_components_cronet_android_cronet_api_java",
+    ],
+}
+
+java_library {
+    name: "stable_cronet_aml_api_java",
+    defaults: [
+        "stable_cronet_api_defaults",
+    ],
+    sdk_version: "module_current",
+    min_sdk_version: "30",
+    visibility: [
+        "//packages/modules/Connectivity:__subpackages__",
+        "//external/cronet/android:__subpackages__",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+
+java_defaults {
+    name: "stable_cronet_java_tests_defaults",
+    static_libs: [
+        "stable_cronet_java_tests",
+    ],
+    jni_libs: [
+        "stable_cronet_components_cronet_android_cronet_tests__testing",
+        "stable_cronet_components_cronet_android_cronet__testing",
+        "stable_cronet_third_party_netty_tcnative_netty_tcnative_so__testing",
+    ],
+    data: [":stable_cronet_javatests_resources"],
+    manifest: "components/cronet/android/test/javatests/AndroidManifest.xml",
+    resource_dirs: ["components/cronet/android/test/res"],
+}
+
+java_defaults {
+    name: "stable_cronet_testing",
+    static_libs: [
+        "stable_cronet_components_cronet_android_cronet_impl_native_java__testing",
+        "stable_cronet_components_cronet_android_cronet_build_config_and_jni_registration_java__testing",
+        "stable_cronet_components_cronet_android_cronet_tests_jni_registration_java__testing",
+    ],
+}
+
+java_library {
+    name: "stable_cronet_aml_java__testing",
+    defaults: [
+        "stable_cronet_testing",
+    ],
+    sdk_version: "module_current",
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet/android:__subpackages__",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+android_test {
+    name: "stable_cronet_NetHttpCoverageTests",
+    enforce_default_target_sdk_version: true,
+    min_sdk_version: "30",
+    test_suites: [
+        "general-tests",
+        "mts-tethering",
+    ],
+    defaults: [
+        "stable_cronet_java_tests_defaults",
+    ],
+    static_libs: [
+        "modules-utils-native-coverage-listener",
+        "CtsNetHttpTestsLib",
+        "stable_cronet_aml_api_java",
+        "stable_cronet_aml_java__testing",
+    ],
+    compile_multilib: "both", // Include both the 32 and 64 bit versions
+    jni_libs: [
+        "libnativecoverage",
+    ],
+    test_config: "AndroidTest.xml",
 }

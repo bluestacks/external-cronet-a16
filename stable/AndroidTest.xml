@@ -15,10 +15,10 @@
   -->
 <configuration description="Runs coverage tests for NetHttp">
     <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
-        <option name="test-file-name" value="NetHttpCoverageTests.apk" />
+        <option name="test-file-name" value="stable_cronet_NetHttpCoverageTests.apk" />
         <option name="install-arg" value="-t" />
     </target_preparer>
-    <option name="test-tag" value="NetHttpCoverageTests" />
+    <option name="test-tag" value="stable_cronet_NetHttpCoverageTests" />
 
     <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
         <!--
@@ -55,8 +55,8 @@
         <option name="push-file" key="net" value="/storage/emulated/0/chromium_tests_root/net" />
         <option name="push-file" key="net" value="/mnt/user/10/emulated/10/chromium_tests_root/net" />
 
-        <option name="push-file" key="test_server" value="/storage/emulated/0/chromium_tests_root/components/cronet/testing/test_server" />
-        <option name="push-file" key="test_server" value="/mnt/user/10/emulated/10/chromium_tests_root/components/cronet/testing/test_server" />
+        <option name="push-file" key="test_server" value="/storage/emulated/0/chromium_tests_root/components/cronet/android/test/test_server" />
+        <option name="push-file" key="test_server" value="/mnt/user/10/emulated/10/chromium_tests_root/components/cronet/android/test/test_server" />
     </target_preparer>
     <!-- Tethering/Connectivity is a SDK 30+ module however Cronet is installed on 31+ due to b/270049141. -->
     <object type="module_controller"

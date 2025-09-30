@@ -25,8 +25,7 @@
 #include "src/trace_processor/types/trace_processor_context.h"
 #include "src/trace_processor/util/winscope_proto_mapping.h"
 
-namespace perfetto {
-namespace trace_processor {
+namespace perfetto::trace_processor::winscope {
 
 // Tracks information in the transition table.
 class ShellTransitionsTracker {
@@ -40,11 +39,13 @@ class ShellTransitionsTracker {
   void SetTransitionType(int32_t transition_id, int32_t transition_type);
   void SetSendTime(int32_t transition_id, int64_t timestamp_ns);
   void SetDispatchTime(int32_t transition_id, int64_t timestamp_ns);
-  void TrySetDurationFromFinishTime(int32_t transition_id,
-                                    int64_t finish_time_ns);
+  void SetShellAbortTime(int32_t transition_id, int64_t timestamp_ns);
+  void SetFinishTime(int32_t transition_id, int64_t finish_time_ns);
   void SetHandler(int32_t transition_id, int64_t handler);
   void SetFlags(int32_t transition_id, int32_t flags);
   void SetStatus(int32_t transition_id, StringPool::Id status);
+  void SetStartTransactionId(int32_t transition_id, uint64_t transaction_id);
+  void SetFinishTransactionId(int32_t transition_id, uint64_t transaction_id);
 
   void Flush();
 
@@ -52,7 +53,6 @@ class ShellTransitionsTracker {
   struct TransitionInfo {
     tables::WindowManagerShellTransitionsTable::Id row_id;
     ArgsTracker args_tracker;
-    std::optional<int64_t> finish_time_ns = std::nullopt;
   };
 
   TransitionInfo* GetOrInsertTransition(int32_t transition_id);
@@ -64,7 +64,6 @@ class ShellTransitionsTracker {
   std::unordered_map<int32_t, TransitionInfo> transitions_infos_;
 };
 
-}  // namespace trace_processor
-}  // namespace perfetto
+}  // namespace perfetto::trace_processor::winscope
 
 #endif  // SRC_TRACE_PROCESSOR_IMPORTERS_PROTO_WINSCOPE_SHELL_TRANSITIONS_TRACKER_H_

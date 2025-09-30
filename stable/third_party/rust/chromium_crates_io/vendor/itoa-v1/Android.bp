@@ -60,12 +60,7 @@ rust_ffi_static {
     target: {
         android_arm: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -74,16 +69,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_arm64: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -92,16 +83,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_riscv64: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -110,16 +97,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -128,16 +111,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86_64: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -146,17 +125,13 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         host: {
             compile_multilib: "64",
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
@@ -165,6 +140,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
     },
@@ -194,12 +170,7 @@ rust_ffi_static {
     target: {
         android_arm: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -208,16 +179,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_arm64: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -226,16 +193,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_riscv64: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -244,16 +207,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -262,16 +221,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86_64: {
             edition: "2018",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=itoa-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -280,6 +235,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         host: {

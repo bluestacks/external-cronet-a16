@@ -112,23 +112,24 @@ class ChromeScrollJankStdlib(TestSuite):
         SELECT
           ts,
           dur,
-          track_id,
-          name,
+          track.name AS track_name,
+          chrome_janky_event_latencies_v3.name,
           cause_of_jank,
           sub_cause_of_jank,
           delayed_frame_count,
           frame_jank_ts,
           frame_jank_dur
-        FROM chrome_janky_event_latencies_v3;
+        FROM chrome_janky_event_latencies_v3
+        JOIN track ON chrome_janky_event_latencies_v3.track_id = track.id;
         """,
         out=Csv("""
-        "ts","dur","track_id","name","cause_of_jank","sub_cause_of_jank","delayed_frame_count","frame_jank_ts","frame_jank_dur"
-        1035866897893926,49303000,968,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035866935295926,11901000
-        1035868162888926,61845000,1672,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868212811926,11921999
-        1035868886494926,49285000,2055,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868923855926,11924000
-        1035869208882926,60201000,2230,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",1,1035869257151926,11932000
-        1035869319831926,71490000,2287,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035869379377926,11944000
-        1035869386651926,60311000,2314,"EventLatency","RendererCompositorQueueingDelay","[NULL]",1,1035869434949926,12013000
+        "ts","dur","track_name","name","cause_of_jank","sub_cause_of_jank","delayed_frame_count","frame_jank_ts","frame_jank_dur"
+        1035866897893926,49303000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035866935295926,11901000
+        1035868162888926,61845000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868212811926,11921999
+        1035868886494926,49285000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868923855926,11924000
+        1035869208882926,60201000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",1,1035869257151926,11932000
+        1035869319831926,71490000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035869379377926,11944000
+        1035869386651926,60311000,"EventLatency","EventLatency","RendererCompositorQueueingDelay","[NULL]",1,1035869434949926,12013000
         """))
 
   def test_chrome_janky_frame_presentation_intervals(self):
@@ -203,6 +204,7 @@ class ChromeScrollJankStdlib(TestSuite):
         5,1035869379377926,11944000
         6,1035869434949926,12013000
         """))
+
   def test_chrome_presented_scroll_offsets(self):
     return DiffTestBlueprint(
         trace=DataPath('scroll_offsets_trace_2.pftrace'),
@@ -315,8 +317,8 @@ class ChromeScrollJankStdlib(TestSuite):
         INCLUDE PERFETTO MODULE chrome.event_latency;
 
         SELECT
-          id,
-          name,
+          chrome_event_latencies.id,
+          chrome_event_latencies.name,
           ts,
           dur,
           scroll_update_id,
@@ -324,7 +326,7 @@ class ChromeScrollJankStdlib(TestSuite):
           display_trace_id,
           is_presented,
           event_type,
-          track_id,
+          track.name AS track_name,
           vsync_interval_ms,
           is_janky_scrolled_frame,
           is_janky_scrolled_frame_v3,
@@ -334,6 +336,7 @@ class ChromeScrollJankStdlib(TestSuite):
           swap_end_timestamp,
           presentation_timestamp
         FROM chrome_event_latencies
+        JOIN track ON chrome_event_latencies.track_id = track.id
         WHERE
           event_type IN (
             'FIRST_GESTURE_SCROLL_UPDATE',
@@ -341,27 +344,27 @@ class ChromeScrollJankStdlib(TestSuite):
             'INERTIAL_GESTURE_SCROLL_UPDATE'
           )
           AND is_presented
-        ORDER BY id
+        ORDER BY chrome_event_latencies.id
         LIMIT 10;
         """,
         out=Csv("""
-        "id","name","ts","dur","scroll_update_id","surface_frame_trace_id","display_trace_id","is_presented","event_type","track_id","vsync_interval_ms","is_janky_scrolled_frame","is_janky_scrolled_frame_v3","buffer_available_timestamp","buffer_ready_timestamp","latch_timestamp","swap_end_timestamp","presentation_timestamp"
-        1393,"EventLatency",9648030168797,31117000,2715127443997596957,-5883104867331890212,197383,1,"FIRST_GESTURE_SCROLL_UPDATE",39,8.333000,0,0,9648042077797,"[NULL]",9648052119797,9648052279797,9648061285797
-        1472,"EventLatency",9648034310797,43643000,2715127443997596944,-5883104867331890224,197384,1,"GESTURE_SCROLL_UPDATE",45,8.333000,1,0,9648050525797,9648058623797,9648065887797,9648073080797,9648077953797
-        1552,"EventLatency",9648042670797,51959000,2715127443997596936,-5883104867331890217,197386,1,"GESTURE_SCROLL_UPDATE",55,8.333000,1,0,9648059044797,9648060854797,9648084625797,9648088709797,9648094629797
-        1590,"EventLatency",9648051037797,51935000,2715127443997596928,-5883104867331890197,197387,1,"GESTURE_SCROLL_UPDATE",64,8.333000,0,0,9648067745797,9648069434797,9648092936797,9648096033797,9648102972797
-        1802,"EventLatency",9648067763797,43528000,2715127443997597424,-5883104867331890193,197388,1,"GESTURE_SCROLL_UPDATE",80,8.333000,0,0,9648077953797,9648079259797,9648101348797,9648105190797,9648111291797
-        1880,"EventLatency",9648076110797,43521000,2715127443997597416,-5883104867331890205,197389,1,"GESTURE_SCROLL_UPDATE",88,8.333000,0,0,9648088212797,9648089952797,9648109861797,9648114300797,9648119631797
-        1934,"EventLatency",9648084476797,43447000,2715127443997597408,-5883104867331890202,197390,1,"GESTURE_SCROLL_UPDATE",96,8.333000,0,0,9648095641797,9648097461797,9648117880797,9648120847797,9648127923797
-        2018,"EventLatency",9648092838797,43426000,2715127443997597400,-5883104867331890183,197391,1,"GESTURE_SCROLL_UPDATE",104,8.333000,0,0,9648105944797,9648109986797,9648126173797,9648128941797,9648136264797
-        2100,"EventLatency",9648101207797,43390000,2715127443997597392,-5883104867331890179,197392,1,"GESTURE_SCROLL_UPDATE",112,8.333000,0,0,9648113821797,9648116687797,9648134608797,9648137873797,9648144597797
-        2184,"EventLatency",9648109566797,43363000,2715127443997597384,-5883104867331890192,197393,1,"GESTURE_SCROLL_UPDATE",120,8.333000,0,0,9648119837797,9648122956797,9648142849797,9648146215797,9648152929797
+        "id","name","ts","dur","scroll_update_id","surface_frame_trace_id","display_trace_id","is_presented","event_type","track_name","vsync_interval_ms","is_janky_scrolled_frame","is_janky_scrolled_frame_v3","buffer_available_timestamp","buffer_ready_timestamp","latch_timestamp","swap_end_timestamp","presentation_timestamp"
+        1393,"EventLatency",9648030168797,31117000,2715127443997596957,-5883104867331890212,197383,1,"FIRST_GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648042077797,"[NULL]",9648052119797,9648052279797,9648061285797
+        1472,"EventLatency",9648034310797,43643000,2715127443997596944,-5883104867331890224,197384,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,1,0,9648050525797,9648058623797,9648065887797,9648073080797,9648077953797
+        1552,"EventLatency",9648042670797,51959000,2715127443997596936,-5883104867331890217,197386,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,1,0,9648059044797,9648060854797,9648084625797,9648088709797,9648094629797
+        1590,"EventLatency",9648051037797,51935000,2715127443997596928,-5883104867331890197,197387,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648067745797,9648069434797,9648092936797,9648096033797,9648102972797
+        1802,"EventLatency",9648067763797,43528000,2715127443997597424,-5883104867331890193,197388,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648077953797,9648079259797,9648101348797,9648105190797,9648111291797
+        1880,"EventLatency",9648076110797,43521000,2715127443997597416,-5883104867331890205,197389,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648088212797,9648089952797,9648109861797,9648114300797,9648119631797
+        1934,"EventLatency",9648084476797,43447000,2715127443997597408,-5883104867331890202,197390,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648095641797,9648097461797,9648117880797,9648120847797,9648127923797
+        2018,"EventLatency",9648092838797,43426000,2715127443997597400,-5883104867331890183,197391,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648105944797,9648109986797,9648126173797,9648128941797,9648136264797
+        2100,"EventLatency",9648101207797,43390000,2715127443997597392,-5883104867331890179,197392,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648113821797,9648116687797,9648134608797,9648137873797,9648144597797
+        2184,"EventLatency",9648109566797,43363000,2715127443997597384,-5883104867331890192,197393,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648119837797,9648122956797,9648142849797,9648146215797,9648152929797
         """))
 
   # A trace from M131 (ToT as of adding this test) has the necessary
   # events/arguments.
   def test_chrome_input_pipeline_steps(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -430,8 +433,8 @@ class ChromeScrollJankStdlib(TestSuite):
 
   def test_task_start_time_surface_frame_steps(self):
     return DiffTestBlueprint(
-      trace=DataPath('scroll_m132.pftrace'),
-      query="""
+        trace=DataPath('scroll_m132.pftrace'),
+        query="""
       INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
       SELECT
         step,
@@ -440,7 +443,7 @@ class ChromeScrollJankStdlib(TestSuite):
       ORDER BY ts
       LIMIT 10;
       """,
-      out=Csv("""
+        out=Csv("""
       "step","task_start_time_ts"
       "STEP_ISSUE_BEGIN_FRAME","[NULL]"
       "STEP_RECEIVE_BEGIN_FRAME",3030298007485995
@@ -456,8 +459,8 @@ class ChromeScrollJankStdlib(TestSuite):
 
   def test_task_start_time_display_frame_steps(self):
     return DiffTestBlueprint(
-      trace=DataPath('scroll_m132.pftrace'),
-      query="""
+        trace=DataPath('scroll_m132.pftrace'),
+        query="""
       INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
       SELECT
         step,
@@ -466,7 +469,7 @@ class ChromeScrollJankStdlib(TestSuite):
       ORDER BY ts
       LIMIT 10;
       """,
-      out=Csv("""
+        out=Csv("""
       "step","task_start_time_ts"
       "STEP_DRAW_AND_SWAP",3030298019565268
       "STEP_SURFACE_AGGREGATION",3030298019563268
@@ -481,7 +484,7 @@ class ChromeScrollJankStdlib(TestSuite):
       """))
 
   def test_chrome_coalesced_inputs(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -508,7 +511,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_touch_move_to_scroll_update(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -535,7 +538,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_touch_move_to_scroll_update_not_forwarded_to_renderer(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_with_input_not_forwarded_to_renderer.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -562,7 +565,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_scroll_update_refs(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -603,13 +606,13 @@ class ChromeScrollJankStdlib(TestSuite):
   """))
 
   def test_chrome_scroll_update_input_pipeline(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
-          id,
+          pipeline.id,
           presented_in_frame_id,
           is_presented,
           is_janky,
@@ -619,7 +622,7 @@ class ChromeScrollJankStdlib(TestSuite):
           is_first_scroll_update_in_frame,
           generation_ts,
           generation_to_browser_main_dur,
-          browser_utid,
+          browser_thread.tid AS browser_tid,
           touch_move_received_slice_id,
           touch_move_received_ts,
           touch_move_processing_dur,
@@ -628,7 +631,7 @@ class ChromeScrollJankStdlib(TestSuite):
           scroll_update_processing_dur,
           scroll_update_created_end_ts,
           browser_to_compositor_delay_dur,
-          compositor_utid,
+          compositor_thread.tid AS compositor_tid,
           compositor_dispatch_slice_id,
           compositor_dispatch_ts,
           compositor_dispatch_dur,
@@ -638,37 +641,39 @@ class ChromeScrollJankStdlib(TestSuite):
           compositor_coalesced_input_handled_ts,
           compositor_coalesced_input_handled_dur,
           compositor_coalesced_input_handled_end_ts
-        FROM chrome_scroll_update_input_pipeline
-        ORDER BY id
+        FROM chrome_scroll_update_input_pipeline pipeline
+        JOIN thread browser_thread ON browser_thread.utid = pipeline.browser_utid
+        JOIN thread compositor_thread ON compositor_thread.utid = pipeline.compositor_utid
+        ORDER BY pipeline.id
         LIMIT 21
         """,
         out=Csv("""
-        "id","presented_in_frame_id","is_presented","is_janky","is_janky_v3","is_inertial","is_first_scroll_update_in_scroll","is_first_scroll_update_in_frame","generation_ts","generation_to_browser_main_dur","browser_utid","touch_move_received_slice_id","touch_move_received_ts","touch_move_processing_dur","scroll_update_created_slice_id","scroll_update_created_ts","scroll_update_processing_dur","scroll_update_created_end_ts","browser_to_compositor_delay_dur","compositor_utid","compositor_dispatch_slice_id","compositor_dispatch_ts","compositor_dispatch_dur","compositor_dispatch_end_ts","compositor_dispatch_to_coalesced_input_handled_dur","compositor_coalesced_input_handled_slice_id","compositor_coalesced_input_handled_ts","compositor_coalesced_input_handled_dur","compositor_coalesced_input_handled_end_ts"
-        -2143831735395280256,-2143831735395280256,1,0,0,1,0,1,1292554141489270,677987,1,"[NULL]","[NULL]","[NULL]",10781,1292554142167257,363000,1292554142530257,472953,4,10796,1292554143003210,108000,1292554143111210,10912000,10827,1292554154023210,83000,1292554154106210
-        -2143831735395280254,-2143831735395280254,1,0,0,1,0,1,1292554152575270,1654987,1,"[NULL]","[NULL]","[NULL]",10830,1292554154230257,259000,1292554154489257,698953,4,10845,1292554155188210,120000,1292554155308210,9637000,10869,1292554164945210,223000,1292554165168210
-        -2143831735395280250,-2143831735395280250,1,0,0,1,0,1,1292554130385270,806987,1,"[NULL]","[NULL]","[NULL]",10742,1292554131192257,279000,1292554131471257,393953,4,10757,1292554131865210,98000,1292554131963210,10636000,10790,1292554142599210,191000,1292554142790210
-        -2143831735395280248,-2143831735395280248,1,0,0,1,0,1,1292554185877270,750987,1,"[NULL]","[NULL]","[NULL]",10939,1292554186628257,398000,1292554187026257,217953,4,10950,1292554187244210,107000,1292554187351210,10849000,10988,1292554198200210,82000,1292554198282210
-        -2143831735395280246,-2143831735395280246,1,0,0,1,0,1,1292554196968270,1073987,1,"[NULL]","[NULL]","[NULL]",10980,1292554198042257,362000,1292554198404257,890953,4,11000,1292554199295210,110000,1292554199405210,9963000,11025,1292554209368210,90000,1292554209458210
-        -2143831735395280244,-2143831735395280244,1,0,0,1,0,1,1292554163682270,785987,1,"[NULL]","[NULL]","[NULL]",10860,1292554164468257,393000,1292554164861257,513953,4,10876,1292554165375210,127000,1292554165502210,10798000,10908,1292554176300210,226000,1292554176526210
-        -2143831735395280242,-2143831735395280242,1,0,0,1,0,1,1292554174786270,921987,1,"[NULL]","[NULL]","[NULL]",10899,1292554175708257,321000,1292554176029257,697953,4,10915,1292554176727210,107000,1292554176834210,10177000,10947,1292554187011210,88000,1292554187099210
-        -2143831735395280239,-2143831735395280239,1,0,0,1,0,1,1292554086893270,3987,1,"[NULL]","[NULL]","[NULL]",10555,1292554086897257,128000,1292554087025257,1290953,4,10586,1292554088316210,79000,1292554088395210,9853000,10620,1292554098248210,177000,1292554098425210
-        -2143831735395280229,-2143831735395280229,1,0,0,1,0,1,1292554119302270,739987,1,"[NULL]","[NULL]","[NULL]",10699,1292554120042257,327000,1292554120369257,167953,4,10714,1292554120537210,94000,1292554120631210,10935000,10750,1292554131566210,158000,1292554131724210
-        -2143831735395280227,-2143831735395280227,1,0,0,1,0,1,1292554097138270,848987,1,"[NULL]","[NULL]","[NULL]",10611,1292554097987257,189000,1292554098176257,366953,4,10626,1292554098543210,76000,1292554098619210,10479000,10662,1292554109098210,151000,1292554109249210
-        -2143831735395280226,-2143831735395280226,1,0,0,1,0,1,1292554108216270,771987,1,"[NULL]","[NULL]","[NULL]",10657,1292554108988257,322000,1292554109310257,80953,4,10666,1292554109391210,100000,1292554109491210,10760000,10706,1292554120251210,138000,1292554120389210
-        -2143831735395280208,-2143831735395280208,1,0,0,1,0,1,1292554230251270,802987,1,"[NULL]","[NULL]","[NULL]",11096,1292554231054257,408000,1292554231462257,145953,4,11106,1292554231608210,103000,1292554231711210,11015000,11142,1292554242726210,128000,1292554242854210
-        -2143831735395280206,-2143831735395280206,1,0,0,1,0,1,1292554241443270,892987,1,"[NULL]","[NULL]","[NULL]",11134,1292554242336257,324000,1292554242660257,335953,4,11148,1292554242996210,120000,1292554243116210,11070000,11184,1292554254186210,138000,1292554254324210
-        -2143831735395280204,-2143831735395280204,1,0,0,1,0,1,1292554208072270,858987,1,"[NULL]","[NULL]","[NULL]",11017,1292554208931257,257000,1292554209188257,423953,4,11031,1292554209612210,110000,1292554209722210,10857000,11064,1292554220579210,107000,1292554220686210
-        -2143831735395280202,-2143831735395280202,1,0,0,1,0,1,1292554219159270,1143987,1,"[NULL]","[NULL]","[NULL]",11057,1292554220303257,375000,1292554220678257,1225953,4,11078,1292554221904210,150000,1292554222054210,9337000,11103,1292554231391210,77000,1292554231468210
-        -2143831735395280200,-2143831735395280200,0,0,0,1,0,1,1292554274773270,971987,1,"[NULL]","[NULL]","[NULL]",11250,1292554275745257,304000,1292554276049257,837953,4,11266,1292554276887210,144000,1292554277031210,9856000,11290,1292554286887210,242000,1292554287129210
-        -2143831735395280196,-2143831735395280196,1,0,0,1,0,1,1292554252553270,747987,1,"[NULL]","[NULL]","[NULL]",11172,1292554253301257,345000,1292554253646257,819953,4,11187,1292554254466210,119000,1292554254585210,11932000,11223,1292554266517210,117000,1292554266634210
-        -2143831735395280194,-2143831735395280194,0,0,0,1,0,1,1292554263653270,946987,1,"[NULL]","[NULL]","[NULL]",11211,1292554264600257,279000,1292554264879257,1915953,4,11227,1292554266795210,193000,1292554266988210,9556000,11259,1292554276544210,133000,1292554276677210
-        -2143831735395280183,-2143831735395280179,0,0,0,0,0,0,1292554034979270,3955987,1,10192,1292554038935257,286000,10197,1292554039221257,141000,1292554039362257,17953,4,10210,1292554039380210,124000,1292554039504210,3940000,10230,1292554043444210,101000,1292554043545210
-        -2143831735395280179,-2143831735395280179,1,0,0,0,0,1,1292554029441270,7839987,1,10172,1292554037281257,337000,10177,1292554037618257,167000,1292554037785257,451953,4,10189,1292554038237210,89000,1292554038326210,4800000,10229,1292554043126210,303000,1292554043429210
-        -2143831735395280166,-2143831735395280166,1,0,0,0,1,1,1292554023976270,3704987,1,10071,1292554027681257,2166000,10102,1292554029847257,236000,1292554030083257,276953,4,10123,1292554030360210,377000,1292554030737210,-68000,10128,1292554030669210,56000,1292554030725210
+        "id","presented_in_frame_id","is_presented","is_janky","is_janky_v3","is_inertial","is_first_scroll_update_in_scroll","is_first_scroll_update_in_frame","generation_ts","generation_to_browser_main_dur","browser_tid","touch_move_received_slice_id","touch_move_received_ts","touch_move_processing_dur","scroll_update_created_slice_id","scroll_update_created_ts","scroll_update_processing_dur","scroll_update_created_end_ts","browser_to_compositor_delay_dur","compositor_tid","compositor_dispatch_slice_id","compositor_dispatch_ts","compositor_dispatch_dur","compositor_dispatch_end_ts","compositor_dispatch_to_coalesced_input_handled_dur","compositor_coalesced_input_handled_slice_id","compositor_coalesced_input_handled_ts","compositor_coalesced_input_handled_dur","compositor_coalesced_input_handled_end_ts"
+        -2143831735395280256,-2143831735395280256,1,0,0,1,0,1,1292554141489270,677987,6263,"[NULL]","[NULL]","[NULL]",10781,1292554142167257,363000,1292554142530257,472953,6476,10796,1292554143003210,108000,1292554143111210,10912000,10827,1292554154023210,83000,1292554154106210
+        -2143831735395280254,-2143831735395280254,1,0,0,1,0,1,1292554152575270,1654987,6263,"[NULL]","[NULL]","[NULL]",10830,1292554154230257,259000,1292554154489257,698953,6476,10845,1292554155188210,120000,1292554155308210,9637000,10869,1292554164945210,223000,1292554165168210
+        -2143831735395280250,-2143831735395280250,1,0,0,1,0,1,1292554130385270,806987,6263,"[NULL]","[NULL]","[NULL]",10742,1292554131192257,279000,1292554131471257,393953,6476,10757,1292554131865210,98000,1292554131963210,10636000,10790,1292554142599210,191000,1292554142790210
+        -2143831735395280248,-2143831735395280248,1,0,0,1,0,1,1292554185877270,750987,6263,"[NULL]","[NULL]","[NULL]",10939,1292554186628257,398000,1292554187026257,217953,6476,10950,1292554187244210,107000,1292554187351210,10849000,10988,1292554198200210,82000,1292554198282210
+        -2143831735395280246,-2143831735395280246,1,0,0,1,0,1,1292554196968270,1073987,6263,"[NULL]","[NULL]","[NULL]",10980,1292554198042257,362000,1292554198404257,890953,6476,11000,1292554199295210,110000,1292554199405210,9963000,11025,1292554209368210,90000,1292554209458210
+        -2143831735395280244,-2143831735395280244,1,0,0,1,0,1,1292554163682270,785987,6263,"[NULL]","[NULL]","[NULL]",10860,1292554164468257,393000,1292554164861257,513953,6476,10876,1292554165375210,127000,1292554165502210,10798000,10908,1292554176300210,226000,1292554176526210
+        -2143831735395280242,-2143831735395280242,1,0,0,1,0,1,1292554174786270,921987,6263,"[NULL]","[NULL]","[NULL]",10899,1292554175708257,321000,1292554176029257,697953,6476,10915,1292554176727210,107000,1292554176834210,10177000,10947,1292554187011210,88000,1292554187099210
+        -2143831735395280239,-2143831735395280239,1,0,0,1,0,1,1292554086893270,3987,6263,"[NULL]","[NULL]","[NULL]",10555,1292554086897257,128000,1292554087025257,1290953,6476,10586,1292554088316210,79000,1292554088395210,9853000,10620,1292554098248210,177000,1292554098425210
+        -2143831735395280229,-2143831735395280229,1,0,0,1,0,1,1292554119302270,739987,6263,"[NULL]","[NULL]","[NULL]",10699,1292554120042257,327000,1292554120369257,167953,6476,10714,1292554120537210,94000,1292554120631210,10935000,10750,1292554131566210,158000,1292554131724210
+        -2143831735395280227,-2143831735395280227,1,0,0,1,0,1,1292554097138270,848987,6263,"[NULL]","[NULL]","[NULL]",10611,1292554097987257,189000,1292554098176257,366953,6476,10626,1292554098543210,76000,1292554098619210,10479000,10662,1292554109098210,151000,1292554109249210
+        -2143831735395280226,-2143831735395280226,1,0,0,1,0,1,1292554108216270,771987,6263,"[NULL]","[NULL]","[NULL]",10657,1292554108988257,322000,1292554109310257,80953,6476,10666,1292554109391210,100000,1292554109491210,10760000,10706,1292554120251210,138000,1292554120389210
+        -2143831735395280208,-2143831735395280208,1,0,0,1,0,1,1292554230251270,802987,6263,"[NULL]","[NULL]","[NULL]",11096,1292554231054257,408000,1292554231462257,145953,6476,11106,1292554231608210,103000,1292554231711210,11015000,11142,1292554242726210,128000,1292554242854210
+        -2143831735395280206,-2143831735395280206,1,0,0,1,0,1,1292554241443270,892987,6263,"[NULL]","[NULL]","[NULL]",11134,1292554242336257,324000,1292554242660257,335953,6476,11148,1292554242996210,120000,1292554243116210,11070000,11184,1292554254186210,138000,1292554254324210
+        -2143831735395280204,-2143831735395280204,1,0,0,1,0,1,1292554208072270,858987,6263,"[NULL]","[NULL]","[NULL]",11017,1292554208931257,257000,1292554209188257,423953,6476,11031,1292554209612210,110000,1292554209722210,10857000,11064,1292554220579210,107000,1292554220686210
+        -2143831735395280202,-2143831735395280202,1,0,0,1,0,1,1292554219159270,1143987,6263,"[NULL]","[NULL]","[NULL]",11057,1292554220303257,375000,1292554220678257,1225953,6476,11078,1292554221904210,150000,1292554222054210,9337000,11103,1292554231391210,77000,1292554231468210
+        -2143831735395280200,-2143831735395280200,0,0,0,1,0,1,1292554274773270,971987,6263,"[NULL]","[NULL]","[NULL]",11250,1292554275745257,304000,1292554276049257,837953,6476,11266,1292554276887210,144000,1292554277031210,9856000,11290,1292554286887210,242000,1292554287129210
+        -2143831735395280196,-2143831735395280196,1,0,0,1,0,1,1292554252553270,747987,6263,"[NULL]","[NULL]","[NULL]",11172,1292554253301257,345000,1292554253646257,819953,6476,11187,1292554254466210,119000,1292554254585210,11932000,11223,1292554266517210,117000,1292554266634210
+        -2143831735395280194,-2143831735395280194,0,0,0,1,0,1,1292554263653270,946987,6263,"[NULL]","[NULL]","[NULL]",11211,1292554264600257,279000,1292554264879257,1915953,6476,11227,1292554266795210,193000,1292554266988210,9556000,11259,1292554276544210,133000,1292554276677210
+        -2143831735395280183,-2143831735395280179,0,0,0,0,0,0,1292554034979270,3955987,6263,10192,1292554038935257,286000,10197,1292554039221257,141000,1292554039362257,17953,6476,10210,1292554039380210,124000,1292554039504210,3940000,10230,1292554043444210,101000,1292554043545210
+        -2143831735395280179,-2143831735395280179,1,0,0,0,0,1,1292554029441270,7839987,6263,10172,1292554037281257,337000,10177,1292554037618257,167000,1292554037785257,451953,6476,10189,1292554038237210,89000,1292554038326210,4800000,10229,1292554043126210,303000,1292554043429210
+        -2143831735395280166,-2143831735395280166,1,0,0,0,1,1,1292554023976270,3704987,6263,10071,1292554027681257,2166000,10102,1292554029847257,236000,1292554030083257,276953,6476,10123,1292554030360210,377000,1292554030737210,-68000,10128,1292554030669210,56000,1292554030725210
         """))
 
   def test_chrome_scroll_update_frame_pipeline(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -737,7 +742,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_scroll_frame_info(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m132.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -762,9 +767,8 @@ class ChromeScrollJankStdlib(TestSuite):
         259,259
         """))
 
-
   def test_chrome_scroll_update_info(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -847,10 +851,10 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_scroll_update_info_step_templates(self):
-        # Verify that chrome_scroll_update_info_step_templates references at
-        # least one valid column name and no invalid column names in
-        # chrome_scroll_update_info.
-        return DiffTestBlueprint(
+    # Verify that chrome_scroll_update_info_step_templates references at
+    # least one valid column name and no invalid column names in
+    # chrome_scroll_update_info.
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -894,7 +898,7 @@ class ChromeScrollJankStdlib(TestSuite):
   # A trace from M132 (ToT as of adding this test) has the necessary
   # events/arguments (including the ones from the 'view' atrace category).
   def test_chrome_input_dispatch_step(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m132_with_atrace.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.android_input;
@@ -920,9 +924,9 @@ class ChromeScrollJankStdlib(TestSuite):
   # A trace from M132 has the necessary events/arguments
   # (including the ones from the 'input' atrace category).
   def test_chrome_scroll_update_info_with_android_input(self):
-        # Verify that non-fling scrolls have correct durations
-        # of the InputReader and InputDispatcher steps.
-        return DiffTestBlueprint(
+    # Verify that non-fling scrolls have correct durations
+    # of the InputReader and InputDispatcher steps.
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m132_with_atrace.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;

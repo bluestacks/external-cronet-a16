@@ -99,7 +99,6 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"32\"",
             ],
             features: [
@@ -109,8 +108,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -119,12 +116,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"64\"",
             ],
             features: [
@@ -134,8 +131,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -144,12 +139,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"64\"",
             ],
             features: [
@@ -159,8 +154,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -169,12 +162,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"32\"",
             ],
             features: [
@@ -184,8 +177,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -194,12 +185,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"64\"",
             ],
             features: [
@@ -209,8 +200,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -219,6 +208,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         host: {
@@ -292,7 +282,6 @@ rust_ffi_static {
         android_arm: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"32\"",
             ],
             features: [
@@ -302,8 +291,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -312,12 +299,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_arm64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"64\"",
             ],
             features: [
@@ -327,8 +314,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -337,12 +322,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_riscv64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"64\"",
             ],
             features: [
@@ -352,8 +337,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -362,12 +345,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"32\"",
             ],
             features: [
@@ -377,8 +360,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -387,12 +368,12 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         android_x86_64: {
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"64\"",
             ],
             features: [
@@ -402,8 +383,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -412,13 +391,13 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
         host: {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "fast_arithmetic=\"64\"",
             ],
             features: [
@@ -428,8 +407,6 @@ rust_ffi_static {
                 "unbounded_depth",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=serde_json_lenient-0.2",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
@@ -438,6 +415,7 @@ rust_ffi_static {
                 "-Ccodegen-units=1",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
             rustlibs: [
                 "libproc_macro2__9500a1d33b311508",

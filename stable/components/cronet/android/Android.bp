@@ -1929,6 +1929,7 @@ java_library {
         "stable_cronet_components_cronet_request_context_config_java_proto",
         "stable_cronet_net_android_net_thread_stats_uid_java",
         "stable_cronet_third_party_android_deps_protobuf_lite_runtime_java",
+        "stable_cronet_third_party_jni_zero_jni_zero_java",
     ],
     defaults: [
         "stable_cronet_java_framework_defaults",
@@ -1953,6 +1954,7 @@ java_library {
         "stable_cronet_components_cronet_request_context_config_java_proto__testing",
         "stable_cronet_net_android_net_thread_stats_uid_java__testing",
         "stable_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing",
+        "stable_cronet_third_party_jni_zero_jni_zero_java__testing",
     ],
     defaults: [
         "stable_cronet_java_framework_defaults",
@@ -2016,6 +2018,9 @@ java_library {
         "stable_cronet_components_cronet_request_context_config_java_proto__testing__unfiltered",
         "stable_cronet_net_android_net_thread_stats_uid_java__testing__unfiltered",
         "stable_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_jni_zero_java__testing__unfiltered",
         "stable_cronet_third_party_protobuf_proto_runtime_lite_java__testing__unfiltered",
     ],
 }
@@ -2070,6 +2075,9 @@ java_library {
         "stable_cronet_components_cronet_request_context_config_java_proto__unfiltered",
         "stable_cronet_net_android_net_thread_stats_uid_java__unfiltered",
         "stable_cronet_third_party_android_deps_protobuf_lite_runtime_java__unfiltered",
+        "stable_cronet_third_party_jni_zero_gendeps_java__unfiltered",
+        "stable_cronet_third_party_jni_zero_generate_jni_java__unfiltered",
+        "stable_cronet_third_party_jni_zero_jni_zero_java__unfiltered",
         "stable_cronet_third_party_protobuf_proto_runtime_lite_java__unfiltered",
     ],
 }
@@ -2125,6 +2133,9 @@ java_library {
         "stable_cronet_components_cronet_request_context_config_java_proto__testing__unfiltered",
         "stable_cronet_net_android_net_thread_stats_uid_java__testing__unfiltered",
         "stable_cronet_third_party_android_deps_protobuf_lite_runtime_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_gendeps_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_generate_jni_java__testing__unfiltered",
+        "stable_cronet_third_party_jni_zero_jni_zero_java__testing__unfiltered",
         "stable_cronet_third_party_protobuf_proto_runtime_lite_java__testing__unfiltered",
     ],
 }

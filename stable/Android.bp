@@ -98,7 +98,6 @@ rust_ffi_static {
                 "-Cdefault-linker-libraries",
                 "-Clto=no",
                 "-Ccodegen-units=1",
-                "-Cpanic=abort",
                 "-Copt-level=s",
                 "-Cdebuginfo=1",
             ],
@@ -18195,7 +18194,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1754516925",
+         "1759328495",
     host_cross_supported: false,
     out: [
         "base/generated_build_date_internal.h",
@@ -18217,7 +18216,7 @@ cc_genrule {
     cmd: "mkdir -p $(genDir)/base &&  " +
          "$(location base/write_build_date_header.py) " +
          "'$(out)' " +
-         "1754516925",
+         "1759328495",
     host_supported: true,
     host_cross_supported: false,
     out: [
@@ -32761,6 +32760,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -33494,6 +33494,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36515,6 +36516,7 @@ cc_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36537,6 +36539,8 @@ cc_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36546,6 +36550,8 @@ cc_genrule {
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
@@ -36559,6 +36565,7 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36597,6 +36604,7 @@ java_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36619,6 +36627,8 @@ java_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36628,6 +36638,8 @@ java_genrule {
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
@@ -36640,6 +36652,7 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36687,6 +36700,7 @@ cc_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36709,6 +36723,8 @@ cc_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36718,6 +36734,8 @@ cc_genrule {
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
+         "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
@@ -36729,6 +36747,7 @@ cc_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36767,6 +36786,7 @@ java_genrule {
     srcs: [
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -36789,6 +36809,8 @@ java_genrule {
          "--output-name " +
          "CronetLibraryLoader_jni.h " +
          "--output-name " +
+         "CronetMetrics_jni.h " +
+         "--output-name " +
          "CronetUploadDataStream_jni.h " +
          "--output-name " +
          "CronetUrlRequest_jni.h " +
@@ -36799,6 +36821,8 @@ java_genrule {
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java)' " +
          "--input-file " +
+         "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java)' " +
+         "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java)' " +
          "--input-file " +
          "'$(location components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java)' " +
@@ -36808,6 +36832,7 @@ java_genrule {
         "components/cronet/android/cronet_jni_headers.srcjar",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -36905,6 +36930,7 @@ cc_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37033,6 +37059,7 @@ java_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37156,6 +37183,7 @@ cc_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37292,6 +37320,7 @@ java_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -37666,6 +37695,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -38399,6 +38429,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -39397,6 +39428,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",
@@ -40188,6 +40220,7 @@ java_genrule {
         "base/version_info/android/java/src/org/chromium/base/version_info/VersionConstantsBridge.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java",
+        "components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java",
         "components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java",
@@ -40882,6 +40915,7 @@ cc_genrule {
         "build/robolectric_buildflags.h",
         "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h",
+        "components/cronet/android/cronet_jni_headers/CronetMetrics_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h",
         "components/cronet/android/cronet_jni_headers/CronetUrlRequest_jni.h",

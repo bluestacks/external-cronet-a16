@@ -118,9 +118,6 @@ rust_ffi_static {
         host: {
             compile_multilib: "64",
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             features: [
                 "clone-impls",
                 "default",
@@ -134,8 +131,6 @@ rust_ffi_static {
                 "visit",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=syn-2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -143,6 +138,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
     },
@@ -231,9 +227,6 @@ rust_ffi_static {
         host: {
             compile_multilib: "64",
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             features: [
                 "clone-impls",
                 "default",
@@ -247,8 +240,6 @@ rust_ffi_static {
                 "visit",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=syn-2",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -256,6 +247,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
     },

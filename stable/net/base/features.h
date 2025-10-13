@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/net_buildflags.h"
 
 namespace net::features {
@@ -173,6 +174,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
 // NetworkAnonymizationKey associated with a request.
 // See https://github.com/MattMenke2/Explainer---Partition-Network-State.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
+
+// "__Http-" prefix for cookies.
+// https://github.com/httpwg/http-extensions/pull/3110
+NET_EXPORT BASE_DECLARE_FEATURE(kPrefixCookieHttp);
+
+// "__HostHttp-" prefix for cookies.
+// https://github.com/httpwg/http-extensions/issues/3111
+NET_EXPORT BASE_DECLARE_FEATURE(kPrefixCookieHostHttp);
 
 // Changes the interval between two search engine preconnect attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
@@ -404,18 +413,24 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<bool>
     kProbabilisticRevealTokenFetchOnly;
 
-// If true, probabilistic reveal tokens can be attached to non-proxied requests
-// as well. PRTs will still only be attached to requests if the
-// `ProbabilisticRevealTokensAddHeaderToProxiedRequests` flag is true and the
-// request is being sent to a registered domain, but this flag can be used in
-//  combination with `BypassProbabilisticRevealTokenRegistry` or
-// `CustomProbabilisticRevealTokenRegistry`. This is intended to be used for
-// developer testing only.
+// If true, PRTs are attached to the non-proxied requests satisfying the
+// right conditions specified by other PRT flags, in addition to the proxied
+// ones.
 NET_EXPORT extern const base::FeatureParam<bool>
     kEnableProbabilisticRevealTokensForNonProxiedRequests;
 
-// If true, probabilistic reveal tokens header will be added to proxied
-// requests.
+// TODO(crbug.com/425905281): Rename feature flag
+// `kProbabilisticRevealTokensAddHeaderToProxiedRequests`
+//
+// Despite its name this flag controls whether the PRT header should be added to
+// a given request, independent of the request being proxied or not. The
+// decision on enabling PRTs for non-proxied requests is controlled with
+// `kEnableProbabilisticRevealTokensForNonProxiedRequests`.
+//
+// If true, PRT header will be added to the not necessarily proxied requests
+// satisfying the right conditions specified by other PRT flags, i.e., whether
+// PRTs are enabled for the request/session, destination domain is eligible and
+// kProbabilisticRevealTokenFetchOnly is false.
 NET_EXPORT extern const base::FeatureParam<bool>
     kProbabilisticRevealTokensAddHeaderToProxiedRequests;
 
@@ -575,6 +590,13 @@ NET_EXPORT extern const base::FeatureParam<bool>
 // the Network panel. Tracked at https://crbug.com/425645896.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools;
 
+// Enables the ability for IP protection features to be gated in the Privacy
+// and Security Panel within DevTools. When this flag is disabled, the IP
+// Protection section will not be shown in the DevTools panel, allowing testing
+// and development of the IP Protection features before public release.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kIpPrivacyEnableIppPanelInDevTools;
+
 // Maximum report body size (KB) to include in serialized reports. Bodies
 // exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
 // Reporting.ReportBodySize UMA histogram to monitor report body sizes and
@@ -667,6 +689,12 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // This behavior is expected by default; disabling it should only be for
 // testing purposes.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsRefreshQuota);
+// This feature will enable breaking changes to Device Bound Session
+// Credentials from after the Origin Trial started. This is disabled by
+// default to facilitate implementation of feedback from the Origin
+// Trial while still being able to get consistent metrics across Chrome
+// releases.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback);
 
 // When enabled, all proxies in a proxy chain are partitioned by the NAK for the
 // endpoint of the connection. When disabled, proxies carrying tunnels to other
@@ -704,16 +732,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSimdutfBase64Support);
 // Further optimize parsing data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kFurtherOptimizeParsingDataUrls);
 
-// Keep whitespace for non-base64 encoded data: URLs.
-NET_EXPORT BASE_DECLARE_FEATURE(kKeepWhitespaceForDataUrls);
-
 // If enabled, unrecognized keys in a No-Vary-Search header will be ignored.
 // Otherwise, unrecognized keys are treated as if the header was invalid.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
-
-// If enabled, then a cookie entry containing both encrypted and plaintext
-// values is considered invalid, and the entire eTLD group will be dropped.
-NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid);
 
 // Kill switch for Static CT Log (aka Tiled Log aka Sunlight)
 // enforcements in Certificate Transparency policy checks. If disabled, SCTs
@@ -722,8 +743,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableStaticCTAPIEnforcement);
 
 // Finch experiment to select a disk cache backend.
 enum class DiskCacheBackend {
+  kDefault,
   kSimple,
   kBlockfile,
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  kSql,
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 };
 NET_EXPORT BASE_DECLARE_FEATURE(kDiskCacheBackendExperiment);
 NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
@@ -753,11 +778,34 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
 // When enabled HSTS upgrades will only apply to top-level navigations.
 NET_EXPORT BASE_DECLARE_FEATURE(kHstsTopLevelNavigationsOnly);
 
+#if BUILDFLAG(IS_WIN)
+// Whether or not to flush on MappedFile::Flush().
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheMappedFileFlushWin);
+#endif
+
 // Whether or not to apply No-Vary-Search processing in the HTTP disk cache.
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
 
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
                                       kHttpCacheNoVarySearchCacheMaxEntries);
+
+// Whether the NoVarySearchCache should be consulted in
+// HttpCache::OnExternalCacheHit().
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kHttpCacheNoVarySearchApplyToExternalHits);
+
+// Whether persistence is enabled in on-the-record profiles. True by default.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kHttpCacheNoVarySearchPersistenceEnabled);
+
+// If true, the persisted files will be created with valid but empty contents at
+// startup and after that closed and never used. Has no effect if
+// "persistence_enabled" is false. Causes "HttpCache.NoVarySearch.LoadResult" to
+// log "SnapshotLoadFailed" as there is no point in adding a new enum value for
+// this temporary feature.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kHttpCacheNoVarySearchFakePersistence);
 
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
@@ -821,6 +869,26 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpConnectionPoolSizeTrial);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpConnectionPoolSizeTrialNormal);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kTcpConnectionPoolSizeTrialWebSocket);
+
+// These parameters control whether the Network Service Task Scheduler is used
+// for specific classes.
+NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerHttpCache);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerHttpCacheTransaction);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerHttpProxyConnectJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerHttpStreamFactoryJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kNetTaskSchedulerHttpStreamFactoryJobController);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerURLRequestErrorJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerURLRequestHttpJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kNetTaskSchedulerURLRequestJob);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kNetTaskSchedulerURLRequestRedirectJob);
 
 }  // namespace net::features
 

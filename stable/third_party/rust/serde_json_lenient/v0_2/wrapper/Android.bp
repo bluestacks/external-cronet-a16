@@ -54,13 +54,9 @@ rust_ffi_static {
     target: {
         android_arm: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -72,13 +68,9 @@ rust_ffi_static {
         },
         android_arm64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -90,13 +82,9 @@ rust_ffi_static {
         },
         android_riscv64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -108,13 +96,9 @@ rust_ffi_static {
         },
         android_x86: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -126,13 +110,9 @@ rust_ffi_static {
         },
         android_x86_64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -145,13 +125,9 @@ rust_ffi_static {
         host: {
             compile_multilib: "64",
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -161,6 +137,9 @@ rust_ffi_static {
                 "-Cdebuginfo=1",
             ],
             rustlibs: [
+                "libequivalent__4afaab7807879527",
+                "libhashbrown__4a37b06da06c343a",
+                "libindexmap__015edb36d386eaee",
                 "libproc_macro2__9500a1d33b311508",
                 "libquote__a68b574aa1e07ec9",
                 "libsyn__dc2376f007a6ca68",
@@ -202,13 +181,9 @@ rust_ffi_static {
     target: {
         android_arm: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -220,13 +195,9 @@ rust_ffi_static {
         },
         android_arm64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -238,13 +209,9 @@ rust_ffi_static {
         },
         android_riscv64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -256,13 +223,9 @@ rust_ffi_static {
         },
         android_x86: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -274,13 +237,9 @@ rust_ffi_static {
         },
         android_x86_64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -311,9 +270,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -394,8 +350,6 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -433,7 +387,6 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -442,7 +395,6 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -454,7 +406,6 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -462,7 +413,6 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -472,7 +422,6 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",

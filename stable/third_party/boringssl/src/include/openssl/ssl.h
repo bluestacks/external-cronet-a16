@@ -3057,7 +3057,7 @@ OPENSSL_EXPORT int SSL_add_bio_cert_subjects_to_stack(STACK_OF(X509_NAME) *out,
 // issuer of the final certificate in |cred|'s certificate chain.
 //
 // Additionally, |cred| must enable issuer matching (see
-// SSL_CREDENTIAL_set_must_match_issuer|) for this value to take effect.
+// |SSL_CREDENTIAL_set_must_match_issuer|) for this value to take effect.
 //
 // For better extensibility, callers are recommended to configure this
 // information with a CertificatePropertyList instead. See
@@ -4936,7 +4936,7 @@ enum ssl_select_cert_result_t BORINGSSL_ENUM_INT {
   // ClientHelloOuter instead. From there, the handshake will proceed
   // without retry_configs, to signal to the client to disable ECH.
   //
-  // This value may only be returned when |SSL_ech_accepted| returnes one. It
+  // This value may only be returned when |SSL_ech_accepted| returns one. It
   // may be useful if the ClientHelloInner indicated a service which does not
   // support ECH, e.g. if it is a TLS-1.2 only service.
   ssl_select_cert_disable_ech = -2,

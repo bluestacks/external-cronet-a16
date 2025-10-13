@@ -3,10 +3,13 @@
 name: "Anonymous Tokens"
 third_party {
   license_type: NOTICE
-  version: "d708a2602a5947ee068f784daa1594a673d47c4a"
+  version: "50b2ee441f1c3bad73ab7430c41fd1ea5a7a06a6"
   identifier {
     value: "https://github.com/google/anonymous-tokens"
     type: "Git"
-    version: "d708a2602a5947ee068f784daa1594a673d47c4a"
+    version: "50b2ee441f1c3bad73ab7430c41fd1ea5a7a06a6"
+  }
+  security {
+    tag: "NVD-CPE2.3:unknown"
   }
 }

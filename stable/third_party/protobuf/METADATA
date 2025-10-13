@@ -9,4 +9,7 @@ third_party {
     type: "Git"
     version: "31.0"
   }
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:google:protobuf:31.0"
+  }
 }

@@ -71,7 +71,6 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "span_locations",
                 "wrap_proc_macro",
             ],
@@ -81,8 +80,6 @@ rust_ffi_static {
                 "span-locations",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=proc_macro2-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -90,6 +87,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
     },
@@ -131,7 +129,6 @@ rust_ffi_static {
             compile_multilib: "64",
             edition: "2021",
             cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
                 "span_locations",
                 "wrap_proc_macro",
             ],
@@ -141,8 +138,6 @@ rust_ffi_static {
                 "span-locations",
             ],
             flags: [
-                "-Awarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cmetadata=proc_macro2-1",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
@@ -150,6 +145,7 @@ rust_ffi_static {
                 "-Clto=no",
                 "-Copt-level=3",
                 "-Cdebuginfo=1",
+                "-Awarnings",
             ],
         },
     },

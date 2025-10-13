@@ -49,13 +49,9 @@ rust_ffi_static {
     target: {
         android_arm: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -68,13 +64,9 @@ rust_ffi_static {
         },
         android_arm64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -87,13 +79,9 @@ rust_ffi_static {
         },
         android_riscv64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -106,13 +94,9 @@ rust_ffi_static {
         },
         android_x86: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -125,13 +109,9 @@ rust_ffi_static {
         },
         android_x86_64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -177,13 +157,9 @@ rust_ffi_static {
     target: {
         android_arm: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -195,13 +171,9 @@ rust_ffi_static {
         },
         android_arm64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -213,13 +185,9 @@ rust_ffi_static {
         },
         android_riscv64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -231,13 +199,9 @@ rust_ffi_static {
         },
         android_x86: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -249,13 +213,9 @@ rust_ffi_static {
         },
         android_x86_64: {
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=yes",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -268,13 +228,9 @@ rust_ffi_static {
         host: {
             compile_multilib: "64",
             edition: "2021",
-            cfgs: [
-                "cr_rustc_revision=\"189022be76b7e259f27bf3e55eb931f354cd8b69d55f-22be76b7e259f27bf3e55eb931f354cd8b69d55f-1-21-16348-gbd809ffb\"",
-            ],
             flags: [
                 "-Dunsafe_op_in_unsafe_fn",
                 "-Dwarnings",
-                "-Amismatched_lifetime_syntaxes",
                 "-Cforce-unwind-tables=no",
                 "-Crelocation-model=pic",
                 "-Cdefault-linker-libraries",
@@ -284,6 +240,9 @@ rust_ffi_static {
                 "-Cdebuginfo=1",
             ],
             rustlibs: [
+                "libequivalent__4afaab7807879527",
+                "libhashbrown__4a37b06da06c343a",
+                "libindexmap__015edb36d386eaee",
                 "libproc_macro2__9500a1d33b311508",
                 "libquote__a68b574aa1e07ec9",
                 "libsyn__dc2376f007a6ca68",
@@ -506,9 +465,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -592,9 +548,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -860,7 +813,6 @@ cc_library_static {
         "allocator/dispatcher/reentry_guard.cc",
         "allocator/dispatcher/tls.cc",
         "android/android_hardware_buffer_compat.cc",
-        "android/android_image_reader_compat.cc",
         "android/android_info.cc",
         "android/android_input_receiver_compat.cc",
         "android/apk_assets.cc",
@@ -868,9 +820,7 @@ cc_library_static {
         "android/application_status_listener.cc",
         "android/background_thread_pool_field_trial.cc",
         "android/base_feature_map.cc",
-        "android/base_jni_onload.cc",
-        "android/binder.cc",
-        "android/binder_box.cc",
+        "android/base_jni_init.cc",
         "android/build_info.cc",
         "android/bundle_utils.cc",
         "android/callback_android.cc",
@@ -927,6 +877,8 @@ cc_library_static {
         "android/token_android.cc",
         "android/trace_event_binding.cc",
         "android/unguessable_token_android.cc",
+        "android/virtual_document_path.cc",
+        "android/yield_to_looper_checker.cc",
         "at_exit.cc",
         "atomicops.cc",
         "barrier_closure.cc",
@@ -934,6 +886,7 @@ cc_library_static {
         "base64url.cc",
         "base_paths.cc",
         "base_paths_android.cc",
+        "byte_count.cc",
         "callback_list.cc",
         "check.cc",
         "check_is_test.cc",
@@ -964,6 +917,7 @@ cc_library_static {
         "files/drive_info.cc",
         "files/drive_info_posix.cc",
         "files/file.cc",
+        "files/file_android.cc",
         "files/file_descriptor_watcher_posix.cc",
         "files/file_enumerator.cc",
         "files/file_enumerator_posix.cc",
@@ -1035,6 +989,9 @@ cc_library_static {
         "memory/unsafe_shared_memory_region.cc",
         "memory/weak_ptr.cc",
         "memory/writable_shared_memory_region.cc",
+        "memory_coordinator/async_memory_consumer_registration.cc",
+        "memory_coordinator/memory_consumer.cc",
+        "memory_coordinator/memory_consumer_registry.cc",
         "message_loop/io_watcher.cc",
         "message_loop/message_pump.cc",
         "message_loop/message_pump_android.cc",
@@ -1282,7 +1239,6 @@ cc_library_static {
         "time/time_android.cc",
         "time/time_conversion_posix.cc",
         "time/time_delta_from_string.cc",
-        "time/time_exploded_icu.cc",
         "time/time_exploded_posix.cc",
         "time/time_now_posix.cc",
         "time/time_override.cc",
@@ -1358,23 +1314,13 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBASE_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
-        "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",
         "-DIS_RAW_PTR_IMPL",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_CHROMIUM_ICU=1",
-        "-DU_ENABLE_DYLOAD=0",
-        "-DU_ENABLE_RESOURCE_TRACING=0",
-        "-DU_ENABLE_TRACING=1",
-        "-DU_STATIC_IMPLEMENTATION",
-        "-DU_USING_ICU_NAMESPACE=0",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1398,8 +1344,6 @@ cc_library_static {
         "external/cronet/stable/third_party/abseil-cpp/",
         "external/cronet/stable/third_party/boringssl/src/include/",
         "external/cronet/stable/third_party/cpu_features/src/ndk_compat/",
-        "external/cronet/stable/third_party/icu/source/common/",
-        "external/cronet/stable/third_party/icu/source/i18n/",
         "external/cronet/stable/third_party/libc++/src/include",
         "external/cronet/stable/third_party/libc++abi/src/include",
         "external/cronet/stable/third_party/perfetto/include/",
@@ -1469,6 +1413,7 @@ cc_library_static {
         "base64.cc",
         "base64url.cc",
         "base_paths.cc",
+        "byte_count.cc",
         "callback_list.cc",
         "check.cc",
         "check_is_test.cc",
@@ -1565,6 +1510,9 @@ cc_library_static {
         "memory/unsafe_shared_memory_region.cc",
         "memory/weak_ptr.cc",
         "memory/writable_shared_memory_region.cc",
+        "memory_coordinator/async_memory_consumer_registration.cc",
+        "memory_coordinator/memory_consumer.cc",
+        "memory_coordinator/memory_consumer_registry.cc",
         "message_loop/io_watcher.cc",
         "message_loop/message_pump.cc",
         "message_loop/message_pump_default.cc",
@@ -1804,7 +1752,6 @@ cc_library_static {
         "time/time.cc",
         "time/time_conversion_posix.cc",
         "time/time_delta_from_string.cc",
-        "time/time_exploded_icu.cc",
         "time/time_exploded_posix.cc",
         "time/time_now_posix.cc",
         "time/time_override.cc",
@@ -1866,20 +1813,11 @@ cc_library_static {
     ],
     cflags: [
         "-DBASE_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
-        "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",
         "-DIS_RAW_PTR_IMPL",
         "-DNDEBUG",
         "-DNVALGRIND",
         "-DOFFICIAL_BUILD",
-        "-DUSE_CHROMIUM_ICU=1",
-        "-DU_ENABLE_DYLOAD=0",
-        "-DU_ENABLE_RESOURCE_TRACING=0",
-        "-DU_ENABLE_TRACING=1",
-        "-DU_STATIC_IMPLEMENTATION",
-        "-DU_USING_ICU_NAMESPACE=0",
         "-D_GNU_SOURCE",
         "-D_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS",
         "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
@@ -1901,8 +1839,6 @@ cc_library_static {
         "external/cronet/stable/buildtools/third_party/libc++/",
         "external/cronet/stable/third_party/abseil-cpp/",
         "external/cronet/stable/third_party/boringssl/src/include/",
-        "external/cronet/stable/third_party/icu/source/common/",
-        "external/cronet/stable/third_party/icu/source/i18n/",
         "external/cronet/stable/third_party/libc++/src/include",
         "external/cronet/stable/third_party/libc++abi/src/include",
         "external/cronet/stable/third_party/perfetto/include/",
@@ -1921,7 +1857,6 @@ cc_library_static {
         android_arm: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -1929,9 +1864,7 @@ cc_library_static {
                 "android/application_status_listener.cc",
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
-                "android/base_jni_onload.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
+                "android/base_jni_init.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -1988,8 +1921,11 @@ cc_library_static {
                 "android/token_android.cc",
                 "android/trace_event_binding.cc",
                 "android/unguessable_token_android.cc",
+                "android/virtual_document_path.cc",
+                "android/yield_to_looper_checker.cc",
                 "base_paths_android.cc",
                 "debug/stack_trace_android.cc",
+                "files/file_android.cc",
                 "files/file_util_android.cc",
                 "files/scoped_file_android.cc",
                 "memory/platform_shared_memory_mapper_android.cc",
@@ -2016,7 +1952,6 @@ cc_library_static {
             ],
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -2036,7 +1971,6 @@ cc_library_static {
         android_arm64: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -2044,9 +1978,7 @@ cc_library_static {
                 "android/application_status_listener.cc",
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
-                "android/base_jni_onload.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
+                "android/base_jni_init.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2103,9 +2035,12 @@ cc_library_static {
                 "android/token_android.cc",
                 "android/trace_event_binding.cc",
                 "android/unguessable_token_android.cc",
+                "android/virtual_document_path.cc",
+                "android/yield_to_looper_checker.cc",
                 "base_paths_android.cc",
                 "debug/allocation_trace.cc",
                 "debug/stack_trace_android.cc",
+                "files/file_android.cc",
                 "files/file_util_android.cc",
                 "files/scoped_file_android.cc",
                 "memory/platform_shared_memory_mapper_android.cc",
@@ -2131,7 +2066,6 @@ cc_library_static {
             ],
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -2153,7 +2087,6 @@ cc_library_static {
         android_riscv64: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -2161,9 +2094,7 @@ cc_library_static {
                 "android/application_status_listener.cc",
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
-                "android/base_jni_onload.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
+                "android/base_jni_init.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2220,8 +2151,11 @@ cc_library_static {
                 "android/token_android.cc",
                 "android/trace_event_binding.cc",
                 "android/unguessable_token_android.cc",
+                "android/virtual_document_path.cc",
+                "android/yield_to_looper_checker.cc",
                 "base_paths_android.cc",
                 "debug/stack_trace_android.cc",
+                "files/file_android.cc",
                 "files/file_util_android.cc",
                 "files/scoped_file_android.cc",
                 "memory/platform_shared_memory_mapper_android.cc",
@@ -2246,7 +2180,6 @@ cc_library_static {
             ],
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -2265,7 +2198,6 @@ cc_library_static {
         android_x86: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -2273,9 +2205,7 @@ cc_library_static {
                 "android/application_status_listener.cc",
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
-                "android/base_jni_onload.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
+                "android/base_jni_init.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2332,8 +2262,11 @@ cc_library_static {
                 "android/token_android.cc",
                 "android/trace_event_binding.cc",
                 "android/unguessable_token_android.cc",
+                "android/virtual_document_path.cc",
+                "android/yield_to_looper_checker.cc",
                 "base_paths_android.cc",
                 "debug/stack_trace_android.cc",
+                "files/file_android.cc",
                 "files/file_util_android.cc",
                 "files/scoped_file_android.cc",
                 "memory/platform_shared_memory_mapper_android.cc",
@@ -2358,7 +2291,6 @@ cc_library_static {
             ],
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -2379,7 +2311,6 @@ cc_library_static {
         android_x86_64: {
             srcs: [
                 "android/android_hardware_buffer_compat.cc",
-                "android/android_image_reader_compat.cc",
                 "android/android_info.cc",
                 "android/android_input_receiver_compat.cc",
                 "android/apk_assets.cc",
@@ -2387,9 +2318,7 @@ cc_library_static {
                 "android/application_status_listener.cc",
                 "android/background_thread_pool_field_trial.cc",
                 "android/base_feature_map.cc",
-                "android/base_jni_onload.cc",
-                "android/binder.cc",
-                "android/binder_box.cc",
+                "android/base_jni_init.cc",
                 "android/build_info.cc",
                 "android/bundle_utils.cc",
                 "android/callback_android.cc",
@@ -2446,8 +2375,11 @@ cc_library_static {
                 "android/token_android.cc",
                 "android/trace_event_binding.cc",
                 "android/unguessable_token_android.cc",
+                "android/virtual_document_path.cc",
+                "android/yield_to_looper_checker.cc",
                 "base_paths_android.cc",
                 "debug/stack_trace_android.cc",
+                "files/file_android.cc",
                 "files/file_util_android.cc",
                 "files/scoped_file_android.cc",
                 "memory/platform_shared_memory_mapper_android.cc",
@@ -2472,7 +2404,6 @@ cc_library_static {
             ],
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -3391,9 +3322,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -3473,8 +3401,6 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -3513,7 +3439,6 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -3522,7 +3447,6 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -3533,7 +3457,6 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -3541,7 +3464,6 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -3551,7 +3473,6 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -3727,9 +3648,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -3813,9 +3731,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -4359,9 +4274,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -4439,8 +4351,6 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -4478,7 +4388,6 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -4487,7 +4396,6 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -4499,7 +4407,6 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -4507,7 +4414,6 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -4517,7 +4423,6 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -5342,10 +5247,7 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
         "-DBASE_I18N_IMPLEMENTATION",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_FILE",
@@ -7217,9 +7119,6 @@ cc_library_static {
     ],
     cflags: [
         "-DANDROID",
-        "-DANDROID_NDK_VERSION_ROLL=r28_1",
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DHAVE_SYS_UIO_H",
         "-DNDEBUG",
@@ -7301,8 +7200,6 @@ cc_library_static {
         "stable_cronet_cc_defaults",
     ],
     cflags: [
-        "-DCR_CLANG_REVISION=\"llvmorg-21-init-16348-gbd809ffb-1\"",
-        "-DCR_LIBCXX_REVISION=2c359c239b138a20a03f798e47889448ef131c22",
         "-DDYNAMIC_ANNOTATIONS_ENABLED=0",
         "-DNDEBUG",
         "-DNVALGRIND",
@@ -7341,7 +7238,6 @@ cc_library_static {
         android_arm: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -7350,7 +7246,6 @@ cc_library_static {
         android_arm64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -7362,7 +7257,6 @@ cc_library_static {
         android_riscv64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
             ],
@@ -7370,7 +7264,6 @@ cc_library_static {
         android_x86: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
@@ -7380,7 +7273,6 @@ cc_library_static {
         android_x86_64: {
             cflags: [
                 "-DANDROID",
-                "-DANDROID_NDK_VERSION_ROLL=r28_1",
                 "-DHAVE_SYS_UIO_H",
                 "-D_FORTIFY_SOURCE=2",
                 "-D__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",

@@ -45,7 +45,7 @@ struct RSA_PKEY_CTX {
   // message digest for MGF1
   const EVP_MD *mgf1md = nullptr;
   // PSS salt length
-  int saltlen = RSA_PSS_SALTLEN_AUTO;
+  int saltlen = RSA_PSS_SALTLEN_DIGEST;
   bssl::Array<uint8_t> oaep_label;
 };
 
@@ -325,8 +325,7 @@ static int pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2) {
         OPENSSL_PUT_ERROR(EVP, EVP_R_ILLEGAL_OR_UNSUPPORTED_PADDING_MODE);
         return 0;
       }
-      if ((p1 == RSA_PKCS1_PSS_PADDING || p1 == RSA_PKCS1_OAEP_PADDING) &&
-          rctx->md == NULL) {
+      if (p1 == RSA_PKCS1_OAEP_PADDING && rctx->md == NULL) {
         rctx->md = EVP_sha1();
       }
       rctx->pad_mode = p1;

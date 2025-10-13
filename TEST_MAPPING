@@ -1,8 +1,16 @@
 {
   "captiveportal-networkstack-resolve-tethering-mainline-presubmit": [
     {
+      "name": "CtsNetHttpTestCases"
+    },
+    {
      "name": "NetHttpCoverageTests",
      "options": [
+       // These options should be used only to declare filters to skip presubmit.
+       // Do not use them to disable tests. Instead, rely on the various
+       // Tradefed and our various AndroidTest.xml. That is preferable because
+       // those files are versioned, making it easier to re-enable tests once
+       // the underlying issue has been fixed.
        {
          "exclude-annotation": "com.android.testutils.SkipPresubmit"
        },
@@ -17,8 +25,13 @@
      ]
     },
     {
-     "name": "StableNetHttpCoverageTests",
+     "name": "stable_cronet_NetHttpCoverageTests",
      "options": [
+       // These options should be used only to declare filters to skip presubmit.
+       // Do not use them to disable tests. Instead, rely on the various
+       // Tradefed and our various AndroidTest.xml. That is preferable because
+       // those files are versioned, making it easier to re-enable tests once
+       // the underlying issue has been fixed.
        {
          "exclude-annotation": "com.android.testutils.SkipPresubmit"
        },
@@ -47,6 +60,51 @@
   ],
   "presubmit": [
     {
+      "name": "CtsNetHttpTestCases"
+    },
+    {
+     "name": "NetHttpCoverageTests",
+     "options": [
+       // These options should be used only to declare filters to skip presubmit.
+       // Do not use them to disable tests. Instead, rely on the various
+       // Tradefed and our various AndroidTest.xml. That is preferable because
+       // those files are versioned, making it easier to re-enable tests once
+       // the underlying issue has been fixed.
+       {
+         "exclude-annotation": "com.android.testutils.SkipPresubmit"
+       },
+       {
+         // These sometimes take longer than 1 min which is the presubmit timeout
+         "exclude-annotation": "androidx.test.filters.LargeTest"
+       },
+       {
+         // TODO(http://b/432122460) - this test is flaky when running on Android CI
+         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
+       }
+     ]
+    },
+    {
+     "name": "stable_cronet_NetHttpCoverageTests",
+     "options": [
+       // These options should be used only to declare filters to skip presubmit.
+       // Do not use them to disable tests. Instead, rely on the various
+       // Tradefed and our various AndroidTest.xml. That is preferable because
+       // those files are versioned, making it easier to re-enable tests once
+       // the underlying issue has been fixed.
+       {
+         "exclude-annotation": "com.android.testutils.SkipPresubmit"
+       },
+       {
+         // These sometimes take longer than 1 min which is the presubmit timeout
+         "exclude-annotation": "androidx.test.filters.LargeTest"
+       },
+       {
+         // TODO(http://b/432122460) - this test is flaky when running on Android CI
+         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
+       }
+     ]
+    },
+    {
       "name": "net_unittests_tester"
     },
     {
@@ -57,17 +115,36 @@
     },
     {
       "name": "stable_cronet_unittests_tester"
+    }
+  ],
+  "postsubmit": [
+    // Repeat all tests in postsubmit without excluding any. This is required
+    // to make it so exclude filters only affect presubmit.
+    {
+      "name": "CtsNetHttpTestCases"
     },
     {
      "name": "NetHttpCoverageTests",
      "options": [
+       // These options should be used only to declare filters to skip presubmit.
+       // Do not use them to disable tests. Instead, rely on the various
+       // Tradefed and our various AndroidTest.xml. That is preferable because
+       // those files are versioned, making it easier to re-enable tests once
+       // the underlying issue has been fixed.
        {
-         "exclude-annotation": "com.android.testutils.SkipPresubmit"
-       },
-       {
-         // These sometimes take longer than 1 min which is the presubmit timeout
-         "exclude-annotation": "androidx.test.filters.LargeTest"
-       },
+         // TODO(http://b/432122460) - this test is flaky when running on Android CI
+         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
+       }
+      ]
+    },
+    {
+     "name": "stable_cronet_NetHttpCoverageTests",
+     "options": [
+       // These options should be used only to declare filters to skip presubmit.
+       // Do not use them to disable tests. Instead, rely on the various
+       // Tradefed and our various AndroidTest.xml. That is preferable because
+       // those files are versioned, making it easier to re-enable tests once
+       // the underlying issue has been fixed.
        {
          // TODO(http://b/432122460) - this test is flaky when running on Android CI
          "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
@@ -75,20 +152,16 @@
      ]
     },
     {
-     "name": "StableNetHttpCoverageTests",
-     "options": [
-       {
-         "exclude-annotation": "com.android.testutils.SkipPresubmit"
-       },
-       {
-         // These sometimes take longer than 1 min which is the presubmit timeout
-         "exclude-annotation": "androidx.test.filters.LargeTest"
-       },
-       {
-         // TODO(http://b/432122460) - this test is flaky when running on Android CI
-         "exclude-filter": "org.chromium.net.SystemProxyTest#testProxyChange"
-       }
-     ]
+      "name": "net_unittests_tester"
+    },
+    {
+      "name": "stable_net_unittests_tester"
+    },
+    {
+      "name": "cronet_unittests_tester"
+    },
+    {
+      "name": "stable_cronet_unittests_tester"
     }
   ]
 }

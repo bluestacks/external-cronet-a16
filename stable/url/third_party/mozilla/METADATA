@@ -7,4 +7,7 @@ third_party {
     value: "https://hg.mozilla.org/mozilla-central/file/tip/netwerk/base/nsURLParsers.cpp"
     type: "Hg"
   }
+  security {
+    tag: "NVD-CPE2.3:unknown"
+  }
 }

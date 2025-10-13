@@ -3,6 +3,6 @@
 name: "cxxbridge-cmd"
 third_party {
   license_type: NOTICE
-  version: "1.0.158"
+  version: "1.0.161"
   homepage: "https://crates.io/crates/cxxbridge-cmd"
 }

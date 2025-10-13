@@ -9,4 +9,7 @@ third_party {
     type: "Git"
     version: "2f40a850bcc5d6f7c1bfa02dbf42ad19d8220dc0"
   }
+  security {
+    tag: "NVD-CPE2.3:cpe:/a:ced_project:ced"
+  }
 }

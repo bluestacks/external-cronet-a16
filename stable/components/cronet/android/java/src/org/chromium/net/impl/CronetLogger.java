@@ -230,6 +230,10 @@ public abstract class CronetLogger {
         private final boolean mSocketReused;
         private final String mCronetVersion;
         private final CronetSource mCronetSource;
+        private final long mTimeToEstablishDnsMillis;
+        private final long mTimeToEstablishSSLMillis;
+        private final long mTimeToConnectMillis;
+        private final long mTimeToSendFirstByteMillis;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -255,7 +259,11 @@ public abstract class CronetLogger {
                 RequestFailureReason failureReason,
                 boolean sockedReused,
                 String cronetVersion,
-                CronetSource cronetSource) {
+                CronetSource cronetSource,
+                long timeToEstablishDnsMillis,
+                long timeToEstablishSSLMillis,
+                long timeToConnectMillis,
+                long timeToSendFirstByteMillis) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -280,6 +288,10 @@ public abstract class CronetLogger {
             mSocketReused = sockedReused;
             mCronetVersion = cronetVersion;
             mCronetSource = cronetSource;
+            mTimeToEstablishDnsMillis = timeToEstablishDnsMillis;
+            mTimeToEstablishSSLMillis = timeToEstablishSSLMillis;
+            mTimeToConnectMillis = timeToConnectMillis;
+            mTimeToSendFirstByteMillis = timeToSendFirstByteMillis;
         }
 
         /**
@@ -398,6 +410,22 @@ public abstract class CronetLogger {
 
         public CronetSource getCronetSource() {
             return mCronetSource;
+        }
+
+        public long getTimeToEstablishDNSMillis() {
+            return mTimeToEstablishDnsMillis;
+        }
+
+        public long getTimeToEstablishSSLMillis() {
+            return mTimeToEstablishSSLMillis;
+        }
+
+        public long getTimeToConnectMillis() {
+            return mTimeToConnectMillis;
+        }
+
+        public long getTimeToSendFirstByteMillis() {
+            return mTimeToSendFirstByteMillis;
         }
     }
 

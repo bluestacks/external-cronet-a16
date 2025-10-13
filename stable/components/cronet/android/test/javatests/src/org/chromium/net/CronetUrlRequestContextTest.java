@@ -92,21 +92,24 @@ public class CronetUrlRequestContextTest {
     private static final String MOCK_CRONET_TEST_SUCCESS_URL = "http://mock.http/success.txt";
     private static final int MAX_FILE_SIZE = 1000000000;
 
+    private NativeTestServer mNativeTestServer;
     private String mUrl;
     private String mUrl404;
     private String mUrl500;
 
     @Before
     public void setUp() throws Exception {
-        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
-        mUrl = NativeTestServer.getSuccessURL();
-        mUrl404 = NativeTestServer.getNotFoundURL();
-        mUrl500 = NativeTestServer.getServerErrorURL();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
+        mUrl = mNativeTestServer.getSuccessURL();
+        mUrl404 = mNativeTestServer.getNotFoundURL();
+        mUrl500 = mNativeTestServer.getServerErrorURL();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     class RequestThread extends Thread {
@@ -169,13 +172,15 @@ public class CronetUrlRequestContextTest {
         }
     }
 
-    private void setReadHttpFlagsInManifest(boolean value) {
+    private void setupManifest(boolean enableHttpFlags, boolean enableTelemetry) {
         Bundle metaData = new Bundle();
-        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, value);
+        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, enableHttpFlags);
+        metaData.putBoolean(CronetManifest.ENABLE_TELEMETRY_META_DATA_KEY, enableTelemetry);
         mTestRule.getTestFramework().interceptContext(new CronetManifestInterceptor(metaData));
     }
 
-    private void setLogFlag(String marker, String appId, String minVersion) {
+    private void setLogFlag(
+            String marker, String appId, String minVersion, boolean applyIfTelemetryDisabled) {
         FlagValue.ConstrainedValue.Builder constrainedValueBuilder =
                 FlagValue.ConstrainedValue.newBuilder()
                         .setStringValue("Test log flag value " + marker);
@@ -184,6 +189,9 @@ public class CronetUrlRequestContextTest {
         }
         if (minVersion != null) {
             constrainedValueBuilder.setMinVersion(minVersion);
+        }
+        if (applyIfTelemetryDisabled) {
+            constrainedValueBuilder.setApplyEvenIfCronetTelemetryDisabled(applyIfTelemetryDisabled);
         }
         mTestRule
                 .getTestFramework()
@@ -260,9 +268,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAreLoaded() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -274,9 +286,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAreLoadedFromAPI() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         getHttpFlagsFromAPIWhileExpectingLog(marker);
     }
 
@@ -288,9 +304,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAreNotLoadedIfDisabledInManifest() throws Exception {
-        setReadHttpFlagsInManifest(false);
+        setupManifest(/* enableHttpFlags= */ false, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
     }
 
@@ -302,9 +322,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsNotAppliedIfAppIdDoesntMatch() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ "org.chromium.fake.app.id", /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ "org.chromium.fake.app.id",
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
     }
 
@@ -316,12 +340,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAppliedIfAppIdMatches() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
         setLogFlag(
                 marker,
                 /* appId= */ mTestRule.getTestFramework().getContext().getPackageName(),
-                /* minVersion= */ ImplVersion.getCronetVersion());
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -333,9 +358,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsNotAppliedIfBelowMinVersion() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ "999999.0.0.0");
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ "999999.0.0.0",
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
     }
 
@@ -346,10 +375,50 @@ public class CronetUrlRequestContextTest {
             reason =
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
-    public void testHttpFlagsAppliedIfAtMinVersion() throws Exception {
-        setReadHttpFlagsInManifest(true);
+    public void testHttpFlagsNotAppliedIfTelemetryDisabled() throws Exception {
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ false);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ ImplVersion.getCronetVersion());
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ false);
+        runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "HTTP flags are only supported on native Cronet for now. "
+                            + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
+    public void testHttpFlagsAppliedIfTelemetryOverrideIsUsed() throws Exception {
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ false);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ true);
+        runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "HTTP flags are only supported on native Cronet for now. "
+                            + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
+    public void testHttpFlagsAppliedIfAtMinVersion() throws Exception {
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -361,9 +430,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAppliedIfAboveMinVersion() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ "100.0.0.0");
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ "100.0.0.0",
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -402,7 +475,7 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testBaseFeatureFlagsOverridesEnabled() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
         setChromiumBaseFeatureLogFlag(true, marker);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
@@ -414,7 +487,7 @@ public class CronetUrlRequestContextTest {
             implementations = {CronetImplementation.FALLBACK},
             reason = "HTTP flags are only supported on native Cronet for now")
     public void testBaseFeatureFlagsOverridesDisabled() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
         setChromiumBaseFeatureLogFlag(false, marker);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
@@ -570,16 +643,10 @@ public class CronetUrlRequestContextTest {
                 .applyEngineBuilderPatch((builder) -> builder.setUserAgent(userAgentValue));
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
-        NativeTestServer.shutdownNativeTestServer(); // startNativeTestServer returns false if it's
-        // already running
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
                 cronetEngine.newUrlRequestBuilder(
-                        NativeTestServer.getEchoHeaderURL(userAgentName),
+                        mNativeTestServer.getEchoHeaderURL(userAgentName),
                         callback,
                         callback.getExecutor());
         urlRequestBuilder.build().start();
@@ -1480,10 +1547,6 @@ public class CronetUrlRequestContextTest {
             builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         }
         builder.enableHttpCache(cacheType, 100 * 1024);
-        // Don't check the return value here, because startNativeTestServer() returns false when the
-        // NativeTestServer is already running and this method needs to be called twice without
-        // shutting down the NativeTestServer in between.
-        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
         return builder.build();
     }
 
@@ -1498,13 +1561,13 @@ public class CronetUrlRequestContextTest {
     public void testShutDownEngineOnNetworkThread() throws Exception {
         final CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         // Make a request to a cacheable resource.
         checkRequestCaching(cronetEngine, url, false);
 
         final AtomicReference<Throwable> thrown = new AtomicReference<>();
         // Shut down the server.
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         class CancelUrlRequestCallback extends TestUrlRequestCallback {
             @Override
             public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
@@ -1559,12 +1622,12 @@ public class CronetUrlRequestContextTest {
     public void testShutDownEngineWhenReadingFromDiskCache() throws Exception {
         final CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         // Make a request to a cacheable resource.
         checkRequestCaching(cronetEngine, url, false);
 
         // Shut down the server.
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         class CancelUrlRequestCallback extends TestUrlRequestCallback {
             @Override
             public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
@@ -1899,7 +1962,7 @@ public class CronetUrlRequestContextTest {
     public void testEnableHttpCacheDisabled() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISABLED);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, false);
@@ -1914,10 +1977,10 @@ public class CronetUrlRequestContextTest {
     public void testEnableHttpCacheInMemory() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, true);
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         checkRequestCaching(cronetEngine, url, true);
         cronetEngine.shutdown();
     }
@@ -1930,10 +1993,10 @@ public class CronetUrlRequestContextTest {
     public void testEnableHttpCacheDisk() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, true);
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         checkRequestCaching(cronetEngine, url, true);
         cronetEngine.shutdown();
     }
@@ -1954,10 +2017,10 @@ public class CronetUrlRequestContextTest {
                         () -> createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK));
         assertThat(e).hasMessageThat().isEqualTo("Disk cache storage path already in use");
 
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, true);
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         checkRequestCaching(cronetEngine, url, true);
         cronetEngine.shutdown();
     }
@@ -1971,7 +2034,7 @@ public class CronetUrlRequestContextTest {
     public void testEnableHttpCacheDiskNoHttp() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, false);
@@ -1994,7 +2057,7 @@ public class CronetUrlRequestContextTest {
     public void testDisableCache() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
 
         // When cache is disabled, making a request does not write to the cache.
         checkRequestCaching(cronetEngine, url, false, true);
@@ -2005,7 +2068,7 @@ public class CronetUrlRequestContextTest {
         checkRequestCaching(cronetEngine, url, true);
 
         // Shut down the server, next request should have a cached response.
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         checkRequestCaching(cronetEngine, url, true);
 
         // Cache is disabled after server is shut down, request should fail.
@@ -2029,10 +2092,10 @@ public class CronetUrlRequestContextTest {
     public void testEnableHttpCacheDiskNewEngine() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         checkRequestCaching(cronetEngine, url, false);
         checkRequestCaching(cronetEngine, url, true);
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         checkRequestCaching(cronetEngine, url, true);
 
         // Shutdown original context and create another that uses the same cache.
